@@ -25,6 +25,8 @@ const Chemi = lazy(() => import('./pages/Chemi'))
 const QuickHub = lazy(() => import('./pages/QuickHub'))
 const QuickTest = lazy(() => import('./pages/QuickTest'))
 const Routine = lazy(() => import('./pages/Routine'))
+const Magazine = lazy(() => import('./pages/Magazine'))
+const Article = lazy(() => import('./pages/Article'))
 
 function Loader() {
   return (
@@ -85,6 +87,8 @@ export default function App() {
               <Route path="/quick" element={<QuickHub />} />
               <Route path="/quick/:id" element={<QuickTest />} />
               <Route path="/routine/:id" element={<Routine />} />
+              <Route path="/magazine" element={<Magazine />} />
+              <Route path="/magazine/:id" element={<Article />} />
               <Route path="/rank" element={<Rank />} />
               <Route path="/league" element={<League />} />
               <Route path="/legal/:doc" element={<Legal />} />

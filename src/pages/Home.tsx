@@ -245,6 +245,18 @@ export default function Home() {
           </Card>
         </motion.div>
 
+        {/* 심리 매거진 */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+          <Card onClick={() => nav('/magazine')} className="flex items-center gap-3.5 !p-4">
+            <span className="text-[28px]">📖</span>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-[16px] font-extrabold tracking-tight">{t('mag.title')}</h3>
+              <p className="mt-0.5 truncate text-[13px] font-bold text-ink-faint">{t('mag.banner')}</p>
+            </div>
+            <span className="text-xl text-ink-faint">›</span>
+          </Card>
+        </motion.div>
+
         <p className="mt-6 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">
           {t('home.disclaimer')}
         </p>
