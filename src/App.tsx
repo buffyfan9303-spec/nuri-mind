@@ -22,6 +22,8 @@ const Legal = lazy(() => import('./pages/Legal'))
 const Community = lazy(() => import('./pages/Community'))
 const Dex = lazy(() => import('./pages/Dex'))
 const Chemi = lazy(() => import('./pages/Chemi'))
+const QuickHub = lazy(() => import('./pages/QuickHub'))
+const QuickTest = lazy(() => import('./pages/QuickTest'))
 
 function Loader() {
   return (
@@ -79,6 +81,8 @@ export default function App() {
               <Route path="/community" element={<Community />} />
               <Route path="/dex" element={<Dex />} />
               <Route path="/chemi" element={<Chemi />} />
+              <Route path="/quick" element={<QuickHub />} />
+              <Route path="/quick/:id" element={<QuickTest />} />
               <Route path="/rank" element={<Rank />} />
               <Route path="/league" element={<League />} />
               <Route path="/legal/:doc" element={<Legal />} />

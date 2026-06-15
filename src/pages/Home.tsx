@@ -175,6 +175,27 @@ export default function Home() {
           </Card>
         </motion.div>
 
+        {/* ── 1분 바이럴 퀵 테스트 ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12, type: 'spring', stiffness: 220, damping: 22 }}
+        >
+          <Card
+            onClick={() => nav('/quick')}
+            className="mt-3.5 flex items-center gap-3.5 !bg-gradient-to-r from-[#F25C8E] to-[#8B7CF6] !p-4"
+          >
+            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="shrink-0 text-[26px]">
+              🔥
+            </motion.span>
+            <div className="min-w-0 flex-1">
+              <h3 className="whitespace-nowrap text-[15.5px] font-extrabold leading-tight text-white">{t('quick.banner')}</h3>
+              <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">{t('quick.bannerSub')}</p>
+            </div>
+            <span className="shrink-0 rounded-full bg-white/25 px-3 py-1.5 text-[13px] font-extrabold text-white">1{t('common.min')}</span>
+          </Card>
+        </motion.div>
+
         {/* ── 다면 기질 검사 (가로형 컴팩트 리스트) ── */}
         <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('home.testsHeader')}</h2>
         <div className="mt-3 space-y-2.5">

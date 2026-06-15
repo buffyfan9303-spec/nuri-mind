@@ -1,0 +1,156 @@
+import { useMemo, useState } from 'react'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import Button from '../components/Button'
+import { ProgressBar, TopBar } from '../components/ui'
+import { quickById } from '../data/quick'
+import { useT, useL } from '../i18n/useT'
+import { track } from '../lib/analytics'
+import { sfx } from '../lib/sound'
+import { burst } from '../lib/confetti'
+
+export default function QuickTest() {
+  const { id } = useParams<{ id: string }>()
+  const t = useT()
+  const l = useL()
+  const nav = useNavigate()
+  const test = quickById(id || '')
+
+  const [step, setStep] = useState(0)
+  const [tally, setTally] = useState<Record<string, number>>({})
+  const [done, setDone] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const winner = useMemo(() => {
+    if (!test) return null
+    let best = test.results[0]
+    let bestN = -1
+    for (const r of test.results) {
+      const n = tally[r.key] || 0
+      if (n > bestN) {
+        bestN = n
+        best = r
+      }
+    }
+    return best
+  }, [tally, test])
+
+  if (!test) return <Navigate to="/" replace />
+
+  const pick = (to: string) => {
+    setTally((prev) => ({ ...prev, [to]: (prev[to] || 0) + 1 }))
+    sfx.tap()
+    if (step + 1 < test.questions.length) setStep(step + 1)
+    else {
+      setDone(true)
+      burst()
+      track('quick_complete', { id: test.id })
+    }
+  }
+
+  const share = async () => {
+    if (!winner) return
+    track('share', { channel: 'quick', id: test.id })
+    const url = `${location.origin}/quick/${test.id}`
+    const txt = `[누리 마인드] 나의 ${l(test.title)}: ${winner.emoji} ${l(winner.name)} — ${l(winner.tag)}`
+    try {
+      if (navigator.share) await navigator.share({ text: txt, url })
+      else {
+        await navigator.clipboard.writeText(`${txt} ${url}`)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1600)
+      }
+    } catch {
+      /* 취소 */
+    }
+  }
+
+  const reset = () => {
+    setTally({})
+    setStep(0)
+    setDone(false)
+  }
+
+  // ── 결과 ──
+  if (done && winner) {
+    return (
+      <div className="min-h-dvh pb-36">
+        <TopBar back="/quick" title={l(test.title)} />
+        <main className="mx-auto max-w-md px-5">
+          <motion.div
+            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+            className="mt-3 rounded-3xl p-7 text-center text-white shadow-pop"
+            style={{ background: `linear-gradient(135deg, ${test.grad[0]}, ${test.grad[1]})` }}
+          >
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -8, 6, 0] }} className="text-[72px] leading-none">
+              {winner.emoji}
+            </motion.div>
+            <h1 className="mt-3 text-[28px] font-extrabold tracking-tight">{l(winner.name)}</h1>
+            <p className="mt-2 text-[15px] font-extrabold text-white/90">“{l(winner.tag)}”</p>
+            <p className="mt-3 break-keep text-[14.5px] font-medium leading-relaxed text-white/95">{l(winner.desc)}</p>
+          </motion.div>
+
+          {copied && (
+            <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">{t('common.copied')}</p>
+          )}
+
+          <div className="mt-4 space-y-2.5">
+            <Button color="mind" onClick={share}>
+              📤 {t('quick.share')}
+            </Button>
+            {test.funnel && (
+              <Button color="white" onClick={() => nav(`/test/${test.funnel}`)}>
+                🔬 {t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}
+              </Button>
+            )}
+            <button onClick={reset} className="w-full py-2 text-[13.5px] font-extrabold text-ink-faint">
+              🔄 {t('quick.again')}
+            </button>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  // ── 문항 ──
+  const q = test.questions[step]
+  return (
+    <div className="min-h-dvh pb-10">
+      <TopBar back="/quick" title={l(test.title)} />
+      <main className="mx-auto max-w-md px-5">
+        <div className="mt-1">
+          <ProgressBar value={(step + 1) / test.questions.length} />
+          <p className="mt-1.5 text-right text-[12px] font-extrabold text-ink-faint">
+            {step + 1} / {test.questions.length}
+          </p>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -24 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+          >
+            <h1 className="mt-6 break-keep text-[21px] font-extrabold leading-snug tracking-tight">{l(q.text)}</h1>
+            <div className="mt-5 space-y-2.5">
+              {q.options.map((op, i) => (
+                <motion.button
+                  key={i}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => pick(op.to)}
+                  className="w-full rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-4 text-left text-[15.5px] font-bold leading-snug transition-colors active:border-mind-400"
+                >
+                  {l(op.text)}
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </main>
+    </div>
+  )
+}
