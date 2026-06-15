@@ -6,6 +6,7 @@ import AdGate from '../components/AdGate'
 import AdSlot from '../components/AdSlot'
 import Gauge from '../components/Gauge'
 import AiReport from '../components/AiReport'
+import Trend from '../components/Trend'
 import { Card, Chip, TopBar } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
 import { testMeta } from '../data/tests'
@@ -248,6 +249,9 @@ export default function TestResult() {
             )}
           </div>
         </Card>
+
+        {/* 심리 날씨 — 재검사 추이 (2회 이상부터) */}
+        <Trend testId={result.testId} />
 
         {/* 광고 — 게이지 직하단(고시선 영역) */}
         <div className="mt-4">
