@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import Avatar from '../components/Avatar'
+import Badges from '../components/Badges'
 import { Card, Chip, Modal, Section, TopBar } from '../components/ui'
 import { PERSONAS, PERSONA_TEST } from '../i18n/animalTranslations'
 import { lifetimeOf, tierOf } from '../data/rank'
@@ -148,6 +149,9 @@ export default function Profile() {
             </div>
           )}
         </Section>
+
+        {/* 업적/뱃지 */}
+        <Badges />
 
         {/* 설정 */}
         <Section title={`⚙️ ${t('profile.settings')}`}>
