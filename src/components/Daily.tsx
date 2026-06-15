@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Button from './Button'
-import AdGate from './AdGate'
 import { Card, Modal } from './ui'
 import { QUIZ_BANK, todayQuizIndex } from '../data/quiz'
 import { DAILY_FREE_CAP, useStore } from '../store/useStore'
@@ -38,21 +37,18 @@ export function DailyCapMeter() {
   )
 }
 
-/** 랜덤박스 — 무료 1회 + 광고 보너스 1회 */
+/** 랜덤박스 — 무료 1회 (광고 보너스 박스는 당분간 비활성) */
 export function DailySpin() {
   const t = useT()
   const lastSpinDate = useStore((s) => s.lastSpinDate)
-  const lastAdSpinDate = useStore((s) => s.lastAdSpinDate)
   const spin = useStore((s) => s.spin)
   const freeRemaining = useStore((s) => s.freeRemaining)
 
   const [opening, setOpening] = useState(false)
   const [reward, setReward] = useState<{ rolled: number; granted: number } | null>(null)
-  const [gate, setGate] = useState(false)
 
   const freeUsed = lastSpinDate === todayStr()
-  const adUsed = lastAdSpinDate === todayStr()
-  const allDone = freeUsed && adUsed
+  const allDone = freeUsed
   const capLeft = freeRemaining()
 
   const doSpin = (viaAd: boolean) => {
@@ -95,18 +91,9 @@ export function DailySpin() {
             {t('spin.done')}
           </p>
         ) : (
-          <>
-            {!freeUsed && (
-              <Button color="adhd" onClick={() => doSpin(false)}>
-                {t('spin.open')}
-              </Button>
-            )}
-            {freeUsed && !adUsed && (
-              <Button color="sky" onClick={() => setGate(true)}>
-                {t('spin.adOpen')}
-              </Button>
-            )}
-          </>
+          <Button color="adhd" onClick={() => doSpin(false)}>
+            {t('spin.open')}
+          </Button>
         )}
       </div>
 
@@ -145,8 +132,6 @@ export function DailySpin() {
           )}
         </div>
       </Modal>
-
-      <AnimatePresence>{gate && <AdGate onDone={() => { setGate(false); doSpin(true) }} />}</AnimatePresence>
     </Card>
   )
 }
