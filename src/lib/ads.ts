@@ -5,9 +5,10 @@
  * APK(예정): Capacitor + AdMob — isNative() 분기에 전면/배너/보상형 연결
  *   - @capacitor-community/admob 설치 후 아래 TODO 지점에 구현
  */
-export const ADSENSE_CLIENT: string | undefined = import.meta.env.VITE_ADSENSE_CLIENT
-export const ADSENSE_SLOT_BANNER: string | undefined = import.meta.env.VITE_ADSENSE_SLOT_BANNER
-export const ADSENSE_SLOT_RECT: string | undefined = import.meta.env.VITE_ADSENSE_SLOT_RECT
+// 공개 ID(클라이언트 노출 정상) — 기본값 박아 Vercel env 없이도 동작. env 설정 시 덮어씀.
+export const ADSENSE_CLIENT: string | undefined = import.meta.env.VITE_ADSENSE_CLIENT || 'ca-pub-6018943099120763'
+export const ADSENSE_SLOT_BANNER: string | undefined = import.meta.env.VITE_ADSENSE_SLOT_BANNER || '2845154757'
+export const ADSENSE_SLOT_RECT: string | undefined = import.meta.env.VITE_ADSENSE_SLOT_RECT || '2729646243'
 
 export function adsEnabled(): boolean {
   return Boolean(ADSENSE_CLIENT)
