@@ -5,6 +5,7 @@ import AdSlot from '../components/AdSlot'
 import Avatar from '../components/Avatar'
 import { PointsPill, Card } from '../components/ui'
 import { TESTS } from '../data/tests'
+import { QUICK_TESTS } from '../data/quick'
 import { SHOP_ITEMS } from '../data/seed'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
@@ -175,26 +176,37 @@ export default function Home() {
           </Card>
         </motion.div>
 
-        {/* ── 1분 바이럴 퀵 테스트 ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.12, type: 'spring', stiffness: 220, damping: 22 }}
-        >
-          <Card
-            onClick={() => nav('/quick')}
-            className="mt-3.5 flex items-center gap-3.5 !bg-gradient-to-r from-[#F25C8E] to-[#8B7CF6] !p-4"
-          >
-            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="shrink-0 text-[26px]">
-              🔥
-            </motion.span>
-            <div className="min-w-0 flex-1">
-              <h3 className="whitespace-nowrap text-[15.5px] font-extrabold leading-tight text-white">{t('quick.banner')}</h3>
-              <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">{t('quick.bannerSub')}</p>
-            </div>
-            <span className="shrink-0 rounded-full bg-white/25 px-3 py-1.5 text-[13px] font-extrabold text-white">1{t('common.min')}</span>
-          </Card>
-        </motion.div>
+        {/* ── 1분 바이럴 퀵 테스트 (메인 전면 노출) ── */}
+        <div className="mt-6">
+          <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
+            <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
+              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
+              {t('quick.banner')}
+            </h2>
+            <span className="text-[12.5px] font-extrabold text-mind-600">{t('community.all')} ›</span>
+          </button>
+          <div className="no-scrollbar -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1">
+            {QUICK_TESTS.map((q, i) => (
+              <motion.button
+                key={q.id}
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05 * i, type: 'spring', stiffness: 240, damping: 24 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => nav(`/quick/${q.id}`)}
+                className="flex w-[148px] shrink-0 flex-col rounded-3xl p-4 text-left text-white shadow-pop"
+                style={{ background: `linear-gradient(135deg, ${q.grad[0]}, ${q.grad[1]})` }}
+              >
+                <span className="text-[32px] leading-none">{q.emoji}</span>
+                <h3 className="mt-2.5 break-keep text-[15.5px] font-extrabold leading-tight">{l(q.title)}</h3>
+                <p className="mt-auto pt-3 text-[11.5px] font-extrabold text-white/85">
+                  {q.questions.length}
+                  {t('common.q')} · 1{t('common.min')}
+                </p>
+              </motion.button>
+            ))}
+          </div>
+        </div>
 
         {/* ── 다면 기질 검사 (가로형 컴팩트 리스트) ── */}
         <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('home.testsHeader')}</h2>
