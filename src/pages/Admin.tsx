@@ -7,7 +7,7 @@ import { useT, useL } from '../i18n/useT'
 import { expById, TIERS } from '../data/rank'
 import { sfx } from '../lib/sound'
 
-type Tab = 'surveys' | 'redeem' | 'exp' | 'stats'
+type Tab = 'surveys' | 'redeem' | 'exp' | 'reports' | 'stats'
 
 export default function Admin() {
   const t = useT()
@@ -73,6 +73,8 @@ function Console() {
   const rejectSurvey = useStore((s) => s.rejectSurvey)
   const decideRedemption = useStore((s) => s.decideRedemption)
   const decideApplication = useStore((s) => s.decideApplication)
+  const reports = useStore((s) => s.reports)
+  const resolveReport = useStore((s) => s.resolveReport)
   const lockAdmin = useStore((s) => s.lockAdmin)
   const [reasons, setReasons] = useState<Record<string, string>>({})
   const [openQ, setOpenQ] = useState<string | null>(null)
@@ -80,6 +82,7 @@ function Console() {
   const pendingSurveys = surveys.filter((s) => s.status === 'pending')
   const pendingRedeems = redemptions.filter((r) => r.status === 'pending')
   const pendingApps = applications.filter((a) => a.status === 'pending')
+  const openReports = reports.filter((r) => !r.resolved)
   const pointsIssued = ledger.filter((e) => e.amount > 0).reduce((a, e) => a + e.amount, 0)
   const totalResponses = surveys.reduce((a, s) => a + s.responses, 0)
 
@@ -87,6 +90,7 @@ function Console() {
     { key: 'surveys', label: t('admin.tab.surveys'), badge: pendingSurveys.length },
     { key: 'redeem', label: t('admin.tab.redeem'), badge: pendingRedeems.length },
     { key: 'exp', label: t('admin.tab.exp'), badge: pendingApps.length },
+    { key: 'reports', label: t('admin.tab.reports'), badge: openReports.length },
     { key: 'stats', label: t('admin.tab.stats') },
   ]
 
@@ -100,12 +104,12 @@ function Console() {
             🔒 {t('admin.lock')}
           </button>
         </div>
-        <div className="mx-auto flex max-w-md gap-1.5 px-4 pb-3">
+        <div className="no-scrollbar mx-auto flex max-w-md gap-1.5 overflow-x-auto px-4 pb-3">
           {TABS.map((tb) => (
             <button
               key={tb.key}
               onClick={() => setTab(tb.key)}
-              className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-[13px] font-extrabold transition-colors ${
+              className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-[13px] font-extrabold transition-colors ${
                 tab === tb.key ? 'bg-[#1ab394] text-white' : 'bg-white/10 text-white/70'
               }`}
             >
@@ -257,6 +261,36 @@ function Console() {
                 </Card>
               )
             })}
+          </div>
+        )}
+
+        {tab === 'reports' && (
+          <div className="space-y-3">
+            {openReports.length === 0 && (
+              <Card className="py-10 text-center text-[15px] font-bold text-ink-faint">{t('admin.emptyQueue')}</Card>
+            )}
+            {openReports.map((rp) => (
+              <Card key={rp.id} className="!p-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🚩</span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate text-[14px] font-extrabold">{rp.nick}</h3>
+                    <p className="text-[11.5px] font-bold text-ink-faint">{new Date(rp.at).toLocaleString()}</p>
+                  </div>
+                </div>
+                <p className="mt-2 rounded-xl bg-[#FAFCFA] px-3 py-2 text-[13px] font-medium leading-relaxed text-ink break-keep line-clamp-4">
+                  {rp.excerpt}
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <Button color="danger" size="sm" onClick={() => { resolveReport(rp.id, true); sfx.err() }}>
+                    🙈 {t('admin.report.hide')}
+                  </Button>
+                  <Button color="mind" size="sm" onClick={() => { resolveReport(rp.id, false); sfx.tap() }}>
+                    ✅ {t('admin.report.keep')}
+                  </Button>
+                </div>
+              </Card>
+            ))}
           </div>
         )}
 

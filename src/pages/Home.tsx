@@ -75,8 +75,11 @@ export default function Home() {
         >
           <div className="flex items-center justify-between">
             <button onClick={() => nav('/profile')} className="flex min-w-0 items-center gap-2">
-              <Avatar avatar={s.avatar} size={36} emojiScale={0.55} className="ring-2 ring-white/40" />
-              <p className="truncate text-[13.5px] font-bold text-white/90">{t('home.greeting', { name: s.nickname })}</p>
+              <Avatar avatar={s.avatar} size={38} emojiScale={0.55} className="ring-2 ring-white/40" />
+              <p className="truncate text-[16px] font-extrabold text-white">
+                {s.nickname}
+                <span className="ml-0.5 text-[13px] font-bold text-white/80">님 👋</span>
+              </p>
             </button>
             <motion.button
               whileTap={{ scale: 0.94 }}
@@ -113,17 +116,17 @@ export default function Home() {
 
           {/* 스탯 3종 */}
           <div className="mt-3.5 grid grid-cols-3 gap-2">
-            <div className="rounded-xl bg-white/20 px-2 py-2 text-center">
-              <p className="text-[15px] font-extrabold text-white">🔥 {s.streak}</p>
-              <p className="text-[10.5px] font-bold text-white/80">{t('dash.streak')}</p>
+            <div className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
+              <p className="text-[16px] font-extrabold leading-none text-white">🔥 {s.streak}</p>
+              <p className="mt-1 whitespace-nowrap text-[10.5px] font-bold text-white/80">{t('dash.streak')}</p>
             </div>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => nav('/league')} className="rounded-xl bg-white/20 px-2 py-2 text-center">
-              <p className="text-[15px] font-extrabold text-white">{lgTier.emoji} {lgRank}위</p>
-              <p className="text-[10.5px] font-bold text-white/80">{t('dash.league', { r: lgRank })}</p>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => nav('/league')} className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
+              <p className="text-[16px] font-extrabold leading-none text-white">{lgTier.emoji} {lgRank}위</p>
+              <p className="mt-1 whitespace-nowrap text-[10.5px] font-bold text-white/80">{t('dash.leagueShort')}</p>
             </motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => nav('/rewards')} className="rounded-xl bg-white/20 px-2 py-2 text-center">
-              <p className="text-[15px] font-extrabold text-white">⚡ {freeLeft}P</p>
-              <p className="text-[10.5px] font-bold text-white/80">{t('daily.cap')}</p>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => nav('/rewards')} className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
+              <p className="text-[16px] font-extrabold leading-none text-white">⚡ {freeLeft}P</p>
+              <p className="mt-1 whitespace-nowrap text-[10.5px] font-bold text-white/80">{t('dash.freeShort')}</p>
             </motion.button>
           </div>
 
@@ -153,19 +156,19 @@ export default function Home() {
         >
           <Card
             onClick={() => nav(bestSurvey ? `/rewards/survey/${bestSurvey.id}` : '/rewards')}
-            className="mt-3.5 flex items-center gap-3.5 !bg-gradient-to-r from-mind-600 to-mind-400 !p-4"
+            className="mt-3.5 flex items-center gap-3 !bg-gradient-to-r from-mind-600 to-mind-400 !p-4"
           >
-            <motion.span animate={{ rotate: [0, -6, 6, 0] }} transition={{ repeat: Infinity, duration: 2.4 }} className="text-[30px]">
+            <motion.span animate={{ rotate: [0, -6, 6, 0] }} transition={{ repeat: Infinity, duration: 2.4 }} className="shrink-0 text-[26px]">
               💰
             </motion.span>
             <div className="min-w-0 flex-1">
-              <h3 className="text-[16px] font-extrabold leading-tight text-white">{t('home.surveyBanner')}</h3>
-              <p className="mt-0.5 text-[12.5px] font-bold text-white/90">
+              <h3 className="whitespace-nowrap text-[15.5px] font-extrabold leading-tight text-white">{t('home.surveyBanner')}</h3>
+              <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">
                 {bestSurvey ? t('home.surveyBadge') : t('home.surveyBannerEmpty')}
               </p>
             </div>
             {bestSurvey && (
-              <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[15px] font-extrabold text-mind-700">
+              <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[14.5px] font-extrabold text-mind-700">
                 +{bestSurvey.reward}P
               </span>
             )}

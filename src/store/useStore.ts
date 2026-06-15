@@ -2,7 +2,9 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type {
   Avatar,
+  CommunityComment,
   CommunityPost,
+  Report,
   ExperienceApplication,
   Lang,
   LedgerEntry,
@@ -45,6 +47,11 @@ interface State {
   avatar: Avatar
   deviceId: string
   posts: CommunityPost[]
+  comments: Record<string, CommunityComment[]>
+  reports: Report[]
+  hiddenPosts: string[]
+  firstPostDone: boolean
+  firstCommentDone: boolean
   points: number
   streak: number
   lastCheckIn: string
@@ -90,6 +97,11 @@ interface State {
   addPost: (text: string, badge?: string) => void
   likePost: (id: string) => void
   deletePost: (id: string) => void
+  addComment: (postId: string, text: string, badge?: string) => void
+  reportPost: (postId: string, nick: string, excerpt: string, reason: string) => void
+  resolveReport: (id: string, hide: boolean) => void
+  claimFirstPost: () => number
+  claimFirstComment: () => number
   freeRemaining: () => number
   checkIn: () => boolean
   addResult: (r: TestResult) => number
@@ -125,6 +137,11 @@ const initial = () => ({
   avatar: null as Avatar,
   deviceId: uid('dev_'),
   posts: SEED_POSTS,
+  comments: {} as Record<string, CommunityComment[]>,
+  reports: [] as Report[],
+  hiddenPosts: [] as string[],
+  firstPostDone: false,
+  firstCommentDone: false,
   points: 100,
   streak: 0,
   lastCheckIn: '',
@@ -216,6 +233,65 @@ export const useStore = create<State>()(
             ),
           })),
         deletePost: (id) => set((s) => ({ posts: s.posts.filter((p) => p.id !== id) })),
+
+        addComment: (postId, text, badge) => {
+          const body = text.trim().slice(0, 200)
+          if (!body) return
+          const s = get()
+          const c: CommunityComment = {
+            id: uid('cm_'),
+            postId,
+            nick: s.nickname,
+            avatar: s.avatar,
+            badge,
+            text: body,
+            at: Date.now(),
+            mine: true,
+          }
+          set({ comments: { ...s.comments, [postId]: [...(s.comments[postId] ?? []), c] } })
+        },
+
+        reportPost: (postId, nick, excerpt, reason) => {
+          const s = get()
+          if (s.reports.some((r) => r.postId === postId && !r.resolved)) return
+          set({
+            reports: [
+              { id: uid('rp_'), postId, nick, excerpt: excerpt.slice(0, 60), reason, at: Date.now(), resolved: false },
+              ...s.reports,
+            ],
+          })
+        },
+        resolveReport: (id, hide) =>
+          set((s) => {
+            const rep = s.reports.find((r) => r.id === id)
+            return {
+              reports: s.reports.map((r) => (r.id === id ? { ...r, resolved: true } : r)),
+              hiddenPosts: hide && rep ? [...new Set([...s.hiddenPosts, rep.postId])] : s.hiddenPosts,
+            }
+          }),
+
+        /** 첫 글 +20P (1회성, 일일 상한 제외) */
+        claimFirstPost: () => {
+          const s = get()
+          if (s.firstPostDone) return 0
+          set({
+            firstPostDone: true,
+            points: s.points + 20,
+            ledger: [{ id: uid('lg_'), amount: 20, memo: '✍️ 커뮤니티 첫 글 보상', at: Date.now() }, ...s.ledger],
+          })
+          return 20
+        },
+        /** 첫 댓글 +10P (1회성) */
+        claimFirstComment: () => {
+          const s = get()
+          if (s.firstCommentDone) return 0
+          set({
+            firstCommentDone: true,
+            points: s.points + 10,
+            ledger: [{ id: uid('lg_'), amount: 10, memo: '💬 커뮤니티 첫 댓글 보상', at: Date.now() }, ...s.ledger],
+          })
+          return 10
+        },
 
         freeRemaining: () => freeLeft(),
 

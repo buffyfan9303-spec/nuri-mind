@@ -35,6 +35,12 @@ export default function Community() {
   const addPost = useStore((s) => s.addPost)
   const likePost = useStore((s) => s.likePost)
   const deletePost = useStore((s) => s.deletePost)
+  const commentsMap = useStore((s) => s.comments)
+  const hiddenPosts = useStore((s) => s.hiddenPosts)
+  const addComment = useStore((s) => s.addComment)
+  const reportPost = useStore((s) => s.reportPost)
+  const claimFirstPost = useStore((s) => s.claimFirstPost)
+  const claimFirstComment = useStore((s) => s.claimFirstComment)
 
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
@@ -42,33 +48,113 @@ export default function Community() {
   const [sort, setSort] = useState<'new' | 'hot'>('new')
   const [filter, setFilter] = useState<TestId | 'all'>('all')
   const [copied, setCopied] = useState(false)
+  const [reward, setReward] = useState('')
+  const [openComments, setOpenComments] = useState<string | null>(null)
+  const [commentText, setCommentText] = useState('')
+
+  const flash = (msg: string) => {
+    setReward(msg)
+    setTimeout(() => setReward(''), 2400)
+  }
 
   const [server, setServer] = useState<boolean | null>(null)
   const [serverPosts, setServerPosts] = useState<CommunityPost[]>([])
+  const [newCount, setNewCount] = useState(0)
+  const [pulling, setPulling] = useState(0) // 당겨서 새로고침 거리(px)
+  const [refreshing, setRefreshing] = useState(false)
 
   const reload = async () => {
     try {
       setServerPosts(await fetchPosts(deviceId))
       setServer(true)
+      setNewCount(0)
     } catch {
       setServer(false)
     }
   }
+
+  /** 새 글 감지 폴링 (서버 모드) — 화면은 그대로 두고 pill만 표시 */
+  const poll = async () => {
+    try {
+      const fresh = await fetchPosts(deviceId)
+      setServerPosts((cur) => {
+        const known = new Set(cur.map((p) => p.id))
+        const n = fresh.filter((p) => !known.has(p.id) && !p.mine).length
+        setNewCount(n)
+        return cur
+      })
+    } catch {
+      /* 무시 */
+    }
+  }
+
+  const applyNew = async () => {
+    setRefreshing(true)
+    await reload()
+    setRefreshing(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    sfx.tap()
+  }
+
   useEffect(() => {
     if (supabaseReady()) reload()
     else setServer(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (server !== true) return
+    const id = setInterval(poll, 20000)
+    return () => clearInterval(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [server])
+
+  /** 당겨서 새로고침 — 스크롤 최상단에서 아래로 당길 때만 */
+  useEffect(() => {
+    let startY = 0
+    let active = false
+    const onStart = (e: TouchEvent) => {
+      if (window.scrollY <= 0) {
+        startY = e.touches[0].clientY
+        active = true
+      }
+    }
+    const onMove = (e: TouchEvent) => {
+      if (!active) return
+      const d = e.touches[0].clientY - startY
+      if (d > 0) setPulling(Math.min(d * 0.5, 80))
+    }
+    const onEnd = async () => {
+      if (!active) return
+      active = false
+      if (pulling > 50) {
+        setRefreshing(true)
+        await reload()
+        setRefreshing(false)
+        sfx.tap()
+      }
+      setPulling(0)
+    }
+    window.addEventListener('touchstart', onStart, { passive: true })
+    window.addEventListener('touchmove', onMove, { passive: true })
+    window.addEventListener('touchend', onEnd)
+    return () => {
+      window.removeEventListener('touchstart', onStart)
+      window.removeEventListener('touchmove', onMove)
+      window.removeEventListener('touchend', onEnd)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pulling])
+
   const myAnimal = results[0] ? PERSONAS[results[0].persona]?.emoji : undefined
   const raw = server ? serverPosts : localPosts
 
-  /** 주제 필터 + 정렬 */
+  /** 숨김 제외 + 주제 필터 + 정렬 */
   const posts = useMemo(() => {
-    let list = raw
+    let list = raw.filter((p) => !hiddenPosts.includes(p.id))
     if (filter !== 'all') list = list.filter((p) => p.badge && EMOJI_TEST[p.badge] === filter)
     return [...list].sort((a, b) => (sort === 'hot' ? b.likes - a.likes || b.at - a.at : b.at - a.at))
-  }, [raw, filter, sort])
+  }, [raw, filter, sort, hiddenPosts])
 
   const submit = async () => {
     if (!text.trim()) return
@@ -87,6 +173,24 @@ export default function Community() {
     burst()
     sfx.coin()
     setOpen(false)
+    const r = claimFirstPost()
+    if (r > 0) flash(t('community.firstReward', { p: r }))
+  }
+
+  const submitComment = (postId: string) => {
+    const body = commentText.trim()
+    if (!body) return
+    addComment(postId, body, attach ? myAnimal : undefined)
+    setCommentText('')
+    sfx.tap()
+    const r = claimFirstComment()
+    if (r > 0) flash(t('community.firstCommentReward', { p: r }))
+  }
+
+  const onReport = (p: CommunityPost) => {
+    reportPost(p.id, p.nick, p.text, 'user-report')
+    flash(t('community.reportDone'))
+    sfx.tap()
   }
 
   const onLike = async (p: CommunityPost) => {
@@ -138,12 +242,33 @@ export default function Community() {
     <div className="min-h-dvh pb-36">
       <TopBar title={t('nav.community')} />
 
+      {/* 당겨서 새로고침 인디케이터 */}
+      <AnimatePresence>
+        {(pulling > 0 || refreshing) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="pointer-events-none fixed inset-x-0 top-14 z-30 flex justify-center"
+          >
+            <motion.div
+              animate={refreshing ? { rotate: 360 } : { rotate: pulling * 4 }}
+              transition={refreshing ? { repeat: Infinity, duration: 0.8, ease: 'linear' } : { duration: 0 }}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[20px] shadow-pop"
+              style={{ transform: `translateY(${refreshing ? 8 : pulling - 12}px)` }}
+            >
+              {refreshing ? '🐢' : pulling > 50 ? '🐰' : '🐢'}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <main className="mx-auto max-w-md px-5">
         {/* 상태 표시 */}
-        <div className="flex items-center justify-between px-1">
-          <p className="text-[13.5px] font-medium leading-relaxed text-[#6B756E]">{t('community.sub')}</p>
+        <div className="flex items-start justify-between gap-2 px-1">
+          <p className="flex-1 break-keep text-[13.5px] font-medium leading-relaxed text-[#6B756E]">{t('community.sub')}</p>
           {server !== null && (
-            <span className="shrink-0 text-[11.5px] font-extrabold text-ink-faint">
+            <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-full bg-[#EFF3F0] px-2.5 py-1 text-[11px] font-extrabold text-ink-faint">
               {server ? t('community.shared') : t('community.local')}
             </span>
           )}
@@ -223,6 +348,7 @@ export default function Community() {
           ) : (
             posts.map((p, i) => {
               const hot = p.likes >= HOT
+              const comments = commentsMap[p.id] || []
               return (
                 <div key={p.id}>
                   <motion.div
@@ -273,13 +399,93 @@ export default function Community() {
                           </motion.span>
                           {p.likes}
                         </motion.button>
+                        <motion.button
+                          whileTap={{ scale: 0.85 }}
+                          onClick={() => setOpenComments((v) => (v === p.id ? null : p.id))}
+                          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
+                            openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-[#F2F5F3] text-ink-sub'
+                          }`}
+                        >
+                          💬 {comments.length || ''}
+                        </motion.button>
                         <button
                           onClick={() => onShare(p)}
-                          className="flex items-center gap-1.5 rounded-full bg-[#F2F5F3] px-3 py-1.5 text-[12.5px] font-extrabold text-ink-sub"
+                          className="flex shrink-0 items-center gap-1.5 rounded-full bg-[#F2F5F3] px-3 py-1.5 text-[12.5px] font-extrabold text-ink-sub"
                         >
-                          📤 {t('community.share')}
+                          📤
                         </button>
+                        {!p.mine && (
+                          <button
+                            onClick={() => onReport(p)}
+                            className="ml-auto shrink-0 rounded-full px-2.5 py-1.5 text-[11.5px] font-bold text-ink-faint"
+                          >
+                            🚩 {t('community.report')}
+                          </button>
+                        )}
                       </div>
+
+                      {/* 댓글 패널 */}
+                      <AnimatePresence initial={false}>
+                        {openComments === p.id && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-3 space-y-2 border-t-2 border-[#F0F4F1] pt-3">
+                              {comments.length === 0 ? (
+                                <p className="py-1 text-center text-[12.5px] font-bold text-ink-faint">
+                                  {t('community.commentEmpty')}
+                                </p>
+                              ) : (
+                                comments.map((c) => (
+                                  <motion.div
+                                    key={c.id}
+                                    initial={{ opacity: 0, x: -6 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="flex items-start gap-2"
+                                  >
+                                    <Avatar avatar={c.avatar} size={26} emojiScale={0.5} />
+                                    <div className="min-w-0 flex-1 rounded-2xl bg-[#F4F7F5] px-3 py-2">
+                                      <p className="flex items-center gap-1 text-[12px] font-extrabold">
+                                        <span className="truncate">{c.nick}</span>
+                                        {c.badge && <span className="shrink-0">{c.badge}</span>}
+                                        <span className="ml-auto shrink-0 text-[10.5px] font-bold text-ink-faint">
+                                          {timeAgo(c.at, t)}
+                                        </span>
+                                      </p>
+                                      <p className="mt-0.5 whitespace-pre-line break-keep text-[13px] font-medium leading-relaxed text-ink">
+                                        {c.text}
+                                      </p>
+                                    </div>
+                                  </motion.div>
+                                ))
+                              )}
+
+                              <div className="flex items-center gap-2 pt-1">
+                                <input
+                                  value={openComments === p.id ? commentText : ''}
+                                  onChange={(e) => setCommentText(e.target.value)}
+                                  onKeyDown={(e) => e.key === 'Enter' && submitComment(p.id)}
+                                  placeholder={t('community.commentPh')}
+                                  maxLength={200}
+                                  className="min-w-0 flex-1 rounded-full border-2 border-[#E3EAE5] bg-white px-3.5 py-2 text-[13px] font-medium outline-none focus:border-mind-400"
+                                />
+                                <motion.button
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => submitComment(p.id)}
+                                  disabled={!commentText.trim()}
+                                  className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-extrabold text-white disabled:opacity-40"
+                                >
+                                  {t('community.send')}
+                                </motion.button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </Card>
                   </motion.div>
 
@@ -294,6 +500,46 @@ export default function Community() {
           )}
         </div>
       </main>
+
+      {/* 새 글 N개 pill */}
+      <AnimatePresence>
+        {newCount > 0 && (
+          <motion.button
+            initial={{ opacity: 0, y: -20, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.8 }}
+            transition={{ type: 'spring', stiffness: 360, damping: 22 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={applyNew}
+            className="fixed inset-x-0 top-16 z-40 mx-auto flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-[13.5px] font-extrabold text-white shadow-pop"
+            style={{ background: 'linear-gradient(135deg, #4FA882, #6E9FDC)' }}
+          >
+            <motion.span animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 1.2 }}>
+              🐤
+            </motion.span>
+            <span className="whitespace-nowrap">{t('community.newPosts', { n: newCount })}</span>
+            <span aria-hidden>↑</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* 리워드 토스트 */}
+      <AnimatePresence>
+        {reward && (
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 24, scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+            className="safe-bottom fixed inset-x-0 bottom-28 z-40 mx-auto flex w-fit max-w-[90%] items-center gap-2 rounded-full bg-mind-600 px-5 py-3 text-[14px] font-extrabold text-white shadow-pop"
+          >
+            <motion.span animate={{ rotate: [0, -12, 12, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}>
+              🎉
+            </motion.span>
+            <span className="whitespace-nowrap">{reward}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 플로팅 작성 버튼 */}
       <motion.button

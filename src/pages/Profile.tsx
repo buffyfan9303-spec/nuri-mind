@@ -118,11 +118,11 @@ export default function Profile() {
                       {p.emoji}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[15.5px] font-extrabold">
-                        {t(`test.${r.testId}.name`)} · {l(p.name)}
+                      <p className="break-keep text-[15px] font-extrabold leading-tight">
+                        {t(`test.${r.testId}.name`)}
                       </p>
-                      <p className="mt-0.5 text-[12.5px] font-bold text-ink-faint">
-                        {new Date(r.at).toLocaleDateString()} · {t(`band.${r.testId}.${r.band}`)}
+                      <p className="mt-1 break-keep text-[12px] font-bold leading-snug text-ink-faint">
+                        {new Date(r.at).toLocaleDateString()} · {l(p.name)}
                         {r.iq ? ` · IQ ${r.iq}` : ''}
                       </p>
                     </div>

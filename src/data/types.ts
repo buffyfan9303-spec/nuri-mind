@@ -22,6 +22,29 @@ export interface CommunityPost {
   at: number
 }
 
+/** 커뮤니티 댓글 */
+export interface CommunityComment {
+  id: string
+  postId: string
+  nick: string
+  avatar: Avatar
+  badge?: string
+  text: string
+  at: number
+  mine?: boolean
+}
+
+/** 신고 (운영자 모더레이션) */
+export interface Report {
+  id: string
+  postId: string
+  nick: string
+  excerpt: string
+  reason: string
+  at: number
+  resolved: boolean
+}
+
 /** 리커트형 문항 (ADHD / EGO) */
 export interface LikertItem {
   id: string

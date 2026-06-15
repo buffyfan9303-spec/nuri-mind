@@ -79,13 +79,13 @@ export default function Rewards() {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => nav('/rank')}
-            className="mt-4 flex w-full items-center justify-between rounded-2xl bg-white/20 px-4 py-3.5 text-left"
+            className="mt-4 flex w-full items-center justify-between gap-2 rounded-2xl bg-white/20 px-4 py-3.5 text-left"
           >
-            <span className="flex items-center gap-2 text-[15px] font-extrabold text-white">
+            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[15px] font-extrabold text-white">
               {tier.emoji} {t('rank.row')}: {l(tier.name)}
             </span>
-            <span className="text-[13px] font-bold text-white/85">
-              {next ? t('rank.next', { tier: next.emoji, p: (next.min - lifetime).toLocaleString() }) : t('rank.max')} ›
+            <span className="shrink-0 whitespace-nowrap text-[13px] font-bold text-white/85">
+              {next ? `${next.emoji} +${(next.min - lifetime).toLocaleString()}P` : t('rank.max')} ›
             </span>
           </motion.button>
 

@@ -46,6 +46,50 @@ insert into public.posts (device_id, nick, avatar, badge, body) values
   ('seed', '풀충전 돌고래', '{"kind":"animal","persona":"dolphin"}', '🐬', '오늘 설문 3개 + 출석 + 퀴즈로 95P 모음! 이번 달 치킨 기프티콘 목표 🍗')
 on conflict do nothing;
 
--- ── 2) (향후) 프로필·설문 등은 Auth 도입 후 추가 ─────────────────
+-- ── 2) 댓글 ───────────────────────────────────────────────────────
+create table if not exists public.comments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.posts(id) on delete cascade,
+  device_id text not null,
+  nick text not null,
+  avatar jsonb,
+  badge text,
+  body text not null check (char_length(body) between 1 and 200),
+  created_at timestamptz not null default now()
+);
+create index if not exists comments_post_idx on public.comments (post_id, created_at);
+alter table public.comments enable row level security;
+
+drop policy if exists "comments_select" on public.comments;
+drop policy if exists "comments_insert" on public.comments;
+create policy "comments_select" on public.comments for select using (true);
+create policy "comments_insert" on public.comments for insert with check (char_length(body) between 1 and 200);
+
+create or replace function public.delete_my_comment(cid uuid, did text)
+returns void language sql security definer set search_path = public as $$
+  delete from public.comments where id = cid and device_id = did;
+$$;
+grant execute on function public.delete_my_comment(uuid, text) to anon, authenticated;
+
+-- ── 3) 신고 (운영자 모더레이션) ───────────────────────────────────
+create table if not exists public.reports (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.posts(id) on delete cascade,
+  device_id text not null,             -- 신고자
+  nick text,                           -- 피신고 글 작성자
+  excerpt text,
+  reason text,
+  resolved boolean not null default false,
+  created_at timestamptz not null default now()
+);
+create index if not exists reports_open_idx on public.reports (resolved, created_at);
+alter table public.reports enable row level security;
+
+-- 신고 생성은 누구나, 조회/처리는 운영자(service_role)만.
+drop policy if exists "reports_insert" on public.reports;
+create policy "reports_insert" on public.reports for insert with check (true);
+-- select 정책 없음 → anon은 신고 목록을 읽지 못함(운영 콘솔은 service_role 사용).
+
+-- ── 4) (향후) 프로필·설문 등은 Auth 도입 후 추가 ─────────────────
 -- create table public.profiles (...);  -- auth.users 연동 시
 -- create table public.surveys (...);
