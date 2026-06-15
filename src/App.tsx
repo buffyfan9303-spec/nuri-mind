@@ -21,6 +21,7 @@ const League = lazy(() => import('./pages/League'))
 const Legal = lazy(() => import('./pages/Legal'))
 const Community = lazy(() => import('./pages/Community'))
 const Dex = lazy(() => import('./pages/Dex'))
+const Chemi = lazy(() => import('./pages/Chemi'))
 
 function Loader() {
   return (
@@ -77,6 +78,7 @@ export default function App() {
               <Route path="/rewards/create" element={<SurveyCreate />} />
               <Route path="/community" element={<Community />} />
               <Route path="/dex" element={<Dex />} />
+              <Route path="/chemi" element={<Chemi />} />
               <Route path="/rank" element={<Rank />} />
               <Route path="/league" element={<League />} />
               <Route path="/legal/:doc" element={<Legal />} />

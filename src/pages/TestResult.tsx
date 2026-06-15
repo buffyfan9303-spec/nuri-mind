@@ -286,6 +286,11 @@ export default function TestResult() {
                 </p>
               </div>
             </div>
+            <div className="mt-3">
+              <Button color="love" onClick={() => nav('/chemi')}>
+                💌 {t('chemi.cta')}
+              </Button>
+            </div>
           </Card>
         )}
 

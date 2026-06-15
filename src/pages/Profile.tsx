@@ -115,6 +115,16 @@ export default function Profile() {
           <span className="text-lg text-ink-faint">›</span>
         </Card>
 
+        {/* 연애 궁합 진입 */}
+        <Card onClick={() => nav('/chemi')} className="mt-3 flex items-center gap-3.5 !p-4">
+          <span className="text-[28px]">💞</span>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[15.5px] font-extrabold tracking-tight">{t('chemi.title')}</h3>
+            <p className="mt-0.5 text-[12.5px] font-bold text-ink-faint">{t('chemi.entry')}</p>
+          </div>
+          <span className="text-lg text-ink-faint">›</span>
+        </Card>
+
         {/* 검사 히스토리 */}
         <Section title={`🗂 ${t('profile.history')}`}>
           {s.results.length === 0 ? (
