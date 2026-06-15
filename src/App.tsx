@@ -27,6 +27,7 @@ const QuickTest = lazy(() => import('./pages/QuickTest'))
 const Routine = lazy(() => import('./pages/Routine'))
 const Magazine = lazy(() => import('./pages/Magazine'))
 const Article = lazy(() => import('./pages/Article'))
+const Insight = lazy(() => import('./pages/Insight'))
 
 function Loader() {
   return (
@@ -89,6 +90,7 @@ export default function App() {
               <Route path="/routine/:id" element={<Routine />} />
               <Route path="/magazine" element={<Magazine />} />
               <Route path="/magazine/:id" element={<Article />} />
+              <Route path="/insight" element={<Insight />} />
               <Route path="/rank" element={<Rank />} />
               <Route path="/league" element={<League />} />
               <Route path="/legal/:doc" element={<Legal />} />

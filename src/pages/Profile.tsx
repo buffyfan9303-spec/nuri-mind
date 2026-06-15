@@ -125,6 +125,16 @@ export default function Profile() {
           <span className="text-lg text-ink-faint">›</span>
         </Card>
 
+        {/* AI 종합 심리 프로필 */}
+        <Card onClick={() => nav('/insight')} className="mt-3 flex items-center gap-3.5 !bg-gradient-to-r from-[#6E7BF2] to-[#9AA6FF] !p-4">
+          <span className="text-[28px]">🧬</span>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">{t('insight.title')}</h3>
+            <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">{t('insight.entry')}</p>
+          </div>
+          <span className="text-lg text-white/80">›</span>
+        </Card>
+
         {/* 검사 히스토리 */}
         <Section title={`🗂 ${t('profile.history')}`}>
           {s.results.length === 0 ? (
