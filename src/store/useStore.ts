@@ -183,6 +183,7 @@ const initial = () => ({
   vibeDone: false,
   vibePct: null,
   aiReports: [] as string[],
+  readArticles: [] as string[],
 })
 
 export const useStore = create<State>()(
@@ -532,6 +533,14 @@ export const useStore = create<State>()(
 
         unlockAi: (resultId) =>
           set((s) => (s.aiReports.includes(resultId) ? s : { aiReports: [...s.aiReports, resultId] })),
+
+        /** 매거진 정독 보상 — 글당 1회 +8P(일일 무료 상한 적용) */
+        readArticle: (id) => {
+          const s = get()
+          if (s.readArticles.includes(id)) return 0
+          set({ readArticles: [...s.readArticles, id] })
+          return grantFree(8, '📖 매거진 정독 보상')
+        },
 
         /** 바이브 테스트 완료 — 첫 완료 +10P (1회성, 일일 상한 제외) */
         completeVibe: (pct) => {
