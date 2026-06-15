@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Avatar, CommunityPost } from '../data/types'
+import type { Avatar, CommunityComment, CommunityPost } from '../data/types'
 
 /**
  * 커뮤니티 데이터 계층 — Supabase 연동(스키마 적용 시) / 미적용 시 호출부가 localStorage 폴백.
@@ -91,5 +91,77 @@ export async function toggleLike(postId: string): Promise<boolean> {
 export async function removePost(postId: string, deviceId: string): Promise<void> {
   if (!supabase) throw new Error('supabase-not-configured')
   const { error } = await supabase.rpc('delete_my_post', { pid: postId, did: deviceId })
+  if (error) throw error
+}
+
+// ── 댓글 ──────────────────────────────────────────────────────────
+interface CommentRow {
+  id: string
+  post_id: string
+  device_id: string
+  nick: string
+  avatar: Avatar
+  badge: string | null
+  body: string
+  created_at: string
+}
+
+function toComment(row: CommentRow, deviceId: string): CommunityComment {
+  return {
+    id: row.id,
+    postId: row.post_id,
+    nick: row.nick,
+    avatar: row.avatar ?? null,
+    badge: row.badge ?? undefined,
+    text: row.body,
+    at: new Date(row.created_at).getTime(),
+    mine: row.device_id === deviceId,
+  }
+}
+
+/** 글의 댓글 목록 (오래된 순) */
+export async function fetchComments(postId: string, deviceId: string): Promise<CommunityComment[]> {
+  if (!supabase) throw new Error('supabase-not-configured')
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*')
+    .eq('post_id', postId)
+    .order('created_at', { ascending: true })
+    .limit(200)
+  if (error) throw error
+  return (data as CommentRow[]).map((r) => toComment(r, deviceId))
+}
+
+export async function createComment(
+  deviceId: string,
+  postId: string,
+  c: { nick: string; avatar: Avatar; badge?: string; text: string },
+): Promise<void> {
+  if (!supabase) throw new Error('supabase-not-configured')
+  const { error } = await supabase.from('comments').insert({
+    post_id: postId,
+    device_id: deviceId,
+    nick: c.nick,
+    avatar: c.avatar,
+    badge: c.badge ?? null,
+    body: c.text.trim().slice(0, 200),
+  })
+  if (error) throw error
+}
+
+// ── 신고 (운영자 모더레이션 — anon은 insert만, 검토는 Supabase 대시보드) ──
+export async function reportPostServer(
+  deviceId: string,
+  postId: string,
+  r: { nick: string; excerpt: string; reason: string },
+): Promise<void> {
+  if (!supabase) throw new Error('supabase-not-configured')
+  const { error } = await supabase.from('reports').insert({
+    post_id: postId,
+    device_id: deviceId,
+    nick: r.nick,
+    excerpt: r.excerpt.slice(0, 60),
+    reason: r.reason,
+  })
   if (error) throw error
 }

@@ -39,12 +39,15 @@ $$;
 grant execute on function public.bump_like(uuid, int) to anon, authenticated;
 grant execute on function public.delete_my_post(uuid, text) to anon, authenticated;
 
--- 시드 글 (선택) ──────────────────────────────────────────────────
-insert into public.posts (device_id, nick, avatar, badge, body) values
+-- 시드 글 (선택) ── 재실행해도 중복 안 생기도록 seed가 하나도 없을 때만 삽입 ──
+insert into public.posts (device_id, nick, avatar, badge, body)
+select v.device_id, v.nick, v.avatar::jsonb, v.badge, v.body
+from (values
   ('seed', '집중하는 수달', '{"kind":"animal","persona":"meerkat"}', '🐿️', 'ADHD 검사 미어캣 나왔는데 "이따 하자"의 이따는 영원히 안 온대요 😭 다들 마감 어떻게 지키세요?'),
   ('seed', '명상 고슴도치', '{"kind":"animal","persona":"hedgehog"}', '🦔', '애착 검사 혼란형(고슴도치) 떴어요… 다가오면 가시 멀어지면 눈물 ㅋㅋ 너무 맞아서 소름.'),
   ('seed', '풀충전 돌고래', '{"kind":"animal","persona":"dolphin"}', '🐬', '오늘 설문 3개 + 출석 + 퀴즈로 95P 모음! 이번 달 치킨 기프티콘 목표 🍗')
-on conflict do nothing;
+) as v(device_id, nick, avatar, badge, body)
+where not exists (select 1 from public.posts where device_id = 'seed');
 
 -- ── 2) 댓글 ───────────────────────────────────────────────────────
 create table if not exists public.comments (

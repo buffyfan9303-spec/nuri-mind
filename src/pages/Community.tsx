@@ -6,13 +6,21 @@ import AdSlot from '../components/AdSlot'
 import { Card, Modal, TopBar } from '../components/ui'
 import { PERSONAS, EMOJI_TEST } from '../i18n/animalTranslations'
 import { TESTS } from '../data/tests'
-import type { CommunityPost, TestId } from '../data/types'
+import type { CommunityComment, CommunityPost, TestId } from '../data/types'
 import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
 import { supabaseReady } from '../lib/supabase'
-import { createPost, fetchPosts, removePost, toggleLike } from '../lib/community'
+import {
+  createComment,
+  createPost,
+  fetchComments,
+  fetchPosts,
+  removePost,
+  reportPostServer,
+  toggleLike,
+} from '../lib/community'
 
 const HOT = 10 // 좋아요 이 수 이상이면 인기글 (초기 트래픽 고려)
 
@@ -51,6 +59,7 @@ export default function Community() {
   const [reward, setReward] = useState('')
   const [openComments, setOpenComments] = useState<string | null>(null)
   const [commentText, setCommentText] = useState('')
+  const [serverComments, setServerComments] = useState<Record<string, CommunityComment[]>>({})
 
   const flash = (msg: string) => {
     setReward(msg)
@@ -177,10 +186,37 @@ export default function Community() {
     if (r > 0) flash(t('community.firstReward', { p: r }))
   }
 
-  const submitComment = (postId: string) => {
+  /** 댓글 패널 토글 — 서버 모드면 펼칠 때 댓글 로드 */
+  const loadComments = async (postId: string) => {
+    try {
+      const list = await fetchComments(postId, deviceId)
+      setServerComments((prev) => ({ ...prev, [postId]: list }))
+    } catch {
+      /* 무시 — 펼침 상태 유지 */
+    }
+  }
+  const toggleComments = (postId: string) => {
+    setOpenComments((v) => {
+      const next = v === postId ? null : postId
+      if (next && server) loadComments(postId)
+      return next
+    })
+  }
+
+  const submitComment = async (postId: string) => {
     const body = commentText.trim()
     if (!body) return
-    addComment(postId, body, attach ? myAnimal : undefined)
+    const badge = attach ? myAnimal : undefined
+    if (server) {
+      try {
+        await createComment(deviceId, postId, { nick: nickname, avatar, badge, text: body })
+        await loadComments(postId)
+      } catch {
+        addComment(postId, body, badge) // 폴백: 로컬
+      }
+    } else {
+      addComment(postId, body, badge)
+    }
     setCommentText('')
     sfx.tap()
     const r = claimFirstComment()
@@ -188,7 +224,10 @@ export default function Community() {
   }
 
   const onReport = (p: CommunityPost) => {
-    reportPost(p.id, p.nick, p.text, 'user-report')
+    if (server) {
+      reportPostServer(deviceId, p.id, { nick: p.nick, excerpt: p.text, reason: 'user-report' }).catch(() => {})
+    }
+    reportPost(p.id, p.nick, p.text, 'user-report') // 로컬 기록(신고자 콘솔 확인용)
     flash(t('community.reportDone'))
     sfx.tap()
   }
@@ -348,7 +387,7 @@ export default function Community() {
           ) : (
             posts.map((p, i) => {
               const hot = p.likes >= HOT
-              const comments = commentsMap[p.id] || []
+              const comments = server ? serverComments[p.id] || [] : commentsMap[p.id] || []
               return (
                 <div key={p.id}>
                   <motion.div
@@ -401,7 +440,7 @@ export default function Community() {
                         </motion.button>
                         <motion.button
                           whileTap={{ scale: 0.85 }}
-                          onClick={() => setOpenComments((v) => (v === p.id ? null : p.id))}
+                          onClick={() => toggleComments(p.id)}
                           className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
                             openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-[#F2F5F3] text-ink-sub'
                           }`}
