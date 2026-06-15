@@ -8,7 +8,8 @@ import { PERSONAS, EMOJI_TEST } from '../i18n/animalTranslations'
 import { TESTS } from '../data/tests'
 import type { CommunityComment, CommunityPost, TestId } from '../data/types'
 import { useStore } from '../store/useStore'
-import { useT } from '../i18n/useT'
+import { useT, useL } from '../i18n/useT'
+import { thisWeekTheme } from '../data/themes'
 import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
 import { supabaseReady } from '../lib/supabase'
@@ -36,6 +37,7 @@ function timeAgo(at: number, t: (k: string, v?: Record<string, string | number>)
 
 export default function Community() {
   const t = useT()
+  const l = useL()
   const localPosts = useStore((s) => s.posts)
   const results = useStore((s) => s.results)
   const nickname = useStore((s) => s.nickname)
@@ -334,6 +336,21 @@ export default function Community() {
           </span>
         </button>
 
+        {/* 이번 주 주제 */}
+        <button
+          onClick={() => setOpen(true)}
+          className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-mind-50 to-amber-50 px-4 py-3 text-left"
+        >
+          <span className="text-[22px]">🗓️</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-extrabold tracking-wide text-mind-600">{t('community.themeLabel')}</p>
+            <p className="mt-0.5 break-keep text-[14px] font-extrabold leading-snug">{l(thisWeekTheme())}</p>
+          </div>
+          <span className="shrink-0 whitespace-nowrap rounded-full bg-mind-500 px-3 py-1.5 text-[12px] font-extrabold text-white">
+            ✍️ {t('community.themeWrite')}
+          </span>
+        </button>
+
         {/* 주제 필터 칩 (가로 스크롤) */}
         <div className="no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5">
           {topics.map((tp) => {
@@ -615,6 +632,13 @@ export default function Community() {
             <p className="text-[15px] font-extrabold">{nickname}</p>
             <p className="text-[12px] font-bold text-ink-faint">{server ? t('community.shared') : t('community.local')}</p>
           </div>
+        </div>
+        {/* 이번 주 주제 힌트 */}
+        <div className="mt-2.5 flex items-center gap-2 rounded-xl bg-mind-50 px-3 py-2">
+          <span className="shrink-0 text-[14px]">🗓️</span>
+          <p className="break-keep text-[12.5px] font-bold leading-snug text-mind-700">
+            {t('community.themeLabel')} · {l(thisWeekTheme())}
+          </p>
         </div>
         <textarea
           value={text}
