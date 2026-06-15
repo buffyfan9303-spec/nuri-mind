@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  @apply bg-cream text-ink font-sans antialiased;
+  overscroll-behavior-y: none;
+  font-size: 16px;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  /* 한국어 타이포: 어절(단어) 단위로만 줄바꿈 — 단어 중간에서 끊기는 현상 차단 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  /* 마지막 줄 고아 단어(한 단어만 아래로 삐져나옴) 최소화 */
+  text-wrap: pretty;
+}
+
+/* 제목은 줄별 길이를 고르게 — 한 단어 떨어짐 방지 */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.safe-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+}
+
+@keyframes shine {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  100% { transform: translateX(400%) skewX(-20deg); }
+}
+.progress-shine {
+  animation: shine 2.2s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+.floaty { animation: floaty 3.4s ease-in-out infinite; }
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.25) rotate(12deg); opacity: 0.85; }
+}
+.sparkle { animation: sparkle 2.4s ease-in-out infinite; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+.shake { animation: shake 0.4s ease-in-out; }
+
+.bg-dots {
+  background-image: radial-gradient(rgba(79, 168, 130, 0.10) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
