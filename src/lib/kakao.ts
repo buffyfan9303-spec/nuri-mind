@@ -4,7 +4,8 @@
  *   카카오 developers.kakao.com → 내 앱 → 앱 키 → JavaScript 키
  *   + 플랫폼 > Web 사이트 도메인에 https://www.nurimind.co.kr 등록 필요.
  */
-const KAKAO_KEY = import.meta.env.VITE_KAKAO_KEY as string | undefined
+// JavaScript 키만 사용(클라이언트 공개 안전). REST/네이티브/어드민 키는 절대 클라에 넣지 말 것.
+const KAKAO_KEY = (import.meta.env.VITE_KAKAO_KEY as string | undefined) || '29ca4adfadc69f6b9580cec0edb033dc'
 
 declare global {
   interface Window {
