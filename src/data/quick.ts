@@ -180,6 +180,110 @@ export const QUICK_TESTS: QuickTest[] = [
       { key: 'insomnia', emoji: '🌙', name: { ko: '불면 달', en: 'Restless Moon', ja: '不眠の月' }, tag: { ko: '몸은 피곤한데 잠은 안 와', en: 'Tired but wired', ja: '疲れてるのに眠れない' }, desc: { ko: '생각이 많아 잠들기 힘든 타입. 불안·각성이 높을 수 있어요. 자기 전 화면 끄기와 호흡이 도움 됩니다.', en: 'Your busy mind blocks sleep — likely high arousal. Screen-off + breathing help.', ja: '考えが多く眠れない型。就寝前の画面オフと呼吸を。' } },
     ],
   },
+  {
+    id: 'color',
+    emoji: '🎨',
+    title: { ko: '색채 심리', en: 'Color Psychology', ja: '色彩心理' },
+    desc: { ko: '끌리는 색으로 보는 내 마음', en: 'Your mind via the color you love', ja: '惹かれる色でわかる心' },
+    grad: ['#FF8A4C', '#FFC04C'],
+    funnel: 'ego',
+    questions: [
+      {
+        text: { ko: '지금 가장 끌리는 색은?', en: 'Most drawn to right now?', ja: '今一番惹かれる色は？' },
+        options: [
+          { text: { ko: '❤️ 빨강', en: '❤️ Red', ja: '❤️ 赤' }, to: 'red' },
+          { text: { ko: '💙 파랑', en: '💙 Blue', ja: '💙 青' }, to: 'blue' },
+          { text: { ko: '💛 노랑', en: '💛 Yellow', ja: '💛 黄' }, to: 'yellow' },
+          { text: { ko: '💚 초록', en: '💚 Green', ja: '💚 緑' }, to: 'green' },
+        ],
+      },
+      {
+        text: { ko: '내 방 포인트 색을 고른다면?', en: 'An accent color for your room?', ja: '部屋のアクセント色は？' },
+        options: [
+          { text: { ko: '강렬한 레드', en: 'Bold red', ja: '鮮やかな赤' }, to: 'red' },
+          { text: { ko: '시원한 블루', en: 'Cool blue', ja: '爽やかな青' }, to: 'blue' },
+          { text: { ko: '밝은 옐로우', en: 'Bright yellow', ja: '明るい黄' }, to: 'yellow' },
+          { text: { ko: '편안한 그린', en: 'Calm green', ja: '安らぐ緑' }, to: 'green' },
+        ],
+      },
+      {
+        text: { ko: '기분 최고일 때 떠오르는 색?', en: 'Color when you feel great?', ja: '最高の気分の色？' },
+        options: [
+          { text: { ko: '불타는 빨강', en: 'Fiery red', ja: '燃える赤' }, to: 'red' },
+          { text: { ko: '깊은 바다 파랑', en: 'Deep-sea blue', ja: '深海の青' }, to: 'blue' },
+          { text: { ko: '햇살 노랑', en: 'Sunny yellow', ja: '陽射しの黄' }, to: 'yellow' },
+          { text: { ko: '숲속 초록', en: 'Forest green', ja: '森の緑' }, to: 'green' },
+        ],
+      },
+      {
+        text: { ko: '사고 싶은 옷 색은?', en: 'Color of clothes you\'d buy?', ja: '買いたい服の色は？' },
+        options: [
+          { text: { ko: '눈에 띄는 빨강', en: 'Eye-catching red', ja: '目立つ赤' }, to: 'red' },
+          { text: { ko: '차분한 파랑', en: 'Calm blue', ja: '落ち着く青' }, to: 'blue' },
+          { text: { ko: '발랄한 노랑', en: 'Cheerful yellow', ja: '元気な黄' }, to: 'yellow' },
+          { text: { ko: '자연스러운 초록', en: 'Natural green', ja: '自然な緑' }, to: 'green' },
+        ],
+      },
+    ],
+    results: [
+      { key: 'red', emoji: '🔴', name: { ko: '열정의 빨강', en: 'Passion Red', ja: '情熱の赤' }, tag: { ko: '뜨겁게 사는 사람', en: 'You live on fire', ja: '熱く生きる人' }, desc: { ko: '에너지와 추진력이 넘치는 타입. 하고 싶은 건 바로 해야 직성이 풀려요. 가끔은 속도를 늦추고 숨 고르기도 필요해요.', en: 'Full of energy and drive — you act on what you want, now. Slow down to breathe sometimes.', ja: 'エネルギーと推進力に溢れる型。やりたい事はすぐ実行。時には速度を落として深呼吸を。' } },
+      { key: 'blue', emoji: '🔵', name: { ko: '차분한 파랑', en: 'Calm Blue', ja: '冷静な青' }, tag: { ko: '깊고 침착한 사람', en: 'Deep and composed', ja: '深く冷静な人' }, desc: { ko: '신중하고 안정적인 타입. 감정에 휘둘리지 않고 깊이 생각해요. 다만 너무 재면 기회를 놓칠 수도 있어요.', en: 'Thoughtful and steady — you think deep, not swayed by emotion. Just don\'t over-deliberate.', ja: '慎重で安定した型。感情に流されず深く考える。考えすぎて機会を逃さぬよう。' } },
+      { key: 'yellow', emoji: '🟡', name: { ko: '발랄한 노랑', en: 'Bright Yellow', ja: '陽気な黄' }, tag: { ko: '밝고 사교적인 사람', en: 'Sunny and social', ja: '明るく社交的' }, desc: { ko: '어디서나 분위기를 밝히는 타입. 호기심 많고 사람을 좋아해요. 가끔은 혼자만의 충전 시간도 챙겨주세요.', en: 'You light up any room — curious and people-loving. Save some solo recharge time too.', ja: 'どこでも場を明るくする型。好奇心旺盛で人好き。一人の充電時間も大切に。' } },
+      { key: 'green', emoji: '🟢', name: { ko: '평온한 초록', en: 'Serene Green', ja: '穏やかな緑' }, tag: { ko: '안정과 조화의 사람', en: 'Balance and harmony', ja: '安定と調和の人' }, desc: { ko: '편안하고 배려심 깊은 타입. 주변을 조화롭게 만들어요. 남을 챙기느라 내 마음을 미루지 않도록 해요.', en: 'Easygoing and caring — you bring harmony. Don\'t put your own needs last.', ja: '穏やかで思いやり深い型。周りを調和させる。自分の心も後回しにしないで。' } },
+    ],
+  },
+  {
+    id: 'energy',
+    emoji: '🔋',
+    title: { ko: '에너지 충전 타입', en: 'Energy Type', ja: 'エネルギータイプ' },
+    desc: { ko: 'MBTI가 못 잡는 진짜 내향·외향', en: 'Your true intro/extra beyond MBTI', ja: 'MBTIを超える内向·外向' },
+    grad: ['#10B981', '#5BD9A8'],
+    funnel: 'ego',
+    questions: [
+      {
+        text: { ko: '주말에 푹 쉬는 법은?', en: 'How you truly rest on weekends?', ja: '週末の本当の休み方は？' },
+        options: [
+          { text: { ko: '친구들과 만나서 놀기', en: 'Hang out with friends', ja: '友達と遊ぶ' }, to: 'crowd' },
+          { text: { ko: '혼자 집에서 뒹굴기', en: 'Chill alone at home', ja: '一人で家でゴロゴロ' }, to: 'solo' },
+          { text: { ko: '둘 다 적당히', en: 'A bit of both', ja: '両方ほどほどに' }, to: 'mixed' },
+          { text: { ko: '자도 자도 피곤', en: 'Tired no matter what', ja: '寝ても疲れる' }, to: 'drained' },
+        ],
+      },
+      {
+        text: { ko: '사람 많은 모임 다녀온 뒤?', en: 'After a big gathering?', ja: '大人数の集まりの後は？' },
+        options: [
+          { text: { ko: '더 신나고 충전됨', en: 'Even more energized', ja: 'もっと元気に' }, to: 'crowd' },
+          { text: { ko: '진이 빠져 혼자 쉬어야', en: 'Drained, need alone time', ja: '消耗、一人で休む' }, to: 'solo' },
+          { text: { ko: '그때그때 달라', en: 'Depends on the day', ja: 'その時次第' }, to: 'mixed' },
+          { text: { ko: '며칠은 회복해야', en: 'Need days to recover', ja: '数日回復が必要' }, to: 'drained' },
+        ],
+      },
+      {
+        text: { ko: '에너지가 솟는 순간은?', en: 'When your energy peaks?', ja: 'エネルギーが湧く瞬間は？' },
+        options: [
+          { text: { ko: '함께 떠들썩할 때', en: 'In lively company', ja: 'みんなで賑やかな時' }, to: 'crowd' },
+          { text: { ko: '혼자 몰입할 때', en: 'In solo flow', ja: '一人で没頭する時' }, to: 'solo' },
+          { text: { ko: '마음 맞는 1:1', en: 'One-on-one with a close one', ja: '気の合う1対1' }, to: 'mixed' },
+          { text: { ko: '솔직히 잘 모르겠음', en: 'Honestly not sure', ja: '正直よく分からない' }, to: 'drained' },
+        ],
+      },
+      {
+        text: { ko: '아무 약속 없는 주말이면?', en: 'A weekend with zero plans?', ja: '予定ゼロの週末なら？' },
+        options: [
+          { text: { ko: '심심해서 먼저 연락', en: 'Bored, I reach out first', ja: '退屈で自分から連絡' }, to: 'crowd' },
+          { text: { ko: '오히려 평화롭다', en: 'Actually peaceful', ja: 'むしろ平和' }, to: 'solo' },
+          { text: { ko: '적당히 좋다', en: 'Fine either way', ja: 'ほどほどに良い' }, to: 'mixed' },
+          { text: { ko: '쉬어도 기운 없음', en: 'Still low even resting', ja: '休んでも元気出ない' }, to: 'drained' },
+        ],
+      },
+    ],
+    results: [
+      { key: 'crowd', emoji: '🔋', name: { ko: '인싸 발전기', en: 'Social Dynamo', ja: '社交の発電機' }, tag: { ko: '사람 속에서 충전', en: 'Charged by people', ja: '人の中で充電' }, desc: { ko: '사람들과 어울릴수록 에너지가 차는 외향형. 활기와 추진력이 강점이에요. 가끔은 혼자만의 정리 시간도 끼워 넣어보세요.', en: 'An extrovert who charges among people — lively and driven. Slot in some solo reset time too.', ja: '人と関わるほど充電される外向型。活気と推進力が強み。時には一人の整理時間も。' } },
+      { key: 'solo', emoji: '🔌', name: { ko: '혼자 충전기', en: 'Solo Charger', ja: 'ソロ充電器' }, tag: { ko: '혼자만의 시간이 보약', en: 'Alone time is medicine', ja: '一人時間が薬' }, desc: { ko: '혼자 있을 때 가장 깊이 회복하는 내향형. 집중력과 사색이 강점이에요. 좋아하는 사람과의 만남은 짧고 굵게가 좋아요.', en: 'An introvert who recovers deepest alone — focus and reflection are your strengths. Keep social time short and meaningful.', ja: '一人で最も深く回復する内向型。集中と思索が強み。人付き合いは短く濃く。' } },
+      { key: 'mixed', emoji: '🎛️', name: { ko: '균형 충전기', en: 'Flex Charger', ja: 'バランス充電器' }, tag: { ko: '상황 따라 조절', en: 'Adjusts to the moment', ja: '状況で調整' }, desc: { ko: '상황에 맞춰 외향·내향을 오가는 양향형. 적응력이 뛰어나요. 단, 내 진짜 에너지 상태를 자주 살펴주는 게 좋아요.', en: 'An ambivert who flexes between intro and extra — highly adaptable. Just check in on your real energy often.', ja: '状況で内外を行き来する両向型。適応力抜群。自分の本当のエネルギーを時々確認。' } },
+      { key: 'drained', emoji: '🪫', name: { ko: '방전 주의', en: 'Low Battery', ja: '放電注意' }, tag: { ko: '쉽게 지치니 회복 우선', en: 'Drains easily — recover first', ja: '消耗しやすい—回復優先' }, desc: { ko: '요즘 쉬어도 기운이 잘 안 차는 상태일 수 있어요. 내향·외향의 문제라기보다 회복이 먼저 필요한 신호예요. 번아웃 검사로 더 살펴보세요.', en: 'Lately rest may not be recharging you — less about intro/extra, more a sign you need recovery first. Try the burnout test.', ja: '最近休んでも充電されにくい状態かも。内外より回復が先のサイン。燃え尽き検査で確認を。' } },
+    ],
+  },
 ]
 
 export function quickById(id: string): QuickTest | undefined {
