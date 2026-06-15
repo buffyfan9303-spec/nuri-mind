@@ -49,7 +49,7 @@ export function shareKakao(opts: { title: string; description: string; link: str
       content: {
         title: opts.title,
         description: opts.description,
-        imageUrl: opts.imageUrl || 'https://www.nurimind.co.kr/og.svg',
+        imageUrl: opts.imageUrl || 'https://www.nurimind.co.kr/og.jpg',
         link: { mobileWebUrl: opts.link, webUrl: opts.link },
       },
       buttons: [{ title: '나도 검사하기 🧠', link: { mobileWebUrl: opts.link, webUrl: opts.link } }],
