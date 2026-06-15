@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import Avatar from '../components/Avatar'
 import { Card, Chip, Modal, Section, TopBar } from '../components/ui'
-import { PERSONAS } from '../i18n/animalTranslations'
+import { PERSONAS, PERSONA_TEST } from '../i18n/animalTranslations'
 import { lifetimeOf, tierOf } from '../data/rank'
 import type { Lang } from '../data/types'
 import { fileToAvatarDataUrl } from '../lib/image'
@@ -97,6 +97,21 @@ export default function Profile() {
               {tierOf(lifetimeOf(s.ledger)).emoji} {l(tierOf(lifetimeOf(s.ledger)).name)} ›
             </button>
           </div>
+        </Card>
+
+        {/* 동물 도감 진입 */}
+        <Card onClick={() => nav('/dex')} className="mt-3.5 flex items-center gap-3.5 !p-4">
+          <span className="text-[28px]">🗂</span>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[15.5px] font-extrabold tracking-tight">{t('dex.title')}</h3>
+            <p className="mt-0.5 text-[12.5px] font-bold text-ink-faint">
+              {t('dex.progress', {
+                c: new Set(s.results.map((r) => r.persona).filter((k) => PERSONA_TEST[k])).size,
+                t: Object.keys(PERSONA_TEST).length,
+              })}
+            </p>
+          </div>
+          <span className="text-lg text-ink-faint">›</span>
         </Card>
 
         {/* 검사 히스토리 */}
