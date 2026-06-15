@@ -74,6 +74,7 @@ interface State {
   lastQuizDate: string
   moodLog: Record<string, number>
   challengeDate: string
+  routineDone: Record<string, number[]>
   sharedResults: string[]
   /* 친구 초대 */
   referralCode: string
@@ -120,6 +121,7 @@ interface State {
   answerQuiz: (correct: boolean) => number
   setMood: (mood: number) => void
   toggleChallenge: () => void
+  toggleRoutineDay: (testId: string, day: number) => void
   shareReward: (resultId: string) => number
   buyFreeze: () => boolean
   redeemCode: (code: string) => 'ok' | 'invalid' | 'mine' | 'used'
@@ -166,6 +168,7 @@ const initial = () => ({
   lastQuizDate: '',
   moodLog: {} as Record<string, number>,
   challengeDate: '',
+  routineDone: {} as Record<string, number[]>,
   sharedResults: [] as string[],
   referralCode: genCode(),
   referredBy: '',
@@ -453,6 +456,14 @@ export const useStore = create<State>()(
         /** 오늘의 챌린지 완료 토글 (당일만) */
         toggleChallenge: () =>
           set((s) => ({ challengeDate: s.challengeDate === today() ? '' : today() })),
+
+        /** 7일 루틴 — 특정 일차 완료 토글 */
+        toggleRoutineDay: (testId, day) =>
+          set((s) => {
+            const cur = s.routineDone[testId] || []
+            const next = cur.includes(day) ? cur.filter((d) => d !== day) : [...cur, day]
+            return { routineDone: { ...s.routineDone, [testId]: next } }
+          }),
 
         /** 결과 공유 보상 — 결과당 1회 +5P */
         shareReward: (resultId) => {

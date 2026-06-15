@@ -7,6 +7,7 @@ import AdSlot from '../components/AdSlot'
 import Gauge from '../components/Gauge'
 import AiReport from '../components/AiReport'
 import Trend from '../components/Trend'
+import { ROUTINES } from '../data/routines'
 import { Card, Chip, TopBar } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
 import { testMeta } from '../data/tests'
@@ -371,6 +372,15 @@ export default function TestResult() {
             ))}
           </ul>
         </Card>
+
+        {/* 맞춤 7일 루틴 처방 */}
+        {ROUTINES[result.testId] && (
+          <div className="mt-4">
+            <Button color="mind" onClick={() => nav(`/routine/${result.testId}`)}>
+              🗓 {t('routine.cta')}
+            </Button>
+          </div>
+        )}
 
         {/* 도파민 → 절제력 훈련 퍼널 */}
         {result.testId === 'dopamine' && (
