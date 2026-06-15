@@ -531,6 +531,13 @@ export const useStore = create<State>()(
     },
     {
       name: 'nuri-mind-v1',
+      version: 1,
+      // v1: 글자 크기 배율을 전 사용자 100%로 1회 정규화 (기존에 키워둔 값 리셋)
+      migrate: (persisted, version) => {
+        const s = persisted as Partial<State> | undefined
+        if (s && version < 1) s.fontScale = 1
+        return s as State
+      },
       onRehydrateStorage: () => (state) => {
         if (state) setSoundEnabled(state.sound)
       },

@@ -39,21 +39,22 @@ export default function Button({
   className = '',
 }: Props) {
   const c = COLORS[color]
+  // 본문 100%(16px) 기준에 맞춘 버튼 스케일 — 듀오링고식 3D 프레스는 유지하되 두께만 슬림하게
   const pad =
     size === 'lg'
-      ? 'px-6 py-[18px] text-[19px]'
+      ? 'px-6 py-3.5 text-[16px]'
       : size === 'sm'
-        ? 'px-4 py-2.5 text-[15px]'
-        : 'px-5 py-4 text-[17px]'
+        ? 'px-3.5 py-2 text-[13.5px]'
+        : 'px-5 py-3 text-[15px]'
   return (
     <motion.button
       type="button"
       disabled={disabled}
       onClick={onClick}
-      whileTap={disabled ? undefined : { y: 4, boxShadow: `0 0px 0 ${c.sh}` }}
+      whileTap={disabled ? undefined : { y: 3, boxShadow: `0 0px 0 ${c.sh}` }}
       transition={{ type: 'spring', stiffness: 600, damping: 30 }}
       className={`${full ? 'w-full' : ''} ${pad} whitespace-nowrap rounded-2xl font-extrabold tracking-wide select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
-      style={{ background: c.bg, color: c.fg, boxShadow: `0 4px 0 ${c.sh}`, border: c.border ?? 'none' }}
+      style={{ background: c.bg, color: c.fg, boxShadow: `0 3px 0 ${c.sh}`, border: c.border ?? 'none' }}
     >
       {children}
     </motion.button>
