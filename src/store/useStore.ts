@@ -72,6 +72,8 @@ interface State {
   lastSpinDate: string
   lastAdSpinDate: string
   lastQuizDate: string
+  moodLog: Record<string, number>
+  challengeDate: string
   sharedResults: string[]
   /* 친구 초대 */
   referralCode: string
@@ -116,6 +118,8 @@ interface State {
   decideApplication: (id: string, approve: boolean) => void
   spin: (viaAd: boolean) => { rolled: number; granted: number } | null
   answerQuiz: (correct: boolean) => number
+  setMood: (mood: number) => void
+  toggleChallenge: () => void
   shareReward: (resultId: string) => number
   buyFreeze: () => boolean
   redeemCode: (code: string) => 'ok' | 'invalid' | 'mine' | 'used'
@@ -160,6 +164,8 @@ const initial = () => ({
   lastSpinDate: '',
   lastAdSpinDate: '',
   lastQuizDate: '',
+  moodLog: {} as Record<string, number>,
+  challengeDate: '',
   sharedResults: [] as string[],
   referralCode: genCode(),
   referredBy: '',
@@ -440,6 +446,13 @@ export const useStore = create<State>()(
           set({ lastQuizDate: today() })
           return correct ? grantFree(5, '🧠 데일리 심리 퀴즈 정답') : 0
         },
+
+        /** 오늘 기분 기록 (보상 없음 — 자기 관찰 도구) */
+        setMood: (mood) => set((s) => ({ moodLog: { ...s.moodLog, [today()]: mood } })),
+
+        /** 오늘의 챌린지 완료 토글 (당일만) */
+        toggleChallenge: () =>
+          set((s) => ({ challengeDate: s.challengeDate === today() ? '' : today() })),
 
         /** 결과 공유 보상 — 결과당 1회 +5P */
         shareReward: (resultId) => {

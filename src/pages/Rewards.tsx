@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
 import AdSlot from '../components/AdSlot'
 import { DailyCapMeter, DailyQuiz, DailySpin } from '../components/Daily'
+import DailyExtras from '../components/DailyExtras'
 import Invite from '../components/Invite'
 import { Card, Chip, Modal, Section, TopBar } from '../components/ui'
 import { OFFERS } from '../data/seed'
@@ -137,6 +138,7 @@ export default function Rewards() {
 
         {/* 데일리 존 */}
         <div className="mt-3.5 space-y-3.5">
+          <DailyExtras />
           <DailySpin />
           <DailyQuiz />
         </div>

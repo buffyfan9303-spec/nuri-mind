@@ -253,6 +253,9 @@ const ko: Record<string, string> = {
   'admin.tab.exp': '체험단',
 
   'daily.cap': '오늘 무료 적립',
+  'daily.line': '오늘의 심리 한 줄',
+  'daily.mood': '오늘 기분은 어때요?',
+  'daily.challenge': '오늘의 챌린지',
   'daily.capFull': '오늘 무료 적립 한도를 모두 채웠어요! 내일 또 만나요 💤',
   'spin.title': '랜덤박스',
   'spin.sub': '매일 무료 1회 + 광고 보너스 1회',
@@ -758,6 +761,9 @@ const en: Record<string, string> = {
   'admin.tab.exp': 'Tryouts',
 
   'daily.cap': 'Today\'s free earnings',
+  'daily.line': 'Today\'s mind line',
+  'daily.mood': 'How do you feel today?',
+  'daily.challenge': 'Today\'s challenge',
   'daily.capFull': 'Daily free-earning cap reached! See you tomorrow 💤',
   'spin.title': 'Random Box',
   'spin.sub': '1 free daily + 1 ad bonus',
@@ -1263,6 +1269,9 @@ const ja: Record<string, string> = {
   'admin.tab.exp': '体験団',
 
   'daily.cap': '本日の無料獲得',
+  'daily.line': '今日の心理ひとこと',
+  'daily.mood': '今日の気分は？',
+  'daily.challenge': '今日のチャレンジ',
   'daily.capFull': '本日の無料獲得上限に到達！また明日 💤',
   'spin.title': 'ランダムボックス',
   'spin.sub': '毎日無料1回＋広告ボーナス1回',
