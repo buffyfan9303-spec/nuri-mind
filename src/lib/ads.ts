@@ -13,6 +13,22 @@ export function adsEnabled(): boolean {
   return Boolean(ADSENSE_CLIENT)
 }
 
+/**
+ * AdSense 로더 스크립트를 <head>에 1회 주입.
+ * VITE_ADSENSE_CLIENT 설정 시에만 동작 — index.html을 건드릴 필요 없이 env로 켜고 끔.
+ * main.tsx 시작 시 호출.
+ */
+export function loadAdSenseScript(): void {
+  if (!adsEnabled() || typeof document === 'undefined') return
+  if (document.getElementById('adsbygoogle-js')) return
+  const s = document.createElement('script')
+  s.id = 'adsbygoogle-js'
+  s.async = true
+  s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`
+  s.crossOrigin = 'anonymous'
+  document.head.appendChild(s)
+}
+
 export function isNative(): boolean {
   // TODO(APK): Capacitor.isNativePlatform() 으로 교체
   return false

@@ -1,0 +1,5 @@
+# 누리 마인드 · Google AdSense ads.txt
+# ⚠️ 아래 pub-XXXXXXXXXXXXXXXX 를 본인 게시자 ID로 교체하세요.
+#    (AdSense → 계정 → 설정 → 계정 정보의 '게시자 ID', ca- 접두사 빼고 pub- 부터)
+# 교체 후 https://www.nurimind.co.kr/ads.txt 로 접속되면 정상.
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

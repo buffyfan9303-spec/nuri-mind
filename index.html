@@ -14,9 +14,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <!--
-      [수익화] Google AdSense — 승인 후 아래 주석을 해제하고 ca-pub ID를 넣으세요.
-      .env 파일에 VITE_ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX 설정 시 AdSlot 컴포넌트가 자동 활성화됩니다.
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+      [수익화] Google AdSense — 로더 스크립트는 src/lib/ads.ts(loadAdSenseScript)가
+      VITE_ADSENSE_CLIENT 설정 시 자동 주입합니다. index.html은 손댈 필요 없음.
+      필요한 것: ① 환경변수 3개(CLIENT/SLOT_BANNER/SLOT_RECT) ② public/ads.txt에 게시자 ID.
       APK(네이티브) 빌드 시에는 AdMob을 사용합니다 — README.md의 'APK 패키징' 섹션 참고.
     -->
   </head>
