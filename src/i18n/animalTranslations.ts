@@ -1,4 +1,4 @@
-import type { L } from '../data/types'
+import type { L, TestId } from '../data/types'
 
 /**
  * 동물 페르소나 딕셔너리 (백서 §5)
@@ -813,3 +813,20 @@ export const PERSONAS: Record<string, Persona> = {
     ],
   },
 }
+
+/** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
+export const PERSONA_TEST: Record<string, TestId> = {
+  meerkat: 'adhd', collie: 'adhd',
+  sheep: 'ego', deer: 'ego', tiger: 'ego', wolf: 'ego',
+  owl: 'iq', tit: 'iq',
+  penguin: 'love', koala: 'love', cat: 'love', hedgehog: 'love',
+  dolphin: 'burnout', camel: 'burnout', sloth: 'burnout',
+  bear: 'dopamine', hamster: 'dopamine', raccoon: 'dopamine',
+  bamboo: 'resilience', willow: 'resilience', glass: 'resilience',
+  fox: 'dark', peacock: 'dark', shark: 'dark', dove: 'dark',
+}
+
+/** 이모지(글 뱃지) → 검사 매핑 */
+export const EMOJI_TEST: Record<string, TestId> = Object.fromEntries(
+  Object.entries(PERSONA_TEST).map(([key, tid]) => [PERSONAS[key].emoji, tid]),
+) as Record<string, TestId>
