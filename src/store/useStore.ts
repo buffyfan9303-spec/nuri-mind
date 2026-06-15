@@ -90,6 +90,8 @@ interface State {
   vibePct: number | null
   /* AI 정밀 분석 잠금 해제한 결과 id */
   aiReports: string[]
+  /* 매거진 정독 완료한 글 id(보상 1회) */
+  readArticles: string[]
 
   setLang: (l: Lang) => void
   setSound: (v: boolean) => void
@@ -129,6 +131,7 @@ interface State {
   clearLeagueMsg: () => void
   completeVibe: (pct: number) => number
   unlockAi: (resultId: string) => void
+  readArticle: (id: string) => number
   unlockAdmin: (pin: string) => boolean
   lockAdmin: () => void
   resetAll: () => void

@@ -242,11 +242,11 @@ export default function TestResult() {
                 <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.iq}</div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.iqLabel')}</p>
                 <div className="mt-4">
-                  <Gauge value={result.percentile} color={tm.gradFrom} label="percentile" />
+                  <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
                 </div>
               </>
             ) : (
-              <Gauge value={result.percentile} color={tm.gradFrom} label="percentile" />
+              <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
             )}
           </div>
         </Card>
