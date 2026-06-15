@@ -43,6 +43,7 @@ interface State {
   notify: boolean
   nickname: string
   avatar: Avatar
+  deviceId: string
   posts: CommunityPost[]
   points: number
   streak: number
@@ -122,6 +123,7 @@ const initial = () => ({
   notify: false,
   nickname: '누리',
   avatar: null as Avatar,
+  deviceId: uid('dev_'),
   posts: SEED_POSTS,
   points: 100,
   streak: 0,

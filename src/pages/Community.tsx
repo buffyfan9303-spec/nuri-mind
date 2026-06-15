@@ -1,14 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import Avatar from '../components/Avatar'
 import AdSlot from '../components/AdSlot'
 import { Card, Modal, TopBar } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
+import type { CommunityPost } from '../data/types'
 import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
+import { supabaseReady } from '../lib/supabase'
+import { createPost, fetchPosts, removePost, toggleLike } from '../lib/community'
 
 function timeAgo(at: number, t: (k: string, v?: Record<string, string | number>) => string): string {
   const m = Math.floor((Date.now() - at) / 60000)
@@ -21,8 +24,11 @@ function timeAgo(at: number, t: (k: string, v?: Record<string, string | number>)
 
 export default function Community() {
   const t = useT()
-  const posts = useStore((s) => s.posts)
+  const localPosts = useStore((s) => s.posts)
   const results = useStore((s) => s.results)
+  const nickname = useStore((s) => s.nickname)
+  const avatar = useStore((s) => s.avatar)
+  const deviceId = useStore((s) => s.deviceId)
   const addPost = useStore((s) => s.addPost)
   const likePost = useStore((s) => s.likePost)
   const deletePost = useStore((s) => s.deletePost)
@@ -31,15 +37,76 @@ export default function Community() {
   const [text, setText] = useState('')
   const [attach, setAttach] = useState(true)
 
-  const myAnimal = results[0] ? PERSONAS[results[0].persona]?.emoji : undefined
+  /* 서버 모드: 스키마가 적용돼 있으면 Supabase 공유 피드, 아니면 로컬 폴백 */
+  const [server, setServer] = useState<boolean | null>(null) // null=확인중
+  const [serverPosts, setServerPosts] = useState<CommunityPost[]>([])
 
-  const submit = () => {
+  const reload = async () => {
+    try {
+      const data = await fetchPosts(deviceId)
+      setServerPosts(data)
+      setServer(true)
+    } catch {
+      setServer(false)
+    }
+  }
+
+  useEffect(() => {
+    if (supabaseReady()) reload()
+    else setServer(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const myAnimal = results[0] ? PERSONAS[results[0].persona]?.emoji : undefined
+  const posts = server ? serverPosts : localPosts
+
+  const submit = async () => {
     if (!text.trim()) return
-    addPost(text, attach ? myAnimal : undefined)
+    const badge = attach ? myAnimal : undefined
+    if (server) {
+      try {
+        await createPost(deviceId, { nick: nickname, avatar, badge, text })
+        await reload()
+      } catch {
+        addPost(text, badge) // 실패 시 로컬에라도 남김
+      }
+    } else {
+      addPost(text, badge)
+    }
     setText('')
     burst()
     sfx.coin()
     setOpen(false)
+  }
+
+  const onLike = async (p: CommunityPost) => {
+    if (server) {
+      // 낙관적 업데이트
+      setServerPosts((prev) =>
+        prev.map((x) => (x.id === p.id ? { ...x, liked: !x.liked, likes: x.likes + (x.liked ? -1 : 1) } : x)),
+      )
+      try {
+        await toggleLike(p.id)
+      } catch {
+        reload()
+      }
+    } else {
+      likePost(p.id)
+    }
+    if (!p.liked) sfx.tap()
+  }
+
+  const onDelete = async (p: CommunityPost) => {
+    if (server) {
+      setServerPosts((prev) => prev.filter((x) => x.id !== p.id))
+      try {
+        await removePost(p.id, deviceId)
+      } catch {
+        reload()
+      }
+    } else {
+      deletePost(p.id)
+    }
   }
 
   return (
@@ -76,7 +143,7 @@ export default function Community() {
                       <p className="text-[11.5px] font-bold text-ink-faint">{timeAgo(p.at, t)}</p>
                     </div>
                     {p.mine && (
-                      <button onClick={() => deletePost(p.id)} className="shrink-0 text-[12px] font-bold text-ink-faint">
+                      <button onClick={() => onDelete(p)} className="shrink-0 text-[12px] font-bold text-ink-faint">
                         {t('common.delete')}
                       </button>
                     )}
@@ -85,10 +152,7 @@ export default function Community() {
                   <div className="mt-2 flex items-center">
                     <motion.button
                       whileTap={{ scale: 0.88 }}
-                      onClick={() => {
-                        likePost(p.id)
-                        if (!p.liked) sfx.tap()
-                      }}
+                      onClick={() => onLike(p)}
                       className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12.5px] font-extrabold transition-colors ${
                         p.liked ? 'bg-red-50 text-red-500' : 'bg-[#F2F5F3] text-ink-sub'
                       }`}
