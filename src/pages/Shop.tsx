@@ -42,11 +42,6 @@ export default function Shop() {
       <main className="mx-auto max-w-md px-5">
         <p className="px-1 text-[15px] font-medium leading-relaxed tracking-wide text-[#6B756E]">{t('shop.sub')}</p>
 
-        {/* 광고 — 상단 노출 (가시성 개선) */}
-        <div className="mt-3">
-          <AdSlot variant="banner" />
-        </div>
-
         {requested && (
           <motion.p
             initial={{ opacity: 0, y: -8 }}
@@ -97,6 +92,11 @@ export default function Shop() {
           })}
         </div>
 
+        {/* 가로 한 줄 광고 — 콘텐츠 중앙 */}
+        <div className="mt-4">
+          <AdSlot variant="banner" />
+        </div>
+
         {redemptions.length > 0 && (
           <Section title={`📦 ${t('shop.history')}`}>
             <Card className="!p-2">
@@ -119,6 +119,11 @@ export default function Shop() {
             </Card>
           </Section>
         )}
+
+        {/* 정사각형 광고 — 페이지 맨 아래 */}
+        <div className="mt-5">
+          <AdSlot variant="rect" />
+        </div>
       </main>
 
       <Modal open={Boolean(confirm)} onClose={() => setConfirm(null)}>

@@ -465,6 +465,11 @@ export default function TestResult() {
             🏠 {t('result.home')}
           </Button>
         </div>
+
+        {/* 정사각형 광고 — 페이지 맨 아래 */}
+        <div className="mt-5">
+          <AdSlot variant="rect" />
+        </div>
       </main>
     </div>
   )

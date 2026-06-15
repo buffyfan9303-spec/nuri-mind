@@ -227,6 +227,11 @@ export default function Home() {
         <p className="mt-6 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">
           {t('home.disclaimer')}
         </p>
+
+        {/* 정사각형 광고 — 페이지 맨 아래 */}
+        <div className="mt-5">
+          <AdSlot variant="rect" />
+        </div>
       </main>
     </div>
   )

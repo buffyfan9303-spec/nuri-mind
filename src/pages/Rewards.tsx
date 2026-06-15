@@ -261,6 +261,11 @@ export default function Rewards() {
             ))}
           </Card>
         </Section>
+
+        {/* 정사각형 광고 — 페이지 맨 아래 */}
+        <div className="mt-5">
+          <AdSlot variant="rect" />
+        </div>
       </main>
 
       {/* 스트릭(연속 출석) 설명 모달 */}

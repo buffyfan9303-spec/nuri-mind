@@ -538,6 +538,13 @@ export default function Community() {
             })
           )}
         </div>
+
+        {/* 정사각형 광고 — 페이지 맨 아래 */}
+        {posts.length > 0 && (
+          <div className="mt-4">
+            <AdSlot variant="rect" />
+          </div>
+        )}
       </main>
 
       {/* 새 글 N개 pill */}
