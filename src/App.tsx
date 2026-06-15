@@ -4,6 +4,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
+import { pageView } from './lib/analytics'
 
 /** 라우트별 코드 스플리팅 — 첫 로딩엔 홈만 받고 나머지는 진입 시 로드 */
 const TestIntro = lazy(() => import('./pages/TestIntro'))
@@ -51,6 +52,7 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
+    pageView(location.pathname)
   }, [location.pathname])
 
   return (

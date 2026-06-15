@@ -20,6 +20,7 @@ import { lifetimeOf, tierAtLeast } from '../data/rank'
 import { botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
 import { uid } from '../lib/random'
 import { setSoundEnabled } from '../lib/sound'
+import { track } from '../lib/analytics'
 
 /** 운영자 PIN — 배포 전 반드시 변경 (실서비스는 Supabase Auth 권장) */
 const OPERATOR_PIN = '5690'
@@ -330,6 +331,7 @@ export const useStore = create<State>()(
               ? [{ id: uid('lg_'), amount: reward, memo: '🧠 검사 완료 보상', at: Date.now() }, ...s.ledger]
               : s.ledger,
           })
+          track('test_complete', { test: r.testId, first })
           return reward
         },
 
@@ -357,6 +359,7 @@ export const useStore = create<State>()(
             points: s.points + sv.reward,
             ledger: [{ id: uid('lg_'), amount: sv.reward, memo: `${sv.emoji} 설문 참여: ${sv.title}`, at: Date.now() }, ...s.ledger],
           })
+          track('survey_complete', { reward: sv.reward })
           return sv.reward
         },
 
@@ -441,6 +444,7 @@ export const useStore = create<State>()(
         /** 결과 공유 보상 — 결과당 1회 +5P */
         shareReward: (resultId) => {
           const s = get()
+          track('share', { resultId })
           if (s.sharedResults.includes(resultId)) return 0
           set({ sharedResults: [...s.sharedResults, resultId] })
           return grantFree(5, '📤 결과 카드 공유 보상')

@@ -12,6 +12,7 @@ import { useT } from '../i18n/useT'
 import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
 import { supabaseReady } from '../lib/supabase'
+import { checkRate, hasProfanity, recordAction } from '../lib/moderation'
 import {
   createComment,
   createPost,
@@ -167,6 +168,10 @@ export default function Community() {
 
   const submit = async () => {
     if (!text.trim()) return
+    if (hasProfanity(text)) return flash(t('community.badword'))
+    const rl = checkRate('post')
+    if (!rl.ok) return flash(t('community.tooFast', { n: rl.waitSec }))
+    recordAction('post')
     const badge = attach ? myAnimal : undefined
     if (server) {
       try {
@@ -206,6 +211,10 @@ export default function Community() {
   const submitComment = async (postId: string) => {
     const body = commentText.trim()
     if (!body) return
+    if (hasProfanity(body)) return flash(t('community.badword'))
+    const rl = checkRate('comment')
+    if (!rl.ok) return flash(t('community.tooFast', { n: rl.waitSec }))
+    recordAction('comment')
     const badge = attach ? myAnimal : undefined
     if (server) {
       try {

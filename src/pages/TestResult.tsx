@@ -14,6 +14,8 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { celebrate, burst } from '../lib/confetti'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
+import { kakaoEnabled, shareKakao } from '../lib/kakao'
+import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
 
 export default function TestResult() {
@@ -432,7 +434,23 @@ export default function TestResult() {
               />
             ))}
           </div>
-          <div className="mt-3 grid grid-cols-2 gap-2.5">
+          {kakaoEnabled() && (
+            <button
+              onClick={() => {
+                const ok = shareKakao({
+                  title: `나는 "${l(persona.name)}" 🐾 | 누리 마인드`,
+                  description: l(persona.slap),
+                  link: `https://www.nurimind.co.kr/test/${result.testId}`,
+                })
+                track('share', { channel: 'kakao' })
+                if (!ok) share()
+              }}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-extrabold text-[#3A1D1D]"
+            >
+              💬 카카오톡으로 공유
+            </button>
+          )}
+          <div className="mt-2.5 grid grid-cols-2 gap-2.5">
             <Button color="sky" onClick={shareCard}>
               {t('share.card')}
             </Button>

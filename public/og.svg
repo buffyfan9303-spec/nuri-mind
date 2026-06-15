@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4FA882"/>
+      <stop offset="1" stop-color="#6E9FDC"/>
+    </linearGradient>
+    <radialGradient id="dot" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g fill="#ffffff" fill-opacity="0.08">
+    <circle cx="120" cy="110" r="60"/>
+    <circle cx="1080" cy="520" r="80"/>
+    <circle cx="1010" cy="120" r="42"/>
+    <circle cx="170" cy="520" r="36"/>
+  </g>
+  <text x="80" y="170" font-family="'Pretendard','Apple SD Gothic Neo',sans-serif" font-size="34" font-weight="800" fill="#ffffff" fill-opacity="0.9" letter-spacing="2">NURI MIND · 무료 심리검사</text>
+  <text x="76" y="300" font-family="'Pretendard','Apple SD Gothic Neo',sans-serif" font-size="92" font-weight="900" fill="#ffffff">내 심리 동물은?</text>
+  <text x="80" y="382" font-family="'Pretendard','Apple SD Gothic Neo',sans-serif" font-size="40" font-weight="700" fill="#ffffff" fill-opacity="0.92">ADHD · 번아웃 · 애착 · 다크트라이어드 등 8종</text>
+  <text x="80" y="440" font-family="'Pretendard','Apple SD Gothic Neo',sans-serif" font-size="40" font-weight="700" fill="#ffffff" fill-opacity="0.92">과학 심리검사 + 포인트 적립</text>
+  <text x="600" y="560" text-anchor="middle" font-size="120">🧠🦦🦔🐬🦊🐺</text>
+  <rect x="80" y="500" width="280" height="70" rx="35" fill="#ffffff"/>
+  <text x="220" y="546" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo',sans-serif" font-size="34" font-weight="900" fill="#2F6B52">nurimind.co.kr</text>
+</svg>
