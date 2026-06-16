@@ -5,7 +5,9 @@
  *   + 플랫폼 > Web 사이트 도메인에 https://www.nurimind.co.kr 등록 필요.
  */
 // JavaScript 키만 사용(클라이언트 공개 안전). REST/네이티브/어드민 키는 절대 클라에 넣지 말 것.
-const KAKAO_KEY = (import.meta.env.VITE_KAKAO_KEY as string | undefined) || '29ca4adfadc69f6b9580cec0edb033dc'
+// env에 플레이스홀더(XXXX)가 들어가도 무시하고 진짜 키 사용.
+const _kk = import.meta.env.VITE_KAKAO_KEY as string | undefined
+const KAKAO_KEY = _kk && !/[Xx]{3,}/.test(_kk) ? _kk : '29ca4adfadc69f6b9580cec0edb033dc'
 
 declare global {
   interface Window {

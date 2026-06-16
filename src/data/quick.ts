@@ -284,6 +284,110 @@ export const QUICK_TESTS: QuickTest[] = [
       { key: 'drained', emoji: '🪫', name: { ko: '방전 주의', en: 'Low Battery', ja: '放電注意' }, tag: { ko: '쉽게 지치니 회복 우선', en: 'Drains easily — recover first', ja: '消耗しやすい—回復優先' }, desc: { ko: '요즘 쉬어도 기운이 잘 안 차는 상태일 수 있어요. 내향·외향의 문제라기보다 회복이 먼저 필요한 신호예요. 번아웃 검사로 더 살펴보세요.', en: 'Lately rest may not be recharging you — less about intro/extra, more a sign you need recovery first. Try the burnout test.', ja: '最近休んでも充電されにくい状態かも。内外より回復が先のサイン。燃え尽き検査で確認を。' } },
     ],
   },
+  {
+    id: 'friend',
+    emoji: '🧑‍🤝‍🧑',
+    title: { ko: '친구 유형', en: 'Friend Type', ja: '友達タイプ' },
+    desc: { ko: '모임에서 나는 어떤 친구?', en: 'What kind of friend are you?', ja: '集まりでどんな友達？' },
+    grad: ['#12A5C2', '#5BD0E0'],
+    funnel: 'ego',
+    questions: [
+      {
+        text: { ko: '약속을 잡을 때 나는?', en: 'When making plans?', ja: '約束を決める時は？' },
+        options: [
+          { text: { ko: '내가 다 정하고 끌고 감', en: 'I plan and lead it', ja: '私が決めて引っ張る' }, to: 'leader' },
+          { text: { ko: '신나서 분위기 띄움', en: 'Hype everyone up', ja: '盛り上げ役' }, to: 'mood' },
+          { text: { ko: '다들 괜찮은지 챙김', en: 'Check everyone\'s okay', ja: 'みんなを気遣う' }, to: 'helper' },
+          { text: { ko: '정해지면 따라감', en: 'Go with the flow', ja: '決まったら従う' }, to: 'chill' },
+        ],
+      },
+      {
+        text: { ko: '친구가 고민을 털어놓으면?', en: 'When a friend vents?', ja: '友達が悩みを話すと？' },
+        options: [
+          { text: { ko: '해결책을 제시함', en: 'Offer solutions', ja: '解決策を出す' }, to: 'leader' },
+          { text: { ko: '웃기며 기분 풀어줌', en: 'Cheer them up', ja: '笑わせて気晴らし' }, to: 'mood' },
+          { text: { ko: '끝까지 들어줌', en: 'Listen to the end', ja: '最後まで聞く' }, to: 'helper' },
+          { text: { ko: '곁에 조용히 있어줌', en: 'Quietly stay near', ja: 'そっとそばに' }, to: 'chill' },
+        ],
+      },
+      {
+        text: { ko: '모임에서 내 자리는?', en: 'My role in a group?', ja: '集まりでの役割は？' },
+        options: [
+          { text: { ko: '중심에서 진행', en: 'Center, running it', ja: '中心で進行' }, to: 'leader' },
+          { text: { ko: '웃음 담당', en: 'The funny one', ja: '笑い担当' }, to: 'mood' },
+          { text: { ko: '챙김 담당', en: 'The caretaker', ja: '気配り担当' }, to: 'helper' },
+          { text: { ko: '편하게 묻어감', en: 'Easygoing tag-along', ja: '気楽に紛れる' }, to: 'chill' },
+        ],
+      },
+      {
+        text: { ko: '연락 빈도는?', en: 'How often you text?', ja: '連絡の頻度は？' },
+        options: [
+          { text: { ko: '내가 먼저 자주', en: 'I reach out a lot', ja: '私からよく' }, to: 'leader' },
+          { text: { ko: '드립·짤로 자주', en: 'Memes & jokes often', ja: 'ネタでよく' }, to: 'mood' },
+          { text: { ko: '안부 자주 물음', en: 'Check in often', ja: 'よく安否確認' }, to: 'helper' },
+          { text: { ko: '필요할 때만', en: 'Only when needed', ja: '必要な時だけ' }, to: 'chill' },
+        ],
+      },
+    ],
+    results: [
+      { key: 'leader', emoji: '👑', name: { ko: '리더형', en: 'The Leader', ja: 'リーダー型' }, tag: { ko: '모임은 내가 굴린다', en: 'I run the crew', ja: '集まりは私が回す' }, desc: { ko: '계획하고 이끄는 든든한 중심. 결단력이 강점이에요. 가끔은 친구들에게 키를 넘겨주면 더 편해져요.', en: 'A dependable center who plans and leads — decisive. Hand over the wheel sometimes to relax.', ja: '計画し導く頼れる中心。決断力が強み。時々友達に主導権を渡すと楽。' } },
+      { key: 'mood', emoji: '🎉', name: { ko: '분위기메이커', en: 'Mood Maker', ja: 'ムードメーカー' }, tag: { ko: '내가 있으면 텐션 업', en: 'I bring the energy', ja: '私がいれば盛り上がる' }, desc: { ko: '어디서나 분위기를 밝히는 에너지원. 함께 있으면 즐거워요. 가끔은 내 진짜 기분도 솔직히 나눠보세요.', en: 'The energy that lights up any room — fun to be with. Share your real feelings sometimes too.', ja: 'どこでも場を明るくするエネルギー源。たまには本音も共有を。' } },
+      { key: 'helper', emoji: '🫂', name: { ko: '상담사형', en: 'The Listener', ja: '相談役型' }, tag: { ko: '고민은 나한테', en: 'Bring me your worries', ja: '悩みは私に' }, desc: { ko: '잘 들어주고 챙기는 따뜻한 친구. 공감력이 최고예요. 남 챙기느라 내 마음을 미루지 않도록 해요.', en: 'A warm friend who listens and cares — top empathy. Don\'t put your own needs last.', ja: 'よく聞き気遣う温かい友達。共感力抜群。自分の心も後回しにしないで。' } },
+      { key: 'chill', emoji: '🐢', name: { ko: '마이페이스', en: 'Easygoing', ja: 'マイペース' }, tag: { ko: '편한 거리감이 좋아', en: 'I like comfy distance', ja: '心地よい距離が好き' }, desc: { ko: '무리하지 않는 편안한 친구. 함께 있어도 부담이 없어요. 가끔 먼저 다가가면 관계가 더 깊어져요.', en: 'A relaxed, low-pressure friend. Reach out first now and then to go deeper.', ja: '無理しない気楽な友達。たまに自分から近づくと深まる。' } },
+    ],
+  },
+  {
+    id: 'lovecell',
+    emoji: '💘',
+    title: { ko: '연애세포 검사', en: 'Love Cells', ja: '恋愛細胞' },
+    desc: { ko: '내 연애세포는 지금 몇 살?', en: 'How alive are your love cells?', ja: '恋愛細胞は今元気？' },
+    grad: ['#F25C8E', '#FF9EC0'],
+    funnel: 'love',
+    questions: [
+      {
+        text: { ko: '길에서 이상형을 봤다면?', en: 'You spot your type on the street?', ja: '街で理想の人を見たら？' },
+        options: [
+          { text: { ko: '심장 쿵! 눈 떼질 못함', en: 'Heart skips, can\'t look away', ja: 'ドキッ、目が離せない' }, to: 'max' },
+          { text: { ko: '음… 그냥 지나감', en: 'Meh, walk past', ja: 'うーん、通り過ぎる' }, to: 'sleep' },
+          { text: { ko: '관심 있는 척 안 함', en: 'Hide my interest', ja: '興味ないふり' }, to: 'tease' },
+          { text: { ko: '아무 느낌 없음', en: 'Feel nothing', ja: '何も感じない' }, to: 'stone' },
+        ],
+      },
+      {
+        text: { ko: '썸 타는 상대의 연락?', en: 'A text from your crush?', ja: '気になる人からの連絡？' },
+        options: [
+          { text: { ko: '바로 답하고 설렘', en: 'Reply instantly, giddy', ja: '即返信でときめく' }, to: 'max' },
+          { text: { ko: '연애를 안 한 지 오래', en: 'Haven\'t dated in ages', ja: '長らく恋愛してない' }, to: 'sleep' },
+          { text: { ko: '일부러 천천히 답', en: 'Reply slowly on purpose', ja: 'わざとゆっくり' }, to: 'tease' },
+          { text: { ko: '답장 귀찮음', en: 'Can\'t be bothered', ja: '返信が面倒' }, to: 'stone' },
+        ],
+      },
+      {
+        text: { ko: '로맨스 콘텐츠를 보면?', en: 'Watching a romance?', ja: 'ロマンス作品を見ると？' },
+        options: [
+          { text: { ko: '나도 연애하고 싶어짐', en: 'I want love too', ja: '私も恋したくなる' }, to: 'max' },
+          { text: { ko: '봐도 무덤덤', en: 'Indifferent', ja: '見ても無感動' }, to: 'sleep' },
+          { text: { ko: '분석하며 봄', en: 'Analyze it coolly', ja: '分析しながら見る' }, to: 'tease' },
+          { text: { ko: '오글거려 끔', en: 'Cringe, turn off', ja: 'むず痒くて消す' }, to: 'stone' },
+        ],
+      },
+      {
+        text: { ko: '소개팅 제안이 들어오면?', en: 'Offered a blind date?', ja: '紹介を提案されたら？' },
+        options: [
+          { text: { ko: '좋아! 언제?', en: 'Yes! When?', ja: 'いいね！いつ？' }, to: 'max' },
+          { text: { ko: '귀찮지만 나가볼까', en: 'Meh, maybe', ja: '面倒だけど行くか' }, to: 'sleep' },
+          { text: { ko: '상대 정보부터 분석', en: 'Vet them first', ja: 'まず相手を分析' }, to: 'tease' },
+          { text: { ko: '극구 사양', en: 'Hard pass', ja: '丁重にお断り' }, to: 'stone' },
+        ],
+      },
+    ],
+    results: [
+      { key: 'max', emoji: '💘', name: { ko: '만렙 연애세포', en: 'Max-Level Cells', ja: 'マックス恋愛細胞' }, tag: { ko: '지금 당장 연애 가능', en: 'Ready to fall in love', ja: '今すぐ恋愛OK' }, desc: { ko: '연애세포가 펄떡펄떡 살아있는 상태! 설렘에 솔직하고 표현도 잘해요. 다만 너무 빠지기 전에 상대를 천천히 알아가는 여유도 챙겨요.', en: 'Your love cells are wide awake — honest with butterflies and expressive. Just pace getting to know them.', ja: '恋愛細胞が元気いっぱい！ときめきに正直。ただ夢中になる前に相手をゆっくり知る余裕も。' } },
+      { key: 'sleep', emoji: '😴', name: { ko: '휴면 연애세포', en: 'Dormant Cells', ja: '休眠細胞' }, tag: { ko: '자는 중, 깨우면 됨', en: 'Asleep, just needs a nudge', ja: '寝てるだけ、起こせばOK' }, desc: { ko: '바빠서 연애를 잠시 미뤄둔 상태예요. 세포가 죽은 게 아니라 자는 것! 설레는 콘텐츠나 새 사람을 만나면 금방 깨어나요.', en: 'You\'ve just put love on pause — cells asleep, not dead. New people or a good romance will wake them fast.', ja: '忙しくて恋愛を一時保留中。死んでなく寝てるだけ！新しい出会いですぐ目覚める。' } },
+      { key: 'tease', emoji: '😼', name: { ko: '밀당 연애세포', en: 'Tease Cells', ja: '駆け引き細胞' }, tag: { ko: '관심 있어도 재는 중', en: 'Interested but playing it cool', ja: '興味あるけど様子見' }, desc: { ko: '마음은 있는데 들키기 싫어 재는 타입. 신중함이 강점이지만, 너무 재다 보면 좋은 인연을 놓칠 수도 있어요. 가끔은 직진도 필요해요.', en: 'Interested but hiding it — cautious is good, but over-vetting can cost good connections. Go direct sometimes.', ja: '気はあるけど隠す型。慎重さは強みだが、見極めすぎは良縁を逃す。たまに直進も。' } },
+      { key: 'stone', emoji: '🪨', name: { ko: '돌멩이 연애세포', en: 'Stone Cells', ja: '石の細胞' }, tag: { ko: '지금은 연애 0순위 아님', en: 'Love isn\'t a priority now', ja: '今は恋愛優先度0' }, desc: { ko: '지금은 연애보다 나에게 집중하는 시기예요. 나쁜 게 아니라 자연스러운 흐름! 다만 마음의 문을 아예 닫진 말고, 좋은 사람엔 살짝 열어두세요.', en: 'Right now you\'re focused on yourself, not romance — totally natural. Just keep the door slightly open for the right person.', ja: '今は恋愛より自分に集中する時期。自然な流れ！ただ心の扉は少し開けておいて。' } },
+    ],
+  },
 ]
 
 export function quickById(id: string): QuickTest | undefined {

@@ -3,8 +3,9 @@
  * 미설정이면 모든 함수 no-op → 앱 영향 없음.
  *   Vercel/.env 에 VITE_GA_ID=G-XXXXXXXXXX 넣으면 켜짐.
  */
-// 공개 측정 ID — 기본값 박아 Vercel env 없이도 동작(env 설정 시 덮어씀)
-export const GA_ID = (import.meta.env.VITE_GA_ID as string | undefined) || 'G-5E3GP1D9K7'
+// 공개 측정 ID — 진짜 값 박음. env에 플레이스홀더(XXXX)가 들어가도 무시.
+const _ga = import.meta.env.VITE_GA_ID as string | undefined
+export const GA_ID = _ga && !/[Xx]{3,}/.test(_ga) ? _ga : 'G-5E3GP1D9K7'
 
 /** localhost/프리뷰에선 비활성 — 개발 트래픽이 GA를 더럽히지 않도록 */
 export function analyticsEnabled(): boolean {
