@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Onboarding from './components/Onboarding'
+import ReConsent from './components/ReConsent'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
 import { pageView } from './lib/analytics'
@@ -110,6 +111,7 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
       {!hideNav && <BottomNav />}
+      <ReConsent />
     </div>
   )
 }

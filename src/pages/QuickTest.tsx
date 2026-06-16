@@ -11,6 +11,7 @@ import { burst } from '../lib/confetti'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { shiftGrad } from '../lib/color'
+import { CHARACTERS } from '../lib/characters'
 
 export default function QuickTest() {
   const { id } = useParams<{ id: string }>()
@@ -43,7 +44,7 @@ export default function QuickTest() {
   const accent = useMemo<[string, string]>(() => {
     if (!test || !winner) return ['#9AA6FF', '#C7B8FF']
     const i = test.results.findIndex((r) => r.key === winner.key)
-    return shiftGrad(test.grad, i * 32)
+    return winner.grad ?? shiftGrad(test.grad, i * 32)
   }, [test, winner])
 
   if (!test) return <Navigate to="/" replace />
@@ -89,6 +90,7 @@ export default function QuickTest() {
         testName: l(test.title),
         grad: accent,
         appName: t('app.name'),
+        charSvg: CHARACTERS[winner.emoji],
         heroLabel: '나의 결과',
         ctaTop: '너도 1분 테스트 해볼래? 👀',
         ctaSub: '지금 누리 마인드에서 무료로 →',
@@ -138,15 +140,23 @@ export default function QuickTest() {
             className="mt-3 rounded-3xl p-7 text-center text-white shadow-pop"
             style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }}
           >
-            {/* 동물 일러스트 — 광배 + 그림자로 카드 매력↑ */}
-            <div className="relative mx-auto flex h-[116px] w-[116px] items-center justify-center">
+            {/* 동물 일러스트(자체 아트) — 없으면 이모지 폴백, 광배+그림자로 매력↑ */}
+            <div className="relative mx-auto flex h-[120px] w-[120px] items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-white/25 blur-xl" />
               <motion.div
                 initial={{ scale: 0 }}
-                animate={{ scale: 1, rotate: [0, -8, 6, 0] }}
-                className="relative text-[80px] leading-none drop-shadow-[0_6px_14px_rgba(0,0,0,0.18)]"
+                animate={{ scale: 1, rotate: [0, -6, 5, 0] }}
+                className="relative drop-shadow-[0_6px_14px_rgba(0,0,0,0.18)]"
               >
-                {winner.emoji}
+                {CHARACTERS[winner.emoji] ? (
+                  <img
+                    src={`data:image/svg+xml;utf8,${encodeURIComponent(CHARACTERS[winner.emoji])}`}
+                    alt=""
+                    className="h-[108px] w-[108px]"
+                  />
+                ) : (
+                  <span className="text-[80px] leading-none">{winner.emoji}</span>
+                )}
               </motion.div>
             </div>
             <h1 className="mt-3 text-[28px] font-extrabold tracking-tight">{l(winner.name)}</h1>

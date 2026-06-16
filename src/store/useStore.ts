@@ -104,6 +104,7 @@ interface State {
   setNickname: (n: string) => void
   setAvatar: (a: Avatar) => void
   completeOnboarding: (nickname: string, avatar: Avatar) => void
+  acceptConsent: () => void
   addPost: (text: string, badge?: string) => void
   likePost: (id: string) => void
   deletePost: (id: string) => void
@@ -231,6 +232,7 @@ export const useStore = create<State>()(
         /** 회원가입 완료 — 닉네임·아바타 설정 후 입장 */
         completeOnboarding: (nickname, avatar) =>
           set({ nickname: nickname.trim().slice(0, 12) || '친구', avatar, onboarded: true, consent: { v: LEGAL_VERSION, at: today() } }),
+        acceptConsent: () => set({ consent: { v: LEGAL_VERSION, at: today() } }),
 
         addPost: (text, badge) => {
           const body = text.trim().slice(0, 280)

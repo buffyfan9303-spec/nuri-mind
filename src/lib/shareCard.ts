@@ -21,10 +21,24 @@ export interface CardSpec {
   ctaTop?: string
   /** 하단 CTA 2행 오버라이드 (기본: "지금 누리 마인드에서 무료로 확인 →") */
   ctaSub?: string
+  /** 이모지 대신 그릴 캐릭터 SVG(있으면 우선, 실패 시 이모지 폴백) */
+  charSvg?: string
 }
 
 const FAM = 'Pretendard, Nunito, "Noto Sans JP", sans-serif'
 const EMOJI_FAM = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'
+
+/** 인라인 SVG 문자열 → 이미지(캔버스 drawImage용). 외부 참조 없는 SVG라 캔버스 오염 없음. */
+function svgToImage(svg: string, size: number): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.width = size
+    img.height = size
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
+  })
+}
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath()
@@ -170,10 +184,21 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   ctx.arc(cx, heroY, 240, 0, Math.PI * 2)
   ctx.fill()
 
-  // 동물 이모지 (크게)
-  ctx.font = `300px ${EMOJI_FAM}`
+  // 캐릭터 아트(있으면) → 실패/미존재 시 이모지 폴백
   ctx.textBaseline = 'middle'
-  ctx.fillText(spec.emoji, cx, heroY + 8)
+  if (spec.charSvg) {
+    try {
+      const cs = 360
+      const cimg = await svgToImage(spec.charSvg, cs)
+      ctx.drawImage(cimg, cx - cs / 2, heroY - cs / 2, cs, cs)
+    } catch {
+      ctx.font = `300px ${EMOJI_FAM}`
+      ctx.fillText(spec.emoji, cx, heroY + 8)
+    }
+  } else {
+    ctx.font = `300px ${EMOJI_FAM}`
+    ctx.fillText(spec.emoji, cx, heroY + 8)
+  }
 
   /* ── 텍스트 ── */
   ctx.textBaseline = 'alphabetic'
