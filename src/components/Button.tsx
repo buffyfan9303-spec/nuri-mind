@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import type { ReactNode } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 
 export type BtnColor = 'mind' | 'sky' | 'adhd' | 'ego' | 'iq' | 'love' | 'burn' | 'dopa' | 'reso' | 'dk' | 'white' | 'danger'
 
@@ -17,6 +17,15 @@ const COLORS: Record<BtnColor, { bg: string; sh: string; fg: string; border?: st
   white: { bg: '#FFFFFF', sh: '#D8E0DA', fg: '#33413A', border: '2px solid #E3EAE5' },
   danger: { bg: '#EF4444', sh: '#B91C1C', fg: '#FFFFFF' },
 }
+
+// 누르면 퍼지는 작은 반짝이(듀오링고식 보상감) — 버튼마다 자동
+const SPARKS = [
+  { x: -42, y: -18, e: '✨' },
+  { x: 44, y: -20, e: '⭐' },
+  { x: -26, y: 20, e: '💫' },
+  { x: 30, y: 22, e: '✨' },
+  { x: 0, y: -32, e: '⭐' },
+]
 
 interface Props {
   children: ReactNode
@@ -46,17 +55,42 @@ export default function Button({
       : size === 'sm'
         ? 'px-3.5 py-2 text-[13.5px]'
         : 'px-5 py-3 text-[15px]'
+  const idRef = useRef(0)
+  const [bursts, setBursts] = useState<number[]>([])
+  const handleClick = () => {
+    if (disabled) return
+    const id = ++idRef.current
+    setBursts((b) => [...b, id])
+    setTimeout(() => setBursts((b) => b.filter((x) => x !== id)), 650)
+    onClick?.()
+  }
   return (
     <motion.button
       type="button"
       disabled={disabled}
-      onClick={onClick}
+      onClick={handleClick}
       whileTap={disabled ? undefined : { y: 3, boxShadow: `0 0px 0 ${c.sh}` }}
       transition={{ type: 'spring', stiffness: 600, damping: 30 }}
-      className={`${full ? 'w-full' : ''} ${pad} whitespace-nowrap rounded-2xl font-extrabold tracking-wide select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
+      className={`relative ${full ? 'w-full' : ''} ${pad} whitespace-nowrap rounded-2xl font-extrabold tracking-wide select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
       style={{ background: c.bg, color: c.fg, boxShadow: `0 3px 0 ${c.sh}`, border: c.border ?? 'none' }}
     >
       {children}
+      {bursts.map((id) => (
+        <span key={id} className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          {SPARKS.map((sp, i) => (
+            <motion.span
+              key={i}
+              className="absolute leading-none"
+              style={{ fontSize: 13 }}
+              initial={{ x: 0, y: 0, scale: 0.4, opacity: 0.95 }}
+              animate={{ x: sp.x, y: sp.y, scale: 0, opacity: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            >
+              {sp.e}
+            </motion.span>
+          ))}
+        </span>
+      ))}
     </motion.button>
   )
 }

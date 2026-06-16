@@ -259,7 +259,9 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   ctx.font = `700 32px ${FAM}`
   ctx.fillText(spec.ctaSub ?? '지금 누리 마인드에서 무료로 확인 →', cx, 1268)
 
-  return new Promise((resolve) => c.toBlob((b) => resolve(b!), 'image/png'))
+  return new Promise((resolve, reject) =>
+    c.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas toBlob 실패'))), 'image/png'),
+  )
 }
 
 /** 공유: Web Share(파일) → 실패 시 PNG 다운로드 */

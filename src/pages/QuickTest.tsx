@@ -50,12 +50,13 @@ export default function QuickTest() {
   if (!test) return <Navigate to="/" replace />
 
   const pick = (to: string) => {
-    setTally((prev) => ({ ...prev, [to]: (prev[to] || 0) + 1 }))
     sfx.tap()
+    setTally((prev) => ({ ...prev, [to]: (prev[to] || 0) + 1 }))
     if (step + 1 < test.questions.length) setStep(step + 1)
     else {
       setDone(true)
       burst()
+      sfx.fanfare()
       track('quick_complete', { id: test.id })
     }
   }
@@ -144,19 +145,22 @@ export default function QuickTest() {
             <div className="relative mx-auto flex h-[120px] w-[120px] items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-white/25 blur-xl" />
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1, rotate: [0, -6, 5, 0] }}
+                initial={{ scale: 0.5, y: 8 }}
+                animate={{ scale: 1, y: 0, rotate: [0, -8, 6, 0] }}
+                transition={{ type: 'spring', stiffness: 170, damping: 11 }}
                 className="relative drop-shadow-[0_6px_14px_rgba(0,0,0,0.18)]"
               >
-                {CHARACTERS[winner.emoji] ? (
-                  <img
-                    src={`data:image/svg+xml;utf8,${encodeURIComponent(CHARACTERS[winner.emoji])}`}
-                    alt=""
-                    className="h-[108px] w-[108px]"
-                  />
-                ) : (
-                  <span className="text-[80px] leading-none">{winner.emoji}</span>
-                )}
+                <span className="floaty block">
+                  {CHARACTERS[winner.emoji] ? (
+                    <img
+                      src={`data:image/svg+xml;utf8,${encodeURIComponent(CHARACTERS[winner.emoji])}`}
+                      alt=""
+                      className="h-[108px] w-[108px]"
+                    />
+                  ) : (
+                    <span className="block text-[80px] leading-none">{winner.emoji}</span>
+                  )}
+                </span>
               </motion.div>
             </div>
             <h1 className="mt-3 text-[28px] font-extrabold tracking-tight">{l(winner.name)}</h1>
@@ -227,9 +231,10 @@ export default function QuickTest() {
               {q.options.map((op, i) => (
                 <motion.button
                   key={i}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 24 }}
                   onClick={() => pick(op.to)}
-                  className="w-full rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-4 text-left text-[15.5px] font-bold leading-snug transition-colors active:border-mind-400"
+                  className="w-full rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-4 text-left text-[15.5px] font-bold leading-snug transition-colors active:border-mind-400 active:bg-mind-50"
                 >
                   {l(op.text)}
                 </motion.button>

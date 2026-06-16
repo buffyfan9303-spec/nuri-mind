@@ -60,7 +60,7 @@ export default function Home() {
     <div className="bg-dots min-h-dvh pb-36">
       <header className="mx-auto flex max-w-md items-center justify-between px-5 pt-5">
         <div className="flex items-center gap-2">
-          <img src="/icon.svg" alt="" className="h-8 w-8 rounded-xl" />
+          <img src="/icon.svg" alt="" className="floaty h-8 w-8 rounded-xl" />
           <span className="text-lg font-extrabold tracking-tight text-mind-800">{t('app.name')}</span>
         </div>
         <PointsPill />
