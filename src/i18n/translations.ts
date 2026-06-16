@@ -6,6 +6,15 @@ import type { Lang } from '../data/types'
  */
 const ko: Record<string, string> = {
   'app.name': '누리 마인드',
+  'onboard.welcome': '누리 마인드에 오신 걸 환영해요',
+  'onboard.sub': '나를 알아가는 마음 검사 + 포인트 적립',
+  'onboard.nickLabel': '뭐라고 부를까요?',
+  'onboard.nickPh': '닉네임을 입력해 주세요',
+  'onboard.pickLabel': '시작 캐릭터를 골라보세요 (선택)',
+  'onboard.pickHint': '검사를 받으면 더 많은 동물을 모을 수 있어요',
+  'onboard.bonus': '가입하면 100P를 드려요!',
+  'onboard.start': '시작하기',
+  'onboard.note': '닉네임·캐릭터는 나중에 프로필에서 바꿀 수 있어요',
   'nav.home': '홈',
   'nav.rewards': '리워드',
   'nav.community': '커뮤니티',
@@ -567,6 +576,15 @@ const ko: Record<string, string> = {
 
 const en: Record<string, string> = {
   'app.name': 'Nuri Mind',
+  'onboard.welcome': 'Welcome to Nuri Mind',
+  'onboard.sub': 'Mind tests to know yourself + earn points',
+  'onboard.nickLabel': 'What should we call you?',
+  'onboard.nickPh': 'Enter a nickname',
+  'onboard.pickLabel': 'Pick a starter character (optional)',
+  'onboard.pickHint': 'Take tests to collect more animals',
+  'onboard.bonus': 'Sign up and get 100P!',
+  'onboard.start': 'Get started',
+  'onboard.note': 'You can change your name & character later in Profile',
   'nav.home': 'Home',
   'nav.rewards': 'Rewards',
   'nav.community': 'Community',
@@ -1128,6 +1146,15 @@ const en: Record<string, string> = {
 
 const ja: Record<string, string> = {
   'app.name': 'ヌリマインド',
+  'onboard.welcome': 'ヌリマインドへようこそ',
+  'onboard.sub': '自分を知る心理検査 + ポイント獲得',
+  'onboard.nickLabel': 'なんて呼べばいい？',
+  'onboard.nickPh': 'ニックネームを入力',
+  'onboard.pickLabel': 'スタートキャラを選ぼう（任意）',
+  'onboard.pickHint': '検査を受けるともっと動物を集められます',
+  'onboard.bonus': '登録で100Pプレゼント！',
+  'onboard.start': 'はじめる',
+  'onboard.note': '名前·キャラは後でプロフィールで変更できます',
   'nav.home': 'ホーム',
   'nav.rewards': 'リワード',
   'nav.community': 'コミュニティ',

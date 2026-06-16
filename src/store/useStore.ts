@@ -46,6 +46,7 @@ interface State {
   notify: boolean
   nickname: string
   avatar: Avatar
+  onboarded: boolean
   deviceId: string
   posts: CommunityPost[]
   comments: Record<string, CommunityComment[]>
@@ -100,6 +101,7 @@ interface State {
   setNotify: (v: boolean) => void
   setNickname: (n: string) => void
   setAvatar: (a: Avatar) => void
+  completeOnboarding: (nickname: string, avatar: Avatar) => void
   addPost: (text: string, badge?: string) => void
   likePost: (id: string) => void
   deletePost: (id: string) => void
@@ -145,6 +147,7 @@ const initial = () => ({
   notify: false,
   nickname: '누리',
   avatar: null as Avatar,
+  onboarded: false,
   deviceId: uid('dev_'),
   posts: SEED_POSTS,
   comments: {} as Record<string, CommunityComment[]>,
@@ -222,6 +225,9 @@ export const useStore = create<State>()(
         setNotify: (notify) => set({ notify }),
         setNickname: (nickname) => set({ nickname: nickname.slice(0, 12) || '누리' }),
         setAvatar: (avatar) => set({ avatar }),
+        /** 회원가입 완료 — 닉네임·아바타 설정 후 입장 */
+        completeOnboarding: (nickname, avatar) =>
+          set({ nickname: nickname.trim().slice(0, 12) || '친구', avatar, onboarded: true }),
 
         addPost: (text, badge) => {
           const body = text.trim().slice(0, 280)
@@ -571,11 +577,15 @@ export const useStore = create<State>()(
     },
     {
       name: 'nuri-mind-v1',
-      version: 1,
-      // v1: 글자 크기 배율을 전 사용자 100%로 1회 정규화 (기존에 키워둔 값 리셋)
+      version: 2,
       migrate: (persisted, version) => {
         const s = persisted as Partial<State> | undefined
-        if (s && version < 1) s.fontScale = 1
+        if (s) {
+          // v1: 글자 크기 배율 100% 1회 정규화
+          if (version < 1) s.fontScale = 1
+          // v2: 기존 유저(검사기록 있거나 닉네임 바꾼)는 회원가입 건너뜀
+          if (version < 2) s.onboarded = (s.results?.length ?? 0) > 0 || (!!s.nickname && s.nickname !== '누리')
+        }
         return s as State
       },
       onRehydrateStorage: () => (state) => {

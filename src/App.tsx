@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
+import Onboarding from './components/Onboarding'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
 import { pageView } from './lib/analytics'
@@ -46,6 +47,7 @@ function Loader() {
 export default function App() {
   const location = useLocation()
   const fontScale = useStore((s) => s.fontScale)
+  const onboarded = useStore((s) => s.onboarded)
 
   // 글자 크기: 루트 zoom으로 전체 UI 배율 조정
   useEffect(() => {
@@ -62,6 +64,9 @@ export default function App() {
     window.scrollTo(0, 0)
     pageView(location.pathname)
   }, [location.pathname])
+
+  // 회원가입(온보딩) 전이면 입장 대신 가입 화면
+  if (!onboarded) return <Onboarding />
 
   return (
     <div className="mx-auto min-h-dvh max-w-2xl">
