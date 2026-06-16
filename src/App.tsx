@@ -55,6 +55,7 @@ export default function App() {
   }, [fontScale])
 
   const hideNav =
+    !onboarded ||
     location.pathname.endsWith('/run') ||
     location.pathname.startsWith('/rewards/survey') ||
     location.pathname.startsWith('/rewards/create') ||
@@ -66,7 +67,8 @@ export default function App() {
   }, [location.pathname])
 
   // 회원가입(온보딩) 전이면 입장 대신 가입 화면
-  if (!onboarded) return <Onboarding />
+  // 단, 약관·개인정보 페이지는 가입 화면에서 탭해 열 수 있도록 통과시킴
+  if (!onboarded && !location.pathname.startsWith('/legal')) return <Onboarding />
 
   return (
     <div className="mx-auto min-h-dvh max-w-2xl">

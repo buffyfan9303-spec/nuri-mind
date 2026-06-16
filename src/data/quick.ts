@@ -388,6 +388,110 @@ export const QUICK_TESTS: QuickTest[] = [
       { key: 'stone', emoji: '🪨', name: { ko: '돌멩이 연애세포', en: 'Stone Cells', ja: '石の細胞' }, tag: { ko: '지금은 연애 0순위 아님', en: 'Love isn\'t a priority now', ja: '今は恋愛優先度0' }, desc: { ko: '지금은 연애보다 나에게 집중하는 시기예요. 나쁜 게 아니라 자연스러운 흐름! 다만 마음의 문을 아예 닫진 말고, 좋은 사람엔 살짝 열어두세요.', en: 'Right now you\'re focused on yourself, not romance — totally natural. Just keep the door slightly open for the right person.', ja: '今は恋愛より自分に集中する時期。自然な流れ！ただ心の扉は少し開けておいて。' } },
     ],
   },
+  {
+    id: 'soulmate',
+    emoji: '💞',
+    title: { ko: '소울메이트 유형', en: 'Soulmate Type', ja: 'ソウルメイトタイプ' },
+    desc: { ko: '나랑 찰떡인 짝꿍은?', en: 'Who\'s your perfect match?', ja: 'ピッタリの相手は？' },
+    grad: ['#F25C8E', '#C58BF2'],
+    funnel: 'love',
+    questions: [
+      {
+        text: { ko: '연애에서 가장 중요한 건?', en: 'Most important in love?', ja: '恋愛で一番大事なのは？' },
+        options: [
+          { text: { ko: '편안하고 안정적인 사이', en: 'Comfort & stability', ja: '安らぎと安定' }, to: 'stable' },
+          { text: { ko: '설레는 새로운 경험', en: 'Exciting new experiences', ja: 'ときめく新体験' }, to: 'adventure' },
+          { text: { ko: '대화가 잘 통함', en: 'Great conversations', ja: '会話が合う' }, to: 'smart' },
+          { text: { ko: '다정한 표현과 챙김', en: 'Warmth & care', ja: '優しさと気遣い' }, to: 'sweet' },
+        ],
+      },
+      {
+        text: { ko: '데이트로 가장 좋은 건?', en: 'Your ideal date?', ja: '理想のデートは？' },
+        options: [
+          { text: { ko: '집에서 같이 뒹굴기', en: 'Cozy day in', ja: '家でまったり' }, to: 'stable' },
+          { text: { ko: '즉흥 여행·액티비티', en: 'Spontaneous trip', ja: '即興旅行' }, to: 'adventure' },
+          { text: { ko: '전시·책방 데이트', en: 'Museum & bookshop', ja: '展示·本屋' }, to: 'smart' },
+          { text: { ko: '맛집 다니며 챙겨주기', en: 'Foodie & caring', ja: 'グルメで気遣い' }, to: 'sweet' },
+        ],
+      },
+      {
+        text: { ko: '상대에게 끌리는 순간?', en: 'When you feel drawn?', ja: '惹かれる瞬間？' },
+        options: [
+          { text: { ko: '한결같이 든든할 때', en: 'When they\'re steady', ja: '一途で頼れる時' }, to: 'stable' },
+          { text: { ko: '예측불가 매력 보일 때', en: 'When they surprise me', ja: '予測不能な時' }, to: 'adventure' },
+          { text: { ko: '똑똑하고 깊은 생각', en: 'When they\'re sharp', ja: '賢く深い時' }, to: 'smart' },
+          { text: { ko: '세심하게 챙겨줄 때', en: 'When they care', ja: '気遣ってくれる時' }, to: 'sweet' },
+        ],
+      },
+      {
+        text: { ko: '싸운 뒤 바라는 건?', en: 'After a fight, you want?', ja: 'ケンカ後に望むのは？' },
+        options: [
+          { text: { ko: '차분히 풀고 안정 찾기', en: 'Calm it down', ja: '落ち着いて解決' }, to: 'stable' },
+          { text: { ko: '쿨하게 풀고 새 출발', en: 'Cool reset', ja: 'クールに仕切り直し' }, to: 'adventure' },
+          { text: { ko: '대화로 끝까지 이해', en: 'Talk it fully out', ja: '会話で理解' }, to: 'smart' },
+          { text: { ko: '먼저 다정하게 안아주기', en: 'A warm hug first', ja: 'まず優しく抱擁' }, to: 'sweet' },
+        ],
+      },
+    ],
+    results: [
+      { key: 'stable', emoji: '🐧', name: { ko: '안정형 짝꿍', en: 'The Steady One', ja: '安定型の相手' }, tag: { ko: '편안하고 든든한 사람', en: 'Calm and dependable', ja: '安らぐ頼れる人' }, desc: { ko: '당신에겐 들쭉날쭉한 설렘보다 한결같은 안정감을 주는 사람이 잘 맞아요. 함께 있으면 마음이 편안해지는 짝꿍을 찾으세요.', en: 'You fit best with someone steady, not a rollercoaster — a partner who makes you feel at ease.', ja: 'あなたには波乱より一途な安定をくれる人が合う。一緒にいて安らぐ相手を。' } },
+      { key: 'adventure', emoji: '🦊', name: { ko: '모험형 짝꿍', en: 'The Adventurer', ja: '冒険型の相手' }, tag: { ko: '설레게 하는 사람', en: 'Keeps it exciting', ja: 'ときめかせる人' }, desc: { ko: '예측 불가능한 매력과 새로운 자극을 주는 사람에게 끌려요. 함께 모험하고 성장하는 짝꿍이 당신을 빛나게 합니다.', en: 'You\'re drawn to unpredictable charm and fresh thrills. A partner to adventure and grow with lights you up.', ja: '予測不能な魅力と新しい刺激に惹かれる。共に冒険し成長する相手が輝かせる。' } },
+      { key: 'smart', emoji: '🦉', name: { ko: '지적인 짝꿍', en: 'The Thinker', ja: '知的な相手' }, tag: { ko: '대화가 통하는 사람', en: 'A mind that clicks', ja: '会話が合う人' }, desc: { ko: '깊은 대화와 생각의 합이 맞는 사람과 가장 잘 맞아요. 끝없이 이야기 나눌 수 있는 짝꿍이 당신의 소울메이트.', en: 'You click with deep, well-matched minds. Someone you can talk endlessly with is your soulmate.', ja: '深い会話と思考の合う人と最も合う。延々と話せる相手がソウルメイト。' } },
+      { key: 'sweet', emoji: '🐨', name: { ko: '다정한 짝꿍', en: 'The Sweetheart', ja: '優しい相手' }, tag: { ko: '세심히 챙겨주는 사람', en: 'Warm and caring', ja: '細やかに気遣う人' }, desc: { ko: '따뜻한 표현과 세심한 챙김을 주는 사람에게 안정을 느껴요. 다정함이 사랑의 언어인 짝꿍과 깊이 연결됩니다.', en: 'Warm words and thoughtful care make you feel secure. You bond deeply with someone whose love language is tenderness.', ja: '温かい表現と細やかな気遣いに安心する。優しさが愛の言語の相手と深く繋がる。' } },
+    ],
+  },
+  {
+    id: 'stressanimal',
+    emoji: '🐯',
+    title: { ko: '스트레스 동물', en: 'Stress Animal', ja: 'ストレス動物' },
+    desc: { ko: '스트레스 받으면 변하는 내 동물', en: 'The animal you turn into', ja: 'ストレスで変わる動物' },
+    grad: ['#FF6F61', '#FFA28C'],
+    funnel: 'burnout',
+    questions: [
+      {
+        text: { ko: '스트레스가 폭발 직전이면?', en: 'About to snap?', ja: '爆発寸前なら？' },
+        options: [
+          { text: { ko: '버럭! 소리부터 남', en: 'I roar out loud', ja: 'ガオッと声が出る' }, to: 'tiger' },
+          { text: { ko: '조용히 숨어버림', en: 'I hide away', ja: 'こっそり隠れる' }, to: 'turtle' },
+          { text: { ko: '뭔가 마구 먹음', en: 'I binge-eat', ja: '何か食べまくる' }, to: 'hamster' },
+          { text: { ko: '날카롭게 예민해짐', en: 'I get prickly', ja: 'トゲトゲになる' }, to: 'hedgehog' },
+        ],
+      },
+      {
+        text: { ko: '누가 말 걸면?', en: 'If someone talks to you?', ja: '話しかけられると？' },
+        options: [
+          { text: { ko: '나도 모르게 톡 쏨', en: 'Snap back', ja: 'つい刺々しく' }, to: 'tiger' },
+          { text: { ko: '"괜찮아"하고 회피', en: '"I\'m fine," dodge', ja: '「大丈夫」と回避' }, to: 'turtle' },
+          { text: { ko: '같이 먹자고 함', en: 'Let\'s eat', ja: '一緒に食べよ' }, to: 'hamster' },
+          { text: { ko: '건드리면 가시 세움', en: 'Quills go up', ja: 'トゲを立てる' }, to: 'hedgehog' },
+        ],
+      },
+      {
+        text: { ko: '스트레스가 몸에 오는 곳?', en: 'Where stress hits?', ja: 'ストレスが出る所？' },
+        options: [
+          { text: { ko: '욱하는 짜증', en: 'Hot temper', ja: 'カッとなる' }, to: 'tiger' },
+          { text: { ko: '무기력·잠수', en: 'Numb, withdraw', ja: '無気力·潜る' }, to: 'turtle' },
+          { text: { ko: '식욕 폭발', en: 'Crazy appetite', ja: '食欲爆発' }, to: 'hamster' },
+          { text: { ko: '예민·날카로움', en: 'On edge', ja: '神経過敏' }, to: 'hedgehog' },
+        ],
+      },
+      {
+        text: { ko: '스트레스 푸는 법은?', en: 'How you de-stress?', ja: '解消法は？' },
+        options: [
+          { text: { ko: '운동으로 발산', en: 'Burn it off', ja: '運動で発散' }, to: 'tiger' },
+          { text: { ko: '혼자 푹 쉼', en: 'Rest alone', ja: '一人で休む' }, to: 'turtle' },
+          { text: { ko: '맛있는 거 먹기', en: 'Good food', ja: '美味しい物' }, to: 'hamster' },
+          { text: { ko: '예민함이 가라앉길 기다림', en: 'Wait it out', ja: '落ち着くまで待つ' }, to: 'hedgehog' },
+        ],
+      },
+    ],
+    results: [
+      { key: 'tiger', emoji: '🐯', name: { ko: '폭발 호랑이', en: 'Roaring Tiger', ja: '爆発トラ' }, tag: { ko: '스트레스 = 분노 폭발', en: 'Stress = roar', ja: 'ストレス＝怒り' }, desc: { ko: '스트레스가 곧장 화로 터지는 타입. 빨리 풀리지만 주변이 다칠 수 있어요. 운동·심호흡으로 안전하게 발산해 보세요.', en: 'Stress turns straight to anger — fast release, but others may get hurt. Vent safely via exercise or breathing.', ja: 'ストレスが怒りに直結。発散は早いが周りが傷つく。運動·深呼吸で安全に。' } },
+      { key: 'turtle', emoji: '🐢', name: { ko: '숨는 거북이', en: 'Hiding Turtle', ja: '隠れ亀' }, tag: { ko: '힘들면 등딱지 속으로', en: 'Into the shell', ja: '甲羅にこもる' }, desc: { ko: '스트레스를 받으면 혼자 숨어 삭이는 타입. 안전하지만 너무 오래 잠수하면 번아웃 위험이 커져요. 가끔은 손 내밀어 보세요.', en: 'You retreat and process alone — safe, but hiding too long risks burnout. Reach out sometimes.', ja: 'ストレスで一人にこもる型。潜りすぎは燃え尽き注意。たまに手を伸ばして。' } },
+      { key: 'hamster', emoji: '🐹', name: { ko: '폭식 햄스터', en: 'Binge Hamster', ja: '爆食ハムスター' }, tag: { ko: '스트레스 = 식욕 폭발', en: 'Stress = snacks', ja: 'ストレス＝食欲' }, desc: { ko: '스트레스를 먹는 걸로 푸는 타입. 즉각적이지만 죄책감의 굴레가 될 수 있어요. 먹기 전 5분만 다른 보상을 찾아보세요.', en: 'You soothe stress with food — instant, but watch the guilt loop. Try another reward for 5 min first.', ja: '食で解消する型。罪悪感ループに注意。食べる前に5分別の報酬を。' } },
+      { key: 'hedgehog', emoji: '🦔', name: { ko: '예민 고슴도치', en: 'Prickly Hedgehog', ja: '神経質ハリネズミ' }, tag: { ko: '건드리면 가시 세움', en: 'Quills up when touched', ja: '触ると刺' }, desc: { ko: '스트레스를 받으면 온몸의 가시가 곤두서는 예민형. 작은 자극에도 날카로워져요. 자기 전 화면 끄기와 충분한 잠이 가시를 눕혀줍니다.', en: 'Under stress your quills stand on end — sharp at small triggers. Screens-off and good sleep soften them.', ja: 'ストレスでトゲが逆立つ神経質型。小さな刺激にも鋭くなる。就寝前の画面オフと睡眠が和らげる。' } },
+    ],
+  },
 ]
 
 export function quickById(id: string): QuickTest | undefined {

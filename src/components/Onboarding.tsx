@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from './Button'
 import Avatar from './Avatar'
@@ -14,6 +15,7 @@ const STARTERS = ['penguin', 'koala', 'cat', 'dolphin', 'hamster', 'owl', 'meerk
 
 export default function Onboarding() {
   const t = useT()
+  const nav = useNavigate()
   const completeOnboarding = useStore((s) => s.completeOnboarding)
   const [nick, setNick] = useState('')
   const [picked, setPicked] = useState<string | null>(null)
@@ -84,7 +86,19 @@ export default function Onboarding() {
           <Button color="mind" size="lg" disabled={!nick.trim()} onClick={start}>
             {t('onboard.start')}
           </Button>
-          <p className="mt-3 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">{t('onboard.note')}</p>
+          {/* 약관 동의 안내(실서비스 대비) — 약관·처리방침은 탭하면 열림 */}
+          <p className="mt-3 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">
+            {t('onboard.termsPre')}
+            <button type="button" onClick={() => nav('/legal/terms')} className="font-bold text-ink-sub underline underline-offset-2">
+              {t('onboard.terms')}
+            </button>
+            <span className="mx-1 text-ink-faint">·</span>
+            <button type="button" onClick={() => nav('/legal/privacy')} className="font-bold text-ink-sub underline underline-offset-2">
+              {t('onboard.privacy')}
+            </button>
+            {t('onboard.termsPost')}
+          </p>
+          <p className="mt-1.5 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">{t('onboard.note')}</p>
         </div>
       </main>
 
