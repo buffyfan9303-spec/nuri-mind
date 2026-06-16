@@ -176,6 +176,24 @@ export default function Home() {
           </Card>
         </motion.div>
 
+        {/* ── 오늘의 운세 (신규: 사주·음양오행) ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 22 }}
+        >
+          <Card onClick={() => nav('/fortune')} className="mt-3.5 flex items-center gap-3 !bg-gradient-to-r from-[#6B4FB8] to-[#A88BF2] !p-4">
+            <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ repeat: Infinity, duration: 2.6 }} className="shrink-0 text-[26px]">
+              🔮
+            </motion.span>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-[15.5px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</h3>
+              <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">{t('fortune.homeSub')}</p>
+            </div>
+            <span className="shrink-0 text-[18px] font-extrabold text-white/90">›</span>
+          </Card>
+        </motion.div>
+
         {/* ── 1분 바이럴 퀵 테스트 (메인 전면 노출) ── */}
         <div className="mt-6">
           <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">

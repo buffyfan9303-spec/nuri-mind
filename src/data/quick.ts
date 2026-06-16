@@ -493,6 +493,330 @@ export const QUICK_TESTS: QuickTest[] = [
       { key: 'hedgehog', emoji: '🦔', grad: ['#8A6FE6', '#B79CF2'], name: { ko: '예민 고슴도치', en: 'Prickly Hedgehog', ja: '神経質ハリネズミ' }, tag: { ko: '건드리면 가시 세움', en: 'Quills up when touched', ja: '触ると刺' }, desc: { ko: '스트레스를 받으면 온몸의 가시가 곤두서는 예민형. 작은 자극에도 날카로워져요. 자기 전 화면 끄기와 충분한 잠이 가시를 눕혀줍니다.', en: 'Under stress your quills stand on end — sharp at small triggers. Screens-off and good sleep soften them.', ja: 'ストレスでトゲが逆立つ神経質型。小さな刺激にも鋭くなる。就寝前の画面オフと睡眠が和らげる。' } },
     ],
   },
+  {
+    "id": "flower",
+    "emoji": "🌸",
+    "title": {
+      "ko": "나에게 맞는 꽃",
+      "en": "Your Flower",
+      "ja": "あなたに合う花"
+    },
+    "desc": {
+      "ko": "4문항으로 보는 내 마음을 닮은 꽃",
+      "en": "The flower that matches your heart, in 4 Qs",
+      "ja": "4問でわかる、心に似た花"
+    },
+    "grad": [
+      "#F25C8E",
+      "#FFB3C7"
+    ],
+    "questions": [
+      {
+        "text": {
+          "ko": "친구들이 말하는 내 매력은?",
+          "en": "What do friends say is your charm?",
+          "ja": "友達が言う私の魅力は？"
+        },
+        "options": [
+          {
+            "text": {
+              "ko": "뜨겁고 적극적이야",
+              "en": "Warm and bold",
+              "ja": "情熱的で積極的"
+            },
+            "to": "rose"
+          },
+          {
+            "text": {
+              "ko": "늘 밝고 긍정적이야",
+              "en": "Always bright and positive",
+              "ja": "いつも明るく前向き"
+            },
+            "to": "sunflower"
+          },
+          {
+            "text": {
+              "ko": "차분하고 편안해",
+              "en": "Calm and soothing",
+              "ja": "落ち着いていて安らぐ"
+            },
+            "to": "lavender"
+          },
+          {
+            "text": {
+              "ko": "섬세하고 감성적이야",
+              "en": "Delicate and sensitive",
+              "ja": "繊細で感受性が豊か"
+            },
+            "to": "cherry"
+          }
+        ]
+      },
+      {
+        "text": {
+          "ko": "마음에 둔 사람이 생기면?",
+          "en": "When you start to like someone?",
+          "ja": "好きな人ができたら？"
+        },
+        "options": [
+          {
+            "text": {
+              "ko": "솔직하게 마음을 고백해",
+              "en": "Confess my feelings openly",
+              "ja": "素直に告白する"
+            },
+            "to": "tulip"
+          },
+          {
+            "text": {
+              "ko": "먼저 다가가 표현해",
+              "en": "Reach out and express it",
+              "ja": "自分から表現する"
+            },
+            "to": "rose"
+          },
+          {
+            "text": {
+              "ko": "오래 기다려도 한 사람만",
+              "en": "Wait long, but stay loyal to one",
+              "ja": "長く待ってもひとりだけ"
+            },
+            "to": "camellia"
+          },
+          {
+            "text": {
+              "ko": "조용히 지켜보며 응원해",
+              "en": "Quietly watch and cheer them on",
+              "ja": "そっと見守り応援する"
+            },
+            "to": "lavender"
+          }
+        ]
+      },
+      {
+        "text": {
+          "ko": "주말에 가장 나다운 하루는?",
+          "en": "Your most you-like weekend?",
+          "ja": "一番自分らしい週末は？"
+        },
+        "options": [
+          {
+            "text": {
+              "ko": "햇살 아래 산책하며 기분 전환",
+              "en": "A sunny walk to lift my mood",
+              "ja": "陽の下を散歩して気分転換"
+            },
+            "to": "sunflower"
+          },
+          {
+            "text": {
+              "ko": "새로운 일에 신나게 도전",
+              "en": "Happily try something new",
+              "ja": "新しいことに楽しく挑戦"
+            },
+            "to": "tulip"
+          },
+          {
+            "text": {
+              "ko": "좋아하는 음악과 향초로 힐링",
+              "en": "Music and candles to unwind",
+              "ja": "好きな音楽とお香で癒し"
+            },
+            "to": "lavender"
+          },
+          {
+            "text": {
+              "ko": "감성 가득한 카페에서 사색",
+              "en": "Daydream at a cozy cafe",
+              "ja": "雰囲気あるカフェで物思い"
+            },
+            "to": "cherry"
+          }
+        ]
+      },
+      {
+        "text": {
+          "ko": "힘든 일이 닥쳤을 때 나는?",
+          "en": "When things get hard, I…",
+          "ja": "辛いことが起きたら私は？"
+        },
+        "options": [
+          {
+            "text": {
+              "ko": "정면으로 부딪쳐 이겨내",
+              "en": "Face it head-on and win",
+              "ja": "正面から立ち向かう"
+            },
+            "to": "rose"
+          },
+          {
+            "text": {
+              "ko": "곧 좋아질 거라 믿어",
+              "en": "Trust it'll get better soon",
+              "ja": "すぐ良くなると信じる"
+            },
+            "to": "sunflower"
+          },
+          {
+            "text": {
+              "ko": "묵묵히 견디며 끝까지 지켜",
+              "en": "Endure quietly and stay true",
+              "ja": "黙って耐え最後まで守る"
+            },
+            "to": "camellia"
+          },
+          {
+            "text": {
+              "ko": "지금도 의미가 있다 여겨",
+              "en": "Find meaning even in this",
+              "ja": "今にも意味があると思う"
+            },
+            "to": "cherry"
+          }
+        ]
+      }
+    ],
+    "results": [
+      {
+        "key": "rose",
+        "emoji": "🌹",
+        "name": {
+          "ko": "정열의 장미",
+          "en": "Passionate Rose",
+          "ja": "情熱のバラ"
+        },
+        "tag": {
+          "ko": "사랑도 일도 뜨겁게",
+          "en": "Hot in love and work",
+          "ja": "愛も仕事も熱く"
+        },
+        "desc": {
+          "ko": "장미의 꽃말은 '사랑'과 '열정'이에요. 당신은 마음을 솔직하게 표현하고 원하는 걸 향해 당당히 나아가는 사람. 그 뜨거운 에너지가 큰 매력이지만, 가끔은 상대의 속도도 함께 살펴주면 더 오래 빛나요.",
+          "en": "The rose means 'love' and 'passion.' You express your heart honestly and move boldly toward what you want. That fiery energy is your charm — just mind others' pace to shine even longer.",
+          "ja": "バラの花言葉は『愛』と『情熱』。あなたは気持ちを素直に表し、望むものへ堂々と進む人。その熱いエネルギーが魅力ですが、時には相手のペースも見てあげるとより長く輝けます。"
+        },
+        "grad": [
+          "#E63950",
+          "#FF7A93"
+        ]
+      },
+      {
+        "key": "sunflower",
+        "emoji": "🌻",
+        "name": {
+          "ko": "긍정의 해바라기",
+          "en": "Sunny Sunflower",
+          "ja": "前向きヒマワリ"
+        },
+        "tag": {
+          "ko": "늘 밝은 쪽을 바라봐",
+          "en": "Always facing the light",
+          "ja": "いつも明るい方を見る"
+        },
+        "desc": {
+          "ko": "해바라기의 꽃말은 '희망'과 '한결같은 마음'이에요. 해를 따라 도는 꽃처럼, 당신은 어떤 상황에서도 밝은 면을 찾아내는 긍정 에너지의 소유자. 그 따뜻함이 주변까지 환하게 비추니, 가끔은 흐린 날의 내 마음도 다정히 챙겨줘요.",
+          "en": "The sunflower means 'hope' and 'steadfast heart.' Like a flower that turns to the sun, you find the bright side in anything. Your warmth lights up everyone around you — just be gentle with yourself on cloudy days too.",
+          "ja": "ヒマワリの花言葉は『希望』と『一途な心』。太陽を追う花のように、あなたはどんな時も明るい面を見つける前向きな人。その温かさが周りまで照らすので、曇りの日の自分の心も優しく労わって。"
+        },
+        "grad": [
+          "#F5A623",
+          "#FFD64D"
+        ]
+      },
+      {
+        "key": "lavender",
+        "emoji": "💜",
+        "name": {
+          "ko": "차분한 라벤더",
+          "en": "Calm Lavender",
+          "ja": "穏やかなラベンダー"
+        },
+        "tag": {
+          "ko": "조용히 곁을 지키는 사람",
+          "en": "Quietly by your side",
+          "ja": "そっとそばにいる人"
+        },
+        "desc": {
+          "ko": "라벤더의 꽃말은 '침묵'과 '기다림'이에요. 향기로 마음을 가라앉히는 꽃처럼, 당신은 차분하고 사려 깊어 함께 있으면 편안해지는 사람. 묵묵한 다정함이 강점이지만, 하고 싶은 말은 가끔 소리 내어 표현해도 좋아요.",
+          "en": "Lavender means 'silence' and 'waiting.' Like a flower whose scent calms the mind, you're composed and thoughtful — soothing to be around. Your quiet warmth is a gift; just speak your wishes out loud sometimes too.",
+          "ja": "ラベンダーの花言葉は『沈黙』と『待つこと』。香りで心を鎮める花のように、あなたは穏やかで思慮深く、一緒にいて安らぐ人。静かな優しさが強みですが、言いたいことは時々声に出してもいいんですよ。"
+        },
+        "grad": [
+          "#8E7CC3",
+          "#C3A6E6"
+        ]
+      },
+      {
+        "key": "cherry",
+        "emoji": "🌸",
+        "name": {
+          "ko": "섬세한 벚꽃",
+          "en": "Delicate Blossom",
+          "ja": "繊細な桜"
+        },
+        "tag": {
+          "ko": "지금 이 순간을 소중히",
+          "en": "Cherishing this moment",
+          "ja": "今この瞬間を大切に"
+        },
+        "desc": {
+          "ko": "벚꽃의 꽃말은 '순수한 마음'과 '아름다운 순간'이에요. 활짝 폈다 지는 꽃처럼, 당신은 감수성이 풍부하고 지금 이 순간의 아름다움을 느낄 줄 아는 사람. 섬세함이 큰 매력이지만, 작은 일에 너무 깊이 흔들릴 땐 잠시 숨을 골라요.",
+          "en": "Cherry blossom means 'pure heart' and 'beautiful moment.' Like a flower that blooms then falls, you're sensitive and able to feel the beauty of right now. Your delicacy is a charm — just breathe when small things shake you too deeply.",
+          "ja": "桜の花言葉は『純粋な心』と『美しい瞬間』。咲いては散る花のように、あなたは感受性が豊かで、今この瞬間の美しさを感じられる人。繊細さが魅力ですが、小さなことに深く揺れる時はひと呼吸を。"
+        },
+        "grad": [
+          "#F49AC1",
+          "#FFD1E3"
+        ]
+      },
+      {
+        "key": "camellia",
+        "emoji": "🌺",
+        "name": {
+          "ko": "의리의 동백",
+          "en": "Loyal Camellia",
+          "ja": "義理の椿"
+        },
+        "tag": {
+          "ko": "한번 마음 주면 끝까지",
+          "en": "Loyal once your heart's in",
+          "ja": "一度心を許せば最後まで"
+        },
+        "desc": {
+          "ko": "동백의 꽃말은 '진실한 사랑'과 '기다림'이에요. 추운 겨울에도 굳건히 꽃을 피우는 동백처럼, 당신은 한번 마음을 준 사람과 약속을 끝까지 지키는 의리파. 그 단단함이 큰 신뢰를 주지만, 가끔은 나 자신에게도 너그러워지면 좋아요.",
+          "en": "Camellia means 'true love' and 'waiting.' Like a flower that blooms firm through winter cold, you keep your bonds and promises to the end. That steadfastness earns deep trust — just be kind to yourself sometimes too.",
+          "ja": "椿の花言葉は『真実の愛』と『待つこと』。寒い冬にも凛と咲く椿のように、あなたは一度心を許した人や約束を最後まで守る義理堅い人。その固さが信頼を生みますが、時には自分にも優しくなって。"
+        },
+        "grad": [
+          "#D6336C",
+          "#F06595"
+        ]
+      },
+      {
+        "key": "tulip",
+        "emoji": "🌷",
+        "name": {
+          "ko": "낙천의 튤립",
+          "en": "Cheerful Tulip",
+          "ja": "楽天のチューリップ"
+        },
+        "tag": {
+          "ko": "솔직하게, 즐겁게",
+          "en": "Honest and easygoing",
+          "ja": "素直に、楽しく"
+        },
+        "desc": {
+          "ko": "튤립의 꽃말은 '사랑의 고백'과 '새로운 시작'이에요. 봄을 가장 먼저 알리는 꽃처럼, 당신은 마음을 솔직하게 전하고 새로운 일도 즐겁게 시작하는 낙천가. 그 가벼운 발걸음이 매력이지만, 가끔은 한 가지를 끝까지 마무리하는 끈기도 챙겨봐요.",
+          "en": "Tulip means 'declaration of love' and 'fresh start.' Like the flower that first announces spring, you share your heart honestly and dive into new things with joy. Your light step is charming — just add some follow-through to finish what you start.",
+          "ja": "チューリップの花言葉は『愛の告白』と『新しい始まり』。春を一番に告げる花のように、あなたは気持ちを素直に伝え、新しいことも楽しく始める楽天家。その軽やかさが魅力ですが、時には最後までやり遂げる粘りも。"
+        },
+        "grad": [
+          "#FF6F91",
+          "#FFA94D"
+        ]
+      }
+    ]
+  },
 ]
 
 export function quickById(id: string): QuickTest | undefined {

@@ -159,7 +159,8 @@ export function scoreIq(items: IqItem[], answers: Record<string, string | null>)
 }
 
 /* ───────────────────── LOVE (ECR-R + Bartholomew 4범주) ───────────────── */
-/** 1~5 동의. ANX 9문항: μ=26 σ=6.5 / AVO 9문항(역2): μ=24 σ=6.5 */
+/** 1~5 동의. ECR-R(Fraley 2000) 실규준 정렬: ANX 9문항 μ=23.5 σ=8.0 / AVO 9문항(역2) μ=21.5 σ=8.0.
+ *  (이전 μ26/24·σ6.5는 협소 σ로 중간점수가 극단 백분위로 튀어, 원규준 문항평균 2.6/2.4·넓은 σ로 보정) */
 export function scoreLove(items: LikertItem[], answers: Record<string, number>): TestResult {
   const ax: Record<string, { s: number; m: number; n: number }> = {}
   for (const it of items) {
@@ -174,8 +175,8 @@ export function scoreLove(items: LikertItem[], answers: Record<string, number>):
   const AVO = ax.AVO?.s ?? 0
   const VAL = ax.VAL?.s ?? 0
 
-  const anxPct = percentile(ANX, 26, 6.5)
-  const avoPct = percentile(AVO, 24, 6.5)
+  const anxPct = percentile(ANX, 23.5, 8.0)
+  const avoPct = percentile(AVO, 21.5, 8.0)
   const security = Math.round((100 - (anxPct + avoPct) / 2) * 10) / 10
   const maskFlag = VAL >= 8
 
@@ -271,7 +272,8 @@ export function scoreResilience(items: LikertItem[], answers: Record<string, num
 }
 
 /* ──────────── DARK TRIAD (SD3 3요인) ──────────── */
-/** 1~5 동의. MA/NA 7문항, PS 5문항, VAL 1. 종합 백분위 = 3축 평균 */
+/** 1~5 동의. MA/NA 7문항, PS 5문항, VAL 1. 종합 백분위 = 3축 평균.
+ *  SD3(Jones&Paulhus 2014) 실규준: 사이코패시(PS) 평균이 MA/NA보다 낮음 → PS μ=10.5 σ=3.0(문항평균 ~2.1)으로 정렬 */
 export function scoreDark(items: LikertItem[], answers: Record<string, number>): TestResult {
   const ax: Record<string, { s: number; n: number }> = {}
   for (const it of items) {
@@ -287,7 +289,7 @@ export function scoreDark(items: LikertItem[], answers: Record<string, number>):
 
   const maPct = percentile(MA, 21, 5.5)
   const naPct = percentile(NA, 21, 5.5)
-  const psPct = percentile(PS, 15, 4.5)
+  const psPct = percentile(PS, 10.5, 3.0)
   const overall = Math.round(((maPct + naPct + psPct) / 3) * 10) / 10
   const maskFlag = VAL >= 4
 

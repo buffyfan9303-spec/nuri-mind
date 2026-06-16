@@ -30,6 +30,7 @@ const Routine = lazy(() => import('./pages/Routine'))
 const Magazine = lazy(() => import('./pages/Magazine'))
 const Article = lazy(() => import('./pages/Article'))
 const Insight = lazy(() => import('./pages/Insight'))
+const Fortune = lazy(() => import('./pages/Fortune'))
 
 function Loader() {
   return (
@@ -99,6 +100,7 @@ export default function App() {
               <Route path="/magazine" element={<Magazine />} />
               <Route path="/magazine/:id" element={<Article />} />
               <Route path="/insight" element={<Insight />} />
+              <Route path="/fortune" element={<Fortune />} />
               <Route path="/rank" element={<Rank />} />
               <Route path="/league" element={<League />} />
               <Route path="/legal/:doc" element={<Legal />} />

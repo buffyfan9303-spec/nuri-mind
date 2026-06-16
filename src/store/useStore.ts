@@ -49,6 +49,7 @@ interface State {
   avatar: Avatar
   onboarded: boolean
   consent: { v: string; at: string } | null
+  birthDate: string
   deviceId: string
   posts: CommunityPost[]
   comments: Record<string, CommunityComment[]>
@@ -105,6 +106,7 @@ interface State {
   setAvatar: (a: Avatar) => void
   completeOnboarding: (nickname: string, avatar: Avatar) => void
   acceptConsent: () => void
+  setBirthDate: (d: string) => void
   addPost: (text: string, badge?: string) => void
   likePost: (id: string) => void
   deletePost: (id: string) => void
@@ -152,6 +154,7 @@ const initial = () => ({
   avatar: null as Avatar,
   onboarded: false,
   consent: null as { v: string; at: string } | null,
+  birthDate: '',
   deviceId: uid('dev_'),
   posts: SEED_POSTS,
   comments: {} as Record<string, CommunityComment[]>,
@@ -233,6 +236,7 @@ export const useStore = create<State>()(
         completeOnboarding: (nickname, avatar) =>
           set({ nickname: nickname.trim().slice(0, 12) || '친구', avatar, onboarded: true, consent: { v: LEGAL_VERSION, at: today() } }),
         acceptConsent: () => set({ consent: { v: LEGAL_VERSION, at: today() } }),
+        setBirthDate: (birthDate) => set({ birthDate }),
 
         addPost: (text, badge) => {
           const body = text.trim().slice(0, 280)
