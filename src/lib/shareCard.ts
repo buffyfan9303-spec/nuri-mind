@@ -15,6 +15,12 @@ export interface CardSpec {
   bandLabel?: string
   /** 칩 문구 오버라이드 (기본: "상위 X%") */
   chipText?: string
+  /** 동물 위 라벨 오버라이드 (기본: "나의 심리 동물") — 퀵테스트 등 */
+  heroLabel?: string
+  /** 하단 CTA 1행 오버라이드 (기본: "너의 심리 동물은? 👀") */
+  ctaTop?: string
+  /** 하단 CTA 2행 오버라이드 (기본: "지금 누리 마인드에서 무료로 확인 →") */
+  ctaSub?: string
 }
 
 const FAM = 'Pretendard, Nunito, "Noto Sans JP", sans-serif'
@@ -174,7 +180,7 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   // 라벨
   ctx.fillStyle = 'rgba(255,255,255,0.9)'
   ctx.font = `800 40px ${FAM}`
-  ctx.fillText('나의 심리 동물', cx, 712)
+  ctx.fillText(spec.heroLabel ?? '나의 심리 동물', cx, 712)
   // 동물 이름 (자동 맞춤)
   ctx.shadowColor = 'rgba(0,0,0,0.18)'
   ctx.shadowBlur = 16
@@ -200,10 +206,11 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   }
 
   /* 칩 행: 밴드 + 퍼센타일/IQ — 중앙 정렬 그룹 */
+  const hasPct = spec.chipText != null || spec.iq != null || (typeof spec.topPercent === 'number' && spec.topPercent > 0)
   const chipText = spec.chipText ?? (spec.iq ? `IQ ${spec.iq} · 상위 ${spec.topPercent}%` : `상위 ${spec.topPercent}%`)
   const chips: [string, string, string][] = []
   if (spec.bandLabel) chips.push([spec.bandLabel, 'rgba(255,255,255,0.25)', '#FFFFFF'])
-  chips.push([chipText, '#FFFFFF', spec.grad[0]])
+  if (hasPct) chips.push([chipText, '#FFFFFF', spec.grad[0]])
   // 총 너비 계산
   const chipH = 64
   const gap = 16
@@ -222,10 +229,10 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   ctx.textAlign = 'center'
   ctx.fillStyle = '#FFFFFF'
   ctx.font = `800 40px ${FAM}`
-  ctx.fillText('너의 심리 동물은? 👀', cx, 1212)
+  ctx.fillText(spec.ctaTop ?? '너의 심리 동물은? 👀', cx, 1212)
   ctx.fillStyle = 'rgba(255,255,255,0.85)'
   ctx.font = `700 32px ${FAM}`
-  ctx.fillText('지금 누리 마인드에서 무료로 확인 →', cx, 1268)
+  ctx.fillText(spec.ctaSub ?? '지금 누리 마인드에서 무료로 확인 →', cx, 1268)
 
   return new Promise((resolve) => c.toBlob((b) => resolve(b!), 'image/png'))
 }

@@ -8,6 +8,8 @@ import { useT, useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
+import { makeResultCard, shareCardBlob } from '../lib/shareCard'
+import { kakaoEnabled, shareKakao } from '../lib/kakao'
 
 export default function QuickTest() {
   const { id } = useParams<{ id: string }>()
@@ -20,6 +22,7 @@ export default function QuickTest() {
   const [tally, setTally] = useState<Record<string, number>>({})
   const [done, setDone] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [saved, setSaved] = useState(false)
 
   const winner = useMemo(() => {
     if (!test) return null
@@ -65,6 +68,49 @@ export default function QuickTest() {
     }
   }
 
+  // 결과 카드 PNG 생성 → 공유/저장 (메인 결과와 동일 경로 재사용)
+  const shareCard = async () => {
+    if (!winner) return
+    track('share', { channel: 'quick_card', id: test.id })
+    try {
+      const blob = await makeResultCard({
+        emoji: winner.emoji,
+        name: l(winner.name),
+        title: l(winner.tag),
+        topPercent: 0,
+        testName: l(test.title),
+        grad: test.grad,
+        appName: t('app.name'),
+        heroLabel: '나의 결과',
+        ctaTop: '너도 1분 테스트 해볼래? 👀',
+        ctaSub: '지금 누리 마인드에서 무료로 →',
+      })
+      const how = await shareCardBlob(
+        blob,
+        `[누리 마인드] 나의 ${l(test.title)}: ${winner.emoji} ${l(winner.name)} — ${l(winner.tag)}`,
+        `nurimind-${test.id}.png`,
+      )
+      if (how === 'downloaded') {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2200)
+      }
+    } catch {
+      sfx.err()
+    }
+  }
+
+  // 카카오톡 공유 — 메인 결과와 동일. SDK 미준비면 텍스트 공유로 폴백.
+  const shareKakaoQuick = () => {
+    if (!winner) return
+    const ok = shareKakao({
+      title: `나는 "${l(winner.name)}" ${winner.emoji} | 누리 마인드`,
+      description: l(winner.tag),
+      link: `${location.origin}/quick/${test.id}`,
+    })
+    track('share', { channel: 'kakao', id: test.id })
+    if (!ok) share()
+  }
+
   const reset = () => {
     setTally({})
     setStep(0)
@@ -92,14 +138,29 @@ export default function QuickTest() {
             <p className="mt-3 break-keep text-[14.5px] font-medium leading-relaxed text-white/95">{l(winner.desc)}</p>
           </motion.div>
 
-          {copied && (
-            <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">{t('common.copied')}</p>
+          {(copied || saved) && (
+            <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">
+              ✅ {saved ? t('share.saved') : t('common.copied')}
+            </p>
           )}
 
           <div className="mt-4 space-y-2.5">
-            <Button color="mind" onClick={share}>
-              📤 {t('quick.share')}
-            </Button>
+            {kakaoEnabled() && (
+              <button
+                onClick={shareKakaoQuick}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-extrabold text-[#3A1D1D]"
+              >
+                💬 {t('quick.shareKakao')}
+              </button>
+            )}
+            <div className="grid grid-cols-2 gap-2.5">
+              <Button color="sky" onClick={shareCard}>
+                {t('quick.shareCard')}
+              </Button>
+              <Button color="mind" onClick={share}>
+                📤 {t('quick.share')}
+              </Button>
+            </div>
             {test.funnel && (
               <Button color="white" onClick={() => nav(`/test/${test.funnel}`)}>
                 🔬 {t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}
