@@ -10,6 +10,7 @@ import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
+import { shiftGrad } from '../lib/color'
 
 export default function QuickTest() {
   const { id } = useParams<{ id: string }>()
@@ -37,6 +38,13 @@ export default function QuickTest() {
     }
     return best
   }, [tally, test])
+
+  // 결과별 그라데이션 변주 — 같은 검사라도 결과마다 색조를 회전(idx 0=홈카드와 동일)
+  const accent = useMemo<[string, string]>(() => {
+    if (!test || !winner) return ['#9AA6FF', '#C7B8FF']
+    const i = test.results.findIndex((r) => r.key === winner.key)
+    return shiftGrad(test.grad, i * 32)
+  }, [test, winner])
 
   if (!test) return <Navigate to="/" replace />
 
@@ -79,7 +87,7 @@ export default function QuickTest() {
         title: l(winner.tag),
         topPercent: 0,
         testName: l(test.title),
-        grad: test.grad,
+        grad: accent,
         appName: t('app.name'),
         heroLabel: '나의 결과',
         ctaTop: '너도 1분 테스트 해볼래? 👀',
@@ -128,11 +136,19 @@ export default function QuickTest() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ type: 'spring', stiffness: 220, damping: 22 }}
             className="mt-3 rounded-3xl p-7 text-center text-white shadow-pop"
-            style={{ background: `linear-gradient(135deg, ${test.grad[0]}, ${test.grad[1]})` }}
+            style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }}
           >
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -8, 6, 0] }} className="text-[72px] leading-none">
-              {winner.emoji}
-            </motion.div>
+            {/* 동물 일러스트 — 광배 + 그림자로 카드 매력↑ */}
+            <div className="relative mx-auto flex h-[116px] w-[116px] items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-white/25 blur-xl" />
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1, rotate: [0, -8, 6, 0] }}
+                className="relative text-[80px] leading-none drop-shadow-[0_6px_14px_rgba(0,0,0,0.18)]"
+              >
+                {winner.emoji}
+              </motion.div>
+            </div>
             <h1 className="mt-3 text-[28px] font-extrabold tracking-tight">{l(winner.name)}</h1>
             <p className="mt-2 text-[15px] font-extrabold text-white/90">“{l(winner.tag)}”</p>
             <p className="mt-3 break-keep text-[14.5px] font-medium leading-relaxed text-white/95">{l(winner.desc)}</p>

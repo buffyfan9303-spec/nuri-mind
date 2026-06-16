@@ -9,6 +9,7 @@ import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { celebrate } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import { LEGAL_EFFECTIVE } from '../data/legal'
 
 // 시작 캐릭터 후보(귀여운 페르소나) — 검사로 더 모을 수 있음
 const STARTERS = ['penguin', 'koala', 'cat', 'dolphin', 'hamster', 'owl', 'meerkat', 'collie']
@@ -19,8 +20,10 @@ export default function Onboarding() {
   const completeOnboarding = useStore((s) => s.completeOnboarding)
   const [nick, setNick] = useState('')
   const [picked, setPicked] = useState<string | null>(null)
+  const [agreed, setAgreed] = useState(false)
 
   const start = () => {
+    if (!nick.trim() || !agreed) return
     const avatar: AvatarT = picked ? { kind: 'animal', persona: picked } : null
     completeOnboarding(nick, avatar)
     celebrate()
@@ -83,22 +86,39 @@ export default function Onboarding() {
           <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-50 py-2.5 text-[14px] font-extrabold text-mind-700">
             🎁 {t('onboard.bonus')}
           </div>
-          <Button color="mind" size="lg" disabled={!nick.trim()} onClick={start}>
+          {/* 필수 약관 동의 체크 (실서비스/스토어 심사 대비) */}
+          <div className="mb-3 flex items-start gap-2.5 rounded-2xl border-2 border-[#E9EEEB] bg-white px-3.5 py-3">
+            <button
+              type="button"
+              onClick={() => {
+                setAgreed((v) => !v)
+                sfx.tap()
+              }}
+              aria-pressed={agreed}
+              aria-label={t('onboard.terms') + ' ' + t('onboard.agreeReq')}
+              className="mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 transition-colors"
+              style={{ borderColor: agreed ? '#4FA882' : '#CBD5D0', background: agreed ? '#4FA882' : '#fff' }}
+            >
+              {agreed && <span className="text-[13px] font-black leading-none text-white">✓</span>}
+            </button>
+            <p className="break-keep text-left text-[12.5px] font-medium leading-relaxed text-ink-sub">
+              {t('onboard.agreePre')}
+              <button type="button" onClick={() => nav('/legal/terms')} className="font-extrabold text-mind-700 underline underline-offset-2">
+                {t('onboard.terms')}
+              </button>
+              <span className="mx-1 text-ink-faint">·</span>
+              <button type="button" onClick={() => nav('/legal/privacy')} className="font-extrabold text-mind-700 underline underline-offset-2">
+                {t('onboard.privacy')}
+              </button>
+              {t('onboard.agreeSuf')} <span className="font-extrabold text-mind-600">{t('onboard.agreeReq')}</span>
+            </p>
+          </div>
+          <Button color="mind" size="lg" disabled={!nick.trim() || !agreed} onClick={start}>
             {t('onboard.start')}
           </Button>
-          {/* 약관 동의 안내(실서비스 대비) — 약관·처리방침은 탭하면 열림 */}
-          <p className="mt-3 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">
-            {t('onboard.termsPre')}
-            <button type="button" onClick={() => nav('/legal/terms')} className="font-bold text-ink-sub underline underline-offset-2">
-              {t('onboard.terms')}
-            </button>
-            <span className="mx-1 text-ink-faint">·</span>
-            <button type="button" onClick={() => nav('/legal/privacy')} className="font-bold text-ink-sub underline underline-offset-2">
-              {t('onboard.privacy')}
-            </button>
-            {t('onboard.termsPost')}
+          <p className="mt-2.5 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
+            {t('onboard.effective', { date: LEGAL_EFFECTIVE })} · {t('onboard.note')}
           </p>
-          <p className="mt-1.5 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">{t('onboard.note')}</p>
         </div>
       </main>
 

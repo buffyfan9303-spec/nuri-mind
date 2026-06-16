@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { LEGAL_VERSION } from '../data/legal'
 import type {
   Avatar,
   CommunityComment,
@@ -47,6 +48,7 @@ interface State {
   nickname: string
   avatar: Avatar
   onboarded: boolean
+  consent: { v: string; at: string } | null
   deviceId: string
   posts: CommunityPost[]
   comments: Record<string, CommunityComment[]>
@@ -148,6 +150,7 @@ const initial = () => ({
   nickname: '누리',
   avatar: null as Avatar,
   onboarded: false,
+  consent: null as { v: string; at: string } | null,
   deviceId: uid('dev_'),
   posts: SEED_POSTS,
   comments: {} as Record<string, CommunityComment[]>,
@@ -227,7 +230,7 @@ export const useStore = create<State>()(
         setAvatar: (avatar) => set({ avatar }),
         /** 회원가입 완료 — 닉네임·아바타 설정 후 입장 */
         completeOnboarding: (nickname, avatar) =>
-          set({ nickname: nickname.trim().slice(0, 12) || '친구', avatar, onboarded: true }),
+          set({ nickname: nickname.trim().slice(0, 12) || '친구', avatar, onboarded: true, consent: { v: LEGAL_VERSION, at: today() } }),
 
         addPost: (text, badge) => {
           const body = text.trim().slice(0, 280)
