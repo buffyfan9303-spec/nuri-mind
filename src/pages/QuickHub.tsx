@@ -33,9 +33,7 @@ export default function QuickHub() {
                     <h3 className="text-[17px] font-extrabold tracking-tight">{l(q.title)}</h3>
                     <p className="mt-0.5 text-[13px] font-bold text-white/90">{l(q.desc)}</p>
                   </div>
-                  <span className="shrink-0 rounded-full bg-white/25 px-3 py-1.5 text-[12.5px] font-extrabold">
-                    {q.questions.length}{t('common.q')} · 1{t('common.min')}
-                  </span>
+                  <span className="shrink-0 text-[18px] text-white/70">›</span>
                 </div>
               </Card>
             </motion.div>

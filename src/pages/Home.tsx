@@ -183,15 +183,15 @@ export default function Home() {
           transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 22 }}
         >
           <div className="mt-3.5 grid grid-cols-2 gap-2.5">
-            <Card onClick={() => nav('/fortune')} className="flex flex-col !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-4">
-              <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ repeat: Infinity, duration: 2.6 }} className="text-[24px] leading-none">🔮</motion.span>
-              <h3 className="mt-1.5 break-keep text-[14px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</h3>
-              <p className="mt-0.5 break-keep text-[11px] font-bold text-white/85">{t('fortune.homeSub')}</p>
+            <Card onClick={() => nav('/fortune')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-3.5">
+              <motion.span animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }} className="shrink-0 text-[24px] leading-none">🔮</motion.span>
+              <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</h3>
+              <span className="shrink-0 text-[15px] text-white/70">›</span>
             </Card>
-            <Card onClick={() => nav('/compat')} className="flex flex-col !bg-gradient-to-br from-[#F25C8E] to-[#FF9EC0] !p-4">
-              <motion.span animate={{ scale: [1, 1.12, 1] }} transition={{ repeat: Infinity, duration: 1.8 }} className="text-[24px] leading-none">💞</motion.span>
-              <h3 className="mt-1.5 break-keep text-[14px] font-extrabold leading-tight text-white">{t('compat.title')}</h3>
-              <p className="mt-0.5 break-keep text-[11px] font-bold text-white/85">{t('compat.homeSub')}</p>
+            <Card onClick={() => nav('/compat')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#F25C8E] to-[#FF9EC0] !p-3.5">
+              <motion.span animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }} className="shrink-0 text-[24px] leading-none">💞</motion.span>
+              <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('compat.title')}</h3>
+              <span className="shrink-0 text-[15px] text-white/70">›</span>
             </Card>
           </div>
         </motion.div>
@@ -214,15 +214,11 @@ export default function Home() {
                 transition={{ delay: 0.05 * i, type: 'spring', stiffness: 240, damping: 24 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => nav(`/quick/${q.id}`)}
-                className="flex w-[148px] shrink-0 flex-col rounded-3xl p-4 text-left text-white shadow-pop"
+                className="flex w-[124px] shrink-0 flex-col items-start gap-2 rounded-3xl p-3.5 text-left text-white shadow-pop"
                 style={{ background: `linear-gradient(135deg, ${q.grad[0]}, ${q.grad[1]})` }}
               >
-                <span className="text-[32px] leading-none">{q.emoji}</span>
-                <h3 className="mt-2.5 break-keep text-[15.5px] font-extrabold leading-tight">{l(q.title)}</h3>
-                <p className="mt-auto pt-3 text-[11.5px] font-extrabold text-white/85">
-                  {q.questions.length}
-                  {t('common.q')} · 1{t('common.min')}
-                </p>
+                <span className="text-[30px] leading-none">{q.emoji}</span>
+                <h3 className="break-keep text-[14.5px] font-extrabold leading-tight">{l(q.title)}</h3>
               </motion.button>
             ))}
           </div>

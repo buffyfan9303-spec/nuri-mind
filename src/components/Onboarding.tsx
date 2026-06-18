@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from './Button'
@@ -10,6 +10,7 @@ import { useT } from '../i18n/useT'
 import { celebrate } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { LEGAL_EFFECTIVE } from '../data/legal'
+import { authReady, signInWithKakao, getAuthUser, onAuthChange } from '../lib/auth'
 
 // 시작 캐릭터 후보(귀여운 페르소나) — 검사로 더 모을 수 있음
 const STARTERS = ['penguin', 'koala', 'cat', 'dolphin', 'hamster', 'owl', 'meerkat', 'collie']
@@ -21,6 +22,27 @@ export default function Onboarding() {
   const [nick, setNick] = useState('')
   const [picked, setPicked] = useState<string | null>(null)
   const [agreed, setAgreed] = useState(false)
+  const [kakaoNick, setKakaoNick] = useState<string | null>(null)
+
+  // 카카오 로그인 복귀 시(또는 APK 자동로그인) 닉네임 자동 프리필
+  useEffect(() => {
+    if (!authReady()) return
+    const apply = () =>
+      getAuthUser().then((u) => {
+        if (u) {
+          setKakaoNick(u.nickname || '친구')
+          if (u.nickname) setNick((prev) => prev || u.nickname!)
+        }
+      })
+    apply()
+    return onAuthChange(apply)
+  }, [])
+
+  const doKakao = async () => {
+    sfx.tap()
+    const r = await signInWithKakao()
+    if (!r.ok) alert(t('auth.needSetup'))
+  }
 
   const start = () => {
     if (!nick.trim() || !agreed) return
@@ -40,8 +62,32 @@ export default function Onboarding() {
           <p className="mt-2.5 break-keep text-[14.5px] font-medium leading-relaxed text-ink-sub">{t('onboard.sub')}</p>
         </motion.div>
 
+        {/* 카카오 간편가입 (주 경로) */}
+        {authReady() && (
+          <div className="mt-7">
+            {kakaoNick ? (
+              <div className="flex items-center justify-center gap-2 rounded-2xl bg-[#FEE500]/90 py-3.5 text-[14px] font-extrabold text-[#3A1D1D]">
+                💬 {t('onboard.kakaoReady', { nick: kakaoNick })}
+              </div>
+            ) : (
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={doKakao}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-4 text-[16px] font-extrabold text-[#3A1D1D] shadow-card"
+              >
+                💬 {t('onboard.kakao')}
+              </motion.button>
+            )}
+            <div className="my-5 flex items-center gap-3">
+              <div className="h-px flex-1 bg-[#E3EAE5]" />
+              <span className="shrink-0 text-[12px] font-bold text-ink-faint">{t('onboard.or')}</span>
+              <div className="h-px flex-1 bg-[#E3EAE5]" />
+            </div>
+          </div>
+        )}
+
         {/* 닉네임 */}
-        <div className="mt-8">
+        <div className={authReady() ? '' : 'mt-8'}>
           <label className="px-1 text-[14px] font-extrabold">{t('onboard.nickLabel')}</label>
           <input
             value={nick}
