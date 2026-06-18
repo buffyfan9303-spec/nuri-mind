@@ -7,6 +7,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sajuOf, fortuneOf, weekOf, yearOf, zodiacTodayLines } from '../lib/saju'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
+import { ELEMENT_SVG } from '../lib/characters'
 import { track } from '../lib/analytics'
 
 export default function Fortune() {
@@ -121,9 +122,14 @@ export default function Fortune() {
           initial={{ opacity: 0, y: 16, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 190, damping: 18 }}
-          className="mt-3 rounded-3xl p-6 text-center text-white shadow-pop"
+          className="relative mt-3 rounded-3xl p-6 text-center text-white shadow-pop"
           style={{ background: `linear-gradient(135deg, ${fortune.grad[0]}, ${fortune.grad[1]})` }}
         >
+          {ELEMENT_SVG[saju.ilganEl] && (
+            <div className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/25" title={saju.ilganEl}>
+              <img src={`data:image/svg+xml;utf8,${encodeURIComponent(ELEMENT_SVG[saju.ilganEl])}`} alt="" className="h-8 w-8" />
+            </div>
+          )}
           <p className="text-[12.5px] font-extrabold text-white/85">{t('fortune.todayIs', { ilju: fortune.todayIljuKo })}</p>
           <div className="floaty mt-1 text-[58px] leading-none">{saju.zodiacEmoji}</div>
           <h1 className="mt-2 text-[23px] font-extrabold tracking-tight">{t('fortune.myIlju', { ilju: saju.iljuKo })}</h1>
