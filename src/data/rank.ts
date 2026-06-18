@@ -38,7 +38,7 @@ export const TIERS: Tier[] = [
     name: { ko: '브론즈', en: 'Bronze', ja: 'ブロンズ' },
     perks: [
       { ko: '설문 등록 권한 해금 (내 설문 만들기)', en: 'Unlock survey creation', ja: 'アンケート作成権限を解禁' },
-      { ko: '입문 체험단 신청 가능', en: 'Apply to starter tryout campaigns', ja: '入門体験団に応募可能' },
+      { ko: '📊 등급 뱃지·랭킹 노출', en: 'Tier badge & ranking', ja: 'ティアバッジ・ランキング表示' },
     ],
   },
   {
@@ -126,7 +126,7 @@ export const EXPERIENCES: Experience[] = [
   {
     id: 'ex_drink',
     emoji: '🧋',
-    minTier: 'bronze',
+    minTier: 'gold',
     slots: 30,
     applied: 18,
     reward: { ko: '신메뉴 무료 쿠폰 2매 + 100P', en: '2 free coupons + 100P', ja: '新メニュー無料券2枚＋100P' },
@@ -137,7 +137,7 @@ export const EXPERIENCES: Experience[] = [
   {
     id: 'ex_serum',
     emoji: '🧴',
-    minTier: 'silver',
+    minTier: 'gold',
     slots: 10,
     applied: 7,
     reward: { ko: '정품 제공 + 리뷰 작성 시 300P', en: 'Full product + 300P for review', ja: '本品提供＋レビューで300P' },
@@ -148,7 +148,7 @@ export const EXPERIENCES: Experience[] = [
   {
     id: 'ex_ramen',
     emoji: '🍜',
-    minTier: 'silver',
+    minTier: 'gold',
     slots: 20,
     applied: 14,
     reward: { ko: '신제품 1박스 + 150P', en: '1 box + 150P', ja: '新商品1箱＋150P' },
