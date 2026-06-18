@@ -84,12 +84,12 @@ export default function TestIntro() {
                 <h3 className="text-[14.5px] font-extrabold">
                   {iqUnlocked
                     ? l({ ko: '정밀 IQ 해제됨', en: 'Precision IQ unlocked', ja: '精密IQ解除済み' })
-                    : l({ ko: '앞 4문항 무료 체험', en: 'First 4 questions free', ja: '最初の4問は無料体験' })}
+                    : l({ ko: '검사는 무료 · 결과지 상세는 잠금', en: 'Test is free · detailed result locked', ja: '検査は無料・詳細結果はロック' })}
                 </h3>
                 <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
                   {iqUnlocked
-                    ? l({ ko: '20문항 전체와 정확한 IQ 점수·인지영역 분석을 볼 수 있어요.', en: 'You can take all 20 and see your accurate IQ score & breakdown.', ja: '全20問と正確なIQスコア・分析が見られます。' })
-                    : l({ ko: `전체 20문항과 정확한 IQ 점수·인지영역 분석은 💎${IQ_DIA_COST}로 한 번만 해제하면 영구 이용돼요.`, en: `Unlock all 20 plus your accurate IQ score & breakdown for 💎${IQ_DIA_COST} — once, forever.`, ja: `全20問と正確なIQスコア・分析は💎${IQ_DIA_COST}で一度解除すれば永久利用。` })}
+                    ? l({ ko: '결과지 전체(IQ 점수·인지영역별 분석·강점/주의)를 볼 수 있어요.', en: 'You can see the full result — IQ score, cognitive breakdown, strengths.', ja: '結果全体（IQスコア・認知領域分析・強み）が見られます。' })
+                    : l({ ko: `검사는 무료로 풀고 IQ 점수까지 바로 공개돼요. 인지영역별 정밀 분석·강점/주의는 💎${IQ_DIA_COST}로 한 번만 해제하면 영구 이용돼요.`, en: `Take it free and see your IQ score. The detailed cognitive analysis unlocks for 💎${IQ_DIA_COST} — once, forever.`, ja: `検査は無料でIQスコアまで公開。認知領域別の精密分析は💎${IQ_DIA_COST}で一度解除すれば永久利用。` })}
                 </p>
               </div>
             </div>

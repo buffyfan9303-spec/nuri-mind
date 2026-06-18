@@ -8,11 +8,11 @@ import Gauge from '../components/Gauge'
 import AiReport from '../components/AiReport'
 import Trend from '../components/Trend'
 import { ROUTINES } from '../data/routines'
-import { Card, Chip, TopBar } from '../components/ui'
+import { Card, Chip, TopBar, Modal } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
 import { testMeta } from '../data/tests'
 import { LOVE_CHEMI } from '../data/love'
-import { useStore } from '../store/useStore'
+import { useStore, IQ_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { celebrate, burst } from '../lib/confetti'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
@@ -35,8 +35,12 @@ export default function TestResult() {
   const [shareMsg, setShareMsg] = useState('')
   const [avatarSet, setAvatarSet] = useState(false)
   const [cardTheme, setCardTheme] = useState(0)
+  const [needCharge, setNeedCharge] = useState(false)
   const shareReward = useStore((s) => s.shareReward)
   const setAvatar = useStore((s) => s.setAvatar)
+  const iqUnlocked = useStore((s) => s.iqUnlocked)
+  const unlockIq = useStore((s) => s.unlockIq)
+  const diamonds = useStore((s) => s.diamonds)
   const celebrated = useRef(false)
 
   useEffect(() => {
@@ -59,6 +63,18 @@ export default function TestResult() {
   ]
   const topPercent = Math.max(0.5, Math.round((100 - result.percentile) * 10) / 10)
   const reward = state.reward ?? 0
+
+  /* IQ 결과지 게이팅 — 앞(히어로·IQ점수·게이지)은 무료, 상세 분석은 블러 → 10다이아 영구해제 */
+  const locked = result.testId === 'iq' && !iqUnlocked
+  const tryUnlockIqResult = () => {
+    const ok = unlockIq()
+    if (!ok) {
+      setNeedCharge(true)
+      return
+    }
+    burst()
+    sfx.coin()
+  }
 
   /* 검사별 게이지 제목 (키 없으면 기본 제목) */
   const gaugeKey = `result.gauge.${result.testId}`
@@ -307,6 +323,9 @@ export default function TestResult() {
           </Card>
         )}
 
+        {/* ── IQ 결과지 게이팅: 앞(히어로·점수)은 무료, 상세 분석은 블러 → 10다이아 ── */}
+        <div className="relative">
+          <div className={locked ? 'pointer-events-none select-none blur-[7px]' : ''} aria-hidden={locked || undefined}>
         {/* 세부 회로 */}
         <Card className="mt-4">
           <h2 className="text-[16px] font-extrabold tracking-tight">{t('result.subscaleTitle')}</h2>
@@ -433,6 +452,27 @@ export default function TestResult() {
             <p className="mt-1 break-keep text-[12px] font-medium leading-relaxed text-ink-faint">{t('result.iqEstimate')}</p>
           </div>
         )}
+          </div>
+          {locked && (
+            <div className="absolute inset-x-0 top-4 flex justify-center px-3">
+              <div className="w-full max-w-sm rounded-3xl border-2 border-[#D7DAF7] bg-white/95 p-6 text-center shadow-pop">
+                <div className="text-[42px] leading-none">🔒</div>
+                <h3 className="mt-2 text-[18.5px] font-extrabold">{l({ ko: '정밀 IQ 결과 해제', en: 'Unlock full IQ result', ja: '精密IQ結果を解除' })}</h3>
+                <p className="mx-auto mt-1.5 max-w-[280px] break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
+                  {l({ ko: '인지영역별 분석 · 정밀 해석 · 강점/주의까지 결과지 전체를 한 번만 해제하면 계속 볼 수 있어요.', en: 'Cognitive breakdown, deep interpretation, strengths — unlock the full result once, kept forever.', ja: '認知領域分析・精密解釈・強み/注意まで結果全体を一度解除すればずっと見られます。' })}
+                </p>
+                <div className="mx-auto mt-4 max-w-[260px]">
+                  <Button color="iq" size="lg" onClick={tryUnlockIqResult}>
+                    💎 {l({ ko: `${IQ_DIA_COST}개로 전체 결과 보기`, en: `Unlock for ${IQ_DIA_COST}`, ja: `${IQ_DIA_COST}個で全結果` })}
+                  </Button>
+                </div>
+                <p className="mt-2 text-[11.5px] font-medium text-ink-faint">
+                  {l({ ko: `보유 💎 ${diamonds} · 1회 해제 후 영구`, en: `You have 💎${diamonds} · one-time, permanent`, ja: `保有💎${diamonds}・一度で永久` })}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* 공통 면책 (정신건강 관련 검사) — 연속 지표 고지 강화 */}
         {['adhd', 'burnout', 'dopamine', 'love', 'resilience', 'dark'].includes(result.testId) && (
@@ -537,6 +577,21 @@ export default function TestResult() {
         <div className="mt-5">
           <AdSlot variant="rect" />
         </div>
+
+        {/* 다이아 부족 → 충전 안내 (IQ 결과 해제) */}
+        <Modal open={needCharge} onClose={() => setNeedCharge(false)}>
+          <div className="text-center">
+            <p className="text-[44px] leading-none">💎</p>
+            <h3 className="mt-2 text-[19px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
+            <p className="mt-1 break-keep text-[13.5px] font-bold text-ink-faint">
+              {l({ ko: `정밀 IQ 결과 해제에 ${IQ_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Unlock needs 💎${IQ_DIA_COST} · you have ${diamonds}`, ja: `解除に💎${IQ_DIA_COST}必要・保有${diamonds}` })}
+            </p>
+            <div className="mt-5">
+              <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
+              <button onClick={() => setNeedCharge(false)} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">{l({ ko: '닫기', en: 'Close', ja: '閉じる' })}</button>
+            </div>
+          </div>
+        </Modal>
       </main>
     </div>
   )

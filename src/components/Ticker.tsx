@@ -89,16 +89,16 @@ export default function Ticker() {
           }}
           className="z-10 shrink-0 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-extrabold text-white"
         >
-          ✏️ 💎{TICKER_COST}
+          📢 💎{TICKER_COST}
         </button>
       </div>
 
       {/* 게시 모달 */}
       <Modal open={open} onClose={() => { setOpen(false); setErr('') }}>
         <div className="text-center">
-          <p className="text-[34px] leading-none">📣</p>
-          <h3 className="mt-1.5 text-[18px] font-extrabold">{l({ ko: '전광판에 올리기', en: 'Post to the board', ja: '電光掲示に投稿' })}</h3>
-          <p className="mt-1 text-[12.5px] font-bold text-ink-faint">{l({ ko: `커뮤니티 상단에 흐르는 메시지 · 💎${TICKER_COST}`, en: `Scrolls atop community · 💎${TICKER_COST}`, ja: `コミュニティ上部に流れる · 💎${TICKER_COST}` })}</p>
+          <p className="text-[34px] leading-none">📢</p>
+          <h3 className="mt-1.5 text-[18px] font-extrabold">{l({ ko: '확성기 쏘기', en: 'Megaphone shout', ja: '拡声器を撃つ' })}</h3>
+          <p className="mx-auto mt-1 max-w-[280px] break-keep text-[12.5px] font-bold text-ink-faint">{l({ ko: `모두의 화면 상단 전광판에 흐르는 메시지 · 💎${TICKER_COST} · 그냥 글쓰기는 무료예요!`, en: `Scrolls on everyone's top board · 💎${TICKER_COST} · normal posts are free!`, ja: `全員の上部電光掲示に流れる · 💎${TICKER_COST} · 通常の投稿は無料！` })}</p>
           <textarea
             value={text}
             onChange={(e) => { setText(e.target.value); setErr('') }}
@@ -115,7 +115,7 @@ export default function Ticker() {
           {err && <p className="mt-1.5 text-[12.5px] font-extrabold text-red-500">⚠️ {err}</p>}
           <div className="mt-3.5">
             <Button color="burn" disabled={!text.trim()} onClick={submit}>
-              💎{TICKER_COST} {l({ ko: '올리기', en: 'Post', ja: '投稿' })}
+              📢 💎{TICKER_COST} {l({ ko: '확성기 쏘기', en: 'Shout', ja: '撃つ' })}
             </Button>
           </div>
           <p className="mt-2 text-[11px] font-medium leading-relaxed text-ink-faint">
