@@ -513,7 +513,7 @@ export const useStore = create<State>()(
           return true
         },
 
-        /** 친구 코드 등록 — 1회, +30P (1회성이라 일일 상한 제외) */
+        /** 친구 코드 입력 — 1회, +100P (신규 유입 LTV로 정당화 · 일일 상한 제외) */
         redeemCode: (code) => {
           const s = get()
           const up = code.trim().toUpperCase()
@@ -522,8 +522,8 @@ export const useStore = create<State>()(
           if (s.referredBy) return 'used'
           set({
             referredBy: up,
-            points: s.points + 30,
-            ledger: [{ id: uid('lg_'), amount: 30, memo: '🤝 친구 초대 코드 등록 보상', at: Date.now() }, ...s.ledger],
+            points: s.points + 100,
+            ledger: [{ id: uid('lg_'), amount: 100, memo: '🤝 친구 초대 코드 입력 보상', at: Date.now() }, ...s.ledger],
           })
           return 'ok'
         },

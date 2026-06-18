@@ -6,10 +6,12 @@ import { useT } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 
+// 누적 초대 보너스 — 신규 유입 LTV로 정당화(일일 상한과 별개). 서버 연동 시 자동 지급.
 const MILESTONES = [
-  { n: 1, p: 50 },
-  { n: 3, p: 200 },
-  { n: 5, p: 500 },
+  { n: 1, p: 100 },
+  { n: 3, p: 300 },
+  { n: 5, p: 600 },
+  { n: 10, p: 1500 },
 ]
 
 /** Temu식 마일스톤 친구 초대 (코드 기반 — 서버 연동 전 로컬 버전) */
@@ -36,7 +38,7 @@ export default function Invite() {
   }
 
   const share = async () => {
-    const text = `🧠 누리 마인드에서 숨겨진 진짜 나를 찾아봐! 가입할 때 내 코드 ${referralCode} 입력하면 +30P! ${window.location.origin}`
+    const text = `🧠 누리 마인드 — 심리검사로 진짜 나 찾기! 가입할 때 코드 ${referralCode} 입력하면 너도 나도 +100P 🎁 ${window.location.origin}`
     try {
       if (navigator.share) await navigator.share({ text })
       else {
@@ -90,20 +92,20 @@ export default function Invite() {
       {/* 마일스톤 */}
       <div className="mt-4">
         <p className="text-[13.5px] font-extrabold text-ink-sub">🏁 {t('invite.ms')}</p>
-        <div className="mt-2 grid grid-cols-3 gap-2">
+        <div className="mt-2 grid grid-cols-4 gap-1.5">
           {MILESTONES.map((m) => {
             const hit = invitedCount >= m.n
             return (
               <div
                 key={m.n}
-                className="rounded-2xl border-2 py-2.5 text-center"
+                className="rounded-2xl border-2 py-2 text-center"
                 style={{
                   borderColor: hit ? '#4FA882' : '#E3EAE5',
                   background: hit ? '#4FA8821A' : '#FAFCFA',
                 }}
               >
-                <p className="text-[14px] font-extrabold">{hit ? '🎉' : '👥'} {m.n}명</p>
-                <p className="text-[12.5px] font-extrabold text-mind-700">+{m.p}P</p>
+                <p className="text-[11.5px] font-extrabold">{hit ? '🎉' : '👥'}{m.n}명</p>
+                <p className="mt-0.5 text-[11px] font-extrabold text-mind-700">+{m.p.toLocaleString()}P</p>
               </div>
             )
           })}
