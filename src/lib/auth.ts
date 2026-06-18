@@ -17,7 +17,11 @@ export function authReady(): boolean {
 export async function signInWithKakao(): Promise<{ ok: boolean; error?: string }> {
   if (!supabase) return { ok: false, error: 'supabase_not_configured' }
   const redirectTo = typeof window !== 'undefined' ? window.location.origin : undefined
-  const { error } = await supabase.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo } })
+  // 닉네임만 요청 — account_email은 카카오 동의항목 미설정 시 KOE205 발생(이메일은 비즈앱 검수 필요).
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'kakao',
+    options: { redirectTo, scopes: 'profile_nickname' },
+  })
   return error ? { ok: false, error: error.message } : { ok: true }
 }
 
