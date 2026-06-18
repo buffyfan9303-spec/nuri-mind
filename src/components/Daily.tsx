@@ -10,7 +10,7 @@ import { sfx } from '../lib/sound'
 
 const todayStr = () => new Date().toISOString().slice(0, 10)
 
-/** 오늘 무료 적립 잔량 미터 — 일일 상한 30~50P 룰의 가시화 */
+/** 오늘 무료 적립 잔량 미터 — 일일 상한 25P 룰의 가시화 */
 export function DailyCapMeter() {
   const t = useT()
   const freeDate = useStore((s) => s.freeDate)
