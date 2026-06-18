@@ -9,11 +9,12 @@ import { TESTS } from '../data/tests'
 import type { CommunityComment, CommunityPost, TestId } from '../data/types'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
-import { thisWeekTheme } from '../data/themes'
+import { todayTheme } from '../data/themes'
+import Ticker from '../components/Ticker'
 import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
 import { supabaseReady } from '../lib/supabase'
-import { checkRate, hasProfanity, recordAction } from '../lib/moderation'
+import { checkRate, moderateText, recordAction } from '../lib/moderation'
 import {
   createComment,
   createPost,
@@ -170,7 +171,7 @@ export default function Community() {
 
   const submit = async () => {
     if (!text.trim()) return
-    if (hasProfanity(text)) return flash(t('community.badword'))
+    if (!moderateText(text).ok) return flash(t('community.badword'))
     const rl = checkRate('post')
     if (!rl.ok) return flash(t('community.tooFast', { n: rl.waitSec }))
     recordAction('post')
@@ -213,7 +214,7 @@ export default function Community() {
   const submitComment = async (postId: string) => {
     const body = commentText.trim()
     if (!body) return
-    if (hasProfanity(body)) return flash(t('community.badword'))
+    if (!moderateText(body).ok) return flash(t('community.badword'))
     const rl = checkRate('comment')
     if (!rl.ok) return flash(t('community.tooFast', { n: rl.waitSec }))
     recordAction('comment')
@@ -314,6 +315,9 @@ export default function Community() {
       </AnimatePresence>
 
       <main className="mx-auto max-w-md px-5">
+        {/* 📣 전광판 (확성기) */}
+        <Ticker />
+
         {/* 상태 표시 */}
         <div className="flex items-start justify-between gap-2 px-1">
           <p className="flex-1 break-keep text-[13.5px] font-medium leading-relaxed text-[#6B756E]">{t('community.sub')}</p>
@@ -344,7 +348,7 @@ export default function Community() {
           <span className="text-[22px]">🗓️</span>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-extrabold tracking-wide text-mind-600">{t('community.themeLabel')}</p>
-            <p className="mt-0.5 break-keep text-[14px] font-extrabold leading-snug">{l(thisWeekTheme())}</p>
+            <p className="mt-0.5 break-keep text-[14px] font-extrabold leading-snug">{l(todayTheme())}</p>
           </div>
           <span className="shrink-0 whitespace-nowrap rounded-full bg-mind-500 px-3 py-1.5 text-[12px] font-extrabold text-white">
             ✍️ {t('community.themeWrite')}
@@ -637,7 +641,7 @@ export default function Community() {
         <div className="mt-2.5 flex items-center gap-2 rounded-xl bg-mind-50 px-3 py-2">
           <span className="shrink-0 text-[14px]">🗓️</span>
           <p className="break-keep text-[12.5px] font-bold leading-snug text-mind-700">
-            {t('community.themeLabel')} · {l(thisWeekTheme())}
+            {t('community.themeLabel')} · {l(todayTheme())}
           </p>
         </div>
         <textarea

@@ -23,6 +23,35 @@ export function hasProfanity(text: string): boolean {
   return BANNED.some((w) => n.includes(w))
 }
 
+/* ── 강화 필터 (전광판/게시물): 19금·성인 · 외부유도/연락처 · 도박/스팸 ── */
+const ADULT = [
+  '섹스', '야동', '자위', '음란', '19금', '성인물', '조건만남', '애무', '폰섹', '야사',
+  '노모', '몰카', '불법촬영', '성매매', '원나잇', 'sex', 'porn', 'nude', 'xxx', 'av',
+]
+const CONTACT = [
+  '오픈카톡', '오픈채팅', '카톡아이디', '카톡id', '텔레그램', '텔레', '라인아이디', 'wechat', '디엠주세요', '디엠줘',
+]
+const SPAM = [
+  '토토', '카지노', '바카라', '베팅', '코인리딩', '리딩방', '작업대출', '릴게임', '슬롯머신', '환전',
+  '먹튀', '꽁머니', '배당', '하이로우',
+]
+
+export type ModReason = 'profanity' | 'adult' | 'contact' | 'spam'
+
+/**
+ * 통합 콘텐츠 모더레이션 (클라이언트 휴리스틱 "AI 필터" 1차).
+ * 욕설·19금/성인·외부유도(연락처)·도박/스팸을 정규화 후 부분일치 + 전화번호 패턴으로 차단.
+ * 서버 2차(LLM 모더레이션 Edge Function)로 확장 가능 — 여기선 즉시·무료·오프라인 가능한 1차 방어.
+ */
+export function moderateText(text: string): { ok: boolean; reason?: ModReason } {
+  const n = normalize(text)
+  if (BANNED.some((w) => n.includes(w))) return { ok: false, reason: 'profanity' }
+  if (ADULT.some((w) => n.includes(w))) return { ok: false, reason: 'adult' }
+  if (CONTACT.some((w) => n.includes(w)) || /01[016789]\d{7,8}/.test(n)) return { ok: false, reason: 'contact' }
+  if (SPAM.some((w) => n.includes(w))) return { ok: false, reason: 'spam' }
+  return { ok: true }
+}
+
 /** 표시용 마스킹 (서버 글에도 적용 가능) */
 export function maskProfanity(text: string): string {
   let out = text

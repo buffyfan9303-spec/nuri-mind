@@ -22,6 +22,7 @@ import { botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
 import { uid } from '../lib/random'
 import { setSoundEnabled } from '../lib/sound'
 import { track } from '../lib/analytics'
+import { moderateText } from '../lib/moderation'
 
 /** 운영자 PIN — 배포 전 반드시 변경 (실서비스는 Supabase Auth 권장) */
 const OPERATOR_PIN = '5690'
@@ -59,6 +60,15 @@ export const DIA_BUNDLES: DiaBundle[] = [
   { dia: 30, krw: 2250, off: 25 },
 ]
 
+/** 전광판(확성기) 1회 게시 비용 — 1다이아(=100원). AI 필터 통과 시에만 노출. */
+export const TICKER_COST = 1
+export interface TickerMsg {
+  id: string
+  text: string
+  nick: string
+  at: number
+}
+
 const dayStr = (offset = 0) => new Date(Date.now() - offset * 86400000).toISOString().slice(0, 10)
 const today = () => dayStr(0)
 const yesterday = () => dayStr(1)
@@ -83,6 +93,8 @@ interface State {
   fortuneFreeUses: number
   /** IQ 정밀검사 전체 해제 여부(영구) */
   iqUnlocked: boolean
+  /** 전광판(확성기) 메시지 — 최신순 */
+  tickerMsgs: TickerMsg[]
   deviceId: string
   posts: CommunityPost[]
   comments: Record<string, CommunityComment[]>
@@ -181,6 +193,8 @@ interface State {
   viewFortuneFull: () => 'free' | 'dia' | 'need'
   /** IQ 정밀검사 전체 해제(10다이아) — 부족 시 false */
   unlockIq: () => boolean
+  /** 전광판 게시(1다이아) — 'ok'·'dia'(잔액부족)·'bad'(AI필터 차단) */
+  postTicker: (text: string) => 'ok' | 'dia' | 'bad'
   readArticle: (id: string) => number
   unlockAdmin: (pin: string) => boolean
   lockAdmin: () => void
@@ -202,6 +216,11 @@ const initial = () => ({
   fortuneMonth: '',
   fortuneFreeUses: 0,
   iqUnlocked: false,
+  tickerMsgs: [
+    { id: 'tk_s1', text: '🎉 검사 8종 올클리어 도전 중! 같이 하실 분?', nick: '누리', at: Date.now() - 5400000 },
+    { id: 'tk_s2', text: '💪 오늘도 출석 도장 찍고 갑니다', nick: '민지', at: Date.now() - 3600000 },
+    { id: 'tk_s3', text: '🔮 이번 달 종합 운세 대박이었음', nick: '하늘', at: Date.now() - 1800000 },
+  ] as TickerMsg[],
   deviceId: uid('dev_'),
   posts: SEED_POSTS,
   comments: {} as Record<string, CommunityComment[]>,
@@ -627,6 +646,19 @@ export const useStore = create<State>()(
           if (s.diamonds < IQ_DIA_COST) return false
           set({ diamonds: s.diamonds - IQ_DIA_COST, iqUnlocked: true })
           return true
+        },
+        /** 전광판 게시 — AI 필터 통과 + 1다이아 차감 후 노출 */
+        postTicker: (text) => {
+          const s = get()
+          const body = text.trim().slice(0, 60)
+          if (!body) return 'bad'
+          if (!moderateText(body).ok) return 'bad'
+          if (s.diamonds < TICKER_COST) return 'dia'
+          set({
+            diamonds: s.diamonds - TICKER_COST,
+            tickerMsgs: [{ id: uid('tk_'), text: body, nick: s.nickname, at: Date.now() }, ...s.tickerMsgs].slice(0, 30),
+          })
+          return 'ok'
         },
 
         /** 매거진 정독 보상 — 글당 1회 +8P(일일 무료 상한 적용) */
