@@ -4,7 +4,7 @@ import { useT } from '../i18n/useT'
 
 const TABS = [
   { to: '/', icon: '🏠', key: 'nav.home' },
-  { to: '/rewards', icon: '💎', key: 'nav.rewards' },
+  { to: '/rewards', icon: '🪙', key: 'nav.rewards' },
   { to: '/community', icon: '💬', key: 'nav.community' },
   { to: '/shop', icon: '🎁', key: 'nav.shop' },
   { to: '/profile', icon: '👤', key: 'nav.profile' },
