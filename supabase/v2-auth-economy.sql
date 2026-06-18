@@ -64,7 +64,7 @@ returns int language sql security definer set search_path = public stable as $$
   select coalesce(sum(amount),0)::int from public.points_ledger where user_id = auth.uid();
 $$;
 
--- 적립 (서버 검증: 일일 무료 상한 50P, 1회성 키 중복 차단)
+-- 적립 (서버 검증: 일일 무료 상한 25P, 1회성 키 중복 차단) — 클라 DAILY_FREE_CAP와 일치시킬 것
 create or replace function public.grant_points(p_amount int, p_memo text, p_reason_key text default null, p_is_free boolean default true)
 returns int language plpgsql security definer set search_path = public as $$
 declare uid uuid := auth.uid(); today_free int;
@@ -75,11 +75,11 @@ begin
   if p_reason_key is not null and exists(select 1 from public.points_ledger where user_id=uid and reason_key=p_reason_key) then
     return public.my_points();
   end if;
-  -- 일일 무료적립 상한 50P
+  -- 일일 무료적립 상한 25P (지속가능 재설계 — 클라 DAILY_FREE_CAP=25와 동일)
   if p_is_free then
     select coalesce(sum(amount),0) into today_free from public.points_ledger
       where user_id=uid and at::date = now()::date and amount>0 and reason_key is distinct from 'purchase';
-    if today_free + p_amount > 50 then p_amount := greatest(0, 50 - today_free); end if;
+    if today_free + p_amount > 25 then p_amount := greatest(0, 25 - today_free); end if;
   end if;
   if p_amount > 0 then
     insert into public.points_ledger(user_id, amount, memo, reason_key) values (uid, p_amount, p_memo, p_reason_key);
