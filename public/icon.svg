@@ -1,15 +1,56 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#9BC4B2"/>
-      <stop offset="100%" stop-color="#8FB8E8"/>
+    <linearGradient id="ol" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E58BA8"/>
+      <stop offset="1" stop-color="#B58BD6"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FBD2E1"/>
+      <stop offset="1" stop-color="#F6B6CE"/>
     </linearGradient>
   </defs>
-  <rect width="128" height="128" rx="30" fill="url(#bg)"/>
-  <g fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round">
-    <path d="M52 34c-9 0-16 7-16 15 0 2 .4 4 1.2 6C32 58 29 63 29 69c0 7 4.5 12.5 10.8 14.6C41 92 47.5 98 56 98h8V34h-12z" fill="#ffffff" fill-opacity="0.95" stroke="none"/>
-    <path d="M76 34c9 0 16 7 16 15 0 2-.4 4-1.2 6C96 58 99 63 99 69c0 7-4.5 12.5-10.8 14.6C87 92 80.5 98 72 98h-8V34h12z" fill="#ffffff" fill-opacity="0.75" stroke="none"/>
+
+  <!-- 뇌간 -->
+  <path d="M62 99 C61 106 62 113 65 114 C68 113 69 106 68 99 Z" fill="#A85068"/>
+  <!-- 소뇌 (민트) -->
+  <path d="M68 88 C82 85 94 91 92 101 C90 108 76 110 68 103 Z" fill="#74DEC0" stroke="#46B89C" stroke-width="2.5"/>
+
+  <!-- 뇌 본체 -->
+  <path d="M32 71
+    C29 59 37 49 49 51
+    C48 40 60 36 68 44
+    C75 36 88 40 90 51
+    C102 50 108 61 102 71
+    C108 78 103 88 93 86
+    C91 95 78 97 70 90
+    C63 96 52 94 50 85
+    C39 87 31 81 32 71 Z"
+    fill="url(#body)" stroke="url(#ol)" stroke-width="3.2" stroke-linejoin="round"/>
+
+  <!-- 주름 -->
+  <g fill="none" stroke="#E48BAE" stroke-width="2.6" stroke-linecap="round" opacity="0.8">
+    <path d="M67 46 C65 55 67 62 65 71"/>
+    <path d="M45 55 C51 57 53 63 49 69"/>
+    <path d="M88 56 C82 59 80 65 84 71"/>
+    <path d="M56 47 C58 51 56 55 58 59"/>
+    <path d="M79 47 C77 51 79 55 77 59"/>
   </g>
-  <circle cx="100" cy="28" r="4" fill="#F4B08C"/>
-  <circle cx="108" cy="38" r="2.5" fill="#F4B08C"/>
+
+  <!-- 볼터치 -->
+  <circle cx="45" cy="76" r="5.2" fill="#FBB29C" opacity="0.65"/>
+  <circle cx="90" cy="76" r="5.2" fill="#FBB29C" opacity="0.65"/>
+  <!-- 눈 -->
+  <ellipse cx="55" cy="70" rx="4.6" ry="5.8" fill="#2C2438"/>
+  <ellipse cx="80" cy="70" rx="4.6" ry="5.8" fill="#2C2438"/>
+  <circle cx="56.6" cy="68" r="1.5" fill="#fff"/>
+  <circle cx="81.6" cy="68" r="1.5" fill="#fff"/>
+  <!-- 미소 -->
+  <path d="M62 79 Q67.5 85 73 79" fill="none" stroke="#2C2438" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- 반짝이 -->
+  <g stroke="#B58BD6" stroke-width="2.6" stroke-linecap="round" opacity="0.85">
+    <path d="M97 49 l4.5 -3"/>
+    <path d="M100 58 l4.5 -1"/>
+    <path d="M93 42 l3 -3.5"/>
+  </g>
 </svg>
