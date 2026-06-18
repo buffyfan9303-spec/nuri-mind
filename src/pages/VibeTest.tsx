@@ -164,7 +164,7 @@ export default function VibeTest() {
                 <p className="mt-2 text-[15px] font-bold leading-relaxed text-white/95">“{l(vt.tagline)}”</p>
                 {firstReward > 0 && (
                   <span className="mt-3 inline-block rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
-                    💎 {t('vibe.first')}
+                    🪙 {t('vibe.first')}
                   </span>
                 )}
               </div>

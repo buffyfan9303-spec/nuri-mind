@@ -71,7 +71,7 @@ export default function Shop() {
                   <div className="min-w-0 flex-1">
                     <h3 className="break-keep text-[15px] font-extrabold leading-tight tracking-tight">{l(item.name)}</h3>
                     <p className="mt-0.5 whitespace-nowrap text-[13px] font-extrabold text-mind-700">
-                      💎 {item.cost.toLocaleString()}P
+                      🪙 {item.cost.toLocaleString()}P
                       {isFreeze && freezes > 0 && <span className="ml-1.5 text-[12px] text-sky2-600">❄️×{freezes}</span>}
                     </p>
                   </div>

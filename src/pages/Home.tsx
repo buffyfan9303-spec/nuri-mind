@@ -95,7 +95,7 @@ export default function Home() {
             <div>
               <div className="flex items-end gap-1.5">
                 <span className="text-[34px] font-extrabold leading-none tracking-tight text-white">
-                  💎 {s.points.toLocaleString()}
+                  🪙 {s.points.toLocaleString()}
                 </span>
                 <span className="pb-1 text-[15px] font-extrabold text-white/80">P</span>
               </div>
@@ -268,7 +268,7 @@ export default function Home() {
           className="mt-4"
         >
           <Card onClick={() => nav('/rewards')} className="flex items-center gap-3.5 !p-4">
-            <span className="text-[28px]">💎</span>
+            <span className="text-[28px]">🪙</span>
             <div className="min-w-0 flex-1">
               <h3 className="text-[16px] font-extrabold tracking-tight">{t('home.rewardsBanner')}</h3>
               <p className="mt-0.5 text-[13px] font-bold text-ink-faint">{t('home.rewardsBannerSub')}</p>

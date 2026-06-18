@@ -97,7 +97,7 @@ export default function League() {
           <p className="mt-1 text-[13.5px] font-bold leading-relaxed text-white/90">{t('league.sub')}</p>
           <div className="mt-3 flex items-center justify-center gap-2">
             <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
-              {t('league.myWeek')} 💎 {my.toLocaleString()}P
+              {t('league.myWeek')} 🪙 {my.toLocaleString()}P
             </span>
             <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
               ⏳ {t('league.reset', { d: dLeft, h: hLeft })}

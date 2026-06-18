@@ -38,6 +38,27 @@ export const DAILY_FREE_CAP = 25
 export const FREEZE_COST = 300
 export const FREEZE_MAX = 3
 
+/* ── 다이아(유료 디지털 재화) — 1다이아 = 100원 ── */
+/** 운세 종합: 매월 무료 3회, 이후 다이아 결제 */
+export const FORTUNE_FREE_PER_MONTH = 3
+export const FORTUNE_DIA_COST = 5
+/** IQ 정밀검사 전체 해제(영구) */
+export const IQ_DIA_COST = 10
+export interface DiaBundle {
+  dia: number
+  krw: number
+  /** 정가 대비 할인율(%) — 표시용 */
+  off?: number
+  best?: boolean
+}
+/** 충전 번들 — 5개 10%↓, 10개 20%↓, 30개 25%↓ (PG 연동 후 실제 결제) */
+export const DIA_BUNDLES: DiaBundle[] = [
+  { dia: 1, krw: 100 },
+  { dia: 5, krw: 450, off: 10 },
+  { dia: 10, krw: 800, off: 20, best: true },
+  { dia: 30, krw: 2250, off: 25 },
+]
+
 const dayStr = (offset = 0) => new Date(Date.now() - offset * 86400000).toISOString().slice(0, 10)
 const today = () => dayStr(0)
 const yesterday = () => dayStr(1)
@@ -55,6 +76,13 @@ interface State {
   onboarded: boolean
   consent: { v: string; at: string } | null
   birthDate: string
+  /** 다이아 잔액(유료 재화). 1다이아=100원 */
+  diamonds: number
+  /** 운세 종합 무료횟수 리셋 기준 월(YYYY-MM) */
+  fortuneMonth: string
+  fortuneFreeUses: number
+  /** IQ 정밀검사 전체 해제 여부(영구) */
+  iqUnlocked: boolean
   deviceId: string
   posts: CommunityPost[]
   comments: Record<string, CommunityComment[]>
@@ -145,6 +173,14 @@ interface State {
   completeVibe: (pct: number) => number
   unlockAi: (resultId: string) => void
   setAiReportText: (id: string, text: string) => void
+  /** 다이아 충전(결제 성공 후 호출) */
+  addDiamonds: (n: number) => void
+  /** 다이아 차감 — 잔액 부족 시 false */
+  spendDiamonds: (n: number) => boolean
+  /** 운세 종합 열람 시도 — 'free'(월무료)·'dia'(차감)·'need'(잔액부족) */
+  viewFortuneFull: () => 'free' | 'dia' | 'need'
+  /** IQ 정밀검사 전체 해제(10다이아) — 부족 시 false */
+  unlockIq: () => boolean
   readArticle: (id: string) => number
   unlockAdmin: (pin: string) => boolean
   lockAdmin: () => void
@@ -162,6 +198,10 @@ const initial = () => ({
   onboarded: false,
   consent: null as { v: string; at: string } | null,
   birthDate: '',
+  diamonds: 0,
+  fortuneMonth: '',
+  fortuneFreeUses: 0,
+  iqUnlocked: false,
   deviceId: uid('dev_'),
   posts: SEED_POSTS,
   comments: {} as Record<string, CommunityComment[]>,
@@ -557,6 +597,37 @@ export const useStore = create<State>()(
         unlockAi: (resultId) =>
           set((s) => (s.aiReports.includes(resultId) ? s : { aiReports: [...s.aiReports, resultId] })),
         setAiReportText: (id, text) => set((s) => ({ aiReportText: { ...s.aiReportText, [id]: text } })),
+
+        addDiamonds: (n) => set((s) => ({ diamonds: s.diamonds + Math.max(0, Math.round(n)) })),
+        spendDiamonds: (n) => {
+          const s = get()
+          if (s.diamonds < n) return false
+          set({ diamonds: s.diamonds - n })
+          return true
+        },
+        /** 운세 종합 열람 — 월 무료 3회 → 이후 5다이아 차감 */
+        viewFortuneFull: () => {
+          const s = get()
+          const m = new Date().toISOString().slice(0, 7)
+          const used = s.fortuneMonth === m ? s.fortuneFreeUses : 0
+          if (used < FORTUNE_FREE_PER_MONTH) {
+            set({ fortuneMonth: m, fortuneFreeUses: used + 1 })
+            return 'free'
+          }
+          if (s.diamonds >= FORTUNE_DIA_COST) {
+            set({ diamonds: s.diamonds - FORTUNE_DIA_COST })
+            return 'dia'
+          }
+          return 'need'
+        },
+        /** IQ 정밀검사 전체 해제 — 1회 10다이아(영구) */
+        unlockIq: () => {
+          const s = get()
+          if (s.iqUnlocked) return true
+          if (s.diamonds < IQ_DIA_COST) return false
+          set({ diamonds: s.diamonds - IQ_DIA_COST, iqUnlocked: true })
+          return true
+        },
 
         /** 매거진 정독 보상 — 글당 1회 +8P(일일 무료 상한 적용) */
         readArticle: (id) => {

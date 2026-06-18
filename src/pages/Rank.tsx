@@ -48,7 +48,7 @@ export default function Rank() {
           <p className="mt-3 text-[14px] font-extrabold tracking-wide text-white/85">{t('rank.current')}</p>
           <h1 className="mt-0.5 text-[30px] font-extrabold tracking-tight text-white">{l(tier.name)}</h1>
           <p className="mt-1 text-[15px] font-bold text-white/90">
-            {t('rank.lifetime')} 💎 {lifetime.toLocaleString()}P
+            {t('rank.lifetime')} 🪙 {lifetime.toLocaleString()}P
           </p>
 
           <div className="mt-5">
@@ -97,7 +97,7 @@ export default function Rank() {
                         </h3>
                         {isCurrent && <Chip tone="mind">NOW</Chip>}
                       </div>
-                      <p className="text-[13px] font-bold text-ink-faint">💎 {tr.min.toLocaleString()}P+</p>
+                      <p className="text-[13px] font-bold text-ink-faint">🪙 {tr.min.toLocaleString()}P+</p>
                     </div>
                   </div>
                   <ul className="mt-3 space-y-1.5">

@@ -221,7 +221,7 @@ export default function TestResult() {
             transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 20 }}
             className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-100 py-3.5 text-[15.5px] font-extrabold text-mind-700"
           >
-            💎 {t('result.reward', { p: reward })}
+            🪙 {t('result.reward', { p: reward })}
           </motion.div>
         )}
 

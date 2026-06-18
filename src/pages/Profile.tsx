@@ -95,7 +95,7 @@ export default function Profile() {
               </h2>
             )}
             <p className="mt-1 text-[13px] font-bold text-ink-faint">
-              💎 {s.points.toLocaleString()}P · 🧪 {s.results.length} · 🔥 {s.streak}
+              🪙 {s.points.toLocaleString()}P · 🧪 {s.results.length} · 🔥 {s.streak}
             </p>
             <button
               onClick={() => nav('/rank')}

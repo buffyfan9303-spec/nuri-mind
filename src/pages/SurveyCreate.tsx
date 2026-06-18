@@ -318,7 +318,7 @@ export default function SurveyCreate() {
                 </Card>
                 <Card className="!bg-gradient-to-r from-mind-500 to-sky2-500 text-center">
                   <p className="text-xs font-extrabold text-white/85">{t('create.budget')}</p>
-                  <p className="mt-1 text-3xl font-extrabold text-white">💎 {(reward * target).toLocaleString()}P</p>
+                  <p className="mt-1 text-3xl font-extrabold text-white">🪙 {(reward * target).toLocaleString()}P</p>
                 </Card>
                 <p className="rounded-xl bg-amber-50 px-3.5 py-2.5 text-[12px] font-bold leading-relaxed text-amber-700">
                   ⚠️ {t('create.policy')}

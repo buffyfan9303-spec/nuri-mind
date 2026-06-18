@@ -214,7 +214,7 @@ function Console() {
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-[15px] font-extrabold">{rd.itemName}</h3>
                     <p className="text-xs font-bold text-ink-faint">
-                      💎 {rd.cost.toLocaleString()}P · {new Date(rd.at).toLocaleString()}
+                      🪙 {rd.cost.toLocaleString()}P · {new Date(rd.at).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -298,7 +298,7 @@ function Console() {
           <div className="grid grid-cols-2 gap-3">
             {[
               { label: t('admin.stat.results'), value: results.length, icon: '🧠' },
-              { label: t('admin.stat.points'), value: pointsIssued.toLocaleString() + 'P', icon: '💎' },
+              { label: t('admin.stat.points'), value: pointsIssued.toLocaleString() + 'P', icon: '🪙' },
               { label: t('admin.stat.surveys'), value: surveys.length, icon: '📋' },
               { label: t('admin.stat.responses'), value: totalResponses, icon: '🗳️' },
             ].map((st) => (

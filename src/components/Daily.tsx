@@ -112,7 +112,7 @@ export function DailySpin() {
             reward && (
               <>
                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -8, 6, 0] }} className="text-7xl">
-                  💎
+                  🪙
                 </motion.div>
                 <h3 className="mt-3 text-[24px] font-extrabold text-mind-700">
                   {t('spin.win', { p: reward.rolled })}

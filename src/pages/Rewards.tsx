@@ -73,7 +73,7 @@ export default function Rewards() {
         >
           <p className="text-[13.5px] font-extrabold tracking-wide text-white/80">{t('rewards.balance')}</p>
           <div className="mt-1 flex items-end gap-1.5">
-            <span className="text-4xl font-extrabold tracking-tight text-white">💎 {points.toLocaleString()}</span>
+            <span className="text-4xl font-extrabold tracking-tight text-white">🪙 {points.toLocaleString()}</span>
             <span className="pb-1 text-sm font-extrabold text-white/80">P</span>
           </div>
           {/* 랭크 등급 진입점 */}
