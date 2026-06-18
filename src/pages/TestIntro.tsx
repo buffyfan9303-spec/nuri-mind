@@ -5,13 +5,16 @@ import AdSlot from '../components/AdSlot'
 import { TopBar, Card } from '../components/ui'
 import { testMeta } from '../data/tests'
 import type { TestId } from '../data/types'
-import { useT } from '../i18n/useT'
+import { useT, useL } from '../i18n/useT'
+import { useStore, IQ_DIA_COST } from '../store/useStore'
 
 export default function TestIntro() {
   const { id } = useParams<{ id: TestId }>()
   const t = useT()
+  const l = useL()
   const nav = useNavigate()
   const tm = testMeta(id as TestId)
+  const iqUnlocked = useStore((s) => s.iqUnlocked)
 
   return (
     <div className="min-h-dvh pb-36">
@@ -71,6 +74,26 @@ export default function TestIntro() {
 
         {id === 'adhd' && (
           <p className="mt-3 px-2 text-[12.5px] font-medium leading-relaxed text-ink-faint">{t('result.medical')}</p>
+        )}
+
+        {id === 'iq' && (
+          <Card className={`mt-4 ${iqUnlocked ? '!bg-[#EFFaf4]' : '!bg-[#F7F6FE]'}`}>
+            <div className="flex items-start gap-3">
+              <span className="text-[26px]">{iqUnlocked ? '✅' : '🔒'}</span>
+              <div className="min-w-0">
+                <h3 className="text-[14.5px] font-extrabold">
+                  {iqUnlocked
+                    ? l({ ko: '정밀 IQ 해제됨', en: 'Precision IQ unlocked', ja: '精密IQ解除済み' })
+                    : l({ ko: '앞 4문항 무료 체험', en: 'First 4 questions free', ja: '最初の4問は無料体験' })}
+                </h3>
+                <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
+                  {iqUnlocked
+                    ? l({ ko: '20문항 전체와 정확한 IQ 점수·인지영역 분석을 볼 수 있어요.', en: 'You can take all 20 and see your accurate IQ score & breakdown.', ja: '全20問と正確なIQスコア・分析が見られます。' })
+                    : l({ ko: `전체 20문항과 정확한 IQ 점수·인지영역 분석은 💎${IQ_DIA_COST}로 한 번만 해제하면 영구 이용돼요.`, en: `Unlock all 20 plus your accurate IQ score & breakdown for 💎${IQ_DIA_COST} — once, forever.`, ja: `全20問と正確なIQスコア・分析は💎${IQ_DIA_COST}で一度解除すれば永久利用。` })}
+                </p>
+              </div>
+            </div>
+          </Card>
         )}
 
         <div className="mt-5">

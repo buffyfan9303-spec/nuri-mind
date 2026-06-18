@@ -17,11 +17,14 @@ import type { IqItem, LikertItem, TestId } from '../data/types'
 import { mulberry32, shuffle } from '../lib/random'
 import { scoreAdhd, scoreBurnout, scoreDark, scoreDopamine, scoreEgo, scoreIq, scoreLove, scoreResilience } from '../lib/scoring'
 import { LIKERT_AGREE, LIKERT_FREQ } from '../i18n/translations'
-import { useStore } from '../store/useStore'
+import { useStore, IQ_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx, startAmbient, stopAmbient } from '../lib/sound'
+import { burst } from '../lib/confetti'
 
 const IQ_TIME = 45
+/** IQ 정밀검사 무료 체험 문항 수(앞 20%) — 이후 다이아로 전체 해제 */
+const IQ_FREE_Q = 4
 
 /** 리커트형 검사 문항 뱅크 */
 const BANKS: Partial<Record<TestId, LikertItem[]>> = {
@@ -46,6 +49,9 @@ export default function TestRun() {
   const lang = useStore((s) => s.lang)
   const ambient = useStore((s) => s.ambient)
   const addResult = useStore((s) => s.addResult)
+  const iqUnlocked = useStore((s) => s.iqUnlocked)
+  const unlockIq = useStore((s) => s.unlockIq)
+  const diamonds = useStore((s) => s.diamonds)
   const nav = useNavigate()
 
   /* 차분한 배경음 (설정 ON 시 검사 동안 재생) */
@@ -71,6 +77,7 @@ export default function TestRun() {
   const [sel, setSel] = useState<number | string | null>(null)
   const [answers, setAnswers] = useState<Record<string, number | string | null>>({})
   const [quitOpen, setQuitOpen] = useState(false)
+  const [gateChargeOpen, setGateChargeOpen] = useState(false)
   const [bubble, setBubble] = useState<string | null>(null)
   const [timeLeft, setTimeLeft] = useState(IQ_TIME)
   const startRef = useRef(Date.now())
@@ -163,7 +170,8 @@ export default function TestRun() {
     setTimeout(() => advance(map), 350)
   }
   useEffect(() => {
-    if (!isIq) return
+    // 잠금 게이트(앞 4문항 이후·미해제) 동안엔 타이머 정지
+    if (!isIq || (!iqUnlocked && idx >= IQ_FREE_Q)) return
     setTimeLeft(IQ_TIME)
     const iv = setInterval(() => {
       setTimeLeft((prev) => {
@@ -177,10 +185,20 @@ export default function TestRun() {
     }, 1000)
     return () => clearInterval(iv)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idx, isIq])
+  }, [idx, isIq, iqUnlocked])
 
   const item: LikertItem | IqItem | undefined = isIq ? iqItems[idx] : likertItems[idx]
   const ratio = useMemo(() => idx / total, [idx, total])
+  const iqGated = isIq && !iqUnlocked && idx >= IQ_FREE_Q
+  const tryUnlockIq = () => {
+    const ok = unlockIq()
+    if (!ok) {
+      setGateChargeOpen(true)
+      return
+    }
+    burst()
+    sfx.coin()
+  }
   if (!item) return null
 
   return (
@@ -294,6 +312,16 @@ export default function TestRun() {
                   })}
                 </div>
               </>
+            ) : iqGated ? (
+              <IqGate
+                item={item as IqItem}
+                accent={tm.gradFrom}
+                diamonds={diamonds}
+                freeQ={IQ_FREE_Q}
+                total={total}
+                onUnlock={tryUnlockIq}
+                onLater={() => setQuitOpen(true)}
+              />
             ) : (
               <IqQuestion item={item as IqItem} sel={sel as string | null} onPick={pickIq} accent={tm.gradFrom} />
             )}
@@ -301,8 +329,8 @@ export default function TestRun() {
         </AnimatePresence>
       </main>
 
-      {/* IQ 확인 버튼 */}
-      {isIq && (
+      {/* IQ 확인 버튼 (잠금 게이트 중엔 숨김) */}
+      {isIq && !iqGated && (
         <div className="sticky bottom-0 border-t border-[#EDF2EE] bg-cream/95 px-5 pb-7 pt-3 backdrop-blur">
           <div className="mx-auto max-w-md">
             <Button color="iq" size="lg" disabled={sel === null} onClick={confirmIq}>
@@ -328,6 +356,75 @@ export default function TestRun() {
           </div>
         </div>
       </Modal>
+
+      {/* 다이아 부족 → 충전 안내 */}
+      <Modal open={gateChargeOpen} onClose={() => setGateChargeOpen(false)}>
+        <div className="text-center">
+          <p className="text-[44px] leading-none">💎</p>
+          <h3 className="mt-2 text-[19px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
+          <p className="mt-1 break-keep text-[13.5px] font-bold text-ink-faint">
+            {l({ ko: `정밀 IQ 해제에 ${IQ_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Unlock needs 💎${IQ_DIA_COST} · you have ${diamonds}`, ja: `解除に💎${IQ_DIA_COST}必要・保有${diamonds}` })}
+          </p>
+          <div className="mt-5">
+            <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
+            <button onClick={() => setGateChargeOpen(false)} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">{l({ ko: '닫기', en: 'Close', ja: '閉じる' })}</button>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  )
+}
+
+/** IQ 정밀검사 잠금 게이트 — 앞 4문항(20%) 후 노출. 블러된 다음 문항 + 해제 카드. */
+function IqGate({
+  item,
+  accent,
+  diamonds,
+  freeQ,
+  total,
+  onUnlock,
+  onLater,
+}: {
+  item: IqItem
+  accent: string
+  diamonds: number
+  freeQ: number
+  total: number
+  onUnlock: () => void
+  onLater: () => void
+}) {
+  const l = useL()
+  return (
+    <div className="relative mt-6">
+      {/* 블러된 다음 문항 미리보기 */}
+      <div className="pointer-events-none select-none opacity-50 blur-[7px]">
+        <IqQuestion item={item} sel={null} onPick={() => {}} accent={accent} />
+      </div>
+      {/* 해제 카드 */}
+      <div className="absolute inset-0 flex items-start justify-center px-2 pt-4">
+        <div className="w-full max-w-sm rounded-3xl border-2 border-[#D7DAF7] bg-white/95 p-6 text-center shadow-pop backdrop-blur-sm">
+          <div className="text-[42px] leading-none">🔒</div>
+          <h3 className="mt-2 text-[18.5px] font-extrabold">{l({ ko: '정밀 IQ 전체 해제', en: 'Unlock full precision IQ', ja: '精密IQをすべて解除' })}</h3>
+          <p className="mx-auto mt-1.5 max-w-[280px] break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
+            {l({
+              ko: `무료 체험 ${freeQ}문항 완료! 나머지 ${total - freeQ}문항과 정확한 IQ 점수·인지영역 분석은 한 번만 해제하면 계속 볼 수 있어요.`,
+              en: `${freeQ} free sample questions done! Unlock the remaining ${total - freeQ} plus your accurate IQ score & cognitive breakdown — one-time, kept forever.`,
+              ja: `無料体験${freeQ}問完了！残り${total - freeQ}問と正確なIQスコア・認知領域分析は一度の解除でずっと見られます。`,
+            })}
+          </p>
+          <div className="mx-auto mt-4 max-w-[260px]">
+            <Button color="iq" size="lg" onClick={onUnlock}>
+              💎 {l({ ko: `${IQ_DIA_COST}개로 전체 풀기`, en: `Unlock for ${IQ_DIA_COST}`, ja: `${IQ_DIA_COST}個で全解除` })}
+            </Button>
+          </div>
+          <p className="mt-2 text-[11.5px] font-medium text-ink-faint">
+            {l({ ko: `보유 💎 ${diamonds} · 1회 해제 후 영구`, en: `You have 💎${diamonds} · one-time, permanent`, ja: `保有💎${diamonds}・一度で永久` })}
+          </p>
+          <button onClick={onLater} className="mt-1.5 w-full py-2 text-[13px] font-bold text-ink-faint">
+            {l({ ko: '나중에 하기', en: 'Maybe later', ja: '後で' })}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
