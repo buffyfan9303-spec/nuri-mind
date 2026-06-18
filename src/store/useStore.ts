@@ -346,7 +346,7 @@ export const useStore = create<State>()(
             streak,
             streakFreezes: usedFreeze ? s.streakFreezes - 1 : s.streakFreezes,
           })
-          grantFree(bonus, `📅 출석 체크 (${streak}일 연속)${usedFreeze ? ' · ❄️ 프리즈 사용' : ''}`)
+          grantFree(bonus, `📅 출석 체크 (${streak}일 연속)${usedFreeze ? ' · ❄️ 복구권 사용' : ''}`)
           return true
         },
 
@@ -503,7 +503,7 @@ export const useStore = create<State>()(
           set({
             points: s.points - FREEZE_COST,
             streakFreezes: s.streakFreezes + 1,
-            ledger: [{ id: uid('lg_'), amount: -FREEZE_COST, memo: '❄️ 스트릭 프리즈 구매', at: Date.now() }, ...s.ledger],
+            ledger: [{ id: uid('lg_'), amount: -FREEZE_COST, memo: '❄️ 연속출석 복구권 구매', at: Date.now() }, ...s.ledger],
           })
           return true
         },

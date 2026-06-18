@@ -75,8 +75,8 @@ export const SHOP_ITEMS: ShopItem[] = [
   {
     id: 'item_freeze',
     emoji: '❄️',
-    name: { ko: '스트릭 프리즈', en: 'Streak Freeze', ja: 'ストリークフリーズ' },
-    desc: { ko: '하루 놓쳐도 스트릭 유지 · 즉시 지급', en: 'Miss a day, keep streak · instant', ja: '1日逃してもストリーク維持・即時付与' },
+    name: { ko: '연속출석 복구권', en: 'Streak Recovery', ja: 'ストリーク復活' },
+    desc: { ko: '하루 빠져도 연속출석 유지 · 즉시 지급', en: 'Miss a day, keep your streak · instant', ja: '1日休んでも連続出席を維持・即時付与' },
     cost: 300,
   },
   {
