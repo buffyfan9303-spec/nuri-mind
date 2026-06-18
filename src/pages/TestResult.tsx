@@ -426,6 +426,14 @@ export default function TestResult() {
           </div>
         )}
 
+        {/* IQ 추정 지표 안내 (정밀화 3차) */}
+        {result.testId === 'iq' && (
+          <div className="mt-3 rounded-2xl bg-[#F2F5F3] p-3.5">
+            <p className="text-[12.5px] font-extrabold text-ink-sub">📋 {t('result.estTitle')}</p>
+            <p className="mt-1 break-keep text-[12px] font-medium leading-relaxed text-ink-faint">{t('result.iqEstimate')}</p>
+          </div>
+        )}
+
         {/* 공통 면책 (정신건강 관련 검사) — 연속 지표 고지 강화 */}
         {['adhd', 'burnout', 'dopamine', 'love', 'resilience', 'dark'].includes(result.testId) && (
           <p className="mt-3 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">

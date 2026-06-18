@@ -16,3 +16,11 @@ export async function scheduleStreakReminder(_enabled: boolean): Promise<void> {
   if (!isNativeNotifyAvailable()) return
   // TODO(APK): _enabled ? LocalNotifications.schedule(...) : LocalNotifications.cancel(...)
 }
+
+/** 아침(예: 9시) "오늘의 운세 보기" 재방문 알림 예약 — APK에서 구현 */
+export async function scheduleFortuneReminder(_enabled: boolean): Promise<void> {
+  if (!isNativeNotifyAvailable()) return
+  // TODO(APK): _enabled
+  //   ? LocalNotifications.schedule({ notifications: [{ id: 7, title: '🔮 오늘의 운세', body: '오늘의 기운을 확인해 보세요', schedule: { on: { hour: 9, minute: 0 }, repeats: true } }] })
+  //   : LocalNotifications.cancel({ notifications: [{ id: 7 }] })
+}

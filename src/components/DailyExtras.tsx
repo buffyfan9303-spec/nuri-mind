@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Card } from './ui'
 import { DAILY_CHALLENGES, DAILY_LINES, MOODS, dayIndex } from '../data/daily'
 import { useStore } from '../store/useStore'
@@ -11,6 +12,7 @@ const todayStr = () => new Date().toISOString().slice(0, 10)
 export default function DailyExtras() {
   const t = useT()
   const l = useL()
+  const nav = useNavigate()
   const moodLog = useStore((s) => s.moodLog)
   const setMood = useStore((s) => s.setMood)
   const challengeDate = useStore((s) => s.challengeDate)
@@ -94,6 +96,22 @@ export default function DailyExtras() {
           </span>
         </motion.button>
       </div>
+
+      {/* 오늘의 운세 바로가기 — 데일리 재방문 후크 */}
+      <motion.button
+        whileTap={{ scale: 0.98 }}
+        onClick={() => nav('/fortune')}
+        className="mt-4 flex w-full items-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#6B4FB8] to-[#A88BF2] px-3.5 py-3 text-left"
+      >
+        <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ repeat: Infinity, duration: 2.6 }} className="text-[22px] leading-none">
+          🔮
+        </motion.span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[13.5px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</p>
+          <p className="mt-0.5 truncate text-[11px] font-bold text-white/85">{t('fortune.homeSub')}</p>
+        </div>
+        <span className="shrink-0 text-[16px] font-extrabold text-white/90">›</span>
+      </motion.button>
     </Card>
   )
 }

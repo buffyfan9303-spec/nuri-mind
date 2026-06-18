@@ -74,7 +74,8 @@ export function scoreAdhd(items: LikertItem[], answers: Record<string, number>):
 }
 
 /* ───────────────────────── EGO (LSRP + SVO 기반) ───────────────────── */
-/** 1~5점 동의 척도. SELF+STR 10문항: μ=26, σ=6.5 / EMP 5문항: μ=18, σ=3.4 / STR 5문항: μ=13, σ=3.8 */
+/** 1~5점 동의 척도. SELF+STR 10문항: μ=26, σ=6.5 / EMP 5문항: μ=18, σ=3.4 / STR 5문항: μ=13, σ=3.8.
+ *  근거: LSRP 1차/2차 사이코패시(Levenson, Kiehl & Fitzpatrick 1995) + SVO(사회적 가치지향) 일반표본 근사. */
 export function scoreEgo(items: LikertItem[], answers: Record<string, number>): TestResult {
   const ax: Record<string, { s: number; m: number; n: number }> = {}
   for (const it of items) {
@@ -127,7 +128,8 @@ export function scoreEgo(items: LikertItem[], answers: Record<string, number>): 
 }
 
 /* ───────────────────────── IQ (ICAR 기반 유동 지능) ────────────────── */
-/** 난이도 가중 점수. μ=14.75, σ=5.2 → IQ = 100 + 15z */
+/** 난이도 가중 점수. μ=14.75, σ=5.2 → IQ = 100 + 15z.
+ *  근거: ICAR(Condon & Revelle 2014) 공개 문항. ICAR16↔WAIS 상관 r≈.81 — 정식 지능검사 추정 지표(대체 아님). */
 const IQ_MU = 14.75
 const IQ_SIGMA = 5.2
 
@@ -249,7 +251,8 @@ export function scoreDopamine(items: LikertItem[], answers: Record<string, numbe
 }
 
 /* ──────────── RESILIENCE (CD-RISC + BRS, 긍정 진술) ──────────── */
-/** 1~5 동의, 전 문항 긍정. raw 20~100. μ=66 σ=13 → 높을수록 탄탄 */
+/** 1~5 동의, 전 문항 긍정. raw 20~100. μ=66 σ=13 → 높을수록 탄탄.
+ *  근거: CD-RISC(Connor & Davidson 2003) 일반인구 규준 M≈80.4·SD≈12.8(원 0~100척도)을 본 척도 범위로 환산. */
 export function scoreResilience(items: LikertItem[], answers: Record<string, number>): TestResult {
   const ax: Record<string, { s: number; m: number; n: number }> = {}
   let raw = 0

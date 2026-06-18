@@ -182,16 +182,18 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 22 }}
         >
-          <Card onClick={() => nav('/fortune')} className="mt-3.5 flex items-center gap-3 !bg-gradient-to-r from-[#6B4FB8] to-[#A88BF2] !p-4">
-            <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ repeat: Infinity, duration: 2.6 }} className="shrink-0 text-[26px]">
-              🔮
-            </motion.span>
-            <div className="min-w-0 flex-1">
-              <h3 className="text-[15.5px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</h3>
-              <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">{t('fortune.homeSub')}</p>
-            </div>
-            <span className="shrink-0 text-[18px] font-extrabold text-white/90">›</span>
-          </Card>
+          <div className="mt-3.5 grid grid-cols-2 gap-2.5">
+            <Card onClick={() => nav('/fortune')} className="flex flex-col !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-4">
+              <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ repeat: Infinity, duration: 2.6 }} className="text-[24px] leading-none">🔮</motion.span>
+              <h3 className="mt-1.5 break-keep text-[14px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</h3>
+              <p className="mt-0.5 break-keep text-[11px] font-bold text-white/85">{t('fortune.homeSub')}</p>
+            </Card>
+            <Card onClick={() => nav('/compat')} className="flex flex-col !bg-gradient-to-br from-[#F25C8E] to-[#FF9EC0] !p-4">
+              <motion.span animate={{ scale: [1, 1.12, 1] }} transition={{ repeat: Infinity, duration: 1.8 }} className="text-[24px] leading-none">💞</motion.span>
+              <h3 className="mt-1.5 break-keep text-[14px] font-extrabold leading-tight text-white">{t('compat.title')}</h3>
+              <p className="mt-0.5 break-keep text-[11px] font-bold text-white/85">{t('compat.homeSub')}</p>
+            </Card>
+          </div>
         </motion.div>
 
         {/* ── 1분 바이럴 퀵 테스트 (메인 전면 노출) ── */}

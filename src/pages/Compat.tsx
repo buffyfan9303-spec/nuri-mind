@@ -5,6 +5,7 @@ import Button from '../components/Button'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { compatOf, type Compat } from '../lib/saju'
+import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { track } from '../lib/analytics'
 
 export default function Compat() {
@@ -15,6 +16,7 @@ export default function Compat() {
   const [me, setMe] = useState(birthDate)
   const [partner, setPartner] = useState('')
   const [result, setResult] = useState<Compat | null>(null)
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     track('compat_view')
@@ -27,6 +29,33 @@ export default function Compat() {
     if (me !== birthDate) setBirthDate(me)
     setResult(compatOf({ y: ay, m: am, d: ad }, { y: by, m: bm, d: bd }))
     track('compat_run')
+  }
+
+  const shareCompat = async () => {
+    if (!result) return
+    track('share', { channel: 'compat' })
+    try {
+      const blob = await makeResultCard({
+        emoji: '💞',
+        name: `${result.score}${t('fortune.point')}`,
+        title: l(result.template.label),
+        topPercent: 0,
+        chipText: `${result.aIlju} ✕ ${result.bIlju}`,
+        testName: t('compat.title'),
+        grad: result.grad,
+        appName: t('app.name'),
+        heroLabel: t('compat.title'),
+        ctaTop: '우리 궁합은? 💞',
+        ctaSub: '지금 누리 마인드에서 무료로 →',
+      })
+      const how = await shareCardBlob(blob, `[누리 마인드] 생일 궁합 ${result.score}점 · ${l(result.template.label)}`, 'nurimind-compat.png')
+      if (how === 'downloaded') {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2200)
+      }
+    } catch {
+      /* noop */
+    }
   }
 
   return (
@@ -67,6 +96,10 @@ export default function Compat() {
             <Card className="mt-3">
               <p className="break-keep text-[14px] font-medium leading-relaxed text-ink">{l(result.template.desc)}</p>
             </Card>
+            <div className="mt-3">
+              <Button color="love" onClick={shareCompat}>🖼 {t('compat.share')}</Button>
+            </div>
+            {saved && <p className="mt-2 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">✅ {t('share.saved')}</p>}
             <p className="mt-3 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">{t('compat.disclaimer')}</p>
             <button onClick={() => setResult(null)} className="mt-1 w-full py-2 text-[13px] font-extrabold text-ink-faint">
               🔁 {t('compat.again')}
