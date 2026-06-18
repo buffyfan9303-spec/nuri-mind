@@ -333,3 +333,32 @@ export const YEAR_LINES: Record<string, L> = {
     ja: '今年は責任と挑戦が大きい年。正面突破より準備と人を大切にすれば危機が好機に。',
   },
 }
+
+/** 이달의 운(월간) — 출생 일간 오행 vs 이달 월간(月干) 오행, 5관계 */
+export const MONTH_LINES: Record<string, L> = {
+  생받음: {
+    ko: '이달은 주변의 지원과 기회가 들어오는 흐름이에요. 혼자 끙끙대지 말고 먼저 도움을 청하면 일이 한결 빠르게 풀립니다.',
+    en: 'This month, support and openings flow in—ask for help instead of carrying it alone and things move faster.',
+    ja: '今月は周りの支援と機会が入る流れ。一人で抱えず先に助けを求めると物事が早く進みます。',
+  },
+  극해줌: {
+    ko: '이달은 추진력이 붙는 시기예요. 미뤄둔 목표를 구체적인 일정으로 옮겨 밀어붙이면 눈에 보이는 성과가 납니다.',
+    en: 'A month of momentum—turn delayed goals into a concrete schedule and push for visible results.',
+    ja: '今月は推進力がつく時期。後回しの目標を具体的な予定にして進めると目に見える成果が。',
+  },
+  비화: {
+    ko: '이달은 안정 속에서 내실을 다지기 좋은 시기예요. 큰 변화보다 익숙한 루틴을 가다듬으면 꾸준히 쌓입니다.',
+    en: 'A steady month to build substance—refine familiar routines over big changes and it compounds.',
+    ja: '今月は安定の中で内実を固める時期。大きな変化より慣れた習慣を磨くと着実に積み上がります。',
+  },
+  생해줌: {
+    ko: '이달은 베풀고 표현하며 평판을 쌓는 시기예요. 에너지 배분만 잘하면 노력을 인정받는 한 달이 됩니다.',
+    en: 'A month to give and express—pace your energy and your effort gets recognized.',
+    ja: '今月は与え表現し評価を積む時期。エネルギー配分さえ良ければ努力が認められます。',
+  },
+  극받음: {
+    ko: '이달은 책임과 압박이 커질 수 있는 시기예요. 무리한 확장보다 마무리와 정비에 집중하면 손해를 막고 다음을 준비할 수 있어요.',
+    en: 'Pressure may rise—focus on finishing and tidying over expansion to avoid loss and prep for what’s next.',
+    ja: '今月は責任と圧が増えがち。拡大より仕上げと整備に集中すれば損を防ぎ次に備えられます。',
+  },
+}

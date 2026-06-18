@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { TopBar, Card, ProgressBar } from '../components/ui'
+import { TopBar, Card, ProgressBar, Modal } from '../components/ui'
 import Button from '../components/Button'
-import { useStore } from '../store/useStore'
+import { useStore, FORTUNE_FREE_PER_MONTH, FORTUNE_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
-import { sajuOf, fortuneOf, weekOf, yearOf, zodiacTodayLines } from '../lib/saju'
+import { sajuOf, fortuneOf, weekOf, yearOf, monthOf, zodiacTodayLines } from '../lib/saju'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { ELEMENT_SVG } from '../lib/characters'
 import { track } from '../lib/analytics'
+import { burst } from '../lib/confetti'
 
 export default function Fortune() {
   const t = useT()
@@ -16,9 +17,15 @@ export default function Fortune() {
   const nav = useNavigate()
   const birthDate = useStore((s) => s.birthDate)
   const setBirthDate = useStore((s) => s.setBirthDate)
+  const diamonds = useStore((s) => s.diamonds)
+  const fortuneMonth = useStore((s) => s.fortuneMonth)
+  const fortuneFreeUses = useStore((s) => s.fortuneFreeUses)
+  const viewFortuneFull = useStore((s) => s.viewFortuneFull)
   const [draft, setDraft] = useState(birthDate)
   const [editing, setEditing] = useState(!birthDate)
   const [saved, setSaved] = useState(false)
+  const [unlocked, setUnlocked] = useState(false)
+  const [needCharge, setNeedCharge] = useState(false)
 
   const data = useMemo(() => {
     if (!birthDate) return null
@@ -32,6 +39,7 @@ export default function Fortune() {
       fortune: fortuneOf(birth, today),
       week: weekOf(birth, today),
       year: yearOf(birth, today.y),
+      month: monthOf(birth, today.y, today.m),
       zodiac: zodiacTodayLines(today),
     }
   }, [birthDate])
@@ -103,9 +111,23 @@ export default function Fortune() {
     )
   }
 
-  const { saju, fortune, week, year, zodiac } = data
+  const { saju, fortune, week, year, month, zodiac } = data
   const tpl = fortune.template
-  const thisYear = new Date().getFullYear()
+  const now2 = new Date()
+  const thisYear = now2.getFullYear()
+  const thisMonth = now2.getMonth() + 1
+  const monthKey = `${thisYear}-${String(thisMonth).padStart(2, '0')}`
+  const freeUsed = fortuneMonth === monthKey ? fortuneFreeUses : 0
+  const freeLeft = Math.max(0, FORTUNE_FREE_PER_MONTH - freeUsed)
+  const openFull = () => {
+    const r = viewFortuneFull()
+    if (r === 'need') {
+      setNeedCharge(true)
+      return
+    }
+    setUnlocked(true)
+    burst()
+  }
   const gauges = [
     { key: 'overall', emoji: '✨', label: t('fortune.overall'), score: fortune.overall, text: l(tpl.overall) },
     { key: 'love', emoji: '💕', label: t('fortune.love'), score: fortune.love, text: l(tpl.love) },
@@ -183,57 +205,107 @@ export default function Fortune() {
           ))}
         </div>
 
-        {/* 이번 주 총운 추이 */}
-        <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('fortune.weekTitle')}</h2>
-        <Card className="mt-3">
-          <div className="flex items-end justify-between gap-1.5">
-            {week.map((w, i) => (
-              <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-                <span className="text-[10.5px] font-extrabold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.overall}</span>
-                <div className="flex h-[72px] w-full items-end justify-center">
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${w.overall}%` }}
-                    transition={{ delay: 0.04 * i, type: 'spring', stiffness: 200, damping: 22 }}
-                    className="w-[58%] rounded-full"
-                    style={{ background: w.isToday ? `linear-gradient(${fortune.grad[0]}, ${fortune.grad[1]})` : '#DCE4DF' }}
-                  />
-                </div>
-                <span className="text-[10.5px] font-bold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.isToday ? t('fortune.today') : w.weekdayKo}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+        {/* ── 종합 운세 (프리미엄: 매월 무료 3회 → 이후 5다이아) ── */}
+        {unlocked ? (
+          <>
+            <div className="mt-6 flex items-center gap-2 px-1">
+              <h2 className="text-[17px] font-extrabold tracking-tight">🔮 {l({ ko: '종합 운세', en: 'Full Fortune', ja: '総合運勢' })}</h2>
+              <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">{l({ ko: '열람 중', en: 'unlocked', ja: '閲覧中' })}</span>
+            </div>
 
-        {/* 올해의 운 */}
-        <Card className="mt-3 flex items-start gap-3">
-          <span className="shrink-0 text-[26px]">📅</span>
-          <div className="min-w-0">
-            <h3 className="text-[14.5px] font-extrabold">{t('fortune.yearTitle', { year: thisYear })}</h3>
-            <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{l(year.line)}</p>
-          </div>
-        </Card>
-
-        {/* 띠별 오늘 한마디 */}
-        <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('fortune.zodiacTitle')}</h2>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          {zodiac.map((z) => {
-            const mine = z.zodiacKo === saju.zodiacKo
-            return (
-              <div
-                key={z.zodiacKo}
-                className="flex items-center gap-2 rounded-2xl p-2.5"
-                style={{ background: mine ? `${fortune.grad[0]}14` : '#fff', border: mine ? `2px solid ${fortune.grad[0]}` : '2px solid #EEF2F0' }}
-              >
-                <span className="shrink-0 text-[22px] leading-none">{z.zodiacEmoji}</span>
-                <div className="min-w-0">
-                  <p className="text-[11.5px] font-extrabold">{z.zodiacKo}{t('fortune.zodiacSuffix')}{mine ? ' · 나' : ''}</p>
-                  <p className="break-keep text-[10.5px] font-medium leading-tight text-ink-sub">{l(z.line)}</p>
-                </div>
+            {/* 이번 주 총운 추이 */}
+            <h3 className="mt-4 px-1 text-[15px] font-extrabold tracking-tight text-ink-sub">{t('fortune.weekTitle')}</h3>
+            <Card className="mt-2">
+              <div className="flex items-end justify-between gap-1.5">
+                {week.map((w, i) => (
+                  <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
+                    <span className="text-[10.5px] font-extrabold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.overall}</span>
+                    <div className="flex h-[72px] w-full items-end justify-center">
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${w.overall}%` }}
+                        transition={{ delay: 0.04 * i, type: 'spring', stiffness: 200, damping: 22 }}
+                        className="w-[58%] rounded-full"
+                        style={{ background: w.isToday ? `linear-gradient(${fortune.grad[0]}, ${fortune.grad[1]})` : '#DCE4DF' }}
+                      />
+                    </div>
+                    <span className="text-[10.5px] font-bold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.isToday ? t('fortune.today') : w.weekdayKo}</span>
+                  </div>
+                ))}
               </div>
-            )
-          })}
-        </div>
+            </Card>
+
+            {/* 이달의 운 */}
+            <Card className="mt-3 flex items-start gap-3">
+              <span className="shrink-0 text-[26px]">🗓</span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-[14.5px] font-extrabold">{l({ ko: `${thisMonth}월의 운`, en: 'This month', ja: `${thisMonth}月の運` })}</h3>
+                  <span className="shrink-0 text-[13px] font-extrabold" style={{ color: fortune.grad[0] }}>{month.overall}{t('fortune.point')}</span>
+                </div>
+                <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{l(month.line)}</p>
+              </div>
+            </Card>
+
+            {/* 올해의 운 */}
+            <Card className="mt-3 flex items-start gap-3">
+              <span className="shrink-0 text-[26px]">📅</span>
+              <div className="min-w-0">
+                <h3 className="text-[14.5px] font-extrabold">{t('fortune.yearTitle', { year: thisYear })}</h3>
+                <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{l(year.line)}</p>
+              </div>
+            </Card>
+
+            {/* 띠별 오늘 한마디 */}
+            <h3 className="mt-6 px-1 text-[15px] font-extrabold tracking-tight text-ink-sub">{t('fortune.zodiacTitle')}</h3>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {zodiac.map((z) => {
+                const mine = z.zodiacKo === saju.zodiacKo
+                return (
+                  <div
+                    key={z.zodiacKo}
+                    className="flex items-center gap-2 rounded-2xl p-2.5"
+                    style={{ background: mine ? `${fortune.grad[0]}14` : '#fff', border: mine ? `2px solid ${fortune.grad[0]}` : '2px solid #EEF2F0' }}
+                  >
+                    <span className="shrink-0 text-[22px] leading-none">{z.zodiacEmoji}</span>
+                    <div className="min-w-0">
+                      <p className="text-[11.5px] font-extrabold">{z.zodiacKo}{t('fortune.zodiacSuffix')}{mine ? ' · 나' : ''}</p>
+                      <p className="break-keep text-[10.5px] font-medium leading-tight text-ink-sub">{l(z.line)}</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        ) : (
+          <div className="relative mt-6 overflow-hidden rounded-3xl border-2 border-dashed border-[#C9C3F2] bg-[#F7F6FE] p-6 text-center">
+            {/* 흐릿한 미리보기 */}
+            <div className="pointer-events-none absolute inset-x-5 bottom-3 flex items-end justify-between gap-1.5 opacity-30 blur-[3px]">
+              {week.map((w, i) => (
+                <div key={i} className="flex-1 rounded-full" style={{ height: `${10 + w.overall * 0.4}px`, background: fortune.grad[0] }} />
+              ))}
+            </div>
+            <div className="relative">
+              <div className="text-[40px] leading-none">🔮</div>
+              <h3 className="mt-2 text-[18px] font-extrabold">{l({ ko: '종합 운세 풀어보기', en: 'Unlock Full Fortune', ja: '総合運勢を開く' })}</h3>
+              <p className="mx-auto mt-1 max-w-[260px] break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
+                {l({ ko: '이번 주 추이 · 이달의 운 · 올해의 운 · 띠별 한마디를 한 번에', en: 'Weekly trend · this month · this year · zodiac notes — all at once', ja: '週の推移・今月・今年・干支の一言をまとめて' })}
+              </p>
+              <div className="mx-auto mt-4 max-w-[280px]">
+                <Button color="burn" onClick={openFull}>
+                  {freeLeft > 0
+                    ? l({ ko: `무료로 보기 · 이번 달 ${freeLeft}회 남음`, en: `View free · ${freeLeft} left this month`, ja: `無料で見る・今月あと${freeLeft}回` })
+                    : l({ ko: `💎 ${FORTUNE_DIA_COST}개로 보기`, en: `View for 💎${FORTUNE_DIA_COST}`, ja: `💎${FORTUNE_DIA_COST}で見る` })}
+                </Button>
+              </div>
+              <p className="mt-2 text-[11.5px] font-medium text-ink-faint">
+                {freeLeft > 0
+                  ? l({ ko: `매월 ${FORTUNE_FREE_PER_MONTH}회 무료 · 이후 1회 ${FORTUNE_DIA_COST}다이아`, en: `${FORTUNE_FREE_PER_MONTH} free/month, then 💎${FORTUNE_DIA_COST}`, ja: `毎月${FORTUNE_FREE_PER_MONTH}回無料・以降💎${FORTUNE_DIA_COST}` })
+                  : l({ ko: `보유 💎 ${diamonds}`, en: `You have 💎${diamonds}`, ja: `保有💎${diamonds}` })}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* 궁합 + 공유 */}
         <div className="mt-5 space-y-2.5">
@@ -248,6 +320,20 @@ export default function Fortune() {
         <button onClick={() => { setDraft(birthDate); setEditing(true) }} className="mt-1 w-full py-2 text-[13px] font-extrabold text-ink-faint">
           🔁 {t('fortune.changeBirth')}
         </button>
+
+        <Modal open={needCharge} onClose={() => setNeedCharge(false)}>
+          <div className="text-center">
+            <p className="text-[44px] leading-none">💎</p>
+            <h3 className="mt-2 text-[19px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
+            <p className="mt-1 break-keep text-[13.5px] font-bold text-ink-faint">
+              {l({ ko: `종합 운세 열람에 ${FORTUNE_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Full fortune needs 💎${FORTUNE_DIA_COST} · you have ${diamonds}`, ja: `総合運勢に💎${FORTUNE_DIA_COST}必要・保有${diamonds}` })}
+            </p>
+            <div className="mt-5">
+              <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
+              <button onClick={() => setNeedCharge(false)} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">{l({ ko: '다음에', en: 'Later', ja: '後で' })}</button>
+            </div>
+          </div>
+        </Modal>
       </main>
     </div>
   )

@@ -2,7 +2,7 @@
  * 사주(일주)·음양오행 결정론적 계산 — '오늘의 운세'용. 점술 단정이 아닌 '재미로 보는 오늘의 기운'.
  * 일주(60갑자) 공식은 3개 독립 권위자료로 교차검증(2019-01-27=갑자, 2000-01-01=무오, 2026-06-17=임술).
  */
-import { FORTUNE_TEMPLATES, BIRTH_FLOWERS, COMPAT_TEMPLATES, SHORT_LINES, YEAR_LINES, type FortuneTemplate, type BirthFlower, type CompatTemplate } from '../data/fortune'
+import { FORTUNE_TEMPLATES, BIRTH_FLOWERS, COMPAT_TEMPLATES, SHORT_LINES, YEAR_LINES, MONTH_LINES, type FortuneTemplate, type BirthFlower, type CompatTemplate } from '../data/fortune'
 import type { L } from '../data/types'
 
 const STEMS = [
@@ -186,6 +186,24 @@ export function yearOf(birth: { y: number; m: number; d: number }, year: number)
   const yearStemEl = STEMS[(((year - 4) % 10) + 10) % 10].el
   const rel = relation(birthEl, yearStemEl)
   return { relation: rel, line: YEAR_LINES[rel], el: yearStemEl }
+}
+
+/** 이달의 운 — 출생 일간 오행 vs 이달 월간(月干) 오행. 월간은 五虎遁(연간→월간) 규칙 근사. */
+export function monthOf(birth: { y: number; m: number; d: number }, year: number, month: number): { relation: string; line: L; el: string; overall: number } {
+  const bi = dayPillarIndex(birth.y, birth.m, birth.d)
+  const birthEl = STEMS[bi % 10].el
+  // 월지: 1월→인(2) … 11월→자(0) … 12월→축(1)  ≈ (month+1)%12
+  const monthBranchIdx = (month + 1) % 12
+  const ord = (monthBranchIdx - 2 + 12) % 12 // 인(寅)월=0 기준 순번
+  const yearStemIdx = (((year - 4) % 10) + 10) % 10
+  // 五虎遁: 인월 월간 = (연간%5)*2 + 2(병), 이후 월마다 +1
+  const monthStemIdx = ((yearStemIdx % 5) * 2 + 2 + ord) % 10
+  const monthEl = STEMS[monthStemIdx].el
+  const rel = relation(birthEl, monthEl)
+  const base = BASE[rel]
+  const k = year * 12 + month
+  const overall = clamp(base + ((((k * 7 + bi) % 15) + 15) % 15 - 7), 1, 99)
+  return { relation: rel, line: MONTH_LINES[rel], el: monthEl, overall }
 }
 
 /** 띠별 오늘 한 줄 — 각 띠 지지 오행 vs 오늘 일간 오행. */
