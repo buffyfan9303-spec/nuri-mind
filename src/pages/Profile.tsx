@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -10,6 +10,7 @@ import { lifetimeOf, tierOf } from '../data/rank'
 import type { Lang } from '../data/types'
 import { fileToAvatarDataUrl } from '../lib/image'
 import { scheduleStreakReminder } from '../lib/notify'
+import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 
@@ -28,6 +29,12 @@ export default function Profile() {
   const [editing, setEditing] = useState(false)
   const [nick, setNick] = useState(s.nickname)
   const [avatarOpen, setAvatarOpen] = useState(false)
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null)
+  useEffect(() => {
+    if (!authReady()) return
+    getAuthUser().then(setAuthUser)
+    return onAuthChange(() => getAuthUser().then(setAuthUser))
+  }, [])
   const fileRef = useRef<HTMLInputElement>(null)
 
   // 검사로 얻은 동물(중복 제거) — 아바타 후보
@@ -270,6 +277,30 @@ export default function Profile() {
               </button>
             </div>
 
+            {authReady() &&
+              (authUser ? (
+                <button
+                  onClick={async () => {
+                    await signOut()
+                    setAuthUser(null)
+                  }}
+                  className="flex w-full items-center justify-between border-t border-[#F1F5F2] px-3 py-3"
+                >
+                  <span className="text-[15.5px] font-bold">🔓 {t('auth.logout')}{authUser.nickname ? ` · ${authUser.nickname}` : ''}</span>
+                  <span className="text-ink-faint">›</span>
+                </button>
+              ) : (
+                <button
+                  onClick={async () => {
+                    const r = await signInWithKakao()
+                    if (!r.ok) alert(t('auth.needSetup'))
+                  }}
+                  className="flex w-full items-center justify-between border-t border-[#F1F5F2] px-3 py-3"
+                >
+                  <span className="text-[15.5px] font-bold">💬 {t('auth.kakaoLogin')}</span>
+                  <span className="text-ink-faint">›</span>
+                </button>
+              ))}
             <button
               onClick={() => nav('/legal/terms')}
               className="flex w-full items-center justify-between border-t border-[#F1F5F2] px-3 py-3"

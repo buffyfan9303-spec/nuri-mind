@@ -627,6 +627,9 @@ const ko: Record<string, string> = {
   'ai.headerHi': '{name}님의 {test} 정밀 리포트',
   'ai.intro': '당신은 전체에서 상위 {p}% 구간({band})에 있어요. 아래는 표준 결과보다 더 깊이 들어간 전체 분석이에요.',
   'ai.loading': 'AI가 당신만의 리포트를 쓰고 있어요…',
+  'auth.kakaoLogin': '카카오로 로그인',
+  'auth.logout': '로그아웃',
+  'auth.needSetup': '카카오 로그인 준비 중이에요. 곧 열려요!',
 
   'ad.label': 'AD',
   'ad.placeholder': '광고 영역 · AdSense 승인 후 표시됩니다',
@@ -1255,6 +1258,9 @@ const en: Record<string, string> = {
   'ai.headerHi': '{name}\'s {test} deep report',
   'ai.intro': 'You\'re in the top {p}% ({band}). Below is the full analysis, deeper than the standard result.',
   'ai.loading': 'AI is writing your personal report…',
+  'auth.kakaoLogin': 'Log in with Kakao',
+  'auth.logout': 'Log out',
+  'auth.needSetup': 'Kakao login is being set up. Coming soon!',
 
   'ad.label': 'AD',
   'ad.placeholder': 'Ad area · shows after AdSense approval',
@@ -1883,6 +1889,9 @@ const ja: Record<string, string> = {
   'ai.headerHi': '{name}さんの{test}精密レポート',
   'ai.intro': 'あなたは上位{p}%（{band}）にいます。以下は標準結果より深い全体分析です。',
   'ai.loading': 'AIがあなた専用のレポートを作成中…',
+  'auth.kakaoLogin': 'カカオでログイン',
+  'auth.logout': 'ログアウト',
+  'auth.needSetup': 'カカオログインは準備中です。もうすぐ公開！',
 
   'ad.label': 'AD',
   'ad.placeholder': '広告エリア · AdSense承認後に表示',
