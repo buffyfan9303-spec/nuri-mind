@@ -94,6 +94,7 @@ interface State {
   vibePct: number | null
   /* AI 정밀 분석 잠금 해제한 결과 id */
   aiReports: string[]
+  aiReportText: Record<string, string>
   /* 매거진 정독 완료한 글 id(보상 1회) */
   readArticles: string[]
 
@@ -138,6 +139,7 @@ interface State {
   clearLeagueMsg: () => void
   completeVibe: (pct: number) => number
   unlockAi: (resultId: string) => void
+  setAiReportText: (id: string, text: string) => void
   readArticle: (id: string) => number
   unlockAdmin: (pin: string) => boolean
   lockAdmin: () => void
@@ -193,6 +195,7 @@ const initial = () => ({
   vibeDone: false,
   vibePct: null,
   aiReports: [] as string[],
+  aiReportText: {} as Record<string, string>,
   readArticles: [] as string[],
 })
 
@@ -548,6 +551,7 @@ export const useStore = create<State>()(
 
         unlockAi: (resultId) =>
           set((s) => (s.aiReports.includes(resultId) ? s : { aiReports: [...s.aiReports, resultId] })),
+        setAiReportText: (id, text) => set((s) => ({ aiReportText: { ...s.aiReportText, [id]: text } })),
 
         /** 매거진 정독 보상 — 글당 1회 +8P(일일 무료 상한 적용) */
         readArticle: (id) => {
