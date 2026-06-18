@@ -495,6 +495,20 @@ export default function TestResult() {
           </div>
         </Card>
 
+        {/* 친구 초대 CTA — 결과 공유 직후 바이럴 (둘 다 +100P) */}
+        <button
+          onClick={() => nav('/rewards')}
+          className="mt-3 flex w-full items-center gap-3 rounded-2xl p-3.5 text-left shadow-card"
+          style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)' }}
+        >
+          <span className="text-[24px]">🎁</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[14px] font-extrabold leading-tight text-white">{l({ ko: '친구 초대하면 둘 다 +100P', en: 'Invite a friend — you both get +100P', ja: '友達招待で二人とも+100P' })}</p>
+            <p className="mt-0.5 truncate text-[11.5px] font-bold text-white/85">{l({ ko: '코드 공유하고 보너스 받기', en: 'Share your code & earn', ja: 'コードを共有してボーナス' })}</p>
+          </div>
+          <span className="text-lg text-white/80">›</span>
+        </button>
+
         {/* 이 동물을 프로필 아바타로 */}
         <div className="mt-4">
           <Button

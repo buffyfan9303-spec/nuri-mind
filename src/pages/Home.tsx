@@ -277,6 +277,22 @@ export default function Home() {
           </Card>
         </motion.div>
 
+        {/* 친구 초대 CTA — 바이럴 후크 (둘 다 +100P) */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+          <button
+            onClick={() => nav('/rewards')}
+            className="flex w-full items-center gap-3.5 rounded-3xl p-4 text-left shadow-pop"
+            style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)' }}
+          >
+            <span className="text-[28px]">🎁</span>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">{l({ ko: '친구 초대하고 +100P', en: 'Invite a friend, +100P', ja: '友達招待で+100P' })}</h3>
+              <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/85">{l({ ko: '친구도 나도 +100P · 많이 부를수록 보너스 ↑', en: 'You both get +100P · more invites, bigger bonus', ja: '二人とも+100P・招待ほどボーナス↑' })}</p>
+            </div>
+            <span className="text-xl text-white/80">›</span>
+          </button>
+        </motion.div>
+
         {/* 심리 매거진 */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
           <Card onClick={() => nav('/magazine')} className="flex items-center gap-3.5 !p-4">

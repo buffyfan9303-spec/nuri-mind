@@ -7,11 +7,12 @@ import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 
 // 누적 초대 보너스 — 신규 유입 LTV로 정당화(일일 상한과 별개). 서버 연동 시 자동 지급.
-const MILESTONES = [
+// 최상위(10명+)엔 다이아(유료 재화)까지 얹어 강력한 바이럴 후크.
+const MILESTONES: { n: number; p: number; d?: number }[] = [
   { n: 1, p: 100 },
   { n: 3, p: 300 },
   { n: 5, p: 600 },
-  { n: 10, p: 1500 },
+  { n: 10, p: 1500, d: 10 },
 ]
 
 /** Temu식 마일스톤 친구 초대 (코드 기반 — 서버 연동 전 로컬 버전) */
@@ -106,6 +107,7 @@ export default function Invite() {
               >
                 <p className="text-[11.5px] font-extrabold">{hit ? '🎉' : '👥'}{m.n}명</p>
                 <p className="mt-0.5 text-[11px] font-extrabold text-mind-700">+{m.p.toLocaleString()}P</p>
+                {m.d && <p className="text-[10.5px] font-extrabold text-[#6E7BF2]">+💎{m.d}</p>}
               </div>
             )
           })}
