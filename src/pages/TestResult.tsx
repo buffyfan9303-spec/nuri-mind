@@ -418,10 +418,18 @@ export default function TestResult() {
           </motion.div>
         )}
 
-        {/* 공통 면책 (정신건강 관련 검사) */}
+        {/* 참고 절단점 (임상 척도, 정밀화 2차) */}
+        {['adhd', 'burnout', 'dopamine'].includes(result.testId) && (
+          <div className="mt-3 rounded-2xl bg-[#F2F5F3] p-3.5">
+            <p className="text-[12.5px] font-extrabold text-ink-sub">📋 {t('result.cutoffTitle')}</p>
+            <p className="mt-1 break-keep text-[12px] font-medium leading-relaxed text-ink-faint">{t(`result.cutoff.${result.testId}`)}</p>
+          </div>
+        )}
+
+        {/* 공통 면책 (정신건강 관련 검사) — 연속 지표 고지 강화 */}
         {['adhd', 'burnout', 'dopamine', 'love', 'resilience', 'dark'].includes(result.testId) && (
           <p className="mt-3 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
-            {t('result.medical')}
+            {t('result.medical')} {t('result.contInd')}
           </p>
         )}
 

@@ -235,3 +235,101 @@ export const BIRTH_FLOWERS: BirthFlower[] = [
     "blurbKo": "주변을 따뜻하게 지키며 평화로운 행복을 가꾸는 사람."
   }
 ]
+
+/** 궁합 — 두 사람 일간 오행 관계(나→상대 기준). label/desc ko·en·ja. */
+export interface CompatTemplate {
+  relation: string
+  label: L
+  desc: L
+  score: number
+}
+export const COMPAT_TEMPLATES: Record<string, CompatTemplate> = {
+  비화: {
+    relation: '비화',
+    label: { ko: '닮은꼴 짝', en: 'Mirror match', ja: '似た者ペア' },
+    desc: {
+      ko: '같은 기운이라 말 안 해도 통하고 편안해요. 다만 비슷한 고집끼리는 가끔 부딪히니, 한 명이 한 발 양보하면 오래갑니다.',
+      en: 'Same energy—you click without words and feel at ease. Just two similar wills can clash, so one stepping back keeps it lasting.',
+      ja: '同じ気で言わずとも通じ合い心地よい関係。似た者同士で時にぶつかるので、一方が一歩引くと長続きします。',
+    },
+    score: 80,
+  },
+  생받음: {
+    relation: '생받음',
+    label: { ko: '챙김받는 짝', en: 'Cared-for match', ja: '支えられるペア' },
+    desc: {
+      ko: '상대가 당신을 자연스럽게 채워주는 관계. 기대고 고마워할수록 더 깊어져요. 받기만 하지 말고 가끔은 먼저 표현해 보세요.',
+      en: 'They naturally fill you up. The more you lean in and show thanks, the deeper it grows—just give back first sometimes.',
+      ja: '相手が自然とあなたを満たす関係。甘えて感謝するほど深まります。受けるだけでなく時には先に表現を。',
+    },
+    score: 88,
+  },
+  생해줌: {
+    relation: '생해줌',
+    label: { ko: '챙겨주는 짝', en: 'Nurturing match', ja: '尽くすペア' },
+    desc: {
+      ko: '당신이 상대를 키워주고 이끄는 관계. 베푸는 보람이 크지만 에너지 소모도 커요. 나를 챙기는 시간도 꼭 남겨두세요.',
+      en: 'You nurture and lift them. Rewarding to give—but it drains you, so keep time to recharge yourself too.',
+      ja: 'あなたが相手を育て導く関係。与える喜びは大きいが消耗も大。自分を労わる時間も必ず残して。',
+    },
+    score: 85,
+  },
+  극받음: {
+    relation: '극받음',
+    label: { ko: '긴장감 있는 짝', en: 'Spark-and-tension match', ja: '緊張感あるペア' },
+    desc: {
+      ko: '강하게 끌리지만 주도권 다툼이나 압박이 생기기 쉬워요. 서로의 영역을 존중하고 말투를 다듬으면, 그 긴장이 매력으로 바뀝니다.',
+      en: 'Strong pull, but power struggles and pressure come easily. Respect each other’s space and soften your words—then the tension becomes chemistry.',
+      ja: '強く惹かれるが主導権争いや圧が生じやすい。互いの領域を尊重し言い方を整えると、その緊張が魅力に変わります。',
+    },
+    score: 66,
+  },
+  극해줌: {
+    relation: '극해줌',
+    label: { ko: '리드하는 짝', en: 'Leading match', ja: 'リードするペア' },
+    desc: {
+      ko: '당신이 관계를 끌고 가는 든든한 리더형. 안정감을 주지만, 상대의 속도와 마음도 함께 살펴주면 더 단단해져요.',
+      en: 'You lead the relationship—dependable and steady. Mind their pace and feelings too, and it gets even sturdier.',
+      ja: 'あなたが関係を引っ張る頼れるリーダー型。安心感を与えますが、相手のペースと心も見てあげるとより強固に。',
+    },
+    score: 70,
+  },
+}
+
+/** 오늘의 한 줄(띠별·요약용) — 5관계 */
+export const SHORT_LINES: Record<string, L> = {
+  생받음: { ko: '도움이 들어오는 날, 솔직히 기대도 좋아요.', en: 'Help flows in—lean in honestly.', ja: '助けが入る日、素直に頼っても。' },
+  극해줌: { ko: '주도권 쥐기 좋은 날, 미뤄둔 일을 밀어붙여요.', en: 'Take the lead—push the delayed task.', ja: '主導権を握る日、後回しを進めて。' },
+  비화: { ko: '평온하고 안정적인 하루, 익숙한 루틴이 답.', en: 'Calm and steady—familiar routines win.', ja: '穏やかで安定、慣れた習慣が正解。' },
+  생해줌: { ko: '베풀면 평판이 오르는 날, 내 충전도 잊지 마요.', en: 'Giving lifts your name—recharge too.', ja: '与えると評価が上がる日、充電も。' },
+  극받음: { ko: '한 박자 물러서면 손해를 막는 날.', en: 'Step back a beat to avoid loss.', ja: '一歩引けば損を防げる日。' },
+}
+
+/** 올해의 운(연간) — 출생 일간 오행 vs 올해 천간 오행, 5관계 */
+export const YEAR_LINES: Record<string, L> = {
+  생받음: {
+    ko: '올해는 귀인과 기회가 들어오는 흐름이에요. 손 내미는 곳에 응하면 일이 한결 수월하게 풀립니다.',
+    en: 'This year, mentors and chances flow in. Say yes to outstretched hands and things ease up.',
+    ja: '今年は貴人とチャンスが入る流れ。差し出された手に応じると物事が楽に進みます。',
+  },
+  극해줌: {
+    ko: '올해는 주도적으로 성취하기 좋은 해예요. 목표를 정하고 밀어붙이면 결실이 큽니다.',
+    en: 'A great year to achieve on your own terms. Set goals and push—the harvest is big.',
+    ja: '今年は主体的に成し遂げるのに良い年。目標を定め推し進めると実りが大きい。',
+  },
+  비화: {
+    ko: '올해는 기반을 다지는 안정의 해예요. 무리한 확장보다 내실을 채우면 멀리 갑니다.',
+    en: 'A steadying year to build foundations. Fill in substance over risky expansion and you go far.',
+    ja: '今年は基盤を固める安定の年。無理な拡大より内実を満たすと遠くまで。',
+  },
+  생해줌: {
+    ko: '올해는 베풀고 표현하며 이름을 알리는 해예요. 에너지 관리만 잘하면 성장이 큽니다.',
+    en: 'A year to give, express, and get known. Manage your energy and growth is large.',
+    ja: '今年は与え表現し名を広める年。エネルギー管理さえできれば成長は大きい。',
+  },
+  극받음: {
+    ko: '올해는 책임과 도전이 큰 해예요. 정면돌파보다 준비와 사람을 챙기면 위기가 기회가 됩니다.',
+    en: 'A year of big duties and challenges. Prepare and care for people over charging in—crisis turns to chance.',
+    ja: '今年は責任と挑戦が大きい年。正面突破より準備と人を大切にすれば危機が好機に。',
+  },
+}

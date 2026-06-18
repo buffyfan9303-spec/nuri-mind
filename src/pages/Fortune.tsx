@@ -1,29 +1,71 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { TopBar, Card, ProgressBar } from '../components/ui'
 import Button from '../components/Button'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
-import { sajuOf, fortuneOf } from '../lib/saju'
+import { sajuOf, fortuneOf, weekOf, yearOf, zodiacTodayLines } from '../lib/saju'
+import { makeResultCard, shareCardBlob } from '../lib/shareCard'
+import { track } from '../lib/analytics'
 
 export default function Fortune() {
   const t = useT()
   const l = useL()
+  const nav = useNavigate()
   const birthDate = useStore((s) => s.birthDate)
   const setBirthDate = useStore((s) => s.setBirthDate)
   const [draft, setDraft] = useState(birthDate)
   const [editing, setEditing] = useState(!birthDate)
+  const [saved, setSaved] = useState(false)
 
   const data = useMemo(() => {
     if (!birthDate) return null
     const [y, m, d] = birthDate.split('-').map(Number)
     if (!y || !m || !d) return null
     const now = new Date()
+    const today = { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() }
+    const birth = { y, m, d }
     return {
       saju: sajuOf(y, m, d),
-      fortune: fortuneOf({ y, m, d }, { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() }),
+      fortune: fortuneOf(birth, today),
+      week: weekOf(birth, today),
+      year: yearOf(birth, today.y),
+      zodiac: zodiacTodayLines(today),
     }
   }, [birthDate])
+
+  useEffect(() => {
+    if (data) track('fortune_view')
+  }, [data])
+
+  const shareFortune = async () => {
+    if (!data) return
+    const { saju, fortune } = data
+    track('share', { channel: 'fortune' })
+    try {
+      const blob = await makeResultCard({
+        emoji: saju.zodiacEmoji,
+        name: `${saju.iljuKo} · ${saju.zodiacKo}${t('fortune.zodiacSuffix')}`,
+        title: `${t('fortune.overall')} ${fortune.overall}${t('fortune.point')}`,
+        topPercent: 0,
+        chipText: `${fortune.luckyColorKo} · ${fortune.luckyNumber}`,
+        testName: t('fortune.title'),
+        grad: fortune.grad,
+        appName: t('app.name'),
+        heroLabel: t('fortune.title'),
+        ctaTop: '내 오늘의 운세는? 🔮',
+        ctaSub: '지금 누리 마인드에서 무료로 →',
+      })
+      const how = await shareCardBlob(blob, `[누리 마인드] 오늘의 운세 · ${saju.zodiacKo}띠 ${saju.iljuKo}`, 'nurimind-fortune.png')
+      if (how === 'downloaded') {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2200)
+      }
+    } catch {
+      /* noop */
+    }
+  }
 
   // ── 생일 입력 ──
   if (editing || !data) {
@@ -60,8 +102,9 @@ export default function Fortune() {
     )
   }
 
-  const { saju, fortune } = data
+  const { saju, fortune, week, year, zodiac } = data
   const tpl = fortune.template
+  const thisYear = new Date().getFullYear()
   const gauges = [
     { key: 'overall', emoji: '✨', label: t('fortune.overall'), score: fortune.overall, text: l(tpl.overall) },
     { key: 'love', emoji: '💕', label: t('fortune.love'), score: fortune.love, text: l(tpl.love) },
@@ -133,6 +176,67 @@ export default function Fortune() {
             </div>
           ))}
         </div>
+
+        {/* 이번 주 총운 추이 */}
+        <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('fortune.weekTitle')}</h2>
+        <Card className="mt-3">
+          <div className="flex items-end justify-between gap-1.5">
+            {week.map((w, i) => (
+              <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
+                <span className="text-[10.5px] font-extrabold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.overall}</span>
+                <div className="flex h-[72px] w-full items-end justify-center">
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${w.overall}%` }}
+                    transition={{ delay: 0.04 * i, type: 'spring', stiffness: 200, damping: 22 }}
+                    className="w-[58%] rounded-full"
+                    style={{ background: w.isToday ? `linear-gradient(${fortune.grad[0]}, ${fortune.grad[1]})` : '#DCE4DF' }}
+                  />
+                </div>
+                <span className="text-[10.5px] font-bold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.isToday ? t('fortune.today') : w.weekdayKo}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* 올해의 운 */}
+        <Card className="mt-3 flex items-start gap-3">
+          <span className="shrink-0 text-[26px]">📅</span>
+          <div className="min-w-0">
+            <h3 className="text-[14.5px] font-extrabold">{t('fortune.yearTitle', { year: thisYear })}</h3>
+            <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{l(year.line)}</p>
+          </div>
+        </Card>
+
+        {/* 띠별 오늘 한마디 */}
+        <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('fortune.zodiacTitle')}</h2>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          {zodiac.map((z) => {
+            const mine = z.zodiacKo === saju.zodiacKo
+            return (
+              <div
+                key={z.zodiacKo}
+                className="flex items-center gap-2 rounded-2xl p-2.5"
+                style={{ background: mine ? `${fortune.grad[0]}14` : '#fff', border: mine ? `2px solid ${fortune.grad[0]}` : '2px solid #EEF2F0' }}
+              >
+                <span className="shrink-0 text-[22px] leading-none">{z.zodiacEmoji}</span>
+                <div className="min-w-0">
+                  <p className="text-[11.5px] font-extrabold">{z.zodiacKo}{t('fortune.zodiacSuffix')}{mine ? ' · 나' : ''}</p>
+                  <p className="break-keep text-[10.5px] font-medium leading-tight text-ink-sub">{l(z.line)}</p>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* 궁합 + 공유 */}
+        <div className="mt-5 space-y-2.5">
+          <Button color="love" onClick={() => nav('/compat')}>💞 {t('fortune.compatCta')}</Button>
+          <Button color="sky" onClick={shareFortune}>🖼 {t('fortune.share')}</Button>
+        </div>
+        {saved && (
+          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">✅ {t('share.saved')}</p>
+        )}
 
         <p className="mt-4 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">{t('fortune.disclaimer')}</p>
         <button onClick={() => { setDraft(birthDate); setEditing(true) }} className="mt-1 w-full py-2 text-[13px] font-extrabold text-ink-faint">

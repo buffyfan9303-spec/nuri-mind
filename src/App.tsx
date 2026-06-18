@@ -31,6 +31,7 @@ const Magazine = lazy(() => import('./pages/Magazine'))
 const Article = lazy(() => import('./pages/Article'))
 const Insight = lazy(() => import('./pages/Insight'))
 const Fortune = lazy(() => import('./pages/Fortune'))
+const Compat = lazy(() => import('./pages/Compat'))
 
 function Loader() {
   return (
@@ -101,6 +102,7 @@ export default function App() {
               <Route path="/magazine/:id" element={<Article />} />
               <Route path="/insight" element={<Insight />} />
               <Route path="/fortune" element={<Fortune />} />
+              <Route path="/compat" element={<Compat />} />
               <Route path="/rank" element={<Rank />} />
               <Route path="/league" element={<League />} />
               <Route path="/legal/:doc" element={<Legal />} />

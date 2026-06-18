@@ -2,7 +2,8 @@
  * 사주(일주)·음양오행 결정론적 계산 — '오늘의 운세'용. 점술 단정이 아닌 '재미로 보는 오늘의 기운'.
  * 일주(60갑자) 공식은 3개 독립 권위자료로 교차검증(2019-01-27=갑자, 2000-01-01=무오, 2026-06-17=임술).
  */
-import { FORTUNE_TEMPLATES, BIRTH_FLOWERS, type FortuneTemplate, type BirthFlower } from '../data/fortune'
+import { FORTUNE_TEMPLATES, BIRTH_FLOWERS, COMPAT_TEMPLATES, SHORT_LINES, YEAR_LINES, type FortuneTemplate, type BirthFlower, type CompatTemplate } from '../data/fortune'
+import type { L } from '../data/types'
 
 const STEMS = [
   { ko: '갑', el: '목', ym: '양' }, { ko: '을', el: '목', ym: '음' },
@@ -122,4 +123,77 @@ export function fortuneOf(birth: { y: number; m: number; d: number }, today: { y
     luckyDir: DIR_KO[todayEl],
     grad: GRAD[todayEl],
   }
+}
+
+export interface Compat {
+  relation: string
+  template: CompatTemplate
+  score: number
+  aIlju: string
+  bIlju: string
+  aEl: string
+  bEl: string
+  grad: [string, string]
+}
+
+/** 두 생일 궁합 — 나(A) 일간 오행 vs 상대(B) 일간 오행 관계. */
+export function compatOf(a: { y: number; m: number; d: number }, b: { y: number; m: number; d: number }): Compat {
+  const ai = dayPillarIndex(a.y, a.m, a.d)
+  const bi = dayPillarIndex(b.y, b.m, b.d)
+  const aEl = STEMS[ai % 10].el
+  const bEl = STEMS[bi % 10].el
+  const rel = relation(aEl, bEl)
+  const tpl = COMPAT_TEMPLATES[rel]
+  return {
+    relation: rel,
+    template: tpl,
+    score: tpl.score,
+    aIlju: STEMS[ai % 10].ko + BRANCHES[ai % 12].ko,
+    bIlju: STEMS[bi % 10].ko + BRANCHES[bi % 12].ko,
+    aEl,
+    bEl,
+    grad: GRAD[aEl],
+  }
+}
+
+export interface WeekDay {
+  y: number
+  m: number
+  d: number
+  weekdayKo: string
+  overall: number
+  relation: string
+  isToday: boolean
+}
+const WD = ['일', '월', '화', '수', '목', '금', '토']
+
+/** 오늘부터 7일 총운 추이. */
+export function weekOf(birth: { y: number; m: number; d: number }, today: { y: number; m: number; d: number }): WeekDay[] {
+  const out: WeekDay[] = []
+  for (let i = 0; i < 7; i++) {
+    const dt = new Date(today.y, today.m - 1, today.d + i)
+    const day = { y: dt.getFullYear(), m: dt.getMonth() + 1, d: dt.getDate() }
+    const f = fortuneOf(birth, day)
+    out.push({ ...day, weekdayKo: WD[dt.getDay()], overall: f.overall, relation: f.relation, isToday: i === 0 })
+  }
+  return out
+}
+
+/** 올해의 운 — 출생 일간 오행 vs 올해 천간 오행. */
+export function yearOf(birth: { y: number; m: number; d: number }, year: number): { relation: string; line: L; el: string } {
+  const bi = dayPillarIndex(birth.y, birth.m, birth.d)
+  const birthEl = STEMS[bi % 10].el
+  const yearStemEl = STEMS[(((year - 4) % 10) + 10) % 10].el
+  const rel = relation(birthEl, yearStemEl)
+  return { relation: rel, line: YEAR_LINES[rel], el: yearStemEl }
+}
+
+/** 띠별 오늘 한 줄 — 각 띠 지지 오행 vs 오늘 일간 오행. */
+export function zodiacTodayLines(today: { y: number; m: number; d: number }): { zodiacKo: string; zodiacEmoji: string; line: L; relation: string }[] {
+  const todayIdx = dayPillarIndex(today.y, today.m, today.d)
+  const todayEl = STEMS[todayIdx % 10].el
+  return BRANCHES.map((b) => {
+    const rel = relation(b.el, todayEl)
+    return { zodiacKo: b.zo, zodiacEmoji: b.emoji, line: SHORT_LINES[rel], relation: rel }
+  })
 }
