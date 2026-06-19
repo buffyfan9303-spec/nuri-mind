@@ -61,7 +61,7 @@ export default function Profile() {
         <Card className="flex items-center gap-4">
           <button onClick={() => setAvatarOpen(true)} className="relative shrink-0">
             <Avatar avatar={s.avatar} size={64} />
-            <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-[12px] shadow-card">
+            <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-surface text-[12px] shadow-card">
               📷
             </span>
           </button>
@@ -185,13 +185,13 @@ export default function Profile() {
           <Card className="!p-2">
             <div className="flex items-center justify-between px-3 py-3">
               <span className="text-[15.5px] font-bold">{t('profile.language')}</span>
-              <div className="flex gap-1 rounded-xl bg-[#F0F4F1] p-1">
+              <div className="flex gap-1 rounded-xl bg-surface2 p-1">
                 {LANGS.map((lg) => (
                   <button
                     key={lg.key}
                     onClick={() => s.setLang(lg.key)}
                     className={`rounded-lg px-2.5 py-1.5 text-xs font-extrabold transition-colors ${
-                      s.lang === lg.key ? 'bg-white text-mind-700 shadow-card' : 'text-ink-faint'
+                      s.lang === lg.key ? 'bg-surface text-mind-700 shadow-card' : 'text-ink-faint'
                     }`}
                   >
                     {lg.label}
@@ -199,7 +199,7 @@ export default function Profile() {
                 ))}
               </div>
             </div>
-            <div className="flex items-center justify-between border-t border-[#F1F5F2] px-3 py-3">
+            <div className="flex items-center justify-between border-t border-line px-3 py-3">
               <span className="text-[15.5px] font-bold">{t('profile.sound')}</span>
               <button
                 onClick={() => s.setSound(!s.sound)}
@@ -210,13 +210,30 @@ export default function Profile() {
                 <motion.span
                   animate={{ x: s.sound ? 22 : 0 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                  className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-white shadow"
+                  className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
+                />
+              </button>
+            </div>
+
+            {/* 다크 모드 */}
+            <div className="flex items-center justify-between border-t border-line px-3 py-3">
+              <span className="text-[15.5px] font-bold">{t('profile.darkMode')}</span>
+              <button
+                onClick={() => s.setTheme(s.theme === 'dark' ? 'light' : 'dark')}
+                className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
+                style={{ background: s.theme === 'dark' ? '#4FA882' : '#D9E2DC' }}
+                aria-label="dark mode"
+              >
+                <motion.span
+                  animate={{ x: s.theme === 'dark' ? 22 : 0 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                  className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
                 />
               </button>
             </div>
 
             {/* 검사 중 배경음 */}
-            <div className="flex items-center justify-between border-t border-[#F1F5F2] px-3 py-3">
+            <div className="flex items-center justify-between border-t border-line px-3 py-3">
               <span className="text-[15.5px] font-bold">{t('profile.ambient')}</span>
               <button
                 onClick={() => s.setAmbient(!s.ambient)}
@@ -227,13 +244,13 @@ export default function Profile() {
                 <motion.span
                   animate={{ x: s.ambient ? 22 : 0 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                  className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-white shadow"
+                  className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
                 />
               </button>
             </div>
 
             {/* 글자 크기 슬라이더 */}
-            <div className="border-t border-[#F1F5F2] px-3 py-3">
+            <div className="border-t border-line px-3 py-3">
               <div className="flex items-center justify-between">
                 <span className="text-[15.5px] font-bold">{t('profile.fontSize')}</span>
                 <span className="text-[13px] font-extrabold text-mind-700">{Math.round(s.fontScale * 100)}%</span>
@@ -254,7 +271,7 @@ export default function Profile() {
             </div>
 
             {/* 출석 알림 (APK) */}
-            <div className="flex items-center justify-between border-t border-[#F1F5F2] px-3 py-3">
+            <div className="flex items-center justify-between border-t border-line px-3 py-3">
               <div className="min-w-0 pr-3">
                 <p className="text-[15.5px] font-bold">{t('profile.notify')}</p>
                 <p className="mt-0.5 text-[12px] font-medium leading-relaxed text-ink-faint">{t('profile.notifyDesc')}</p>
@@ -272,7 +289,7 @@ export default function Profile() {
                 <motion.span
                   animate={{ x: s.notify ? 22 : 0 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                  className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-white shadow"
+                  className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
                 />
               </button>
             </div>
@@ -284,7 +301,7 @@ export default function Profile() {
                     await signOut()
                     setAuthUser(null)
                   }}
-                  className="flex w-full items-center justify-between border-t border-[#F1F5F2] px-3 py-3"
+                  className="flex w-full items-center justify-between border-t border-line px-3 py-3"
                 >
                   <span className="text-[15.5px] font-bold">🔓 {t('auth.logout')}{authUser.nickname ? ` · ${authUser.nickname}` : ''}</span>
                   <span className="text-ink-faint">›</span>
@@ -295,7 +312,7 @@ export default function Profile() {
                     const r = await signInWithKakao()
                     if (!r.ok) alert(t('auth.needSetup'))
                   }}
-                  className="flex w-full items-center justify-between border-t border-[#F1F5F2] px-3 py-3"
+                  className="flex w-full items-center justify-between border-t border-line px-3 py-3"
                 >
                   <span className="text-[15.5px] font-bold">💬 {t('auth.kakaoLogin')}</span>
                   <span className="text-ink-faint">›</span>
@@ -303,28 +320,28 @@ export default function Profile() {
               ))}
             <button
               onClick={() => nav('/legal/terms')}
-              className="flex w-full items-center justify-between border-t border-[#F1F5F2] px-3 py-3"
+              className="flex w-full items-center justify-between border-t border-line px-3 py-3"
             >
               <span className="text-[15.5px] font-bold">📜 {t('legal.terms')}</span>
               <span className="text-ink-faint">›</span>
             </button>
             <button
               onClick={() => nav('/legal/privacy')}
-              className="flex w-full items-center justify-between border-t border-[#F1F5F2] px-3 py-3"
+              className="flex w-full items-center justify-between border-t border-line px-3 py-3"
             >
               <span className="text-[15.5px] font-bold">🔐 {t('legal.privacy')}</span>
               <span className="text-ink-faint">›</span>
             </button>
             <button
               onClick={() => nav('/admin')}
-              className="flex w-full items-center justify-between border-t border-[#F1F5F2] px-3 py-3"
+              className="flex w-full items-center justify-between border-t border-line px-3 py-3"
             >
               <span className="text-[15.5px] font-bold">🛠 {t('profile.adminMode')}</span>
               <span className="text-ink-faint">›</span>
             </button>
             <button
               onClick={() => setResetOpen(true)}
-              className="flex w-full items-center justify-between border-t border-[#F1F5F2] px-3 py-3 text-red-500"
+              className="flex w-full items-center justify-between border-t border-line px-3 py-3 text-red-500"
             >
               <span className="text-[15.5px] font-bold">🗑 {t('profile.reset')}</span>
               <span>›</span>
@@ -366,7 +383,7 @@ export default function Profile() {
               })}
             </div>
           ) : (
-            <p className="mt-4 rounded-2xl bg-[#F4F8F5] px-4 py-3 text-center text-[13.5px] font-bold text-ink-faint">
+            <p className="mt-4 rounded-2xl bg-surface2 px-4 py-3 text-center text-[13.5px] font-bold text-ink-faint">
               {t('profile.avatarNoAnimal')}
             </p>
           )}

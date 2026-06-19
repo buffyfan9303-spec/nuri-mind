@@ -33,7 +33,7 @@ export default function DailyExtras() {
       </div>
 
       {/* 오늘의 챌린지 */}
-      <div className="mt-4 border-t border-[#F1F5F2] pt-4">
+      <div className="mt-4 border-t border-line pt-4">
         <p className="text-[13.5px] font-extrabold">{t('daily.challenge')}</p>
         <motion.button
           whileTap={{ scale: 0.98 }}

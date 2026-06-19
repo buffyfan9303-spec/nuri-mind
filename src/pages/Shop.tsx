@@ -40,7 +40,7 @@ export default function Shop() {
     <div className="min-h-dvh pb-36">
       <TopBar title={t('shop.title')} />
       <main className="mx-auto max-w-md px-5">
-        <p className="px-1 text-[15px] font-medium leading-relaxed tracking-wide text-[#6B756E]">{t('shop.sub')}</p>
+        <p className="px-1 text-[15px] font-medium leading-relaxed tracking-wide text-ink-sub">{t('shop.sub')}</p>
 
         {requested && (
           <motion.p
@@ -101,7 +101,7 @@ export default function Shop() {
           <Section title={`📦 ${t('shop.history')}`}>
             <Card className="!p-2">
               {redemptions.map((rd) => (
-                <div key={rd.id} className="flex items-center justify-between border-b border-[#F1F5F2] px-3 py-3 last:border-0">
+                <div key={rd.id} className="flex items-center justify-between border-b border-line px-3 py-3 last:border-0">
                   <div className="flex min-w-0 items-center gap-2.5">
                     <span className="text-xl">{rd.emoji}</span>
                     <div className="min-w-0">

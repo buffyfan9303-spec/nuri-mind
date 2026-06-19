@@ -13,7 +13,7 @@ export default function QuickHub() {
     <div className="min-h-dvh pb-36">
       <TopBar back="/" title={t('quick.title')} />
       <main className="mx-auto max-w-md px-5">
-        <p className="px-1 text-[14px] font-medium leading-relaxed text-[#6B756E]">{t('quick.sub')}</p>
+        <p className="px-1 text-[14px] font-medium leading-relaxed text-ink-sub">{t('quick.sub')}</p>
 
         <div className="mt-4 space-y-3">
           {QUICK_TESTS.map((q, i) => (

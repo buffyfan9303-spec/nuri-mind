@@ -128,7 +128,7 @@ export default function Invite() {
               }}
               placeholder={t('invite.ph')}
               maxLength={11}
-              className="min-w-0 flex-1 rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-3 text-[15px] font-extrabold tracking-widest outline-none focus:border-mind-400"
+              className="min-w-0 flex-1 rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-extrabold tracking-widest outline-none focus:border-mind-400"
             />
             <Button color="mind" size="sm" full={false} disabled={input.length < 9} onClick={submit}>
               {t('invite.submit')}

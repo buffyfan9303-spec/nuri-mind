@@ -45,7 +45,7 @@ function PinGate() {
             onChange={(e) => setPin(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && tryUnlock()}
             placeholder={t('admin.pinPh')}
-            className="w-full rounded-2xl border-2 bg-white px-4 py-3.5 text-center text-lg font-extrabold tracking-widest outline-none focus:border-mind-400"
+            className="w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-center text-lg font-extrabold tracking-widest outline-none focus:border-mind-400"
             style={{ borderColor: err ? '#EF4444' : '#E3EAE5' }}
           />
         </div>
@@ -115,7 +115,7 @@ function Console() {
             >
               {tb.label}
               {tb.badge !== undefined && tb.badge > 0 && (
-                <span className="rounded-full bg-white px-1.5 text-[11px] font-extrabold text-[#1ab394]">{tb.badge}</span>
+                <span className="rounded-full bg-surface px-1.5 text-[11px] font-extrabold text-[#1ab394]">{tb.badge}</span>
               )}
             </button>
           ))}
@@ -151,14 +151,14 @@ function Console() {
 
                 <button
                   onClick={() => setOpenQ(openQ === sv.id ? null : sv.id)}
-                  className="mt-3 w-full rounded-xl bg-[#F4F8F5] py-2 text-xs font-extrabold text-ink-sub"
+                  className="mt-3 w-full rounded-xl bg-surface2 py-2 text-xs font-extrabold text-ink-sub"
                 >
                   {openQ === sv.id ? '▲' : '▼'} {t('common.q')}
                 </button>
                 {openQ === sv.id && (
                   <motion.ul initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 space-y-1.5">
                     {sv.questions.map((q, i) => (
-                      <li key={q.id} className="rounded-xl bg-[#FAFCFA] px-3 py-2 text-[12px] font-bold leading-relaxed">
+                      <li key={q.id} className="rounded-xl bg-surface2 px-3 py-2 text-[12px] font-bold leading-relaxed">
                         <span className="text-mind-600">Q{i + 1}.</span> {q.text}
                         <span className="ml-1.5 text-[10px] font-extrabold text-ink-faint">
                           [{t(`create.type.${q.type}`)}{q.required ? ` · ${t('common.required')}` : ''}]
@@ -173,7 +173,7 @@ function Console() {
                   value={reasons[sv.id] ?? ''}
                   onChange={(e) => setReasons((p) => ({ ...p, [sv.id]: e.target.value }))}
                   placeholder={t('admin.rejectPh')}
-                  className="mt-3 w-full rounded-xl border-2 border-[#E3EAE5] px-3 py-2 text-[13px] font-medium outline-none focus:border-mind-400"
+                  className="mt-3 w-full rounded-xl border-2 border-line px-3 py-2 text-[13px] font-medium outline-none focus:border-mind-400"
                 />
                 <div className="mt-2.5 grid grid-cols-2 gap-2">
                   <Button
@@ -278,7 +278,7 @@ function Console() {
                     <p className="text-[11.5px] font-bold text-ink-faint">{new Date(rp.at).toLocaleString()}</p>
                   </div>
                 </div>
-                <p className="mt-2 rounded-xl bg-[#FAFCFA] px-3 py-2 text-[13px] font-medium leading-relaxed text-ink break-keep line-clamp-4">
+                <p className="mt-2 rounded-xl bg-surface2 px-3 py-2 text-[13px] font-medium leading-relaxed text-ink break-keep line-clamp-4">
                   {rp.excerpt}
                 </p>
                 <div className="mt-3 grid grid-cols-2 gap-2">

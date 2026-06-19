@@ -79,6 +79,7 @@ interface State {
   lang: Lang
   sound: boolean
   ambient: boolean
+  theme: 'light' | 'dark'
   fontScale: number
   notify: boolean
   nickname: string
@@ -146,6 +147,7 @@ interface State {
   setLang: (l: Lang) => void
   setSound: (v: boolean) => void
   setAmbient: (v: boolean) => void
+  setTheme: (v: 'light' | 'dark') => void
   setFontScale: (v: number) => void
   setNotify: (v: boolean) => void
   setNickname: (n: string) => void
@@ -205,6 +207,7 @@ const initial = () => ({
   lang: 'ko' as Lang,
   sound: true,
   ambient: false,
+  theme: 'light' as 'light' | 'dark',
   fontScale: 1,
   notify: false,
   nickname: '누리',
@@ -295,6 +298,7 @@ export const useStore = create<State>()(
           set({ sound })
         },
         setAmbient: (ambient) => set({ ambient }),
+        setTheme: (theme) => set({ theme }),
         setFontScale: (fontScale) => set({ fontScale: Math.min(1.3, Math.max(0.9, fontScale)) }),
         setNotify: (notify) => set({ notify }),
         setNickname: (nickname) => set({ nickname: nickname.slice(0, 12) || '누리' }),

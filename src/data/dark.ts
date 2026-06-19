@@ -75,7 +75,7 @@ export const DARK_ITEMS: LikertItem[] = [
     en: 'I get a thrill from risky or reckless things',
     ja: '危険・無謀なことにスリルを感じる方だ' } },
   { id: 'dk17', sub: 'PS', text: {
-    ko: '남이 다치거나 곤란해져도 내 일이 아니면 별 감흥이 없다',
+    ko: '남이 다치거나 곤란해져도 내 일이 아니면 별 감정이 없다',
     en: 'If others get hurt and it\'s not my problem, I feel little',
     ja: '他人が傷ついても自分事でなければ大して感じない' } },
   { id: 'dk18', sub: 'PS', text: {

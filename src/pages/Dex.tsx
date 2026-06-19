@@ -52,7 +52,7 @@ export default function Dex() {
           </div>
           <div className="mt-2.5 h-2.5 overflow-hidden rounded-full bg-white/25">
             <motion.div
-              className="h-full rounded-full bg-white"
+              className="h-full rounded-full bg-surface"
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
               transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.2 }}

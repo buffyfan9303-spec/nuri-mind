@@ -93,7 +93,7 @@ export default function Charge() {
                     setSel(b)
                     sfx.tap()
                   }}
-                  className="relative overflow-hidden rounded-3xl border-2 bg-white p-4 text-center shadow-card"
+                  className="relative overflow-hidden rounded-3xl border-2 bg-surface p-4 text-center shadow-card"
                   style={{ borderColor: b.best ? '#6E7BF2' : '#ECECF5' }}
                 >
                   {b.best && (
@@ -140,7 +140,7 @@ export default function Charge() {
 
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               {['카카오페이', '신용카드', 'Toss'].map((m) => (
-                <span key={m} className="rounded-full border border-[#E3EAE5] bg-[#FAFBFA] px-3 py-1.5 text-[12.5px] font-bold text-ink-faint">
+                <span key={m} className="rounded-full border border-line bg-[#FAFBFA] px-3 py-1.5 text-[12.5px] font-bold text-ink-faint">
                   {m} <span className="text-[10.5px] text-ink-faint/70">준비중</span>
                 </span>
               ))}

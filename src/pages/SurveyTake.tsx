@@ -72,7 +72,7 @@ export default function SurveyTake() {
             {t('take.needRequired')}
           </p>
         )}
-        <p className="mt-3 text-[15px] font-medium leading-relaxed tracking-wide text-[#6B756E]">{survey.desc}</p>
+        <p className="mt-3 text-[15px] font-medium leading-relaxed tracking-wide text-ink-sub">{survey.desc}</p>
 
         <div className="mt-4 space-y-4">
           {survey.questions.map((q, qi) => (
@@ -185,7 +185,7 @@ export default function SurveyTake() {
                     onChange={(e) => setAns(q.id, e.target.value)}
                     placeholder={t('take.textPh')}
                     rows={3}
-                    className="mt-3 w-full rounded-xl border-2 border-[#E3EAE5] bg-white px-4 py-3 text-[15px] font-medium leading-relaxed outline-none focus:border-mind-400"
+                    className="mt-3 w-full rounded-xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-medium leading-relaxed outline-none focus:border-mind-400"
                   />
                 )}
               </Card>

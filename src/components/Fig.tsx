@@ -73,7 +73,7 @@ export function MatrixGrid({ cells }: { cells: Fig[] }) {
   return (
     <div className="mx-auto grid w-full max-w-[300px] grid-cols-3 gap-1.5">
       {cells.map((fig, i) => (
-        <div key={i} className="aspect-square rounded-xl border-2 border-[#E3EAE5] bg-white p-1">
+        <div key={i} className="aspect-square rounded-xl border-2 border-line bg-surface p-1">
           <FigCell fig={fig} className="h-full w-full" />
         </div>
       ))}
@@ -91,7 +91,7 @@ export function FoldStrip({ cells }: { cells: Fig[] }) {
       {cells.map((fig, i) => (
         <div key={i} className="flex items-center gap-1.5">
           {i > 0 && <span className="text-lg font-extrabold text-ink-faint">→</span>}
-          <div className="h-24 w-24 rounded-xl border-2 border-[#E3EAE5] bg-white p-1">
+          <div className="h-24 w-24 rounded-xl border-2 border-line bg-surface p-1">
             <FigCell fig={fig} className="h-full w-full" />
           </div>
         </div>

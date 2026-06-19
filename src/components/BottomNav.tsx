@@ -20,7 +20,7 @@ export default function BottomNav() {
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 h-24 bg-gradient-to-t from-cream via-cream/95 to-transparent" />
 
       <nav className="safe-bottom pointer-events-none fixed inset-x-0 bottom-0 z-40">
-        <div className="pointer-events-auto mx-auto mb-1 flex max-w-[380px] items-center justify-around rounded-[26px] border border-white/70 bg-white/95 px-1.5 py-1.5 shadow-pop backdrop-blur-md">
+        <div className="pointer-events-auto mx-auto mb-1 flex max-w-[380px] items-center justify-around rounded-[26px] border border-line bg-surface/95 px-1.5 py-1.5 shadow-pop backdrop-blur-md">
           {TABS.map((tab) => {
             const active = tab.to === '/' ? loc.pathname === '/' : loc.pathname.startsWith(tab.to)
             return (

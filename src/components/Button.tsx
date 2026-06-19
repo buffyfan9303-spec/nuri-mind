@@ -14,7 +14,7 @@ const COLORS: Record<BtnColor, { bg: string; sh: string; fg: string; border?: st
   dopa: { bg: '#12A5C2', sh: '#0B7186', fg: '#FFFFFF' },
   reso: { bg: '#10B981', sh: '#0B7A55', fg: '#FFFFFF' },
   dk: { bg: '#A23E63', sh: '#722B47', fg: '#FFFFFF' },
-  white: { bg: '#FFFFFF', sh: '#D8E0DA', fg: '#33413A', border: '2px solid #E3EAE5' },
+  white: { bg: 'rgb(var(--surface))', sh: 'rgb(var(--line))', fg: 'rgb(var(--text))', border: '2px solid rgb(var(--line))' },
   danger: { bg: '#EF4444', sh: '#B91C1C', fg: '#FFFFFF' },
 }
 

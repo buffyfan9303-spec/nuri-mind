@@ -96,7 +96,7 @@ export default function SurveyCreate() {
           <h1 className="mt-5 text-[21px] font-extrabold leading-relaxed tracking-tight">
             {t('create.lock', { tier: `${bronze.emoji} ${l(bronze.name)}` })}
           </h1>
-          <p className="mt-3 text-[15px] font-medium leading-relaxed tracking-wide text-[#6B756E]">
+          <p className="mt-3 text-[15px] font-medium leading-relaxed tracking-wide text-ink-sub">
             {t('create.lockDesc')}
           </p>
           <div className="mx-auto mt-7 max-w-[280px] space-y-3">
@@ -164,7 +164,7 @@ export default function SurveyCreate() {
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder={t('create.namePh')}
                     maxLength={40}
-                    className="mt-2 w-full rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-3.5 text-[15px] font-bold outline-none focus:border-mind-400"
+                    className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[15px] font-bold outline-none focus:border-mind-400"
                   />
                 </div>
                 <div>
@@ -175,7 +175,7 @@ export default function SurveyCreate() {
                     placeholder={t('create.descPh')}
                     rows={3}
                     maxLength={120}
-                    className="mt-2 w-full rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-3 text-[14px] font-medium leading-relaxed outline-none focus:border-mind-400"
+                    className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[14px] font-medium leading-relaxed outline-none focus:border-mind-400"
                   />
                 </div>
                 <Button color="mind" size="lg" disabled={!step1Ok} onClick={() => setStep(1)}>
@@ -192,7 +192,7 @@ export default function SurveyCreate() {
                       key={type}
                       whileTap={{ scale: 0.92 }}
                       onClick={() => addQ(type)}
-                      className="rounded-2xl border-2 border-[#E3EAE5] bg-white px-1 py-3 text-center"
+                      className="rounded-2xl border-2 border-line bg-surface px-1 py-3 text-center"
                     >
                       <div className="text-xl">{icon}</div>
                       <div className="mt-1 text-[10px] font-extrabold text-ink-sub">{t(`create.type.${type}`)}</div>
@@ -219,7 +219,7 @@ export default function SurveyCreate() {
                         onChange={(e) => patchQ(q.id, { text: e.target.value })}
                         placeholder={t('create.qPh')}
                         rows={2}
-                        className="mt-3 w-full rounded-xl border-2 border-[#E3EAE5] bg-white px-3.5 py-2.5 text-[14px] font-bold leading-relaxed outline-none focus:border-mind-400"
+                        className="mt-3 w-full rounded-xl border-2 border-line bg-surface px-3.5 py-2.5 text-[14px] font-bold leading-relaxed outline-none focus:border-mind-400"
                       />
                       {(q.type === 'single' || q.type === 'multi') && (
                         <div className="mt-2 space-y-2">
@@ -232,7 +232,7 @@ export default function SurveyCreate() {
                                   patchQ(q.id, { options: q.options!.map((x, i) => (i === oi ? e.target.value : x)) })
                                 }
                                 placeholder={t('create.optPh')}
-                                className="flex-1 rounded-xl border-2 border-[#E3EAE5] bg-white px-3 py-2 text-[13px] font-bold outline-none focus:border-mind-400"
+                                className="flex-1 rounded-xl border-2 border-line bg-surface px-3 py-2 text-[13px] font-bold outline-none focus:border-mind-400"
                               />
                               {q.options!.length > 2 && (
                                 <button
@@ -264,7 +264,7 @@ export default function SurveyCreate() {
                           <motion.span
                             animate={{ x: q.required ? 22 : 3 }}
                             transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                            className="absolute top-1 h-5 w-5 rounded-full bg-white shadow"
+                            className="absolute top-1 h-5 w-5 rounded-full bg-surface shadow"
                           />
                         </button>
                       </label>

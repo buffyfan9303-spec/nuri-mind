@@ -15,7 +15,7 @@ export function DiamondPill() {
       animate={{ scale: 1 }}
       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
       onClick={() => nav('/charge')}
-      className="flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-sm font-extrabold text-[#6E7BF2] shadow-card"
+      className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold text-[#6E7BF2] shadow-card"
     >
       💎 {diamonds.toLocaleString()}
       <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#6E7BF2] text-[11px] leading-none text-white">+</span>
@@ -29,7 +29,7 @@ export function PointsPill() {
   return (
     <div className="flex items-center gap-1.5">
       {streak > 0 && (
-        <span className="flex items-center gap-0.5 rounded-full bg-white px-2.5 py-1 text-sm font-extrabold text-orange-500 shadow-card">
+        <span className="flex items-center gap-0.5 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold text-orange-500 shadow-card">
           🔥{streak}
         </span>
       )}
@@ -39,7 +39,7 @@ export function PointsPill() {
         initial={{ scale: 1.25 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-        className="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-sm font-extrabold text-mind-700 shadow-card"
+        className="flex items-center gap-1 rounded-full bg-surface px-3 py-1 text-sm font-extrabold text-mind-700 shadow-card"
       >
         🪙 {points.toLocaleString()}
       </motion.span>
@@ -86,7 +86,7 @@ export function Card({ children, className = '', onClick }: { children: ReactNod
     <motion.div
       whileTap={onClick ? { scale: 0.98 } : undefined}
       onClick={onClick}
-      className={`rounded-3xl bg-white p-5 shadow-card ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`rounded-3xl bg-surface p-5 shadow-card ${onClick ? 'cursor-pointer' : ''} ${className}`}
     >
       {children}
     </motion.div>
@@ -141,7 +141,7 @@ export function Modal({
             exit={{ y: 80, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 380, damping: 32 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-t-3xl bg-white p-6 pb-8 shadow-pop sm:rounded-3xl sm:pb-6"
+            className="w-full max-w-md rounded-t-3xl bg-surface p-6 pb-8 shadow-pop sm:rounded-3xl sm:pb-6"
           >
             {children}
           </motion.div>
@@ -159,7 +159,7 @@ export function Modal({
 export function ProgressBar({ value, color = '#4FA882' }: { value: number; color?: string }) {
   const pct = Math.min(100, Math.max(0, (Number.isFinite(value) ? value : 0) * 100))
   return (
-    <div className="h-3.5 w-full overflow-hidden rounded-full bg-[#E3E9E5]">
+    <div className="h-3.5 w-full overflow-hidden rounded-full bg-line">
       <motion.div
         className="relative h-full overflow-hidden rounded-full"
         initial={false}
@@ -167,7 +167,7 @@ export function ProgressBar({ value, color = '#4FA882' }: { value: number; color
         transition={{ type: 'spring', stiffness: 180, damping: 26, mass: 0.7 }}
         style={{ background: color, minWidth: pct > 0 ? '0.875rem' : 0 }}
       >
-        <span className="pointer-events-none absolute inset-x-1.5 top-[3px] block h-1 rounded-full bg-white/40" />
+        <span className="pointer-events-none absolute inset-x-1.5 top-[3px] block h-1 rounded-full bg-surface/40" />
       </motion.div>
     </div>
   )

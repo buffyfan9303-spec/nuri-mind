@@ -47,7 +47,7 @@ export const RESILIENCE_ITEMS: LikertItem[] = [
     en: 'When problems arise, I reach for solutions before emotions',
     ja: '問題が起きると感情より先に解決策を思い浮かべる' } },
   { id: 'rs10', sub: 'CTL', text: {
-    ko: '목표를 세우면 어지간한 방해에도 끝까지 밀고 간다',
+    ko: '목표를 세우면 웬만한 방해에도 끝까지 밀고 간다',
     en: 'Once I set a goal, I push through most obstacles',
     ja: '目標を立てたら、多少の妨害でも最後までやり抜く' } },
   { id: 'rs11', sub: 'AD', text: {

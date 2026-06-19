@@ -52,11 +52,17 @@ export default function App() {
   const location = useLocation()
   const fontScale = useStore((s) => s.fontScale)
   const onboarded = useStore((s) => s.onboarded)
+  const theme = useStore((s) => s.theme)
 
   // 글자 크기: 루트 zoom으로 전체 UI 배율 조정
   useEffect(() => {
     ;(document.documentElement.style as unknown as { zoom: string }).zoom = String(fontScale)
   }, [fontScale])
+
+  // 다크모드: 루트에 .dark 클래스 토글 (CSS 변수로 전체 색 전환)
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+  }, [theme])
 
   const hideNav =
     !onboarded ||

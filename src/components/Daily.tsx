@@ -27,7 +27,7 @@ export function DailyCapMeter() {
       </div>
       <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-white/25">
         <motion.div
-          className="h-full rounded-full bg-white"
+          className="h-full rounded-full bg-surface"
           initial={false}
           animate={{ width: `${ratio * 100}%` }}
           transition={{ type: 'spring', stiffness: 160, damping: 22 }}
@@ -83,7 +83,7 @@ export function DailySpin() {
 
       <div className="mt-3.5 space-y-2.5">
         {capLeft <= 0 && !allDone ? (
-          <p className="rounded-2xl bg-[#F4F8F5] py-3.5 text-center text-[14px] font-bold text-ink-sub">
+          <p className="rounded-2xl bg-surface2 py-3.5 text-center text-[14px] font-bold text-ink-sub">
             {t('daily.capFull')}
           </p>
         ) : allDone ? (
@@ -220,7 +220,7 @@ export function DailyQuiz() {
                     : t('quiz.correctCap')
                   : t('quiz.wrong', { a: l(item.options[item.answer]) })}
               </p>
-              <p className="mt-2 rounded-2xl bg-[#F4F8F5] px-4 py-3 text-[14px] font-medium leading-relaxed text-ink-sub">
+              <p className="mt-2 rounded-2xl bg-surface2 px-4 py-3 text-[14px] font-medium leading-relaxed text-ink-sub">
                 💡 {l(item.fact)}
               </p>
               <div className="mt-4">

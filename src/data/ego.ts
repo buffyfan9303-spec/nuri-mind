@@ -110,7 +110,7 @@ export const EGO_ITEMS: LikertItem[] = [
     sub: 'EMP',
     reverse: true,
     text: {
-      ko: '내 시간이 깎여 나가더라도, 동료의 급한 부탁을 외면하기는 어렵다',
+      ko: '내 시간을 빼앗기더라도, 동료의 급한 부탁을 외면하기는 어렵다',
       en: 'Even at the cost of my own time, ignoring a colleague\'s urgent request is hard for me',
       ja: '自分の時間が削られても、同僚の急な頼みを見過ごすのは難しい',
     },
@@ -195,7 +195,7 @@ export const EGO_ITEMS: LikertItem[] = [
     sub: 'VAL',
     validity: true,
     text: {
-      ko: '나는 어떤 상황에서도, 다른 사람을 부러워하거나 질투해 본 적이 전혀 없다',
+      ko: '나는 어떤 상황에서도, 다른 사람을 부러워하거나 질투한 적이 전혀 없다',
       en: 'In no situation have I ever felt envy or jealousy toward anyone',
       ja: '私はどんな状況でも、他人を羨んだり嫉妬したことが全くない',
     },

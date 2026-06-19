@@ -272,7 +272,7 @@ export default function TestRun() {
                         onClick={() => pickLikert(v)}
                         animate={active ? { scale: [1, 1.045, 1] } : { scale: 1 }}
                         transition={{ duration: 0.25 }}
-                        className="flex w-full items-center justify-between rounded-2xl border-2 bg-white px-5 py-4 text-left text-[17px] font-bold leading-relaxed"
+                        className="flex w-full items-center justify-between rounded-2xl border-2 bg-surface px-5 py-4 text-left text-[17px] font-bold leading-relaxed"
                         style={{
                           borderColor: active ? tm.gradFrom : '#E3EAE5',
                           background: active ? `${tm.gradFrom}1A` : '#fff',
@@ -303,7 +303,7 @@ export default function TestRun() {
 
       {/* IQ 확인 버튼 */}
       {isIq && (
-        <div className="sticky bottom-0 border-t border-[#EDF2EE] bg-cream/95 px-5 pb-7 pt-3 backdrop-blur">
+        <div className="sticky bottom-0 border-t border-line bg-cream/95 px-5 pb-7 pt-3 backdrop-blur">
           <div className="mx-auto max-w-md">
             <Button color="iq" size="lg" disabled={sel === null} onClick={confirmIq}>
               {t('common.next')} →
@@ -347,7 +347,7 @@ function IqQuestion({
   const isFig = item.options.some((o) => o.fig)
   return (
     <>
-      <p className="mt-6 text-center text-[15px] font-bold leading-relaxed tracking-wide text-[#6B756E]">
+      <p className="mt-6 text-center text-[15px] font-bold leading-relaxed tracking-wide text-ink-sub">
         {l(item.prompt ?? IQ_PROMPTS[item.kind])}
       </p>
 
@@ -355,12 +355,12 @@ function IqQuestion({
         {item.kind === 'matrix' && item.cells && <MatrixGrid cells={item.cells} />}
         {item.kind === 'fold' && item.cells && <FoldStrip cells={item.cells} />}
         {(item.kind === 'series' || item.kind === 'letter') && (
-          <div className="rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-8 text-center text-[28px] font-extrabold tracking-widest">
+          <div className="rounded-2xl border-2 border-line bg-surface px-4 py-8 text-center text-[28px] font-extrabold tracking-widest">
             {item.series}
           </div>
         )}
         {item.kind === 'verbal' && (
-          <div className="whitespace-pre-line rounded-2xl border-2 border-[#E3EAE5] bg-white px-5 py-6 text-[18px] font-extrabold leading-[1.75]">
+          <div className="whitespace-pre-line rounded-2xl border-2 border-line bg-surface px-5 py-6 text-[18px] font-extrabold leading-[1.75]">
             {l(item.prompt)}
           </div>
         )}
@@ -375,7 +375,7 @@ function IqQuestion({
               onClick={() => onPick(o.id)}
               whileTap={{ scale: 0.96 }}
               animate={active ? { scale: [1, 1.05, 1] } : { scale: 1 }}
-              className={`rounded-2xl border-2 bg-white ${
+              className={`rounded-2xl border-2 bg-surface ${
                 o.fig ? 'aspect-square p-2' : 'px-4 py-4'
               } font-extrabold`}
               style={{

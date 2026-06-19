@@ -248,7 +248,7 @@ export default function Rewards() {
               <p className="py-6 text-center text-sm font-bold text-ink-faint">{t('rewards.empty.ledger')}</p>
             )}
             {ledger.slice(0, 8).map((e) => (
-              <div key={e.id} className="flex items-center justify-between border-b border-[#F1F5F2] px-3 py-3 last:border-0">
+              <div key={e.id} className="flex items-center justify-between border-b border-line px-3 py-3 last:border-0">
                 <div className="min-w-0">
                   <p className="truncate text-[14.5px] font-bold">{e.memo}</p>
                   <p className="mt-0.5 text-[12px] font-medium text-ink-faint">

@@ -439,7 +439,7 @@ export default function TestResult() {
 
         {/* 참고 절단점 (임상 척도, 정밀화 2차) */}
         {['adhd', 'burnout', 'dopamine'].includes(result.testId) && (
-          <div className="mt-3 rounded-2xl bg-[#F2F5F3] p-3.5">
+          <div className="mt-3 rounded-2xl bg-surface2 p-3.5">
             <p className="text-[12.5px] font-extrabold text-ink-sub">📋 {t('result.cutoffTitle')}</p>
             <p className="mt-1 break-keep text-[12px] font-medium leading-relaxed text-ink-faint">{t(`result.cutoff.${result.testId}`)}</p>
           </div>
@@ -447,7 +447,7 @@ export default function TestResult() {
 
         {/* IQ 추정 지표 안내 (정밀화 3차) */}
         {result.testId === 'iq' && (
-          <div className="mt-3 rounded-2xl bg-[#F2F5F3] p-3.5">
+          <div className="mt-3 rounded-2xl bg-surface2 p-3.5">
             <p className="text-[12.5px] font-extrabold text-ink-sub">📋 {t('result.estTitle')}</p>
             <p className="mt-1 break-keep text-[12px] font-medium leading-relaxed text-ink-faint">{t('result.iqEstimate')}</p>
           </div>

@@ -305,7 +305,7 @@ export default function Community() {
             <motion.div
               animate={refreshing ? { rotate: 360 } : { rotate: pulling * 4 }}
               transition={refreshing ? { repeat: Infinity, duration: 0.8, ease: 'linear' } : { duration: 0 }}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[20px] shadow-pop"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-[20px] shadow-pop"
               style={{ transform: `translateY(${refreshing ? 8 : pulling - 12}px)` }}
             >
               {refreshing ? '🐢' : pulling > 50 ? '🐰' : '🐢'}
@@ -320,9 +320,9 @@ export default function Community() {
 
         {/* 상태 표시 */}
         <div className="flex items-start justify-between gap-2 px-1">
-          <p className="flex-1 break-keep text-[13.5px] font-medium leading-relaxed text-[#6B756E]">{t('community.sub')}</p>
+          <p className="flex-1 break-keep text-[13.5px] font-medium leading-relaxed text-ink-sub">{t('community.sub')}</p>
           {server !== null && (
-            <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-full bg-[#EFF3F0] px-2.5 py-1 text-[11px] font-extrabold text-ink-faint">
+            <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-full bg-surface2 px-2.5 py-1 text-[11px] font-extrabold text-ink-faint">
               {server ? t('community.shared') : t('community.local')}
             </span>
           )}
@@ -331,7 +331,7 @@ export default function Community() {
         {/* 작성 유도 컴포저 바 */}
         <button
           onClick={() => setOpen(true)}
-          className="mt-3 flex w-full items-center gap-3 rounded-full bg-white px-3 py-2.5 shadow-card"
+          className="mt-3 flex w-full items-center gap-3 rounded-full bg-surface px-3 py-2.5 shadow-card"
         >
           <Avatar avatar={avatar} size={34} emojiScale={0.52} />
           <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium text-ink-faint">{t('community.composer')}</span>
@@ -378,13 +378,13 @@ export default function Community() {
         </div>
 
         {/* 정렬 세그먼트 */}
-        <div className="mt-3 flex gap-1 rounded-2xl bg-[#EFF3F0] p-1">
+        <div className="mt-3 flex gap-1 rounded-2xl bg-surface2 p-1">
           {(['new', 'hot'] as const).map((s) => (
             <button
               key={s}
               onClick={() => setSort(s)}
               className={`flex-1 rounded-xl py-2 text-[13.5px] font-extrabold transition-colors ${
-                sort === s ? 'bg-white text-mind-700 shadow-card' : 'text-ink-faint'
+                sort === s ? 'bg-surface text-mind-700 shadow-card' : 'text-ink-faint'
               }`}
             >
               {t(s === 'new' ? 'community.sortNew' : 'community.sortHot')}
@@ -460,7 +460,7 @@ export default function Community() {
                           whileTap={{ scale: 0.85 }}
                           onClick={() => onLike(p)}
                           className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
-                            p.liked ? 'bg-red-50 text-red-500' : 'bg-[#F2F5F3] text-ink-sub'
+                            p.liked ? 'bg-red-50 text-red-500' : 'bg-surface2 text-ink-sub'
                           }`}
                         >
                           <motion.span animate={p.liked ? { scale: [1, 1.4, 1] } : {}}>
@@ -472,14 +472,14 @@ export default function Community() {
                           whileTap={{ scale: 0.85 }}
                           onClick={() => toggleComments(p.id)}
                           className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
-                            openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-[#F2F5F3] text-ink-sub'
+                            openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-sub'
                           }`}
                         >
                           💬 {comments.length || ''}
                         </motion.button>
                         <button
                           onClick={() => onShare(p)}
-                          className="flex shrink-0 items-center gap-1.5 rounded-full bg-[#F2F5F3] px-3 py-1.5 text-[12.5px] font-extrabold text-ink-sub"
+                          className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-[12.5px] font-extrabold text-ink-sub"
                         >
                           📤
                         </button>
@@ -503,7 +503,7 @@ export default function Community() {
                             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
                             className="overflow-hidden"
                           >
-                            <div className="mt-3 space-y-2 border-t-2 border-[#F0F4F1] pt-3">
+                            <div className="mt-3 space-y-2 border-t-2 border-line pt-3">
                               {comments.length === 0 ? (
                                 <p className="py-1 text-center text-[12.5px] font-bold text-ink-faint">
                                   {t('community.commentEmpty')}
@@ -517,7 +517,7 @@ export default function Community() {
                                     className="flex items-start gap-2"
                                   >
                                     <Avatar avatar={c.avatar} size={26} emojiScale={0.5} />
-                                    <div className="min-w-0 flex-1 rounded-2xl bg-[#F4F7F5] px-3 py-2">
+                                    <div className="min-w-0 flex-1 rounded-2xl bg-surface2 px-3 py-2">
                                       <p className="flex items-center gap-1 text-[12px] font-extrabold">
                                         <span className="truncate">{c.nick}</span>
                                         {c.badge && <span className="shrink-0">{c.badge}</span>}
@@ -540,7 +540,7 @@ export default function Community() {
                                   onKeyDown={(e) => e.key === 'Enter' && submitComment(p.id)}
                                   placeholder={t('community.commentPh')}
                                   maxLength={200}
-                                  className="min-w-0 flex-1 rounded-full border-2 border-[#E3EAE5] bg-white px-3.5 py-2 text-[13px] font-medium outline-none focus:border-mind-400"
+                                  className="min-w-0 flex-1 rounded-full border-2 border-line bg-surface px-3.5 py-2 text-[13px] font-medium outline-none focus:border-mind-400"
                                 />
                                 <motion.button
                                   whileTap={{ scale: 0.9 }}
@@ -651,7 +651,7 @@ export default function Community() {
           rows={4}
           maxLength={280}
           autoFocus
-          className="mt-3 w-full rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-3 text-[15px] font-medium leading-relaxed outline-none focus:border-mind-400"
+          className="mt-3 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-medium leading-relaxed outline-none focus:border-mind-400"
         />
         <div className="mt-1.5 flex items-center justify-between">
           {myAnimal ? (

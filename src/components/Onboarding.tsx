@@ -95,7 +95,7 @@ export default function Onboarding() {
             placeholder={t('onboard.nickPh')}
             maxLength={12}
             autoFocus
-            className="mt-2 w-full rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-3.5 text-[16px] font-extrabold outline-none focus:border-mind-400"
+            className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[16px] font-extrabold outline-none focus:border-mind-400"
           />
         </div>
 
@@ -133,7 +133,7 @@ export default function Onboarding() {
             🎁 {t('onboard.bonus')}
           </div>
           {/* 필수 약관 동의 체크 (실서비스/스토어 심사 대비) */}
-          <div className="mb-3 flex items-start gap-2.5 rounded-2xl border-2 border-[#E9EEEB] bg-white px-3.5 py-3">
+          <div className="mb-3 flex items-start gap-2.5 rounded-2xl border-2 border-line bg-surface px-3.5 py-3">
             <button
               type="button"
               onClick={() => {
@@ -170,7 +170,7 @@ export default function Onboarding() {
 
       {/* 미리보기 아바타(우상단 작은 표시) */}
       {(picked || nick) && (
-        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="pointer-events-none fixed right-5 top-5 flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-card">
+        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="pointer-events-none fixed right-5 top-5 flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 shadow-card">
           <Avatar avatar={picked ? { kind: 'animal', persona: picked } : null} size={26} emojiScale={0.5} />
           <span className="max-w-[90px] truncate text-[13px] font-extrabold">{nick || '친구'}</span>
         </motion.div>

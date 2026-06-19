@@ -52,7 +52,7 @@ export default function Routine() {
           </div>
           <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/25">
             <motion.div
-              className="h-full rounded-full bg-white"
+              className="h-full rounded-full bg-surface"
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
               transition={{ type: 'spring', stiffness: 120, damping: 22 }}
@@ -77,7 +77,7 @@ export default function Routine() {
                 transition={{ delay: i * 0.04 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onToggle(i)}
-                className="flex w-full items-center gap-3.5 rounded-2xl border-2 bg-white px-4 py-3.5 text-left transition-colors"
+                className="flex w-full items-center gap-3.5 rounded-2xl border-2 bg-surface px-4 py-3.5 text-left transition-colors"
                 style={{ borderColor: checked ? '#4FA882' : '#E9EEEB' }}
               >
                 <span

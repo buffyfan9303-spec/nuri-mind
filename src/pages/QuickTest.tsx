@@ -234,7 +234,7 @@ export default function QuickTest() {
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 24 }}
                   onClick={() => pick(op.to)}
-                  className="w-full rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-4 text-left text-[15.5px] font-bold leading-snug transition-colors active:border-mind-400 active:bg-mind-50"
+                  className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-4 text-left text-[15.5px] font-bold leading-snug transition-colors active:border-mind-400 active:bg-mind-50"
                 >
                   {l(op.text)}
                 </motion.button>

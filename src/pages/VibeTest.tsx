@@ -186,7 +186,7 @@ export default function VibeTest() {
                   <div className="h-full flex-1" style={{ background: 'linear-gradient(90deg, #A9C9EE, #8FB8E8)' }} />
                 </div>
                 <p className="mt-4 text-[15px] font-medium leading-[1.8] tracking-wide text-ink">{l(vt.desc)}</p>
-                <p className="mt-3 rounded-2xl bg-[#F4F8F5] px-4 py-3 text-center text-[14.5px] font-extrabold text-ink-sub">
+                <p className="mt-3 rounded-2xl bg-surface2 px-4 py-3 text-center text-[14.5px] font-extrabold text-ink-sub">
                   💘 {t('vibe.pair')}: {pair.emoji} {l(pair.name)}
                 </p>
               </Card>

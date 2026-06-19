@@ -106,7 +106,7 @@ export default function Ticker() {
             rows={2}
             autoFocus
             placeholder={l({ ko: '한 줄 외쳐보세요! (최대 60자)', en: 'Shout one line! (max 60)', ja: '一言どうぞ！(最大60字)' })}
-            className="mt-3 w-full resize-none rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-3 text-[15px] font-bold leading-relaxed outline-none focus:border-[#8B7CF6]"
+            className="mt-3 w-full resize-none rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-bold leading-relaxed outline-none focus:border-[#8B7CF6]"
           />
           <div className="mt-1 flex items-center justify-between text-[11.5px] font-bold">
             <span className="text-ink-faint">{l({ ko: '보유', en: 'You have', ja: '保有' })} 💎 {diamonds}</span>

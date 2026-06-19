@@ -140,7 +140,7 @@ export const PERSONAS: Record<string, Persona> = {
       ja: '表向きは利他的に見えますが、データは別の物語を語ります。あなたの譲歩は相手のためではなく、葛藤という痛みを避けるための鎮痛剤に近い。拒絶恐怖が意思決定のハンドルを握っています。',
     },
     slap: {
-      ko: '갈등이 무서워 도망치는 것은 평화가 아니라 미루기 게으름입니다. 당신이 삼킨 말들은 사라지지 않고 이자가 붙어 어느 날 한꺼번에 청구됩니다.',
+      ko: '갈등이 무서워 도망치는 것은 평화가 아니라 미루는 게으름입니다. 당신이 삼킨 말들은 사라지지 않고 이자가 붙어 어느 날 한꺼번에 청구됩니다.',
       en: 'Fleeing conflict isn\'t peace — it\'s procrastination in disguise. The words you swallow don\'t vanish; they accrue interest and one day arrive as a single, crushing invoice.',
       ja: '葛藤が怖くて逃げるのは平和ではなく、先送りの怠惰です。あなたが呑み込んだ言葉は消えず、利子がついてある日一括請求されます。',
     },

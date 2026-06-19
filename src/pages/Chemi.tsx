@@ -73,7 +73,7 @@ export default function Chemi() {
     <div className="min-h-dvh pb-36">
       <TopBar back="/profile" title={t('chemi.title')} />
       <main className="mx-auto max-w-md px-5">
-        <p className="px-1 text-[14px] font-medium leading-relaxed text-[#6B756E]">
+        <p className="px-1 text-[14px] font-medium leading-relaxed text-ink-sub">
           {shared ? t('chemi.subFriend', { a: l(PERSONAS[theirs!].name) }) : t('chemi.sub')}
         </p>
 
@@ -113,7 +113,7 @@ export default function Chemi() {
             <div className="mt-3 text-[46px] font-extrabold leading-none">{chemi.score}%</div>
             <div className="mx-auto mt-3 h-2.5 max-w-[220px] overflow-hidden rounded-full bg-white/30">
               <motion.div
-                className="h-full rounded-full bg-white"
+                className="h-full rounded-full bg-surface"
                 initial={{ width: 0 }}
                 animate={{ width: `${chemi.score}%` }}
                 transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.2 }}

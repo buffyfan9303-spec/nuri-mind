@@ -97,7 +97,7 @@ export default function Fortune() {
               max="2025-12-31"
               min="1920-01-01"
               onChange={(e) => setDraft(e.target.value)}
-              className="mt-2 w-full rounded-2xl border-2 border-[#E3EAE5] bg-white px-4 py-3.5 text-[16px] font-extrabold outline-none focus:border-mind-400"
+              className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[16px] font-extrabold outline-none focus:border-mind-400"
             />
             <p className="mt-2 px-1 text-[11.5px] font-medium leading-relaxed text-ink-faint">{t('fortune.birthHint')}</p>
             <div className="mt-4">
@@ -197,7 +197,7 @@ export default function Fortune() {
             { emoji: '🔢', label: t('fortune.luckyNum'), val: String(fortune.luckyNumber) },
             { emoji: '🧭', label: t('fortune.luckyDir'), val: fortune.luckyDir },
           ].map((x) => (
-            <div key={x.label} className="rounded-2xl bg-white p-3 text-center shadow-card">
+            <div key={x.label} className="rounded-2xl bg-surface p-3 text-center shadow-card">
               <div className="text-[22px] leading-none">{x.emoji}</div>
               <p className="mt-1.5 text-[11px] font-bold text-ink-faint">{x.label}</p>
               <p className="mt-0.5 text-[15px] font-extrabold">{x.val}</p>

@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 export default {
   // cwd와 무관하게 동작하도록 절대경로로 고정
   content: [join(__dirname, 'index.html'), join(__dirname, 'src/**/*.{ts,tsx}')],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -30,8 +31,16 @@ export default {
           600: '#5784C2',
         },
         peach: { 300: '#F6C39F', 400: '#F4B08C', 500: '#E89D77' },
-        ink: { DEFAULT: '#33413A', sub: '#6B756E', faint: '#9AA59E' },
-        cream: '#FAFCF9',
+        // 다크모드 대응 시맨틱 토큰 (rgb(var/alpha) — 투명도 modifier 지원)
+        ink: {
+          DEFAULT: 'rgb(var(--text) / <alpha-value>)',
+          sub: 'rgb(var(--text-sub) / <alpha-value>)',
+          faint: 'rgb(var(--text-faint) / <alpha-value>)',
+        },
+        cream: 'rgb(var(--bg) / <alpha-value>)',
+        surface: 'rgb(var(--surface) / <alpha-value>)',
+        surface2: 'rgb(var(--surface-2) / <alpha-value>)',
+        line: 'rgb(var(--line) / <alpha-value>)',
         adhd: { light: '#FFF4E0', DEFAULT: '#FFB020', deep: '#D98E00' },
         ego: { light: '#FFECEA', DEFAULT: '#FF6F61', deep: '#D94F42' },
         iq: { light: '#ECEFFE', DEFAULT: '#6E7BF2', deep: '#4F5CD4' },

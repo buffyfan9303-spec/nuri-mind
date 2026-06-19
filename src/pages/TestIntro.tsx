@@ -50,7 +50,7 @@ export default function TestIntro() {
 
         <Card className="mt-4">
           <h2 className="flex items-center gap-2 text-[16px] font-extrabold tracking-tight">📚 {t('intro.basis')}</h2>
-          <p className="mt-2.5 text-[15px] font-medium leading-[1.8] tracking-wide text-[#6B756E]">
+          <p className="mt-2.5 text-[15px] font-medium leading-[1.8] tracking-wide text-ink-sub">
             {t(`intro.${id}.basis`)}
           </p>
         </Card>

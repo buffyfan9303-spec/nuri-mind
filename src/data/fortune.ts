@@ -56,7 +56,7 @@ export const FORTUNE_TEMPLATES: Record<string, FortuneTemplate> = {
       "ja": "金運が活発。決断・交渉に有利。保留中の請求や精算を片付けるのに好適。"
     },
     "health": {
-      "ko": "에너지가 넘쳐 활동적인 날. 다만 무리한 과부하는 금물, 스트레칭으로 균형을.",
+      "ko": "에너지가 넘쳐 활동적인 날. 다만 과도한 부하는 금물, 스트레칭으로 균형을.",
       "en": "High-energy and active—just avoid overload; balance it with stretching.",
       "ja": "エネルギーに満ちた活動的な日。過負荷は禁物、ストレッチで均衡を。"
     },
@@ -81,7 +81,7 @@ export const FORTUNE_TEMPLATES: Record<string, FortuneTemplate> = {
       "ja": "大きな波なく安定。攻めるより守りの管理が有利です。"
     },
     "health": {
-      "ko": "평소 컨디션 유지. 규칙적인 식사·가벼운 운동이 그대로 보답합니다.",
+      "ko": "평소 컨디션 유지. 규칙적인 식사·가벼운 운동이 그대로 돌아옵니다.",
       "en": "Steady as usual—regular meals and light exercise pay off.",
       "ja": "いつもの調子を維持。規則的な食事と軽い運動がそのまま報われます。"
     },

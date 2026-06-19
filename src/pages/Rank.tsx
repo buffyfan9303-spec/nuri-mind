@@ -57,7 +57,7 @@ export default function Rank() {
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(100, Math.round(progress * 100))}%` }}
                 transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.3 }}
-                className="h-full rounded-full bg-white"
+                className="h-full rounded-full bg-surface"
               />
             </div>
             <p className="mt-2.5 text-[14px] font-extrabold text-white">
@@ -175,7 +175,7 @@ export default function Rank() {
               {applications.map((a) => {
                 const ex = expById(a.expId)
                 return (
-                  <div key={a.id} className="flex items-center justify-between border-b border-[#F1F5F2] px-3.5 py-3.5 last:border-0">
+                  <div key={a.id} className="flex items-center justify-between border-b border-line px-3.5 py-3.5 last:border-0">
                     <div className="flex min-w-0 items-center gap-2.5">
                       <span className="text-xl">{ex?.emoji}</span>
                       <div className="min-w-0">
