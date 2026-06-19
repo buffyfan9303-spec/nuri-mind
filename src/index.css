@@ -30,6 +30,14 @@
 .dark .shadow-pop {
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.55);
 }
+/* 다크모드 — 어두운 브랜드 텍스트(짙은 청록/딥)는 어두운 표면 위에서 묻히므로 밝게 보정.
+   라이트 틴트 칩(bg-mind-100 등) 위에서도 가독되는 중간 톤으로 통일. */
+.dark .text-mind-600 { color: #6FB394; }
+.dark .text-mind-700 { color: #79C2A0; }
+.dark .text-mind-800 { color: #A3CFB9; }
+.dark .text-reso-deep { color: #34D399; }
+.dark .text-dk-deep { color: #D98AAA; }
+.dark .text-dopa-deep { color: #5BC8DC; }
 
 html {
   -webkit-tap-highlight-color: transparent;
