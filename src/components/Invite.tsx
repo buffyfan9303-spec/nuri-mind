@@ -5,6 +5,7 @@ import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import { referralReady, redeemReferralServer } from '../lib/referral'
 
 // 누적 초대 보너스 — 신규 유입 LTV로 정당화(일일 상한과 별개). 서버 연동 시 자동 지급.
 // 최상위(10명+)엔 다이아(유료 재화)까지 얹어 강력한 바이럴 후크.
@@ -52,7 +53,17 @@ export default function Invite() {
     }
   }
 
-  const submit = () => {
+  const submit = async () => {
+    // 서버 검증(카카오 로그인 + supabase): 계정당 1회 — localStorage 초기화 파밍 차단.
+    // 미배포/비로그인이면 로컬 동작으로 폴백(현행 유지).
+    if (referralReady()) {
+      const sv = await redeemReferralServer(input.trim().toUpperCase())
+      if (sv === 'used') {
+        setMsg({ ok: false, text: t('invite.usedAccount') })
+        sfx.err()
+        return
+      }
+    }
     const r = redeemCode(input)
     if (r === 'ok') {
       setMsg({ ok: true, text: t('invite.ok') })

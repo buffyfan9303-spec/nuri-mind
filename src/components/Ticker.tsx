@@ -9,13 +9,17 @@ import { moderateText, type ModReason } from '../lib/moderation'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 
-/** 전광판 색 — 날짜별로 회전(시즌/기분 변형). grad=배경 그라데, shadow=3D그림자, fade=우측 페이드 */
+/** 전광판 색 — 검사 8종 테마색으로 날짜별 회전(집중력/이기심/두뇌/연애/번아웃/도파민/멘탈회복/본성).
+ *  grad=배경 그라데, shadow=3D그림자(deep), fade=우측 페이드 */
 const TICKER_PALETTES = [
-  { grad: ['#4FA882', '#6E9FDC'], shadow: '#2F6B52', fade: '#5A9FB5' },
-  { grad: ['#FF8A4C', '#F25C8E'], shadow: '#C2453A', fade: '#F8717D' },
-  { grad: ['#8B7CF6', '#6E9FDC'], shadow: '#5B49C4', fade: '#7B8EE6' },
-  { grad: ['#10B981', '#12A5C2'], shadow: '#0B7A55', fade: '#11A5B1' },
-  { grad: ['#F25C8E', '#FFB347'], shadow: '#B83863', fade: '#F98A6A' },
+  { grad: ['#FFB020', '#FF8A4C'], shadow: '#D98E00', fade: '#FF9A38' }, // 🎯 집중력(adhd)
+  { grad: ['#FF6F61', '#FF9A8C'], shadow: '#D94F42', fade: '#FF8576' }, // 🎭 이기심(ego)
+  { grad: ['#6E7BF2', '#9AA6FF'], shadow: '#4F5CD4', fade: '#8490F8' }, // 🧩 두뇌(iq)
+  { grad: ['#F25C8E', '#F6A0C0'], shadow: '#CC3F70', fade: '#F47EA7' }, // 💘 연애(love)
+  { grad: ['#8B7CF6', '#B0A6FA'], shadow: '#6A58D8', fade: '#9E92F8' }, // 🔋 번아웃(burn)
+  { grad: ['#12A5C2', '#5BC8DC'], shadow: '#0E849B', fade: '#3BB7CF' }, // 📵 도파민(dopa)
+  { grad: ['#10B981', '#5BD6AB'], shadow: '#0B8C63', fade: '#34C795' }, // 🎋 멘탈회복(reso)
+  { grad: ['#A23E63', '#C76A8C'], shadow: '#7C2D49', fade: '#B45478' }, // 🃏 본성(dark)
 ]
 
 /** 📣 전광판(확성기) — 커뮤니티 상단. 1다이아로 게시, AI 필터로 욕설·19금·스팸 차단. */
