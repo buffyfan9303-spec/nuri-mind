@@ -132,6 +132,8 @@ export function scoreEgo(items: LikertItem[], answers: Record<string, number>): 
  *  근거: ICAR(Condon & Revelle 2014) 공개 문항. ICAR16↔WAIS 상관 r≈.81 — 정식 지능검사 추정 지표(대체 아님). */
 const IQ_MU = 14.75
 const IQ_SIGMA = 5.2
+/** 정밀판 20문항 전체 난이도합 — 빠른판(부분 문항)을 동일 척도로 환산하는 기준 */
+const IQ_FULL_DIFF = 29.5
 
 export function scoreIq(items: IqItem[], answers: Record<string, string | null>): TestResult {
   let weighted = 0
@@ -144,7 +146,10 @@ export function scoreIq(items: IqItem[], answers: Record<string, string | null>)
     acc.s += correct ? 1 : 0
     acc.m += 1
   }
-  const z = (weighted - IQ_MU) / IQ_SIGMA
+  // 빠른판(부분 문항)도 정밀판과 동일 척도로 — 응답한 문항 난이도합 기준으로 전체 환산
+  const totalDiff = items.reduce((a, it) => a + it.difficulty, 0)
+  const weightedScaled = totalDiff > 0 ? weighted * (IQ_FULL_DIFF / totalDiff) : weighted
+  const z = (weightedScaled - IQ_MU) / IQ_SIGMA
   const iq = Math.max(60, Math.min(145, Math.round(100 + 15 * z)))
   const pct = Math.min(99.5, Math.max(0.5, Math.round(normalCdf(z) * 1000) / 10))
   const band = iq >= 130 ? 'top' : iq >= 115 ? 'high' : iq >= 105 ? 'upper' : iq >= 95 ? 'avg' : 'grow'

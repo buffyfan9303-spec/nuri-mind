@@ -65,7 +65,7 @@ export default function TestResult() {
   const reward = state.reward ?? 0
 
   /* IQ 결과지 게이팅 — 앞(히어로·IQ점수·게이지)은 무료, 상세 분석은 블러 → 10다이아 영구해제 */
-  const locked = result.testId === 'iq' && !iqUnlocked
+  const locked = result.testId === 'iq' && result.iqMode === 'pro' && !iqUnlocked
   const tryUnlockIqResult = () => {
     const ok = unlockIq()
     if (!ok) {

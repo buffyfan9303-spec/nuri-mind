@@ -108,6 +108,8 @@ export interface TestResult {
   band: string
   persona: string
   iq?: number
+  /** IQ 검사 모드 — 'fast'(빠른·전체무료) / 'pro'(정밀·상세결과 유료) */
+  iqMode?: 'fast' | 'pro'
   screener?: number
   maskFlag?: boolean
   axes?: Record<string, number>

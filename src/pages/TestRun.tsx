@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Button from '../components/Button'
 import { Modal, ProgressBar } from '../components/ui'
 import { FigCell, FoldStrip, MatrixGrid } from '../components/Fig'
@@ -40,6 +40,9 @@ export default function TestRun() {
   const { id } = useParams<{ id: TestId }>()
   const testId = id as TestId
   const isIq = testId === 'iq'
+  const [searchParams] = useSearchParams()
+  // IQ 모드: 'fast'(빠른 10문항·전체 무료) / 'pro'(정밀 20문항·상세결과 유료). 기본 빠른.
+  const iqMode: 'fast' | 'pro' = searchParams.get('mode') === 'pro' ? 'pro' : 'fast'
   const tm = testMeta(testId)
   const t = useT()
   const l = useL()
@@ -63,7 +66,8 @@ export default function TestRun() {
   const [iqItems] = useState<IqItem[]>(() => {
     if (!isIq) return []
     const rnd = mulberry32(Date.now() & 0xffffffff)
-    return shuffle(IQ_ITEMS, rnd).map((it) => ({ ...it, options: shuffle(it.options, rnd) }))
+    const shuffled = shuffle(IQ_ITEMS, rnd).map((it) => ({ ...it, options: shuffle(it.options, rnd) }))
+    return iqMode === 'fast' ? shuffled.slice(0, 10) : shuffled
   })
 
   const total = isIq ? iqItems.length : likertItems.length
@@ -101,6 +105,7 @@ export default function TestRun() {
                   ? scoreResilience(RESILIENCE_ITEMS, likertMap)
                   : scoreDark(DARK_ITEMS, likertMap)
     result.durationMs = Date.now() - startRef.current
+    if (isIq) result.iqMode = iqMode
     const reward = addResult(result)
     nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }

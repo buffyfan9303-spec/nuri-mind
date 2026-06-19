@@ -76,31 +76,67 @@ export default function TestIntro() {
           <p className="mt-3 px-2 text-[12.5px] font-medium leading-relaxed text-ink-faint">{t('result.medical')}</p>
         )}
 
-        {id === 'iq' && (
-          <Card className={`mt-4 ${iqUnlocked ? '!bg-surface2' : '!bg-surface2'}`}>
-            <div className="flex items-start gap-3">
-              <span className="text-[26px]">{iqUnlocked ? '✅' : '🔒'}</span>
-              <div className="min-w-0">
-                <h3 className="text-[14.5px] font-extrabold">
-                  {iqUnlocked
-                    ? l({ ko: '정밀 IQ 해제됨', en: 'Precision IQ unlocked', ja: '精密IQ解除済み' })
-                    : l({ ko: '검사는 무료 · 결과지 상세는 잠금', en: 'Test is free · detailed result locked', ja: '検査は無料・詳細結果はロック' })}
-                </h3>
-                <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
-                  {iqUnlocked
-                    ? l({ ko: '결과지 전체(IQ 점수·인지영역별 분석·강점/주의)를 볼 수 있어요.', en: 'You can see the full result — IQ score, cognitive breakdown, strengths.', ja: '結果全体（IQスコア・認知領域分析・強み）が見られます。' })
-                    : l({ ko: `검사는 무료로 풀고 IQ 점수까지 바로 공개돼요. 인지영역별 정밀 분석·강점/주의는 💎${IQ_DIA_COST}로 한 번만 해제하면 영구 이용돼요.`, en: `Take it free and see your IQ score. The detailed cognitive analysis unlocks for 💎${IQ_DIA_COST} — once, forever.`, ja: `検査は無料でIQスコアまで公開。認知領域別の精密分析は💎${IQ_DIA_COST}で一度解除すれば永久利用。` })}
-                </p>
-              </div>
-            </div>
-          </Card>
-        )}
+        {id === 'iq' ? (
+          <>
+            {/* IQ란? 직관 설명 */}
+            <Card className="mt-4">
+              <h2 className="flex items-center gap-2 text-[16px] font-extrabold tracking-tight">🧩 {l({ ko: 'IQ 테스트가 뭔가요?', en: 'What is an IQ test?', ja: 'IQテストとは？' })}</h2>
+              <p className="mt-2 break-keep text-[14.5px] font-medium leading-[1.8] text-ink-sub">
+                {l({
+                  ko: '숫자·도형·규칙 같은 문제로 추론력·패턴 파악·공간 지각을 재서, 언어나 지식의 영향을 빼고 순수 사고력(유동지능)을 IQ 점수로 추정하는 검사예요. 정답을 빠르고 정확하게 맞힐수록 점수가 높아집니다.',
+                  en: 'With number, shape, and rule puzzles it measures reasoning, pattern-finding, and spatial sense — estimating pure thinking ability (fluid intelligence) as an IQ score, free of language or knowledge. Faster, more accurate answers raise the score.',
+                  ja: '数字・図形・規則の問題で推論力・パターン把握・空間認知を測り、言語や知識の影響を除いた純粋な思考力（流動性知能）をIQで推定する検査です。速く正確に解くほど高得点。',
+                })}
+              </p>
+            </Card>
 
-        <div className="mt-5">
-          <Button color={tm.btn} size="lg" onClick={() => nav(`/test/${id}/run`)}>
-            {t('common.start')} →
-          </Button>
-        </div>
+            {/* 두 가지 모드 */}
+            <p className="mt-4 px-1 text-[13px] font-extrabold text-ink-sub">{l({ ko: '두 가지 중에 골라보세요', en: 'Pick one of two', ja: '2つから選んで' })}</p>
+            <div className="mt-2 space-y-2.5">
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => nav('/test/iq/run?mode=fast')}
+                className="flex w-full items-center gap-3 rounded-3xl border-2 border-line bg-surface p-4 text-left shadow-card"
+              >
+                <span className="text-[28px]">⚡</span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-[15.5px] font-extrabold">{l({ ko: '빠른 IQ 테스트', en: 'Quick IQ test', ja: 'クイックIQ' })}</h3>
+                  <p className="mt-0.5 break-keep text-[12.5px] font-bold text-ink-sub">{l({ ko: '10문항 · 약 5분 · 무료 · 결과 바로 공개', en: '10 Qs · ~5 min · free · instant result', ja: '10問・約5分・無料・即結果' })}</p>
+                </div>
+                <span className="shrink-0 text-lg text-ink-faint">›</span>
+              </motion.button>
+
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => nav('/test/iq/run?mode=pro')}
+                className="flex w-full items-center gap-3 rounded-3xl p-4 text-left text-white shadow-pop"
+                style={{ background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
+              >
+                <span className="text-[28px]">🔬</span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-[15.5px] font-extrabold">{l({ ko: '정밀 IQ 검사', en: 'Precision IQ test', ja: '精密IQ検査' })}</h3>
+                  <p className="mt-0.5 break-keep text-[12.5px] font-bold text-white/90">
+                    {l({
+                      ko: `20문항 · 약 12분 · 정밀 점수·인지영역 분석${iqUnlocked ? ' · 해제됨 ✅' : ` · 상세결과 💎${IQ_DIA_COST}`}`,
+                      en: `20 Qs · ~12 min · precise score & breakdown${iqUnlocked ? ' · unlocked ✅' : ` · detail 💎${IQ_DIA_COST}`}`,
+                      ja: `20問・約12分・精密スコア&分析${iqUnlocked ? '・解除済 ✅' : `・詳細💎${IQ_DIA_COST}`}`,
+                    })}
+                  </p>
+                </div>
+                <span className="shrink-0 text-lg text-white/80">›</span>
+              </motion.button>
+            </div>
+            <p className="mt-2.5 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">
+              🔬 {l({ ko: '정밀검사 시리즈는 계속 추가될 예정이에요.', en: 'More precision tests are coming soon.', ja: '精密検査シリーズは今後追加予定です。' })}
+            </p>
+          </>
+        ) : (
+          <div className="mt-5">
+            <Button color={tm.btn} size="lg" onClick={() => nav(`/test/${id}/run`)}>
+              {t('common.start')} →
+            </Button>
+          </div>
+        )}
       </main>
     </div>
   )

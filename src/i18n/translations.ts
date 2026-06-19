@@ -110,9 +110,9 @@ const ko: Record<string, string> = {
   'test.ego.name': '이기심 검사',
   'test.ego.short': '이기심',
   'test.ego.desc': '착한 척 뒤에 숨은 진짜 속마음을 봐요',
-  'test.iq.name': '두뇌 순발력 검사',
-  'test.iq.short': '두뇌',
-  'test.iq.desc': '처음 보는 문제를 푸는 머리 회전 속도를 재요',
+  'test.iq.name': 'IQ 테스트',
+  'test.iq.short': 'IQ',
+  'test.iq.desc': '도형·숫자·규칙 문제로 추론력(순수 사고력)을 재는 IQ 검사',
 
   'intro.measure': '무엇을 측정하나요?',
   'intro.basis': '과학적 배경',
@@ -747,7 +747,7 @@ const en: Record<string, string> = {
   'test.ego.name': 'True Altruism Test',
   'test.ego.short': 'Egoism',
   'test.ego.desc': 'Reveals the real motive behind your "nice"',
-  'test.iq.name': 'Fluid IQ Test',
+  'test.iq.name': 'IQ Test',
   'test.iq.short': 'IQ',
   'test.iq.desc': 'Measures raw reasoning under novel rules',
 
@@ -1384,7 +1384,7 @@ const ja: Record<string, string> = {
   'test.ego.name': '本心利他性検査',
   'test.ego.short': '利己主義',
   'test.ego.desc': '「優しさ」の裏の本心を取り出します',
-  'test.iq.name': '流動性知能検査',
+  'test.iq.name': 'IQテスト',
   'test.iq.short': 'IQ',
   'test.iq.desc': '未知のルール下での分析性能を測定',
 
