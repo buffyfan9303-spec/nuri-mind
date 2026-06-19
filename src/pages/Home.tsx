@@ -163,7 +163,7 @@ export default function Home() {
               💰
             </motion.span>
             <div className="min-w-0 flex-1">
-              <h3 className="whitespace-nowrap text-[15.5px] font-extrabold leading-tight text-white">{t('home.surveyBanner')}</h3>
+              <h3 className="truncate text-[15.5px] font-extrabold leading-tight text-white">{t('home.surveyBanner')}</h3>
               <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">
                 {bestSurvey ? t('home.surveyBadge') : t('home.surveyBannerEmpty')}
               </p>
@@ -240,7 +240,7 @@ export default function Home() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="break-keep text-[15.5px] font-extrabold leading-tight tracking-tight">{t(`test.${tm.id}.name`)}</h3>
-                  <p className={`mt-0.5 whitespace-nowrap text-[12px] font-extrabold ${tm.text}`}>
+                  <p className={`mt-0.5 truncate text-[12px] font-extrabold ${tm.text}`}>
                     {tm.count}
                     {t('common.q')} · {tm.minutes}
                     {t('common.min')}

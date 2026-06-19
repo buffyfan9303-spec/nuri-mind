@@ -429,8 +429,8 @@ export default function Community() {
                       <div className="flex items-center gap-2">
                         <Avatar avatar={p.avatar} size={36} emojiScale={0.52} />
                         <div className="min-w-0 flex-1">
-                          <p className="flex items-center gap-1.5 truncate text-[13.5px] font-extrabold">
-                            <span className="truncate">{p.nick}</span>
+                          <p className="flex min-w-0 items-center gap-1.5 text-[13.5px] font-extrabold">
+                            <span className="min-w-0 truncate">{p.nick}</span>
                             {p.badge && (
                               <span className="shrink-0 rounded-full bg-mind-50 px-1.5 py-0.5 text-[12px]">
                                 {p.badge}
@@ -459,7 +459,7 @@ export default function Community() {
                         <motion.button
                           whileTap={{ scale: 0.85 }}
                           onClick={() => onLike(p)}
-                          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
+                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
                             p.liked ? 'bg-red-50 text-red-500' : 'bg-surface2 text-ink-sub'
                           }`}
                         >
@@ -471,7 +471,7 @@ export default function Community() {
                         <motion.button
                           whileTap={{ scale: 0.85 }}
                           onClick={() => toggleComments(p.id)}
-                          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
+                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
                             openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-sub'
                           }`}
                         >

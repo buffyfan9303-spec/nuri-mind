@@ -250,7 +250,7 @@ export default function Fortune() {
             {/* 올해의 운 */}
             <Card className="mt-3 flex items-start gap-3">
               <span className="shrink-0 text-[26px]">📅</span>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <h3 className="text-[14.5px] font-extrabold">{t('fortune.yearTitle', { year: thisYear })}</h3>
                 <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{l(year.line)}</p>
               </div>

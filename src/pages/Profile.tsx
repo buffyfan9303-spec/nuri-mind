@@ -73,7 +73,7 @@ export default function Profile() {
                   onChange={(e) => setNick(e.target.value)}
                   maxLength={12}
                   placeholder={t('profile.nickPh')}
-                  className="w-32 rounded-xl border-2 border-mind-300 px-3 py-1.5 text-[15px] font-extrabold outline-none"
+                  className="min-w-0 flex-1 rounded-xl border-2 border-mind-300 px-3 py-1.5 text-[15px] font-extrabold outline-none"
                   autoFocus
                 />
                 <button
@@ -137,7 +137,7 @@ export default function Profile() {
           <span className="text-[28px]">🧬</span>
           <div className="min-w-0 flex-1">
             <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">{t('insight.title')}</h3>
-            <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">{t('insight.entry')}</p>
+            <p className="mt-0.5 text-[12.5px] font-bold text-white/90">{t('insight.entry')}</p>
           </div>
           <span className="text-lg text-white/80">›</span>
         </Card>

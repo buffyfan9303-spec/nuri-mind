@@ -82,7 +82,7 @@ export default function Rewards() {
             onClick={() => nav('/rank')}
             className="mt-4 flex w-full items-center justify-between gap-2 rounded-2xl bg-white/20 px-4 py-3.5 text-left"
           >
-            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[15px] font-extrabold text-white">
+            <span className="flex min-w-0 items-center gap-1.5 truncate text-[15px] font-extrabold text-white">
               {tier.emoji} {t('rank.row')}: {l(tier.name)}
             </span>
             <span className="shrink-0 whitespace-nowrap text-[13px] font-bold text-white/85">

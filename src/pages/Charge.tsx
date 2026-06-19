@@ -97,7 +97,7 @@ export default function Charge() {
                   style={{ borderColor: b.best ? '#6E7BF2' : '#ECECF5' }}
                 >
                   {b.best && (
-                    <span className="absolute right-0 top-0 rounded-bl-xl bg-[#6E7BF2] px-2.5 py-1 text-[10.5px] font-extrabold text-white">
+                    <span className="absolute right-0 top-0 rounded-bl-xl rounded-tr-3xl bg-[#6E7BF2] px-2.5 py-1 text-[10.5px] font-extrabold text-white">
                       BEST
                     </span>
                   )}

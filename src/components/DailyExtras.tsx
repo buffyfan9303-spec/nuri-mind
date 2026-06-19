@@ -50,7 +50,7 @@ export default function DailyExtras() {
           >
             {challengeDone && <span className="text-[13px] text-white">✓</span>}
           </span>
-          <span className={`break-keep text-[14.5px] font-bold leading-snug ${challengeDone ? 'text-ink-faint line-through' : 'text-ink'}`}>
+          <span className={`min-w-0 flex-1 break-keep text-[14.5px] font-bold leading-snug ${challengeDone ? 'text-ink-faint line-through' : 'text-ink'}`}>
             {l(challenge)}
           </span>
         </motion.button>
@@ -67,7 +67,7 @@ export default function DailyExtras() {
         </motion.span>
         <div className="min-w-0 flex-1">
           <p className="text-[13.5px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</p>
-          <p className="mt-0.5 truncate text-[11px] font-bold text-white/85">{t('fortune.homeSub')}</p>
+          <p className="mt-0.5 break-keep text-[11px] font-bold text-white/85">{t('fortune.homeSub')}</p>
         </div>
         <span className="shrink-0 text-[16px] font-extrabold text-white/90">›</span>
       </motion.button>

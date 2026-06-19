@@ -543,7 +543,7 @@ export default function TestResult() {
         >
           <span className="text-[24px]">🎁</span>
           <div className="min-w-0 flex-1">
-            <p className="text-[14px] font-extrabold leading-tight text-white">{l({ ko: '친구 초대하면 둘 다 +100P', en: 'Invite a friend — you both get +100P', ja: '友達招待で二人とも+100P' })}</p>
+            <p className="truncate text-[14px] font-extrabold leading-tight text-white">{l({ ko: '친구 초대하면 둘 다 +100P', en: 'Invite a friend — you both get +100P', ja: '友達招待で二人とも+100P' })}</p>
             <p className="mt-0.5 truncate text-[11.5px] font-bold text-white/85">{l({ ko: '코드 공유하고 보너스 받기', en: 'Share your code & earn', ja: 'コードを共有してボーナス' })}</p>
           </div>
           <span className="text-lg text-white/80">›</span>
