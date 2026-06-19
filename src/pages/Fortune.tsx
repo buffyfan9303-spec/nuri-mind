@@ -288,9 +288,23 @@ export default function Fortune() {
             <div className="relative">
               <div className="text-[40px] leading-none">🔮</div>
               <h3 className="mt-2 text-[18px] font-extrabold">{l({ ko: '종합 운세 풀어보기', en: 'Unlock Full Fortune', ja: '総合運勢を開く' })}</h3>
-              <p className="mx-auto mt-1 max-w-[260px] break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
-                {l({ ko: '이번 주 추이 · 이달의 운 · 올해의 운 · 띠별 한마디를 한 번에', en: 'Weekly trend · this month · this year · zodiac notes — all at once', ja: '週の推移・今月・今年・干支の一言をまとめて' })}
+              <p className="mx-auto mt-1 max-w-[260px] break-keep text-[12.5px] font-medium leading-relaxed text-ink-sub">
+                {l({ ko: '오늘은 무료, 이번 주·이달·올해 운세를 한 번에', en: 'Today is free — unlock week, month & year at once', ja: '今日は無料、今週・今月・今年をまとめて' })}
               </p>
+              <div className="mx-auto mt-3 grid max-w-[300px] grid-cols-2 gap-2">
+                {[
+                  { e: '🌅', label: l({ ko: '오늘 운세', en: 'Today', ja: '今日' }), free: true },
+                  { e: '📈', label: l({ ko: '이번 주 운세', en: 'This week', ja: '今週' }), free: false },
+                  { e: '🗓', label: l({ ko: '이달 운세', en: 'This month', ja: '今月' }), free: false },
+                  { e: '🎍', label: l({ ko: '올해 운세', en: 'This year', ja: '今年' }), free: false },
+                ].map((h) => (
+                  <div key={h.label} className="flex items-center gap-1.5 rounded-2xl border border-line bg-surface px-2.5 py-2 text-left">
+                    <span className="shrink-0 text-[16px] leading-none">{h.e}</span>
+                    <span className="min-w-0 flex-1 truncate text-[12px] font-extrabold">{h.label}</span>
+                    <span className="shrink-0 text-[11px]">{h.free ? '✅' : '🔒'}</span>
+                  </div>
+                ))}
+              </div>
               <div className="mx-auto mt-4 max-w-[280px]">
                 <Button color="burn" onClick={openFull}>
                   {freeLeft > 0
