@@ -107,7 +107,7 @@ export default function Home() {
               <motion.button
                 whileTap={{ y: 3, boxShadow: '0 0 0 #D8E0DA' }}
                 onClick={onCheckIn}
-                className="rounded-2xl bg-surface px-4 py-2.5 text-[14px] font-extrabold text-mind-700"
+                className="rounded-2xl bg-white px-4 py-2.5 text-[14px] font-extrabold text-[#2F6B52]"
                 style={{ boxShadow: '0 3px 0 #D8E0DA' }}
               >
                 📅 {t('dash.checkin')}
@@ -138,7 +138,7 @@ export default function Home() {
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(100, Math.round(tierProgress * 100))}%` }}
                 transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.25 }}
-                className="h-full rounded-full bg-surface"
+                className="h-full rounded-full bg-white"
               />
             </div>
             <p className="mt-1.5 text-[11.5px] font-extrabold text-white/85">

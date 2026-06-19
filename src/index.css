@@ -114,6 +114,11 @@ h1, h2, h3, h4 {
   background-image: radial-gradient(rgba(143, 184, 162, 0.06) 1.5px, transparent 1.5px);
 }
 
+/* 광고가 안 채워지면(unfilled) 빈 박스(흰 공란)로 남지 않게 접어버림 — 스크롤 시 깨진 공란 방지 */
+ins.adsbygoogle[data-ad-status='unfilled'] {
+  display: none !important;
+}
+
 /* 접근성·절제 — OS '동작 줄이기' 설정 시 무한 애니메이션/장식 모션 비활성 */
 @media (prefers-reduced-motion: reduce) {
   *,

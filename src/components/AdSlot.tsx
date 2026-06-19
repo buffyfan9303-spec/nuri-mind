@@ -35,7 +35,7 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
 
   return (
     <div
-      className={`flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[#DCE5DE] bg-white/70 ${
+      className={`flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-line bg-surface2 ${
         isRect ? 'h-[250px]' : 'h-[64px]'
       }`}
     >
