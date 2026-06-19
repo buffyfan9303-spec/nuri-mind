@@ -4,27 +4,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: { port: 5179 },
-  build: {
-    // 초기 로딩 가속 — 벤더를 캐시 친화적으로 분리(라우트는 이미 lazy)
-    chunkSizeWarningLimit: 700,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (!id.includes('node_modules')) return undefined
-          if (id.includes('framer-motion') || id.includes('motion-dom') || id.includes('motion-utils'))
-            return 'motion'
-          if (id.includes('@supabase')) return 'supabase'
-          if (
-            id.includes('react-router') ||
-            id.includes('react-dom') ||
-            id.includes('/react/') ||
-            id.includes('scheduler') ||
-            id.includes('zustand')
-          )
-            return 'react-vendor'
-          return 'vendor'
-        },
-      },
-    },
-  },
+  // ⚠️ manualChunks는 프로덕션에서 청크 초기화 순서 크래시(흰 화면)를 유발해 제거함(2026-06-19).
+  build: { chunkSizeWarningLimit: 700 },
 })
