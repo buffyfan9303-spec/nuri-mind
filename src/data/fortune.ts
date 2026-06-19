@@ -16,7 +16,7 @@ export const FORTUNE_TEMPLATES: Record<string, FortuneTemplate> = {
   "생받음": {
     "relation": "생받음",
     "overall": {
-      "ko": "오늘의 기운이 당신을 든든히 받쳐주는 날. 주변의 도움과 좋은 소식이 흘러들어옵니다. 무리해서 끌고 가기보다 들어오는 흐름에 살짝 몸을 맡겨보세요.",
+      "ko": "오늘은 주변의 기운이 당신을 든든히 받쳐주는 날이에요. 평소 신경 쓰던 일에 뜻밖의 도움이나 좋은 소식이 흘러들어오고, 사람들과의 관계에서도 마음이 한결 가벼워집니다. 혼자 무리해서 끌고 가기보다 들어오는 흐름에 살짝 몸을 맡기고, 받은 호의엔 고마움을 표현해 보세요. 다만 너무 받기만 하면 나중에 부담이 될 수 있으니, 작은 보답 하나는 챙겨두면 그 인연이 더 오래갑니다.",
       "en": "Today's energy has your back—help and good news flow toward you. Instead of forcing things, ride the current that comes to you.",
       "ja": "今日の気があなたをしっかり支える日。周りの助けや良い知らせが流れ込みます。無理に進めるより、来る流れに身を任せてみて。"
     },
@@ -41,7 +41,7 @@ export const FORTUNE_TEMPLATES: Record<string, FortuneTemplate> = {
   "극해줌": {
     "relation": "극해줌",
     "overall": {
-      "ko": "주도권을 쥐기 좋은 날. 미뤄둔 일을 밀어붙이면 결실이 보입니다. 다만 욕심이 과하면 사소한 마찰이 생길 수 있으니 한 박자 여유를.",
+      "ko": "오늘은 당신이 주도권을 쥐고 일을 밀어붙이기 좋은 날이에요. 미뤄두었던 결정이나 부탁, 정리해야 할 일을 오늘 끝내면 눈에 보이는 결실이 따라옵니다. 자신감 있게 나서되, 욕심이 앞서 상대의 속도를 무시하면 사소한 마찰이 생길 수 있어요. 한 박자 여유를 두고 상대의 입장도 살피면, 성과와 관계를 모두 챙기는 하루가 됩니다.",
       "en": "A day to take the lead—push the thing you've delayed and results appear. Just don't overreach, or small friction creeps in.",
       "ja": "主導権を握るのに良い日。後回しにした件を進めれば結実します。欲張りすぎると小さな摩擦が出るので一呼吸を。"
     },
@@ -66,7 +66,7 @@ export const FORTUNE_TEMPLATES: Record<string, FortuneTemplate> = {
   "비화": {
     "relation": "비화",
     "overall": {
-      "ko": "흐름이 평온하게 안정되는 날. 큰 변화보다 익숙한 루틴을 다듬을 때 성과가 큽니다. 비슷한 사람과의 협력이 순조롭습니다.",
+      "ko": "오늘은 큰 기복 없이 흐름이 평온하게 안정되는 날이에요. 새로운 일을 크게 벌이기보다 익숙한 루틴을 차분히 다듬고 미뤄둔 정리를 할 때 성과가 큽니다. 나와 결이 비슷한 사람과 함께하면 말하지 않아도 손발이 맞아 일이 순조롭게 풀려요. 다만 평온함에 안주해 미루기만 하면 흐름이 멈출 수 있으니, 작더라도 한 걸음은 꼭 내디뎌 보세요.",
       "en": "A calm, steady day. You gain more by refining familiar routines than chasing big change—collaboration with like-minded people flows.",
       "ja": "流れが穏やかに安定する日。大きな変化より慣れた習慣を磨くと成果大。似た人との協力が順調です。"
     },
@@ -91,7 +91,7 @@ export const FORTUNE_TEMPLATES: Record<string, FortuneTemplate> = {
   "생해줌": {
     "relation": "생해줌",
     "overall": {
-      "ko": "베풀고 표현하는 기운이 강한 날. 아이디어와 정성을 쏟으면 평판이 오릅니다. 다만 에너지 소모가 크니 나를 위한 충전도 잊지 마세요.",
+      "ko": "오늘은 베풀고 표현하는 기운이 강한 날이에요. 아이디어를 꺼내고 정성을 쏟으면 주변의 인정과 좋은 평판이 따라옵니다. 마음을 솔직하게 표현하기에도 더없이 좋은 날이지만, 한쪽으로만 에너지를 쏟다 보면 정작 나는 금세 지칠 수 있어요. 베푼 만큼 나를 위한 휴식과 충전도 일정에 꼭 넣어 두면, 오늘의 빛이 오래 이어집니다.",
       "en": "A giving, expressive day—pour in ideas and care and your reputation rises. But it drains you, so recharge yourself too.",
       "ja": "与え・表現する気が強い日。アイデアと真心を注ぐと評価が上がります。消耗も大きいので自分の充電も忘れずに。"
     },
@@ -116,7 +116,7 @@ export const FORTUNE_TEMPLATES: Record<string, FortuneTemplate> = {
   "극받음": {
     "relation": "극받음",
     "overall": {
-      "ko": "바깥의 압박과 책임이 느껴지는 날. 정면돌파보다 한 발 물러서 정비하면 손해를 막습니다. 작은 일을 야무지게 마무리하는 데 집중하세요.",
+      "ko": "오늘은 바깥의 압박과 책임이 어깨에 느껴지는 날이에요. 정면으로 부딪쳐 무리하게 밀어붙이기보다, 한 발 물러서 상황을 정비하면 불필요한 손해를 막을 수 있습니다. 큰 결정이나 새로운 시작은 하루 미루고, 작은 일을 야무지게 마무리하는 데 집중해 보세요. 오늘 잘 버티고 정돈해 두면, 다가올 흐름에서 훨씬 가볍게 출발할 수 있어요.",
       "en": "Outside pressure and duties weigh in. Stepping back to regroup beats charging head-on—focus on finishing small things well.",
       "ja": "外からの圧力や責任を感じる日。正面突破より一歩引いて整えると損を防げます。小さな事を丁寧に仕上げることに集中を。"
     },
@@ -308,29 +308,58 @@ export const SHORT_LINES: Record<string, L> = {
 /** 올해의 운(연간) — 출생 일간 오행 vs 올해 천간 오행, 5관계 */
 export const YEAR_LINES: Record<string, L> = {
   생받음: {
-    ko: '올해는 귀인과 기회가 들어오는 흐름이에요. 손 내미는 곳에 응하면 일이 한결 수월하게 풀립니다.',
-    en: 'This year, mentors and chances flow in. Say yes to outstretched hands and things ease up.',
-    ja: '今年は貴人とチャンスが入る流れ。差し出された手に応じると物事が楽に進みます。',
+    ko: '올해는 귀인과 기회가 자연스럽게 흘러드는 흐름의 한 해예요. 혼자 애쓰기보다 도움을 청하고 손 내미는 곳에 응하면 일이 한결 수월하게 풀립니다. 사람을 통해 배우고 연결되는 자리에 적극적으로 나서 보세요. 받은 만큼 베풀어 신뢰를 쌓아두면, 그 인연이 내년 이후까지 든든한 자산으로 남습니다.',
+    en: 'A year when mentors and chances flow in naturally. Instead of struggling alone, ask for help and say yes to outstretched hands—things ease up. Step into rooms where you learn and connect through people. Give back as much as you receive, and those bonds become assets well beyond this year.',
+    ja: '今年は貴人とチャンスが自然と流れ込む一年。一人で頑張るより助けを求め、差し出された手に応じると物事が楽に進みます。人を通じて学び繋がる場に積極的に出て。受けた分だけ与え信頼を築けば、その縁は来年以降まで頼れる財産になります。',
   },
   극해줌: {
-    ko: '올해는 주도적으로 성취하기 좋은 해예요. 목표를 정하고 밀어붙이면 결실이 큽니다.',
-    en: 'A great year to achieve on your own terms. Set goals and push—the harvest is big.',
-    ja: '今年は主体的に成し遂げるのに良い年。目標を定め推し進めると実りが大きい。',
+    ko: '올해는 당신이 주도적으로 성취를 만들어내기 좋은 해예요. 목표를 또렷하게 세우고 밀어붙이면 노력한 만큼, 혹은 그 이상으로 결실이 큽니다. 미뤄온 도전이나 키우고 싶던 일을 올해 본격적으로 시작해 보세요. 다만 추진력이 강한 만큼 주변과 속도를 맞추는 지혜를 더하면, 성과가 더 멀리 단단하게 갑니다.',
+    en: 'A great year to achieve on your own terms. Set clear goals and push, and the harvest matches or exceeds your effort. Start that delayed challenge in earnest this year. Your drive is strong—add the wisdom to match others’ pace, and the results go further and hold firmer.',
+    ja: '今年は主体的に成果を生み出すのに良い年。目標を明確に立てて進めれば、努力した分かそれ以上に実りが大きい。後回しの挑戦を今年本格的に始めて。推進力が強い分、周りと歩調を合わせる知恵を加えれば、成果はより遠く確かに進みます。',
   },
   비화: {
-    ko: '올해는 기반을 다지는 안정의 해예요. 무리한 확장보다 내실을 채우면 멀리 갑니다.',
-    en: 'A steadying year to build foundations. Fill in substance over risky expansion and you go far.',
-    ja: '今年は基盤を固める安定の年。無理な拡大より内実を満たすと遠くまで。',
+    ko: '올해는 기반을 단단히 다지는 안정의 해예요. 무리하게 확장하기보다 내실을 채우고 실력을 갈고닦으면, 눈에 띄지 않아도 멀리 갈 토대가 쌓입니다. 익숙한 분야에서 꾸준함으로 신뢰를 얻기 좋은 시기예요. 큰 변화가 없다고 조급해하지 말고, 지금 다진 기본기가 다음 도약의 발판이 된다는 걸 기억하세요.',
+    en: 'A steadying year to build firm foundations. Fill in substance and sharpen your skills over risky expansion, and a base for going far quietly accumulates. A good time to earn trust through consistency. Don’t rush at the lack of big change—the basics you build now become the springboard for your next leap.',
+    ja: '今年は基盤を固める安定の年。無理に拡大するより内実を満たし実力を磨けば、目立たなくても遠くへ行く土台が積み上がります。慣れた分野で着実さにより信頼を得るのに良い時期。大きな変化がないと焦らず、今固めた基本が次の飛躍の足場になると覚えておいて。',
   },
   생해줌: {
-    ko: '올해는 베풀고 표현하며 이름을 알리는 해예요. 에너지 관리만 잘하면 성장이 큽니다.',
-    en: 'A year to give, express, and get known. Manage your energy and growth is large.',
-    ja: '今年は与え表現し名を広める年。エネルギー管理さえできれば成長は大きい。',
+    ko: '올해는 베풀고 표현하며 이름을 알리는 해예요. 가진 것을 나누고 진심을 담아 움직이면, 좋은 평판과 따르는 사람이 늘어납니다. 창작·교육·돌봄처럼 마음을 쓰는 일에서 특히 빛을 발하는 시기예요. 다만 에너지 소모가 큰 흐름이니, 나를 채우는 시간을 확보하는 것만 잊지 않으면 성장이 한층 커집니다.',
+    en: 'A year to give, express, and get known. Share what you have and act with sincerity, and a good reputation and followers grow. You shine especially in caring work—creating, teaching, nurturing. It drains you, so keep time to refill yourself, and your growth gets even bigger.',
+    ja: '今年は与え表現し名を広める年。持つものを分かち真心で動けば、良い評判と慕う人が増えます。創作・教育・ケアのような心を使う仕事で特に輝く時期。消耗が大きいので、自分を満たす時間を確保することだけ忘れなければ、成長は一層大きくなります。',
   },
   극받음: {
-    ko: '올해는 책임과 도전이 큰 해예요. 정면돌파보다 준비와 사람을 챙기면 위기가 기회가 됩니다.',
-    en: 'A year of big duties and challenges. Prepare and care for people over charging in—crisis turns to chance.',
-    ja: '今年は責任と挑戦が大きい年。正面突破より準備と人を大切にすれば危機が好機に。',
+    ko: '올해는 책임과 도전이 묵직하게 다가오는 해예요. 정면돌파로 힘만 쓰기보다, 미리 준비하고 사람을 챙기며 차분히 대응하면 위기가 오히려 기회로 바뀝니다. 버거운 일이 오더라도 그 과정에서 단단해지는 자신을 발견하게 될 거예요. 무리한 확장은 잠시 미루고 마무리와 정비에 힘을 모으면, 한 해 끝엔 한층 성숙한 내가 남습니다.',
+    en: 'A year when responsibilities and challenges arrive heavily. Rather than brute-forcing through, prepare ahead, care for people, and respond calmly—crisis turns into opportunity. Even when things feel heavy, you’ll grow sturdier through them. Postpone risky expansion and gather strength for finishing, and by year’s end a more mature you remains.',
+    ja: '今年は責任と挑戦が重く訪れる年。正面突破で力任せにするより、前もって備え人を気遣い落ち着いて対応すれば、危機がむしろ好機に変わります。重く感じても、その過程で強くなる自分に気づくはず。無理な拡大は少し延ばし仕上げに力を集めれば、年の終わりにより成熟した自分が残ります。',
+  },
+}
+
+/** 이번 주의 운(주간) — 출생 일간 오행 vs 오늘 일주 오행 관계 기준, 5관계 */
+export const WEEK_LINES: Record<string, L> = {
+  생받음: {
+    ko: '이번 주는 도움과 기회가 들어오는 한 주예요. 먼저 손 내밀고 솔직하게 기대면 막혔던 일이 의외로 술술 풀립니다. 주 중반엔 좋은 제안이나 소식이 닿을 수 있으니 마음을 열어두고, 받은 호의는 가볍게라도 갚아두면 흐름이 더 좋아져요.',
+    en: 'A week when help and chances come in. Reach out first and lean in honestly, and stuck things loosen up. Midweek may bring a good offer or news—stay open, and return favors even lightly to keep the flow going.',
+    ja: '今週は助けと機会が入る一週間。先に手を差し伸べ素直に頼れば、詰まっていた事が意外と解けます。週半ばに良い提案や知らせが届くかも。心を開き、受けた厚意は軽くでも返すと流れが良くなります。',
+  },
+  극해줌: {
+    ko: '이번 주는 추진력이 붙는 한 주예요. 미뤄둔 목표를 구체적인 일정으로 옮겨 하나씩 밀어붙이면 눈에 보이는 진전이 생깁니다. 주말로 갈수록 결실이 모이니 초반에 속도를 내두면 좋고, 협상이나 결정이 필요한 일은 이번 주 안에 매듭짓는 걸 추천해요.',
+    en: 'A week of momentum. Turn delayed goals into a concrete schedule and push them one by one for visible progress. Results gather toward the weekend, so build speed early—and wrap up any negotiation or decision within the week.',
+    ja: '今週は推進力がつく一週間。後回しの目標を具体的な予定にして一つずつ進めれば、目に見える前進が。週末に向け実りが集まるので序盤に速度を。交渉や決断は今週中にまとめるのがおすすめ。',
+  },
+  비화: {
+    ko: '이번 주는 잔잔하고 안정적인 한 주예요. 큰 변화를 노리기보다 익숙한 일을 꾸준히 다듬으면 신뢰가 차곡차곡 쌓입니다. 비슷한 사람과의 협업이 특히 순조로우니 함께할 일을 만들어 보고, 무리한 베팅보다 지키는 관리에 무게를 두면 마음이 편해요.',
+    en: 'A calm, steady week. Refine familiar work consistently over chasing big change, and trust quietly accumulates. Collaboration with like-minded people flows—make something together, and favor protecting over risky bets for peace of mind.',
+    ja: '今週は穏やかで安定した一週間。大きな変化を狙うより慣れた事を着実に磨けば信頼が積み上がります。似た人との協働が特に順調なので一緒にやる事を作り、攻めるより守りの管理に重きを置くと心が楽。',
+  },
+  생해줌: {
+    ko: '이번 주는 베풀고 표현할수록 평판이 오르는 한 주예요. 아이디어와 정성을 나누면 주변의 인정이 따라옵니다. 다만 후반부엔 에너지가 바닥날 수 있으니, 나를 위한 충전 시간을 미리 비워두고 지출이나 충동구매는 한 번 더 점검하면 좋아요.',
+    en: 'A week where giving and expressing lifts your name. Share ideas and care, and recognition follows. Energy may run low later in the week—block recharge time in advance, and double-check spending or impulse buys.',
+    ja: '今週は与え表現するほど評価が上がる一週間。アイデアと真心を分かち合えば評価が続きます。後半はエネルギーが切れるかもなので、充電時間を先に空け、支出や衝動買いは再確認を。',
+  },
+  극받음: {
+    ko: '이번 주는 책임과 압박이 커질 수 있는 한 주예요. 무리해서 벌이기보다 마무리와 정비에 집중하면 손해를 막고 다음을 준비할 수 있습니다. 큰 결정은 주말 이후로 미루고, 오해가 생기기 쉬운 시기이니 말투를 한 번 더 다듬으면서 컨디션 관리에 신경 쓰세요.',
+    en: 'A week when responsibility and pressure may rise. Focus on finishing and tidying over starting too much to avoid loss and prep for what’s next. Delay big decisions past the weekend; misunderstandings come easily, so soften your words and mind your condition.',
+    ja: '今週は責任と圧が増えうる一週間。無理に広げるより仕上げと整備に集中すれば損を防ぎ次に備えられます。大きな決断は週末以降に延ばし、誤解が生じやすい時期なので言い方を整え体調管理に気を配って。',
   },
 }
 

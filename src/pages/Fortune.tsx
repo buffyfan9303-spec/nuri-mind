@@ -8,6 +8,7 @@ import { useT, useL } from '../i18n/useT'
 import { sajuOf, fortuneOf, weekOf, yearOf, monthOf, zodiacTodayLines } from '../lib/saju'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { ELEMENT_SVG } from '../lib/characters'
+import { WEEK_LINES } from '../data/fortune'
 import { track } from '../lib/analytics'
 import { burst } from '../lib/confetti'
 
@@ -233,6 +234,7 @@ export default function Fortune() {
                   </div>
                 ))}
               </div>
+              <p className="mt-3 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{l(WEEK_LINES[fortune.relation])}</p>
             </Card>
 
             {/* 이달의 운 */}
