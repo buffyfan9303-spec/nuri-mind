@@ -7,6 +7,13 @@
     <meta name="description" content="ADHD·번아웃·애착·다크트라이어드 등 8종 심리검사로 나의 심리 동물을 찾고 포인트도 적립하세요. 무료." />
     <link rel="canonical" href="https://www.nurimind.co.kr/" />
     <meta name="theme-color" content="#4FA882" />
+    <!-- 다크모드 깜빡임(FOUC) 방지 — React 마운트 전에 .dark 즉시 적용 -->
+    <script>
+      try {
+        var s = JSON.parse(localStorage.getItem('nuri-mind-v1'))
+        if (s && s.state && s.state.theme === 'dark') document.documentElement.classList.add('dark')
+      } catch (e) {}
+    </script>
 
     <!-- Open Graph (카카오·페이스북·디스코드 등 링크 미리보기) -->
     <meta property="og:type" content="website" />
