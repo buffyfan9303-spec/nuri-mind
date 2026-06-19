@@ -191,7 +191,7 @@ export default function Profile() {
                     key={lg.key}
                     onClick={() => s.setLang(lg.key)}
                     className={`rounded-lg px-2.5 py-1.5 text-xs font-extrabold transition-colors ${
-                      s.lang === lg.key ? 'bg-surface text-mind-700 shadow-card' : 'text-ink-faint'
+                      s.lang === lg.key ? 'bg-surface text-mind-700 dark:text-mind-300 shadow-card' : 'text-ink-faint'
                     }`}
                   >
                     {lg.label}
@@ -253,7 +253,7 @@ export default function Profile() {
             <div className="border-t border-line px-3 py-3">
               <div className="flex items-center justify-between">
                 <span className="text-[15.5px] font-bold">{t('profile.fontSize')}</span>
-                <span className="text-[13px] font-extrabold text-mind-700">{Math.round(s.fontScale * 100)}%</span>
+                <span className="text-[13px] font-extrabold text-mind-700 dark:text-mind-300">{Math.round(s.fontScale * 100)}%</span>
               </div>
               <div className="mt-2 flex items-center gap-2.5">
                 <span className="text-[13px] font-bold text-ink-faint">가</span>

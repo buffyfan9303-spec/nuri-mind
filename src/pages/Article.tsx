@@ -93,7 +93,7 @@ export default function Article() {
 
         {/* 핵심 요약 체크리스트 */}
         <motion.div initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ type: 'spring', stiffness: 250, damping: 26 }}>
-          <Card className="mt-5 !bg-mind-50 !p-4 !shadow-none">
+          <Card className="mt-5 !bg-mind-50 dark:!bg-surface !p-4 !shadow-none">
             <h3 className="text-[15px] font-extrabold text-mind-700">📌 {t('mag.keypoints')}</h3>
             <ul className="mt-2.5 space-y-2.5">
               {a.takeaways.map((k, i) => (

@@ -132,7 +132,7 @@ export default function Rank() {
                     <div className="min-w-0 flex-1">
                       <h3 className="text-[16.5px] font-extrabold leading-snug tracking-tight">{l(ex.title)}</h3>
                       <p className="mt-1 text-[14px] font-medium leading-relaxed text-ink-sub">{l(ex.desc)}</p>
-                      <p className="mt-1.5 text-[14px] font-extrabold text-mind-700">🎁 {l(ex.reward)}</p>
+                      <p className="mt-1.5 text-[14px] font-extrabold text-mind-700 dark:text-mind-300">🎁 {l(ex.reward)}</p>
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-1.5">

@@ -455,7 +455,7 @@ export default function TestResult() {
           </div>
           {locked && (
             <div className="absolute inset-x-0 top-4 flex justify-center px-3">
-              <div className="w-full max-w-sm rounded-3xl border-2 border-[#D7DAF7] bg-white/95 p-6 text-center shadow-pop">
+              <div className="w-full max-w-sm rounded-3xl border-2 border-[#D7DAF7] bg-surface/95 p-6 text-center shadow-pop">
                 <div className="text-[42px] leading-none">🔒</div>
                 <h3 className="mt-2 text-[18.5px] font-extrabold">{l({ ko: '정밀 IQ 결과 해제', en: 'Unlock full IQ result', ja: '精密IQ結果を解除' })}</h3>
                 <p className="mx-auto mt-1.5 max-w-[280px] break-keep text-[13px] font-medium leading-relaxed text-ink-sub">

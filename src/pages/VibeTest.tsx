@@ -128,7 +128,7 @@ export default function VibeTest() {
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   onClick={() => pick(true)}
-                  className="w-full rounded-2xl border-2 border-[#FFD2B0] bg-adhd-light px-5 py-5 text-left text-[16.5px] font-extrabold leading-relaxed"
+                  className="w-full rounded-2xl border-2 border-[#FFD2B0] bg-adhd-light dark:bg-surface2 px-5 py-5 text-left text-[16.5px] font-extrabold leading-relaxed"
                   style={{ boxShadow: '0 3px 0 #F2C9A4' }}
                 >
                   🔥 {l(VIBE_QS[idx].a)}
@@ -136,7 +136,7 @@ export default function VibeTest() {
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   onClick={() => pick(false)}
-                  className="w-full rounded-2xl border-2 border-[#BFD9F2] bg-sky2-100 px-5 py-5 text-left text-[16.5px] font-extrabold leading-relaxed"
+                  className="w-full rounded-2xl border-2 border-[#BFD9F2] bg-sky2-100 dark:bg-surface2 px-5 py-5 text-left text-[16.5px] font-extrabold leading-relaxed"
                   style={{ boxShadow: '0 3px 0 #A9C9EE' }}
                 >
                   🫧 {l(VIBE_QS[idx].b)}

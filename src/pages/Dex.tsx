@@ -61,7 +61,7 @@ export default function Dex() {
         </motion.div>
 
         {/* 친구 초대 수집 (소셜 컬렉션) */}
-        <Card onClick={() => nav('/rewards')} className="mt-3.5 flex items-center gap-3.5 !bg-gradient-to-r from-amber-50 to-mind-50 !p-4">
+        <Card onClick={() => nav('/rewards')} className="mt-3.5 flex items-center gap-3.5 !bg-gradient-to-r from-amber-50 to-mind-50 dark:from-surface dark:to-surface !p-4">
           <span className="text-[28px]">🤝</span>
           <div className="min-w-0 flex-1">
             <h3 className="text-[15px] font-extrabold leading-tight">{t('dex.friendTitle')}</h3>

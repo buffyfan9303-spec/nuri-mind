@@ -59,7 +59,7 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
   if (!unlocked) {
     return (
       <>
-        <div className="relative mt-4 overflow-hidden rounded-3xl border-2 border-[#E7D9E0] bg-gradient-to-br from-[#FBF4F8] to-[#F3EEFC] p-5">
+        <div className="relative mt-4 overflow-hidden rounded-3xl border-2 border-[#E7D9E0] bg-gradient-to-br from-[#FBF4F8] to-[#F3EEFC] dark:from-surface dark:to-surface p-5">
           <h2 className="text-[16px] font-extrabold tracking-tight text-dk-deep">{t('ai.title')}</h2>
           <p className="mt-1 text-[13.5px] font-bold text-ink-sub">{t('ai.sub')}</p>
           <p className="mt-3 select-none text-[14px] font-medium leading-[1.7] text-ink/80 blur-[5px]">
@@ -82,7 +82,7 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-4 rounded-3xl border-2 border-[#E7D9E0] bg-gradient-to-br from-[#FBF4F8] to-[#F3EEFC] p-5"
+      className="mt-4 rounded-3xl border-2 border-[#E7D9E0] bg-gradient-to-br from-[#FBF4F8] to-[#F3EEFC] dark:from-surface dark:to-surface p-5"
     >
       <h2 className="text-[16px] font-extrabold tracking-tight text-dk-deep">{t('ai.full')}</h2>
       <p className="mt-2 text-[13px] font-bold text-ink-sub">

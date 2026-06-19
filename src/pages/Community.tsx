@@ -343,7 +343,7 @@ export default function Community() {
         {/* 이번 주 주제 */}
         <button
           onClick={() => setOpen(true)}
-          className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-mind-50 to-amber-50 px-4 py-3 text-left"
+          className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-mind-50 to-amber-50 dark:from-surface2 dark:to-surface2 px-4 py-3 text-left"
         >
           <span className="text-[22px]">🗓️</span>
           <div className="min-w-0 flex-1">
