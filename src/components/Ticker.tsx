@@ -65,32 +65,48 @@ export default function Ticker() {
 
   return (
     <>
-      {/* LED 전광판 바 (풀블리드) */}
-      <div className="relative -mx-5 mt-2 flex items-center gap-2 overflow-hidden px-3 py-2" style={{ background: 'linear-gradient(90deg,#1A1340,#2A1C5A,#1A1340)' }}>
-        <span className="z-10 shrink-0 rounded-full bg-[#FFD34E] px-2 py-0.5 text-[10px] font-extrabold text-[#3A2A00]">📣 LIVE</span>
-        <div className="relative flex-1 overflow-hidden">
+      {/* 확성기 전광판 — 듀오링고 스타일(둥근 카드 + 3D 그림자 + 흔들리는 메가폰) */}
+      <div
+        className="relative mt-3 overflow-hidden rounded-3xl"
+        style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)', boxShadow: '0 4px 0 #2F6B52' }}
+      >
+        <div className="flex items-center gap-2.5 px-3 py-2.5">
           <motion.div
-            className="flex gap-10 whitespace-nowrap"
-            animate={{ x: ['0%', '-50%'] }}
-            transition={{ repeat: Infinity, duration: Math.max(16, items.length * 6), ease: 'linear' }}
+            animate={{ rotate: [0, -13, 13, -8, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut', repeatDelay: 1.5 }}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white text-[18px] shadow"
+            style={{ transformOrigin: '50% 70%' }}
           >
-            {loop.map((m, i) => (
-              <span key={i} className="text-[13px] font-extrabold text-[#FFE9A8]" style={{ textShadow: '0 0 8px rgba(255,211,78,0.45)' }}>
-                {m.text}
-                {m.nick ? <span className="text-[#C9B8FF]"> — {m.nick}</span> : null}
-              </span>
-            ))}
+            📣
           </motion.div>
+          <div className="relative min-w-0 flex-1 overflow-hidden">
+            <motion.div
+              className="flex gap-8 whitespace-nowrap"
+              animate={{ x: ['0%', '-50%'] }}
+              transition={{ repeat: Infinity, duration: Math.max(14, items.length * 5.5), ease: 'linear' }}
+            >
+              {loop.map((m, i) => (
+                <span key={i} className="text-[13.5px] font-extrabold tracking-tight text-white">
+                  {m.text}
+                  {m.nick ? <span className="font-bold text-white/75"> · {m.nick}</span> : null}
+                </span>
+              ))}
+            </motion.div>
+            {/* 양끝 페이드(말풍선이 칼로 잘리지 않게) */}
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-5" style={{ background: 'linear-gradient(90deg,transparent,#5A9FB5)' }} />
+          </div>
+          <motion.button
+            whileTap={{ scale: 0.9, y: 2, boxShadow: '0 0 0 rgba(0,0,0,0.18)' }}
+            onClick={() => {
+              setOpen(true)
+              sfx.tap()
+            }}
+            className="z-10 shrink-0 rounded-2xl bg-white px-2.5 py-1.5 text-[12px] font-extrabold text-mind-700"
+            style={{ boxShadow: '0 2px 0 rgba(0,0,0,0.18)' }}
+          >
+            📢 💎{TICKER_COST}
+          </motion.button>
         </div>
-        <button
-          onClick={() => {
-            setOpen(true)
-            sfx.tap()
-          }}
-          className="z-10 shrink-0 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-extrabold text-white"
-        >
-          📢 💎{TICKER_COST}
-        </button>
       </div>
 
       {/* 게시 모달 */}

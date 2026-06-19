@@ -318,16 +318,6 @@ export default function Community() {
         {/* 📣 전광판 (확성기) */}
         <Ticker />
 
-        {/* 상태 표시 */}
-        <div className="flex items-start justify-between gap-2 px-1">
-          <p className="flex-1 break-keep text-[13.5px] font-medium leading-relaxed text-ink-sub">{t('community.sub')}</p>
-          {server !== null && (
-            <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-full bg-surface2 px-2.5 py-1 text-[11px] font-extrabold text-ink-faint">
-              {server ? t('community.shared') : t('community.local')}
-            </span>
-          )}
-        </div>
-
         {/* 작성 유도 컴포저 바 */}
         <button
           onClick={() => setOpen(true)}
@@ -345,7 +335,13 @@ export default function Community() {
           onClick={() => setOpen(true)}
           className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-mind-50 to-amber-50 dark:from-surface2 dark:to-surface2 px-4 py-3 text-left"
         >
-          <span className="text-[22px]">🗓️</span>
+          <motion.span
+            animate={{ rotate: [0, -10, 10, -6, 6, 0] }}
+            transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut', repeatDelay: 2 }}
+            className="text-[22px]"
+          >
+            🗓️
+          </motion.span>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-extrabold tracking-wide text-mind-600">{t('community.themeLabel')}</p>
             <p className="mt-0.5 break-keep text-[14px] font-extrabold leading-snug">{l(todayTheme())}</p>
@@ -625,7 +621,12 @@ export default function Community() {
         style={{ background: 'linear-gradient(135deg, #4FA882, #6E9FDC)' }}
         aria-label="write"
       >
-        ✏️
+        <motion.span
+          animate={{ rotate: [0, -12, 12, 0] }}
+          transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut', repeatDelay: 1.8 }}
+        >
+          ✏️
+        </motion.span>
       </motion.button>
 
       {/* 글쓰기 모달 */}
