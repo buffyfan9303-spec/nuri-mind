@@ -9,7 +9,16 @@ import { moderateText, type ModReason } from '../lib/moderation'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 
-/** 📣 전광판(확성기) — 커뮤니티 상단 LED 전광판. 1다이아로 게시, AI 필터로 욕설·19금·스팸 차단. */
+/** 전광판 색 — 날짜별로 회전(시즌/기분 변형). grad=배경 그라데, shadow=3D그림자, fade=우측 페이드 */
+const TICKER_PALETTES = [
+  { grad: ['#4FA882', '#6E9FDC'], shadow: '#2F6B52', fade: '#5A9FB5' },
+  { grad: ['#FF8A4C', '#F25C8E'], shadow: '#C2453A', fade: '#F8717D' },
+  { grad: ['#8B7CF6', '#6E9FDC'], shadow: '#5B49C4', fade: '#7B8EE6' },
+  { grad: ['#10B981', '#12A5C2'], shadow: '#0B7A55', fade: '#11A5B1' },
+  { grad: ['#F25C8E', '#FFB347'], shadow: '#B83863', fade: '#F98A6A' },
+]
+
+/** 📣 전광판(확성기) — 커뮤니티 상단. 1다이아로 게시, AI 필터로 욕설·19금·스팸 차단. */
 export default function Ticker() {
   const l = useL()
   const nav = useNavigate()
@@ -62,13 +71,14 @@ export default function Ticker() {
 
   const items = msgs.length ? msgs : [{ id: 'empty', text: l({ ko: '📣 첫 전광판을 올려보세요!', en: '📣 Be the first on the board!', ja: '📣 最初の電光掲示を！' }), nick: '', at: 0 }]
   const loop = [...items, ...items]
+  const pal = TICKER_PALETTES[Math.floor(Date.now() / 86400000) % TICKER_PALETTES.length]
 
   return (
     <>
       {/* 확성기 전광판 — 듀오링고 스타일(둥근 카드 + 3D 그림자 + 흔들리는 메가폰) */}
       <div
         className="relative mt-3 overflow-hidden rounded-3xl"
-        style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)', boxShadow: '0 4px 0 #2F6B52' }}
+        style={{ background: `linear-gradient(135deg,${pal.grad[0]},${pal.grad[1]})`, boxShadow: `0 4px 0 ${pal.shadow}` }}
       >
         <div className="flex items-center gap-2.5 px-3 py-2.5">
           <motion.div
@@ -93,7 +103,7 @@ export default function Ticker() {
               ))}
             </motion.div>
             {/* 양끝 페이드(말풍선이 칼로 잘리지 않게) */}
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-5" style={{ background: 'linear-gradient(90deg,transparent,#5A9FB5)' }} />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-5" style={{ background: `linear-gradient(90deg,transparent,${pal.fade})` }} />
           </div>
           <motion.button
             whileTap={{ scale: 0.9, y: 2, boxShadow: '0 0 0 rgba(0,0,0,0.18)' }}
@@ -101,7 +111,7 @@ export default function Ticker() {
               setOpen(true)
               sfx.tap()
             }}
-            className="z-10 shrink-0 rounded-2xl bg-white px-2.5 py-1.5 text-[12px] font-extrabold text-mind-700"
+            className="z-10 shrink-0 rounded-2xl bg-white px-2.5 py-1.5 text-[12px] font-extrabold text-[#2F6B52]"
             style={{ boxShadow: '0 2px 0 rgba(0,0,0,0.18)' }}
           >
             📢 💎{TICKER_COST}

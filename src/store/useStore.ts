@@ -29,12 +29,10 @@ const OPERATOR_PIN = '5690'
 /** 검사 첫 완료 보상 (1회성 — 일일 상한 제외) */
 export const TEST_REWARD = 20
 /**
- * 일일 "무료 적립" 상한 — 출석·퀴즈·랜덤박스·공유 합산 (1P=1원).
- * 지속가능 재설계(2026-06): 한국 광고수익 ≈ 15~30원/DAU/일(배너+전면+보상형 블렌디드).
- * 무료 페이백은 광고수익의 ~40%로 묶음 → 상한 25P(=25원). 참여감쇠·소멸(브레이크리지)
- * 감안 시 실지급 ≈ 7~10원/DAU/일로 광고수익 내에서 흑자. 고액 보상은 설문·오퍼월(외부 재원).
+ * 일일 "무료 적립" 상한 — 사장님 요청으로 제한 제거(무제한). freeAmount는 '오늘 적립량' 추적용으로 유지.
+ * ⚠️ 무제한 적립은 광고수익 대비 페이백이 커질 수 있어 서버 경제(v2-auth-economy) 전 어뷰징 모니터링 권장.
  */
-export const DAILY_FREE_CAP = 25
+export const DAILY_FREE_CAP = Infinity
 /** 스트릭 프리즈 가격/보유 한도 */
 export const FREEZE_COST = 300
 export const FREEZE_MAX = 3

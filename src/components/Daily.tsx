@@ -3,36 +3,25 @@ import { motion } from 'framer-motion'
 import Button from './Button'
 import { Card, Modal } from './ui'
 import { QUIZ_BANK, todayQuizIndex } from '../data/quiz'
-import { DAILY_FREE_CAP, useStore } from '../store/useStore'
+import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 
 const todayStr = () => new Date().toISOString().slice(0, 10)
 
-/** 오늘 무료 적립 잔량 미터 — 일일 상한 25P 룰의 가시화 */
+/** 오늘 무료 적립 — 제한 없음(무제한). 오늘 적립량만 가볍게 표시. */
 export function DailyCapMeter() {
   const t = useT()
   const freeDate = useStore((s) => s.freeDate)
   const freeAmount = useStore((s) => s.freeAmount)
   const used = freeDate === todayStr() ? freeAmount : 0
-  const ratio = Math.min(1, used / DAILY_FREE_CAP)
   return (
-    <div className="mt-3 rounded-2xl bg-white/20 px-4 py-3">
-      <div className="flex items-center justify-between text-[13px] font-extrabold text-white">
-        <span>⚡ {t('daily.cap')}</span>
-        <span>
-          {used}/{DAILY_FREE_CAP}P
-        </span>
-      </div>
-      <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-white/25">
-        <motion.div
-          className="h-full rounded-full bg-surface"
-          initial={false}
-          animate={{ width: `${ratio * 100}%` }}
-          transition={{ type: 'spring', stiffness: 160, damping: 22 }}
-        />
-      </div>
+    <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3 text-[13px] font-extrabold text-white">
+      <span>⚡ {t('daily.cap')}</span>
+      <span className="rounded-full bg-white/25 px-2.5 py-0.5">
+        {t('daily.unlimited')} · {used}P
+      </span>
     </div>
   )
 }

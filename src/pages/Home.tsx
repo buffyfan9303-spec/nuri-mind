@@ -9,7 +9,7 @@ import { QUICK_TESTS } from '../data/quick'
 import { SHOP_ITEMS } from '../data/seed'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
-import { DAILY_FREE_CAP, useStore } from '../store/useStore'
+import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
@@ -40,7 +40,7 @@ export default function Home() {
     [myWeek, s.leagueWeek, s.leagueSeed, s.leagueTier, s.lang],
   )
 
-  const freeLeft = s.freeDate === todayStr() ? Math.max(0, DAILY_FREE_CAP - s.freeAmount) : DAILY_FREE_CAP
+  const todayFree = s.freeDate === todayStr() ? s.freeAmount : 0
   const redeemable = SHOP_ITEMS.filter((i) => s.points >= i.cost).length
   const checkedToday = s.lastCheckIn === todayStr()
 
@@ -126,7 +126,7 @@ export default function Home() {
               <p className="mt-1 whitespace-nowrap text-[10.5px] font-bold text-white/80">{t('dash.leagueShort')}</p>
             </motion.button>
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => nav('/rewards')} className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
-              <p className="text-[16px] font-extrabold leading-none text-white">⚡ {freeLeft}P</p>
+              <p className="text-[16px] font-extrabold leading-none text-white">⚡ {todayFree}P</p>
               <p className="mt-1 whitespace-nowrap text-[10.5px] font-bold text-white/80">{t('dash.freeShort')}</p>
             </motion.button>
           </div>
@@ -184,12 +184,12 @@ export default function Home() {
         >
           <div className="mt-3.5 grid grid-cols-2 gap-2.5">
             <Card onClick={() => nav('/fortune')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-3.5">
-              <motion.span animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }} className="shrink-0 text-[24px] leading-none">🔮</motion.span>
+              <motion.span animate={{ rotate: [0, -11, 11, -7, 7, 0] }} transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut', repeatDelay: 2 }} className="shrink-0 text-[24px] leading-none">🔮</motion.span>
               <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</h3>
               <span className="shrink-0 text-[15px] text-white/70">›</span>
             </Card>
             <Card onClick={() => nav('/compat')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#F25C8E] to-[#FF9EC0] !p-3.5">
-              <motion.span animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }} className="shrink-0 text-[24px] leading-none">💞</motion.span>
+              <motion.span animate={{ rotate: [0, 11, -11, 7, -7, 0] }} transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut', repeatDelay: 2.2 }} className="shrink-0 text-[24px] leading-none">💞</motion.span>
               <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('compat.title')}</h3>
               <span className="shrink-0 text-[15px] text-white/70">›</span>
             </Card>
@@ -264,7 +264,7 @@ export default function Home() {
           className="mt-4"
         >
           <Card onClick={() => nav('/rewards')} className="flex items-center gap-3.5 !p-4">
-            <span className="text-[28px]">🪙</span>
+            <motion.span animate={{ rotate: [0, -9, 9, -5, 5, 0] }} transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut', repeatDelay: 2.4 }} className="text-[28px]">🪙</motion.span>
             <div className="min-w-0 flex-1">
               <h3 className="text-[16px] font-extrabold tracking-tight">{t('home.rewardsBanner')}</h3>
               <p className="mt-0.5 text-[13px] font-bold text-ink-faint">{t('home.rewardsBannerSub')}</p>
@@ -280,7 +280,7 @@ export default function Home() {
             className="flex w-full items-center gap-3.5 rounded-3xl p-4 text-left shadow-pop"
             style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)' }}
           >
-            <span className="text-[28px]">🎁</span>
+            <motion.span animate={{ rotate: [0, 10, -10, 6, -6, 0] }} transition={{ repeat: Infinity, duration: 2.3, ease: 'easeInOut', repeatDelay: 2 }} className="text-[28px]">🎁</motion.span>
             <div className="min-w-0 flex-1">
               <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">{l({ ko: '친구 초대하고 +100P', en: 'Invite a friend, +100P', ja: '友達招待で+100P' })}</h3>
               <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/85">{l({ ko: '친구도 나도 +100P · 많이 부를수록 보너스 ↑', en: 'You both get +100P · more invites, bigger bonus', ja: '二人とも+100P・招待ほどボーナス↑' })}</p>
