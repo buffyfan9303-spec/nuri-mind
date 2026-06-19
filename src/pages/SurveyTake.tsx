@@ -104,12 +104,12 @@ export default function SurveyTake() {
                           className="flex w-full items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left text-[15.5px] font-bold leading-relaxed"
                           style={{
                             borderColor: active ? '#4FA882' : '#E3EAE5',
-                            background: active ? '#4FA8821A' : '#fff',
+                            background: active ? '#4FA8821A' : 'rgb(var(--surface))',
                           }}
                         >
                           <span
                             className="flex h-4.5 w-4.5 h-[18px] w-[18px] items-center justify-center rounded-full border-2"
-                            style={{ borderColor: active ? '#4FA882' : '#C9D4CC' }}
+                            style={{ borderColor: active ? '#4FA882' : 'rgb(var(--line))' }}
                           >
                             {active && <span className="h-2 w-2 rounded-full bg-mind-500" />}
                           </span>
@@ -135,8 +135,8 @@ export default function SurveyTake() {
                           className="rounded-full border-2 px-4 py-2.5 text-[14.5px] font-bold"
                           style={{
                             borderColor: active ? '#4FA882' : '#E3EAE5',
-                            background: active ? '#4FA882' : '#fff',
-                            color: active ? '#fff' : '#33413A',
+                            background: active ? '#4FA882' : 'rgb(var(--surface))',
+                            color: active ? '#fff' : 'rgb(var(--text))',
                           }}
                         >
                           {active ? '✓ ' : ''}
@@ -163,8 +163,8 @@ export default function SurveyTake() {
                             className="flex h-12 flex-1 items-center justify-center rounded-xl border-2 text-base font-extrabold"
                             style={{
                               borderColor: active ? '#4FA882' : '#E3EAE5',
-                              background: active ? '#4FA882' : '#fff',
-                              color: active ? '#fff' : '#6B756E',
+                              background: active ? '#4FA882' : 'rgb(var(--surface))',
+                              color: active ? '#fff' : 'rgb(var(--text-sub))',
                             }}
                           >
                             {n}

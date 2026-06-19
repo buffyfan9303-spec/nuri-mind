@@ -39,7 +39,7 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
         isRect ? 'h-[250px]' : 'h-[64px]'
       }`}
     >
-      <span className="rounded-md bg-[#EEF3EF] px-2 py-1 text-[11px] font-extrabold tracking-widest text-ink-faint">
+      <span className="rounded-md bg-surface2 px-2 py-1 text-[11px] font-extrabold tracking-widest text-ink-faint">
         {t('ad.label')}
       </span>
       <span className="text-[13px] font-bold text-ink-faint">{t('ad.placeholder')}</span>

@@ -127,7 +127,7 @@ export default function League() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.04 * i, type: 'spring', stiffness: 260, damping: 24 }}
                   className={`flex items-center gap-3 rounded-2xl px-3 py-3 ${
-                    r.me ? 'bg-mind-50 ring-2 ring-mind-400' : inPromo ? 'bg-[#F3FAF6]' : inDemo ? 'bg-red-50/60' : ''
+                    r.me ? 'bg-mind-50 ring-2 ring-mind-400' : inPromo ? 'bg-surface2' : inDemo ? 'bg-red-50/60' : ''
                   }`}
                 >
                   <span

@@ -367,8 +367,8 @@ export default function Community() {
                 className="shrink-0 whitespace-nowrap rounded-full border-2 px-3.5 py-1.5 text-[13px] font-extrabold transition-colors"
                 style={{
                   borderColor: active ? '#4FA882' : '#E3EAE5',
-                  background: active ? '#4FA882' : '#fff',
-                  color: active ? '#fff' : '#6B756E',
+                  background: active ? '#4FA882' : 'rgb(var(--surface))',
+                  color: active ? '#fff' : 'rgb(var(--text-sub))',
                 }}
               >
                 {tm ? `${tm.emoji} ${t(`test.${tm.id}.short`)}` : t('community.all')}
@@ -658,7 +658,7 @@ export default function Community() {
             <button onClick={() => setAttach((v) => !v)} className="flex items-center gap-2 text-[13px] font-bold">
               <span
                 className="flex h-5 w-5 items-center justify-center rounded-md border-2"
-                style={{ borderColor: attach ? '#4FA882' : '#C9D4CC', background: attach ? '#4FA882' : '#fff' }}
+                style={{ borderColor: attach ? '#4FA882' : 'rgb(var(--line))', background: attach ? '#4FA882' : 'rgb(var(--surface))' }}
               >
                 {attach && <span className="text-[11px] text-white">✓</span>}
               </span>

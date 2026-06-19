@@ -78,11 +78,11 @@ export default function Routine() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onToggle(i)}
                 className="flex w-full items-center gap-3.5 rounded-2xl border-2 bg-surface px-4 py-3.5 text-left transition-colors"
-                style={{ borderColor: checked ? '#4FA882' : '#E9EEEB' }}
+                style={{ borderColor: checked ? '#4FA882' : 'rgb(var(--line))' }}
               >
                 <span
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold"
-                  style={{ background: checked ? '#4FA882' : '#EFF3F0', color: checked ? '#fff' : '#9AA8A0' }}
+                  style={{ background: checked ? '#4FA882' : 'rgb(var(--surface-2))', color: checked ? '#fff' : 'rgb(var(--text-faint))' }}
                 >
                   {checked ? '✓' : t('routine.day', { n: i + 1 })}
                 </span>

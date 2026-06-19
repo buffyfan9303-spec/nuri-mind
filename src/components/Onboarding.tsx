@@ -79,9 +79,9 @@ export default function Onboarding() {
               </motion.button>
             )}
             <div className="my-5 flex items-center gap-3">
-              <div className="h-px flex-1 bg-[#E3EAE5]" />
+              <div className="h-px flex-1 bg-line" />
               <span className="shrink-0 text-[12px] font-bold text-ink-faint">{t('onboard.or')}</span>
-              <div className="h-px flex-1 bg-[#E3EAE5]" />
+              <div className="h-px flex-1 bg-line" />
             </div>
           </div>
         )}
@@ -115,7 +115,7 @@ export default function Onboarding() {
                     sfx.tap()
                   }}
                   className="flex aspect-square items-center justify-center rounded-2xl border-2 text-[28px]"
-                  style={{ borderColor: sel ? '#4FA882' : '#E9EEEB', background: sel ? '#4FA88216' : '#fff' }}
+                  style={{ borderColor: sel ? '#4FA882' : 'rgb(var(--line))', background: sel ? '#4FA88216' : 'rgb(var(--surface))' }}
                 >
                   {p.emoji}
                 </motion.button>
@@ -143,7 +143,7 @@ export default function Onboarding() {
               aria-pressed={agreed}
               aria-label={t('onboard.terms') + ' ' + t('onboard.agreeReq')}
               className="mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 transition-colors"
-              style={{ borderColor: agreed ? '#4FA882' : '#CBD5D0', background: agreed ? '#4FA882' : '#fff' }}
+              style={{ borderColor: agreed ? '#4FA882' : 'rgb(var(--line))', background: agreed ? '#4FA882' : 'rgb(var(--surface))' }}
             >
               {agreed && <span className="text-[13px] font-black leading-none text-white">✓</span>}
             </button>

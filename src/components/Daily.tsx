@@ -201,7 +201,7 @@ export function DailyQuiz() {
                   className="w-full rounded-2xl border-2 px-4 py-3.5 text-left text-[15.5px] font-bold leading-relaxed"
                   style={{
                     borderColor: show ? (isAnswer ? '#4FA882' : isPicked ? '#EF4444' : '#E3EAE5') : '#E3EAE5',
-                    background: show ? (isAnswer ? '#4FA8821A' : isPicked ? '#EF44441A' : '#fff') : '#fff',
+                    background: show ? (isAnswer ? '#4FA8821A' : isPicked ? '#EF44441A' : 'rgb(var(--surface))') : 'rgb(var(--surface))',
                   }}
                 >
                   {show && isAnswer ? '✅ ' : show && isPicked ? '❌ ' : ''}

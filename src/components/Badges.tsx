@@ -62,8 +62,8 @@ export default function Badges() {
                 }}
                 className="flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border-2"
                 style={{
-                  borderColor: done ? '#4FA88255' : '#E9EEEB',
-                  background: done ? '#4FA88214' : '#F5F8F6',
+                  borderColor: done ? '#4FA88255' : 'rgb(var(--line))',
+                  background: done ? '#4FA88214' : 'rgb(var(--surface-2))',
                 }}
               >
                 <span className={`text-[24px] leading-none ${done ? '' : 'opacity-25 grayscale'}`}>{a.emoji}</span>
@@ -90,7 +90,7 @@ export default function Badges() {
             <p className="mt-1.5 text-[14.5px] font-medium leading-relaxed text-ink-sub">{l(sel.desc)}</p>
             <p
               className={`mt-3 inline-block rounded-full px-4 py-1.5 text-[13px] font-extrabold ${
-                selDone ? 'bg-mind-100 text-mind-700' : 'bg-[#EEF3EF] text-ink-faint'
+                selDone ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-faint'
               }`}
             >
               {selDone ? `✅ ${t('ach.done')}` : `🔒 ${t('ach.locked')}`}

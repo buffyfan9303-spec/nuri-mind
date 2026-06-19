@@ -140,7 +140,7 @@ export default function Charge() {
 
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               {['카카오페이', '신용카드', 'Toss'].map((m) => (
-                <span key={m} className="rounded-full border border-line bg-[#FAFBFA] px-3 py-1.5 text-[12.5px] font-bold text-ink-faint">
+                <span key={m} className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-[12.5px] font-bold text-ink-faint">
                   {m} <span className="text-[10.5px] text-ink-faint/70">준비중</span>
                 </span>
               ))}

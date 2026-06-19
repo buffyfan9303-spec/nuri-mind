@@ -91,9 +91,9 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
 
       {loading && !cached ? (
         <div className="mt-3 space-y-2">
-          <div className="h-3.5 w-full animate-pulse rounded bg-[#E7D9E0]" />
-          <div className="h-3.5 w-11/12 animate-pulse rounded bg-[#E7D9E0]" />
-          <div className="h-3.5 w-4/6 animate-pulse rounded bg-[#E7D9E0]" />
+          <div className="h-3.5 w-full animate-pulse rounded bg-surface2" />
+          <div className="h-3.5 w-11/12 animate-pulse rounded bg-surface2" />
+          <div className="h-3.5 w-4/6 animate-pulse rounded bg-surface2" />
           <p className="pt-1 text-[12px] font-bold text-ink-faint">{t('ai.loading')}</p>
         </div>
       ) : (

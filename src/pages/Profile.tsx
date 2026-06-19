@@ -374,7 +374,7 @@ export default function Profile() {
                     className="flex aspect-square items-center justify-center rounded-2xl border-2 text-2xl"
                     style={{
                       borderColor: active ? '#4FA882' : '#E3EAE5',
-                      background: active ? '#4FA8821A' : '#fff',
+                      background: active ? '#4FA8821A' : 'rgb(var(--surface))',
                     }}
                   >
                     {p.emoji}

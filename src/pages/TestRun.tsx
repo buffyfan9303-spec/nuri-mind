@@ -275,7 +275,7 @@ export default function TestRun() {
                         className="flex w-full items-center justify-between rounded-2xl border-2 bg-surface px-5 py-4 text-left text-[17px] font-bold leading-relaxed"
                         style={{
                           borderColor: active ? tm.gradFrom : '#E3EAE5',
-                          background: active ? `${tm.gradFrom}1A` : '#fff',
+                          background: active ? `${tm.gradFrom}1A` : 'rgb(var(--surface))',
                           boxShadow: active ? 'none' : '0 2px 0 #EDF1EE',
                         }}
                       >
@@ -380,7 +380,7 @@ function IqQuestion({
               } font-extrabold`}
               style={{
                 borderColor: active ? accent : '#E3EAE5',
-                background: active ? `${accent}14` : '#fff',
+                background: active ? `${accent}14` : 'rgb(var(--surface))',
                 boxShadow: active ? 'none' : '0 2px 0 #EDF1EE',
               }}
             >

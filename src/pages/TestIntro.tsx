@@ -77,7 +77,7 @@ export default function TestIntro() {
         )}
 
         {id === 'iq' && (
-          <Card className={`mt-4 ${iqUnlocked ? '!bg-[#EFFaf4]' : '!bg-[#F7F6FE]'}`}>
+          <Card className={`mt-4 ${iqUnlocked ? '!bg-surface2' : '!bg-surface2'}`}>
             <div className="flex items-start gap-3">
               <span className="text-[26px]">{iqUnlocked ? '✅' : '🔒'}</span>
               <div className="min-w-0">

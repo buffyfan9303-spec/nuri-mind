@@ -101,8 +101,8 @@ export default function Dex() {
                       }}
                       className="flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border-2"
                       style={{
-                        borderColor: has ? `${p.grad[0]}55` : '#E9EEEB',
-                        background: has ? `${p.grad[0]}14` : '#F5F8F6',
+                        borderColor: has ? `${p.grad[0]}55` : 'rgb(var(--line))',
+                        background: has ? `${p.grad[0]}14` : 'rgb(var(--surface-2))',
                       }}
                     >
                       <span className={`text-[26px] leading-none ${has ? '' : 'opacity-25 grayscale'}`}>

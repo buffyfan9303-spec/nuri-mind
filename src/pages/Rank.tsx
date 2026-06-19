@@ -86,13 +86,13 @@ export default function Rank() {
                   <div className="flex items-center gap-3.5">
                     <div
                       className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl"
-                      style={{ background: reached ? `${tr.color}22` : '#F0F3F1' }}
+                      style={{ background: reached ? `${tr.color}22` : 'rgb(var(--surface-2))' }}
                     >
                       {reached ? tr.emoji : '🔒'}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-[17px] font-extrabold tracking-tight" style={{ color: reached ? tr.color : '#9AA59E' }}>
+                        <h3 className="text-[17px] font-extrabold tracking-tight" style={{ color: reached ? tr.color : 'rgb(var(--text-faint))' }}>
                           {l(tr.name)}
                         </h3>
                         {isCurrent && <Chip tone="mind">NOW</Chip>}

@@ -102,7 +102,7 @@ export default function Invite() {
                 className="rounded-2xl border-2 py-2 text-center"
                 style={{
                   borderColor: hit ? '#4FA882' : '#E3EAE5',
-                  background: hit ? '#4FA8821A' : '#FAFCFA',
+                  background: hit ? '#4FA8821A' : 'rgb(var(--surface))',
                 }}
               >
                 <p className="text-[11.5px] font-extrabold">{hit ? '🎉' : '👥'}{m.n}명</p>

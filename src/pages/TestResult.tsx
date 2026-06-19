@@ -338,7 +338,7 @@ export default function TestResult() {
                     {s.score}/{s.max}
                   </span>
                 </div>
-                <div className="h-3 overflow-hidden rounded-full bg-[#E7EDE9]">
+                <div className="h-3 overflow-hidden rounded-full bg-line">
                   <motion.div
                     initial={{ width: 0 }}
                     whileInView={{ width: `${Math.round(s.ratio * 100)}%` }}
@@ -380,7 +380,7 @@ export default function TestResult() {
               </li>
             ))}
           </ul>
-          <div className="my-3 h-px bg-[#EEF2EF]" />
+          <div className="my-3 h-px bg-line" />
           <h2 className="text-[15.5px] font-extrabold text-mind-700">💊 {t('result.solutionTitle')}</h2>
           <ul className="mt-2.5 space-y-2">
             {persona.solutions.slice(0, 3).map((r, i) => (

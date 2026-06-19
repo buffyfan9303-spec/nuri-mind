@@ -42,11 +42,11 @@ export default function DailyExtras() {
             sfx.tap()
           }}
           className="mt-2 flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left transition-colors"
-          style={{ background: challengeDone ? '#4FA88214' : '#F5F8F6' }}
+          style={{ background: challengeDone ? '#4FA88214' : 'rgb(var(--surface-2))' }}
         >
           <span
             className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2"
-            style={{ borderColor: challengeDone ? '#4FA882' : '#C9D4CC', background: challengeDone ? '#4FA882' : '#fff' }}
+            style={{ borderColor: challengeDone ? '#4FA882' : 'rgb(var(--line))', background: challengeDone ? '#4FA882' : 'rgb(var(--surface))' }}
           >
             {challengeDone && <span className="text-[13px] text-white">✓</span>}
           </span>

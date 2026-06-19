@@ -265,7 +265,7 @@ export default function Fortune() {
                   <div
                     key={z.zodiacKo}
                     className="flex items-center gap-2 rounded-2xl p-2.5"
-                    style={{ background: mine ? `${fortune.grad[0]}14` : '#fff', border: mine ? `2px solid ${fortune.grad[0]}` : '2px solid #EEF2F0' }}
+                    style={{ background: mine ? `${fortune.grad[0]}14` : 'rgb(var(--surface))', border: mine ? `2px solid ${fortune.grad[0]}` : '2px solid rgb(var(--line))' }}
                   >
                     <span className="shrink-0 text-[22px] leading-none">{z.zodiacEmoji}</span>
                     <div className="min-w-0">
@@ -278,7 +278,7 @@ export default function Fortune() {
             </div>
           </>
         ) : (
-          <div className="relative mt-6 overflow-hidden rounded-3xl border-2 border-dashed border-[#C9C3F2] bg-[#F7F6FE] p-6 text-center">
+          <div className="relative mt-6 overflow-hidden rounded-3xl border-2 border-dashed border-[#8B7CF6] bg-surface2 p-6 text-center">
             {/* 흐릿한 미리보기 */}
             <div className="pointer-events-none absolute inset-x-5 bottom-3 flex items-end justify-between gap-1.5 opacity-30 blur-[3px]">
               {week.map((w, i) => (

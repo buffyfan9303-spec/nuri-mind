@@ -149,7 +149,7 @@ export default function SurveyCreate() {
                         className="flex aspect-square items-center justify-center rounded-2xl border-2 text-2xl"
                         style={{
                           borderColor: emoji === e ? '#4FA882' : '#E3EAE5',
-                          background: emoji === e ? '#4FA8821A' : '#fff',
+                          background: emoji === e ? '#4FA8821A' : 'rgb(var(--surface))',
                         }}
                       >
                         {e}

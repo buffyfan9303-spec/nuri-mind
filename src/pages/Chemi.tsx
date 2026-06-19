@@ -59,7 +59,7 @@ export default function Chemi() {
               sfx.tap()
             }}
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border-2"
-            style={{ borderColor: sel ? '#F25C8E' : '#E9EEEB', background: sel ? '#F25C8E14' : '#F5F8F6' }}
+            style={{ borderColor: sel ? '#F25C8E' : 'rgb(var(--line))', background: sel ? '#F25C8E14' : 'rgb(var(--surface-2))' }}
           >
             <span className={`text-[26px] leading-none ${sel ? '' : 'opacity-70'}`}>{p.emoji}</span>
             <span className={`text-[10.5px] font-extrabold ${sel ? 'text-[#C2456B]' : 'text-ink-faint'}`}>{l(p.name)}</span>
