@@ -1,7 +1,7 @@
 export type Lang = 'ko' | 'en' | 'ja'
 export type L = Record<Lang, string>
 
-export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark' | 'memory' | 'focus' | 'speed' | 'spatial'
+export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark' | 'memory' | 'focus' | 'speed' | 'spatial' | 'switch'
 
 /** 프로필 아바타 — 업로드 사진 또는 동물 페르소나 */
 export type Avatar =
@@ -118,6 +118,8 @@ export interface TestResult {
   sq?: number
   /** 공간 지수 (정밀 공간지각 검사 — 심적 회전 100±15 척도) */
   xq?: number
+  /** 전환 지수 (정밀 주의전환 검사 — 과제 전환·인지 유연성 100±15 척도) */
+  wq?: number
   screener?: number
   maskFlag?: boolean
   axes?: Record<string, number>

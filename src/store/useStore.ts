@@ -43,6 +43,8 @@ export const FORTUNE_FREE_PER_MONTH = 3
 export const FORTUNE_DIA_COST = 5
 /** IQ 정밀검사 전체 해제(영구) */
 export const IQ_DIA_COST = 10
+/** 정밀검사(기억/집중/처리속도/공간) 상세분석 전체 해제 비용 */
+export const PRECISION_DIA_COST = 10
 export interface DiaBundle {
   dia: number
   krw: number
@@ -92,6 +94,10 @@ interface State {
   fortuneFreeUses: number
   /** IQ 정밀검사 전체 해제 여부(영구) */
   iqUnlocked: boolean
+  /** 정밀검사 상세분석 💎 게이팅 on/off (운영자 토글) */
+  precisionGate: boolean
+  /** 정밀검사(기억/집중/처리속도/공간) 상세 전체 해제됨 */
+  precisionUnlocked: boolean
   /** 전광판(확성기) 메시지 — 최신순 */
   tickerMsgs: TickerMsg[]
   deviceId: string
@@ -193,6 +199,10 @@ interface State {
   viewFortuneFull: () => 'free' | 'dia' | 'need'
   /** IQ 정밀검사 전체 해제(10다이아) — 부족 시 false */
   unlockIq: () => boolean
+  /** 정밀검사 상세 게이팅 on/off (운영자) */
+  setPrecisionGate: (v: boolean) => void
+  /** 정밀검사 상세 전체 해제(10다이아) — 부족 시 false */
+  unlockPrecision: () => boolean
   /** 전광판 게시(1다이아) — 'ok'·'dia'(잔액부족)·'bad'(AI필터 차단) */
   postTicker: (text: string) => 'ok' | 'dia' | 'bad'
   readArticle: (id: string) => number
@@ -217,6 +227,8 @@ const initial = () => ({
   fortuneMonth: '',
   fortuneFreeUses: 0,
   iqUnlocked: false,
+  precisionGate: false,
+  precisionUnlocked: false,
   tickerMsgs: [
     { id: 'tk_s1', text: '🎉 검사 8종 올클리어 도전 중! 같이 하실 분?', nick: '누리', at: Date.now() - 5400000 },
     { id: 'tk_s2', text: '💪 오늘도 출석 도장 찍고 갑니다', nick: '민지', at: Date.now() - 3600000 },
@@ -647,6 +659,15 @@ export const useStore = create<State>()(
           if (s.iqUnlocked) return true
           if (s.diamonds < IQ_DIA_COST) return false
           set({ diamonds: s.diamonds - IQ_DIA_COST, iqUnlocked: true })
+          return true
+        },
+        setPrecisionGate: (v) => set({ precisionGate: v }),
+        /** 정밀검사 상세 전체 해제 — 1회 10다이아(영구, 4종 공통) */
+        unlockPrecision: () => {
+          const s = get()
+          if (s.precisionUnlocked) return true
+          if (s.diamonds < PRECISION_DIA_COST) return false
+          set({ diamonds: s.diamonds - PRECISION_DIA_COST, precisionUnlocked: true })
           return true
         },
         /** 전광판 게시 — AI 필터 통과 + 1다이아 차감 후 노출 */

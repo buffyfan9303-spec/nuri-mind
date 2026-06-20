@@ -267,6 +267,130 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   )
 }
 
+export interface CogAxis {
+  label: string
+  value: number | null
+  color: string
+}
+
+/** 종합 인지 프로필 → 레이더 카드 PNG (5축: IQ·기억·집중·처리속도·공간) */
+export async function makeCogCard(spec: {
+  appName: string
+  title: string
+  composite: number
+  axes: CogAxis[]
+  grad: [string, string]
+  ctaTop?: string
+  ctaSub?: string
+}): Promise<Blob> {
+  try {
+    await (document as any).fonts?.ready
+  } catch {
+    /* noop */
+  }
+  const W = 1080
+  const H = 1350
+  const cx = W / 2
+  const c = document.createElement('canvas')
+  c.width = W
+  c.height = H
+  const ctx = c.getContext('2d')!
+
+  const bg = ctx.createLinearGradient(0, 0, W, H)
+  bg.addColorStop(0, spec.grad[0])
+  bg.addColorStop(1, spec.grad[1])
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, W, H)
+
+  ctx.globalAlpha = 0.1
+  ctx.fillStyle = '#FFFFFF'
+  ;[[150, 190, 260], [970, 1180, 320]].forEach(([x, y, r]) => {
+    ctx.beginPath()
+    ctx.arc(x, y, r, 0, Math.PI * 2)
+    ctx.fill()
+  })
+  ctx.globalAlpha = 1
+
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle = 'rgba(255,255,255,0.92)'
+  ctx.font = `800 36px ${FAM}`
+  ctx.fillText(`🧠 ${spec.appName}`, cx, 92)
+  ctx.fillStyle = '#FFFFFF'
+  ctx.font = `800 56px ${FAM}`
+  ctx.fillText(spec.title, cx, 168)
+  ctx.fillStyle = 'rgba(255,255,255,0.9)'
+  ctx.font = `800 28px ${FAM}`
+  ctx.fillText('종합 인지 점수', cx, 232)
+  ctx.fillStyle = '#FFFFFF'
+  ctx.font = `900 96px ${FAM}`
+  ctx.fillText(String(spec.composite), cx, 312)
+
+  /* 레이더 */
+  const RCX = cx
+  const RCY = 740
+  const RR = 250
+  const N = spec.axes.length || 5
+  const ang = (i: number) => ((-90 + (360 / N) * i) * Math.PI) / 180
+  const pt = (i: number, r: number): [number, number] => [RCX + r * Math.cos(ang(i)), RCY + r * Math.sin(ang(i))]
+  const norm = (v: number | null) => (v == null ? 0 : Math.max(0.05, Math.min(1, (v - 60) / 85)))
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)'
+  ctx.lineWidth = 2
+  ;[0.25, 0.5, 0.75, 1].forEach((k) => {
+    ctx.beginPath()
+    spec.axes.forEach((_, i) => {
+      const [x, y] = pt(i, RR * k)
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
+    })
+    ctx.closePath()
+    ctx.stroke()
+  })
+  spec.axes.forEach((_, i) => {
+    const [x, y] = pt(i, RR)
+    ctx.beginPath()
+    ctx.moveTo(RCX, RCY)
+    ctx.lineTo(x, y)
+    ctx.stroke()
+  })
+
+  ctx.beginPath()
+  spec.axes.forEach((a, i) => {
+    const [x, y] = pt(i, RR * norm(a.value))
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
+  })
+  ctx.closePath()
+  ctx.fillStyle = 'rgba(255,255,255,0.38)'
+  ctx.fill()
+  ctx.strokeStyle = '#FFFFFF'
+  ctx.lineWidth = 4
+  ctx.lineJoin = 'round'
+  ctx.stroke()
+
+  spec.axes.forEach((a, i) => {
+    const [dx, dy] = pt(i, RR * norm(a.value))
+    ctx.beginPath()
+    ctx.arc(dx, dy, 9, 0, Math.PI * 2)
+    ctx.fillStyle = '#FFFFFF'
+    ctx.fill()
+    const [lx, ly] = pt(i, RR + 60)
+    ctx.fillStyle = '#FFFFFF'
+    ctx.font = `800 29px ${FAM}`
+    ctx.fillText(a.label, lx, ly)
+    ctx.font = `900 36px ${FAM}`
+    ctx.fillText(a.value != null ? String(a.value) : '–', lx, ly + 40)
+  })
+
+  ctx.fillStyle = '#FFFFFF'
+  ctx.font = `800 40px ${FAM}`
+  ctx.fillText(spec.ctaTop ?? '내 인지 능력은? 🧠', cx, 1238)
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'
+  ctx.font = `700 31px ${FAM}`
+  ctx.fillText(spec.ctaSub ?? '누리 마인드 정밀검사로 무료 확인 →', cx, 1292)
+
+  return new Promise((resolve, reject) => c.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas toBlob 실패'))), 'image/png'))
+}
+
 /** 공유: Web Share(파일) → 실패 시 PNG 다운로드 */
 export async function shareCardBlob(blob: Blob, text: string, filename = 'nuri-mind-result.png'): Promise<'shared' | 'downloaded'> {
   const file = new File([blob], filename, { type: 'image/png' })

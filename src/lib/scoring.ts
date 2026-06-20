@@ -464,6 +464,54 @@ export function scoreSpatial(correct: number, total: number, totalMs: number): T
   })
 }
 
+/* ──────────── SWITCH (정밀 주의전환 — Task-switching) ────────────
+ * 정밀검사 6호. 집행기능(executive function) 실측 과제.
+ * '크기'와 '홀짝' 규칙을 신호에 맞춰 갈아타며 판단 → 정확도·속도 + 전환비용(switch cost).
+ * 합성 = 정확도 z(0.55) + 속도 z(0.3) + 전환유연성 z(0.15) → WQ=100+15z. */
+export interface SwitchTrial {
+  correct: boolean
+  rt: number
+  isSwitch: boolean
+}
+const SW_ACC_MU = 0.88
+const SW_ACC_SIGMA = 0.1
+const SW_RT_MU = 1100
+const SW_RT_SIGMA = 350
+const SW_COST_MU = 180
+const SW_COST_SIGMA = 200
+
+export function scoreSwitch(trials: SwitchTrial[]): TestResult {
+  const correct = trials.filter((t) => t.correct).length
+  const accuracy = trials.length ? correct / trials.length : 0
+  const rts = trials.map((t) => t.rt)
+  const meanRT = rts.length ? rts.reduce((a, b) => a + b, 0) / rts.length : 9999
+  const swRts = trials.filter((t) => t.isSwitch).map((t) => t.rt)
+  const repRts = trials.filter((t) => !t.isSwitch).map((t) => t.rt)
+  const mean = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : meanRT)
+  const switchCost = mean(swRts) - mean(repRts) // 낮을수록 유연
+
+  const zAcc = (accuracy - SW_ACC_MU) / SW_ACC_SIGMA
+  const zRT = (SW_RT_MU - meanRT) / SW_RT_SIGMA
+  const zCost = (SW_COST_MU - switchCost) / SW_COST_SIGMA // 비용 낮을수록 +
+  const z = 0.55 * zAcc + 0.3 * zRT + 0.15 * zCost
+  const wq = Math.max(60, Math.min(145, Math.round(100 + 15 * z)))
+  const pct = Math.min(99.5, Math.max(0.5, Math.round(normalCdf(z) * 1000) / 10))
+
+  const band = wq >= 115 ? 'high' : wq >= 96 ? 'mid' : 'low'
+  const persona = band === 'high' ? 'chameleon' : band === 'mid' ? 'frog' : 'panda'
+
+  const flexRatio = Math.max(0.02, Math.min(0.99, (450 - switchCost) / 450))
+  const subscales: SubscaleScore[] = [
+    { key: 'swacc', score: correct, max: trials.length, ratio: laplace(correct, trials.length) },
+    { key: 'flex', score: Math.round(flexRatio * 100), max: 100, ratio: flexRatio },
+  ]
+
+  return base('switch', correct, pct, band, persona, subscales, {
+    wq,
+    axes: { rt: Math.round(meanRT), acc: Math.round(accuracy * 100), cost: Math.round(switchCost) },
+  })
+}
+
 function base(
   testId: TestId,
   raw: number,

@@ -206,6 +206,25 @@ export default function TestIntro() {
               </Button>
             </div>
           </>
+        ) : id === 'switch' ? (
+          <>
+            {/* 주의전환 검사란? 직관 설명 */}
+            <Card className="mt-4">
+              <h2 className="flex items-center gap-2 text-[16px] font-extrabold tracking-tight">🔀 {l({ ko: '정밀 주의전환 검사가 뭔가요?', en: 'What is this switching test?', ja: '精密注意切替検査とは？' })}</h2>
+              <p className="mt-2 break-keep text-[14.5px] font-medium leading-[1.8] text-ink-sub">
+                {l({
+                  ko: '설문이 아니라 규칙이 계속 바뀌는 과제를 처리하는 인지과제예요. 신호가 "크기"면 숫자가 5보다 큰지, "홀짝"이면 홀수인지 짝수인지 빠르게 갈아타며 32문항을 판단해요. 과제 전환(Task-switching) 방식으로 집행기능·인지 유연성을 재서, 100을 기준으로 한 전환 지수(WQ)로 알려드려요. 약 2~3분.',
+                  en: 'Not a survey — a task where the rule keeps changing. When the cue is "size" judge if the number is over 5; when it\'s "odd/even" judge parity — swapping fast across 32 items. Using Task-switching, it measures executive function and cognitive flexibility as a Switching Quotient (WQ) centered on 100. About 2–3 minutes.',
+                  ja: 'アンケートではなく、ルールが変わり続ける課題を処理する認知課題です。合図が「大きさ」なら5より大きいか、「偶奇」なら奇数か偶数かを素早く切り替えて32問判断します。課題切替（Task-switching）方式で実行機能・認知的柔軟性を測り、100を基準にした切替指数(WQ)でお伝えします。約2〜3分。',
+                })}
+              </p>
+            </Card>
+            <div className="mt-5">
+              <Button color={tm.btn} size="lg" onClick={() => nav('/switch/run')}>
+                {t('common.start')} →
+              </Button>
+            </div>
+          </>
         ) : (
           <div className="mt-5">
             <Button color={tm.btn} size="lg" onClick={() => nav(`/test/${id}/run`)}>

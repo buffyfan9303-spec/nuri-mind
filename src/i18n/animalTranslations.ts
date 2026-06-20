@@ -1224,6 +1224,109 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '서두르지 않고 하나씩 확인하는 꼼꼼함', en: 'Thoroughness that checks one thing at a time without rushing', ja: '焦らず一つずつ確認する丁寧さ' },
     ],
   },
+
+  /* ── 정밀 주의전환 검사 페르소나 ── */
+  chameleon: {
+    emoji: '🦎',
+    grad: ['#0EA5E9', '#7DD3FC'],
+    name: { ko: '카멜레온', en: 'Chameleon', ja: 'カメレオン' },
+    title: { ko: '유연한 전환자', en: 'The Agile Switcher', ja: '柔軟な切替者' },
+    tagline: {
+      ko: '규칙이 바뀌어도 순식간에 갈아타는 뇌',
+      en: 'A brain that switches gears the instant the rule changes',
+      ja: 'ルールが変わっても瞬時に切り替える脳',
+    },
+    desc: {
+      ko: '규칙이 수시로 바뀌어도 빠르고 정확하게 갈아타는 인지 유연성이 최상위권입니다. 여러 일을 오가는 멀티 상황·돌발 변수에 강해요. 다만 너무 잘 바꿔서 한 가지에 깊게 머무는 끈기가 약해질 수 있습니다.',
+      en: 'Your cognitive flexibility — switching fast and accurately as rules change — sits at the top. You thrive amid multitasking and sudden curveballs. Just beware: switching so easily can erode the grit to stay deep on one thing.',
+      ja: 'ルールが頻繁に変わっても速く正確に切り替える認知的柔軟性が最上位圏。複数を行き来する状況や突発変数に強い。ただ簡単に切り替えるぶん、一つに深く留まる粘りが弱まることも。',
+    },
+    slap: {
+      ko: '잘 바꾸는 능력은, 끝까지 안 바꾸고 버티는 능력과 짝일 때만 무기가 됩니다. 전환이 빠른 사람일수록 "지금은 안 바꾼다"를 일부러 연습해야 해요.',
+      en: 'The ability to switch is only a weapon when paired with the ability to not switch and hold. The faster you pivot, the more you must practice "not pivoting right now."',
+      ja: 'よく切り替える力は、最後まで変えず耐える力と対になって初めて武器になります。切替が速い人ほど「今は変えない」をあえて練習すべきです。',
+    },
+    risks: [
+      { ko: '너무 쉽게 바꿔서 한 가지에 깊이 머무는 끈기가 약함', en: 'Switching too easily weakens the grit to stay deep on one thing', ja: '簡単に切り替えすぎ、一つに深く留まる粘りが弱い' },
+      { ko: '자극이 많으면 이것저것 건드리다 마무리를 놓침', en: 'Amid many stimuli, you dabble and miss the finish', ja: '刺激が多いと、あれこれ手を出して仕上げを逃す' },
+    ],
+    solutions: [
+      { ko: '"지금 25분은 안 바꾼다" 같은 전환 금지 구간을 두세요', en: 'Set no-switch blocks like "no pivoting for 25 minutes"', ja: '「今の25分は変えない」など切替禁止の区間を設ける' },
+      { ko: '끝맺음 체크리스트로 마무리까지 가도록 손을 묶어두기', en: 'Use a finish checklist to tie your hands through completion', ja: '仕上げチェックリストで最後まで手を縛る' },
+    ],
+    strengths: [
+      { ko: '규칙·맥락이 바뀌어도 빠르게 적응하는 인지 유연성', en: 'Cognitive flexibility that adapts fast when rules and context shift', ja: 'ルール・文脈が変わっても素早く適応する認知的柔軟性' },
+      { ko: '여러 일을 오가는 멀티·돌발 상황에서의 강함', en: 'Strength in multitasking and sudden, unexpected situations', ja: '複数を行き来するマルチ・突発状況での強さ' },
+    ],
+  },
+
+  frog: {
+    emoji: '🐸',
+    grad: ['#38BDF8', '#BAE6FD'],
+    name: { ko: '개구리', en: 'Frog', ja: 'カエル' },
+    title: { ko: '콩콩 전환형', en: 'The Hopping Switcher', ja: 'ぴょんぴょん切替型' },
+    tagline: {
+      ko: '필요할 땐 폴짝, 무리 없이 규칙을 갈아타는 뇌',
+      en: 'Hops to a new rule when needed, without strain',
+      ja: '必要な時はぴょんと、無理なくルールを乗り換える脳',
+    },
+    desc: {
+      ko: '평균에서 평균 상단의 안정적인 전환 능력입니다. 일상의 규칙 변화엔 무리 없이 적응하고, 전환이 한꺼번에 몰아칠 때만 살짝 버벅여요. 한 박자 쉬어가면 대부분 정확히 갈아탑니다.',
+      en: 'Your switching ability runs from average to upper-average and stays steady. You adapt fine to everyday rule changes and only stutter when switches pile up at once. A beat to breathe and you usually pivot accurately.',
+      ja: '平均から平均上位の安定した切替能力です。日常のルール変化には無理なく適応し、切替が一度に押し寄せた時だけ少し詰まる。一拍置けばほぼ正確に乗り換えます。',
+    },
+    slap: {
+      ko: '"천천히 하면 잘 바꾼다"는 건, 빠르게 바꿔야 할 때 실수한다는 뜻이기도 합니다. 전환이 잦은 환경이라면 규칙을 눈에 보이게 적어두는 습관이 약점을 메워요.',
+      en: '"I switch well when slow" also means you slip when speed is needed. In switch-heavy settings, writing the rule where you can see it covers the gap.',
+      ja: '「ゆっくりならうまく切り替える」は、速く変える時にミスするという意味でもあります。切替の多い環境では、ルールを見える形で書く習慣が弱点を埋めます。',
+    },
+    risks: [
+      { ko: '전환이 한꺼번에 몰리면 규칙을 헷갈려 실수함', en: 'When switches pile up, you confuse the rules and slip', ja: '切替が一度に重なると、ルールを混同してミス' },
+      { ko: '피곤하면 직전 규칙을 계속 적용하는 관성이 생김', en: 'When tired, you keep applying the previous rule out of inertia', ja: '疲れると直前のルールを適用し続ける慣性が出る' },
+    ],
+    solutions: [
+      { ko: '현재 규칙을 한 단어로 눈앞에 적어두면 헷갈림이 줄어요', en: 'Write the current rule in one word in front of you to cut confusion', ja: '今のルールを一語で目の前に書くと混乱が減る' },
+      { ko: '전환 직전 "지금부터 규칙이 바뀐다"를 속으로 한 번 말하기', en: 'Before a switch, say to yourself "the rule changes now"', ja: '切替の直前に「今からルールが変わる」と心で一度唱える' },
+    ],
+    strengths: [
+      { ko: '일상의 규칙 변화에 무리 없이 적응하는 안정성', en: 'Stability that adapts smoothly to everyday rule changes', ja: '日常のルール変化に無理なく適応する安定性' },
+      { ko: '한 박자 쉬어가며 정확히 갈아타는 신중함', en: 'Care that pivots accurately by taking a beat', ja: '一拍置いて正確に乗り換える慎重さ' },
+    ],
+  },
+
+  panda: {
+    emoji: '🐼',
+    grad: ['#7DD3FC', '#E0F2FE'],
+    name: { ko: '판다', en: 'Panda', ja: 'パンダ' },
+    title: { ko: '한 우물 집중형', en: 'The One-Track Focuser', ja: '一筋集中型' },
+    tagline: {
+      ko: '바꾸는 것보다 하나에 푹 빠지는 게 편한 뇌',
+      en: 'A brain that prefers diving into one thing over switching',
+      ja: '切り替えるより一つに没頭する方が楽な脳',
+    },
+    desc: {
+      ko: '규칙을 빠르게 갈아타는 점수는 평균 아래로 측정됐어요. 머리가 느린 게 아니라, 자주 바꾸기보다 하나에 깊이 몰입하는 게 잘 맞는 스타일입니다. 방해 없는 한 우물 환경에서 강점이 됩니다.',
+      en: 'Your score for switching rules quickly measured below average. This isn\'t slow thinking — it\'s a style that thrives diving deep into one thing rather than switching often. It becomes a strength in a single-track, distraction-free setting.',
+      ja: 'ルールを速く切り替える点数は平均以下と測定されました。頭が遅いのではなく、頻繁に変えるより一つに深く没頭するのが合うスタイルです。邪魔のない一筋の環境で強みになります。',
+    },
+    slap: {
+      ko: '전환이 느린 게 문제가 아니라, 자꾸 바꾸라는 환경에 자신을 욱여넣는 게 문제입니다. 당신의 무기는 멀티가 아니라 몰입이에요. 한 번에 하나씩 할 수 있는 자리를 만드세요.',
+      en: 'Slow switching isn\'t the problem — forcing yourself into switch-heavy settings is. Your weapon is immersion, not multitasking. Build a place where you do one thing at a time.',
+      ja: '切替が遅いのが問題ではなく、頻繁に変える環境に自分を押し込むのが問題です。あなたの武器はマルチではなく没入。一度に一つできる場を作りましょう。',
+    },
+    risks: [
+      { ko: '규칙·업무가 자주 바뀌는 환경에서 실수와 스트레스가 큼', en: 'In settings where rules and tasks change often, errors and stress run high', ja: 'ルール・業務が頻繁に変わる環境でミスとストレスが大きい' },
+      { ko: '한 가지에서 다른 것으로 넘어갈 때 전환이 오래 걸림', en: 'Moving from one thing to another, the switch takes long', ja: '一つから別へ移る時、切替に時間がかかる' },
+    ],
+    solutions: [
+      { ko: '멀티태스킹 대신 한 번에 하나씩(직렬화)으로 일을 배치하세요', en: 'Arrange work one-at-a-time (serialize) instead of multitasking', ja: 'マルチタスクの代わりに一度に一つ（直列化）で配置する' },
+      { ko: '전환이 필요하면 사이에 짧은 "리셋 의식"(심호흡·메모)을 두기', en: 'When a switch is needed, insert a short "reset ritual" (breath, note)', ja: '切替が要る時は間に短い「リセット儀式」（深呼吸・メモ）を置く' },
+    ],
+    strengths: [
+      { ko: '한 가지에 깊이 빠져드는 강력한 몰입력', en: 'Powerful immersion that dives deep into one thing', ja: '一つに深く入り込む強力な没入力' },
+      { ko: '방해만 없으면 끝까지 파고드는 지속력', en: 'Staying power that drills to the end when undisturbed', ja: '邪魔さえなければ最後まで掘り下げる持続力' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -1240,6 +1343,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   hawk: 'focus', bee: 'focus', otter: 'focus',
   cheetah: 'speed', rabbit: 'speed', tortoise: 'speed',
   bat: 'spatial', pigeon: 'spatial', snail: 'spatial',
+  chameleon: 'switch', frog: 'switch', panda: 'switch',
 }
 
 /** 이모지(글 뱃지) → 검사 매핑 */

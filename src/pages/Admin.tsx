@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import { Card, Chip, TopBar } from '../components/ui'
-import { useStore } from '../store/useStore'
+import { useStore, PRECISION_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { expById, TIERS } from '../data/rank'
 import { sfx } from '../lib/sound'
@@ -76,6 +76,8 @@ function Console() {
   const reports = useStore((s) => s.reports)
   const resolveReport = useStore((s) => s.resolveReport)
   const lockAdmin = useStore((s) => s.lockAdmin)
+  const precisionGate = useStore((s) => s.precisionGate)
+  const setPrecisionGate = useStore((s) => s.setPrecisionGate)
   const [reasons, setReasons] = useState<Record<string, string>>({})
   const [openQ, setOpenQ] = useState<string | null>(null)
 
@@ -295,6 +297,7 @@ function Console() {
         )}
 
         {tab === 'stats' && (
+          <>
           <div className="grid grid-cols-2 gap-3">
             {[
               { label: t('admin.stat.results'), value: results.length, icon: '🧠' },
@@ -309,6 +312,23 @@ function Console() {
               </Card>
             ))}
           </div>
+          {/* 정밀검사 상세 💎 게이팅 토글 (운영자) */}
+          <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/10 p-4">
+            <div className="min-w-0 pr-3">
+              <p className="text-[14px] font-extrabold text-white">💎 정밀검사 상세 게이팅</p>
+              <p className="mt-0.5 break-keep text-[11.5px] font-bold text-white/60">
+                켜면 기억·집중·처리속도·공간 상세분석이 💎{PRECISION_DIA_COST}로 잠겨요 (IQ 정밀은 별도)
+              </p>
+            </div>
+            <button
+              onClick={() => setPrecisionGate(!precisionGate)}
+              className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${precisionGate ? 'bg-[#1ab394]' : 'bg-white/20'}`}
+              aria-label="precision-gate"
+            >
+              <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white transition-transform ${precisionGate ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
+            </button>
+          </div>
+          </>
         )}
       </main>
     </div>

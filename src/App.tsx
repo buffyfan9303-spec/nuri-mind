@@ -15,6 +15,7 @@ const MemoryRun = lazy(() => import('./pages/MemoryRun'))
 const FocusRun = lazy(() => import('./pages/FocusRun'))
 const SpeedRun = lazy(() => import('./pages/SpeedRun'))
 const SpatialRun = lazy(() => import('./pages/SpatialRun'))
+const SwitchRun = lazy(() => import('./pages/SwitchRun'))
 const CogProfile = lazy(() => import('./pages/CogProfile'))
 const TestResult = lazy(() => import('./pages/TestResult'))
 const Rewards = lazy(() => import('./pages/Rewards'))
@@ -104,6 +105,7 @@ export default function App() {
               <Route path="/focus/run" element={<FocusRun />} />
               <Route path="/speed/run" element={<SpeedRun />} />
               <Route path="/spatial/run" element={<SpatialRun />} />
+              <Route path="/switch/run" element={<SwitchRun />} />
               <Route path="/cog" element={<CogProfile />} />
               <Route path="/result/:rid" element={<TestResult />} />
               <Route path="/rewards" element={<Rewards />} />

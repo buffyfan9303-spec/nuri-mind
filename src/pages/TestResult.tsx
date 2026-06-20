@@ -40,6 +40,9 @@ export default function TestResult() {
   const setAvatar = useStore((s) => s.setAvatar)
   const iqUnlocked = useStore((s) => s.iqUnlocked)
   const unlockIq = useStore((s) => s.unlockIq)
+  const precisionGate = useStore((s) => s.precisionGate)
+  const precisionUnlocked = useStore((s) => s.precisionUnlocked)
+  const unlockPrecision = useStore((s) => s.unlockPrecision)
   const diamonds = useStore((s) => s.diamonds)
   const celebrated = useRef(false)
 
@@ -64,10 +67,14 @@ export default function TestResult() {
   const topPercent = Math.max(0.5, Math.round((100 - result.percentile) * 10) / 10)
   const reward = state.reward ?? 0
 
-  /* IQ 결과지 게이팅 — 앞(히어로·IQ점수·게이지)은 무료, 상세 분석은 블러 → 10다이아 영구해제 */
-  const locked = result.testId === 'iq' && result.iqMode === 'pro' && !iqUnlocked
+  /* 정밀검사 결과지 게이팅 — 앞(히어로·점수·게이지)은 무료, 상세 분석은 블러 → 10다이아 영구해제.
+     · IQ 정밀(pro): iqUnlocked  · 기억/집중/처리속도/공간: precisionGate(운영자 토글) ON일 때 precisionUnlocked */
+  const PRECISION_GATED = ['memory', 'focus', 'speed', 'spatial', 'switch']
+  const lockedIq = result.testId === 'iq' && result.iqMode === 'pro' && !iqUnlocked
+  const lockedPrecision = precisionGate && PRECISION_GATED.includes(result.testId) && !precisionUnlocked
+  const locked = lockedIq || lockedPrecision
   const tryUnlockIqResult = () => {
-    const ok = unlockIq()
+    const ok = lockedIq ? unlockIq() : unlockPrecision()
     if (!ok) {
       setNeedCharge(true)
       return
@@ -256,6 +263,11 @@ export default function TestResult() {
                 XQ {result.xq}
               </span>
             )}
+            {result.testId === 'switch' && result.wq !== undefined && (
+              <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
+                WQ {result.wq}
+              </span>
+            )}
           </div>
         </motion.div>
 
@@ -309,6 +321,23 @@ export default function TestResult() {
                       ko: `평균 반응 ${result.axes.rt}ms · 정확도 ${result.axes.acc}%`,
                       en: `avg ${result.axes.rt}ms · ${result.axes.acc}% accuracy`,
                       ja: `平均反応 ${result.axes.rt}ms・正確度 ${result.axes.acc}%`,
+                    })}
+                  </p>
+                )}
+                <div className="mt-4">
+                  <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
+                </div>
+              </>
+            ) : result.testId === 'switch' ? (
+              <>
+                <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.wq}</div>
+                <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.wqLabel')}</p>
+                {result.axes && (
+                  <p className="mt-1 text-[12px] font-bold text-ink-faint">
+                    {l({
+                      ko: `평균 ${(result.axes.rt / 1000).toFixed(1)}초 · 정확도 ${result.axes.acc}% · 전환비용 ${result.axes.cost}ms`,
+                      en: `avg ${(result.axes.rt / 1000).toFixed(1)}s · ${result.axes.acc}% · switch cost ${result.axes.cost}ms`,
+                      ja: `平均 ${(result.axes.rt / 1000).toFixed(1)}秒・正確度 ${result.axes.acc}%・切替コスト ${result.axes.cost}ms`,
                     })}
                   </p>
                 )}
@@ -576,7 +605,7 @@ export default function TestResult() {
             <div className="absolute inset-x-0 top-4 flex justify-center px-3">
               <div className="w-full max-w-sm rounded-3xl border-2 border-[#D7DAF7] bg-surface/95 p-6 text-center shadow-pop">
                 <div className="text-[42px] leading-none">🔒</div>
-                <h3 className="mt-2 text-[18.5px] font-extrabold">{l({ ko: '정밀 IQ 결과 해제', en: 'Unlock full IQ result', ja: '精密IQ結果を解除' })}</h3>
+                <h3 className="mt-2 text-[18.5px] font-extrabold">{lockedIq ? l({ ko: '정밀 IQ 결과 해제', en: 'Unlock full IQ result', ja: '精密IQ結果を解除' }) : l({ ko: '상세 분석 해제', en: 'Unlock full analysis', ja: '詳細分析を解除' })}</h3>
                 <p className="mx-auto mt-1.5 max-w-[280px] break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
                   {l({ ko: '인지영역별 분석 · 정밀 해석 · 강점/주의까지 결과지 전체를 한 번만 해제하면 계속 볼 수 있어요.', en: 'Cognitive breakdown, deep interpretation, strengths — unlock the full result once, kept forever.', ja: '認知領域分析・精密解釈・強み/注意まで結果全体を一度解除すればずっと見られます。' })}
                 </p>
@@ -703,7 +732,7 @@ export default function TestResult() {
             <p className="text-[44px] leading-none">💎</p>
             <h3 className="mt-2 text-[19px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
             <p className="mt-1 break-keep text-[13.5px] font-bold text-ink-faint">
-              {l({ ko: `정밀 IQ 결과 해제에 ${IQ_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Unlock needs 💎${IQ_DIA_COST} · you have ${diamonds}`, ja: `解除に💎${IQ_DIA_COST}必要・保有${diamonds}` })}
+              {l({ ko: `상세 결과 해제에 ${IQ_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Unlock needs 💎${IQ_DIA_COST} · you have ${diamonds}`, ja: `解除に💎${IQ_DIA_COST}必要・保有${diamonds}` })}
             </p>
             <div className="mt-5">
               <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>

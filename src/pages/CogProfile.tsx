@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { TopBar, Card } from '../components/ui'
@@ -6,6 +6,8 @@ import Button from '../components/Button'
 import AdSlot from '../components/AdSlot'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
+import { makeCogCard, shareCardBlob } from '../lib/shareCard'
+import { sfx } from '../lib/sound'
 import type { TestResult } from '../data/types'
 
 /** 정밀검사 5종 → 인지 영역 5축 */
@@ -22,12 +24,13 @@ const METRICS: {
   { id: 'focus', label: { ko: '집중력', en: 'Focus', ja: '集中力' }, emoji: '👁️', color: '#14B8A6', route: '/test/focus', get: (r) => r.fq },
   { id: 'speed', label: { ko: '처리속도', en: 'Speed', ja: '処理速度' }, emoji: '⚡', color: '#8B5CF6', route: '/test/speed', get: (r) => r.sq },
   { id: 'spatial', label: { ko: '공간지각', en: 'Spatial', ja: '空間知覚' }, emoji: '🧭', color: '#3B82F6', route: '/test/spatial', get: (r) => r.xq },
+  { id: 'switch', label: { ko: '주의전환', en: 'Switching', ja: '注意切替' }, emoji: '🔀', color: '#0EA5E9', route: '/test/switch', get: (r) => r.wq },
 ]
 
 const CX = 150
 const CY = 150
 const R = 110
-const angle = (i: number) => ((-90 + 72 * i) * Math.PI) / 180
+const angle = (i: number) => ((-90 + (360 / METRICS.length) * i) * Math.PI) / 180
 const pt = (i: number, r: number): [number, number] => [CX + r * Math.cos(angle(i)), CY + r * Math.sin(angle(i))]
 const poly = (rs: number[]) => rs.map((r, i) => pt(i, r).join(',')).join(' ')
 /** 지수(60~145) → 레이더 반경 비율(0.05~1) */
@@ -66,7 +69,60 @@ export default function CogProfile() {
     return bi
   }, [scores])
 
+  const weakest = useMemo(() => {
+    let wi = -1
+    let wv = Infinity
+    scores.forEach((s, i) => {
+      if (s != null && s < wv) {
+        wv = s
+        wi = i
+      }
+    })
+    return wi
+  }, [scores])
+
   const dataRs = scores.map((s) => R * norm(s))
+
+  /* AI 종합 코멘트 (5지수 결정론 해석 — 강점/약점/수준/균형) */
+  const spread = strongest >= 0 && weakest >= 0 ? (scores[strongest] as number) - (scores[weakest] as number) : 0
+  const lvl =
+    avg == null
+      ? null
+      : avg >= 115
+        ? { ko: '매우 우수한', en: 'an excellent', ja: '非常に優れた' }
+        : avg >= 105
+          ? { ko: '평균을 웃도는', en: 'an above-average', ja: '平均を上回る' }
+          : avg >= 95
+            ? { ko: '평균적인', en: 'an average', ja: '平均的な' }
+            : { ko: '성장 여지가 있는', en: 'a developing', ja: '成長の余地がある' }
+  const balanceTxt =
+    spread < 14
+      ? { ko: '영역 간 균형이 고른 올라운더형이에요.', en: 'a well-balanced all-rounder.', ja: 'バランスの取れたオールラウンダーです。' }
+      : { ko: '강약이 뚜렷해 강점을 살리는 전략이 유리해요.', en: 'with clear peaks — lean into your strengths.', ja: '強弱が明確で、強みを活かす戦略が有利です。' }
+  const showComment = doneCount >= 2 && strongest >= 0 && weakest >= 0 && lvl != null
+
+  const [shareMsg, setShareMsg] = useState('')
+  const shareProfile = async () => {
+    try {
+      const blob = await makeCogCard({
+        appName: l({ ko: '누리 마인드', en: 'NURI MIND', ja: 'ヌリマインド' }),
+        title: l({ ko: '내 인지 프로필', en: 'My Cognitive Profile', ja: '私の認知プロフィール' }),
+        composite: avg ?? 0,
+        axes: METRICS.map((m, i) => ({ label: l(m.label), value: scores[i], color: m.color })),
+        grad: ['#5B6CF0', '#3B82F6'],
+        ctaTop: l({ ko: '내 인지 능력은? 🧠', en: 'How sharp is your mind? 🧠', ja: 'あなたの認知力は？🧠' }),
+        ctaSub: l({ ko: '누리 마인드 정밀검사로 무료 확인 →', en: 'Find out free at NURI MIND →', ja: 'ヌリマインドの精密検査で無料確認 →' }),
+      })
+      const how = await shareCardBlob(blob, l({ ko: '내 인지 프로필을 확인해보세요!', en: 'Check out my cognitive profile!', ja: '私の認知プロフィール！' }), 'nuri-cog-profile.png')
+      if (how === 'downloaded') {
+        setShareMsg(l({ ko: '카드를 저장했어요', en: 'Card saved', ja: 'カードを保存しました' }))
+        setTimeout(() => setShareMsg(''), 2200)
+      }
+      sfx.coin()
+    } catch {
+      sfx.err()
+    }
+  }
 
   return (
     <div className="min-h-dvh pb-36">
@@ -93,7 +149,7 @@ export default function CogProfile() {
           <svg viewBox="0 0 300 300" className="mx-auto w-full max-w-[320px]">
             {/* 그리드 링 */}
             {[0.25, 0.5, 0.75, 1].map((k) => (
-              <polygon key={k} points={poly([k, k, k, k, k].map((v) => v * R))} fill="none" stroke="rgb(var(--line))" strokeWidth={1} />
+              <polygon key={k} points={poly(METRICS.map(() => k * R))} fill="none" stroke="rgb(var(--line))" strokeWidth={1} />
             ))}
             {/* 스포크 + 라벨 */}
             {METRICS.map((m, i) => {
@@ -132,6 +188,21 @@ export default function CogProfile() {
             })}
           </svg>
         </Card>
+
+        {/* AI 종합 코멘트 */}
+        {showComment && lvl && (
+          <Card className="mt-4">
+            <h2 className="flex items-center gap-2 text-[15.5px] font-extrabold tracking-tight">🤖 {l({ ko: 'AI 종합 코멘트', en: 'AI summary', ja: 'AI総合コメント' })}</h2>
+            <p className="mt-2 break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">
+              {l({
+                ko: `가장 강한 영역은 「${METRICS[strongest].label.ko}」, 상대적으로 약한 영역은 「${METRICS[weakest].label.ko}」예요. 전반적으로 ${lvl.ko} 인지 프로필이고, ${balanceTxt.ko}`,
+                en: `Your strongest area is ${METRICS[strongest].label.en}, while ${METRICS[weakest].label.en} has the most room to grow. Overall it's ${lvl.en} cognitive profile — ${balanceTxt.en}`,
+                ja: `最も強い領域は「${METRICS[strongest].label.ja}」、相対的に弱いのは「${METRICS[weakest].label.ja}」です。全体的に${lvl.ja}認知プロフィールで、${balanceTxt.ja}`,
+              })}
+            </p>
+            <p className="mt-2 text-[11px] font-medium text-ink-faint">{l({ ko: '※ 측정 지수를 규칙 기반으로 요약한 참고용 코멘트예요.', en: '※ A rule-based summary of your measured scores, for reference.', ja: '※ 測定指数をルールベースで要約した参考コメントです。' })}</p>
+          </Card>
+        )}
 
         {/* 영역별 점수 리스트 */}
         <div className="mt-4 space-y-2.5">
@@ -172,6 +243,16 @@ export default function CogProfile() {
             )
           })}
         </div>
+
+        {/* 레이더 카드 공유 (바이럴) */}
+        {doneCount >= 1 && (
+          <div className="mt-4">
+            <Button color="iq" onClick={shareProfile}>
+              🎴 {l({ ko: '인지 프로필 카드 공유', en: 'Share profile card', ja: 'プロフィールカードを共有' })}
+            </Button>
+            {shareMsg && <p className="mt-2 text-center text-[13.5px] font-extrabold text-mind-700">✅ {shareMsg}</p>}
+          </div>
+        )}
 
         {doneCount < 5 && (
           <p className="mt-3 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">
