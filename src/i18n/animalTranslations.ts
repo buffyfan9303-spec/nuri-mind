@@ -915,6 +915,109 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '지금 눈앞의 일에 강하게 몰입하는 현재 집중력', en: 'Present-focus that dives hard into what is right in front of you', ja: '今目の前のことに強く没入する現在集中力' },
     ],
   },
+
+  /* ── 정밀 집중력 검사 페르소나 ── */
+  hawk: {
+    emoji: '🦅',
+    grad: ['#14B8A6', '#34D399'],
+    name: { ko: '매', en: 'Hawk', ja: 'タカ' },
+    title: { ko: '정밀 조준형', en: 'The Precision Striker', ja: '精密照準型' },
+    tagline: {
+      ko: '한번 잠그면 놓치지 않는 레이저 집중',
+      en: 'Laser focus that locks on and never lets go',
+      ja: '一度ロックしたら逃さないレーザー集中',
+    },
+    desc: {
+      ko: '반응이 빠르면서도 정확합니다. 목표가 또렷할 때 주의를 한 점에 모아 오래 유지하고, 불필요한 자극에 잘 휘둘리지 않아요. 다만 그 강한 몰입이 주변과 휴식을 놓치게 만들 수 있다는 점은 기억하세요.',
+      en: 'You react fast and accurately. When the target is clear, you gather attention to a single point and hold it, rarely swayed by noise. Just remember that intense focus can make you miss the people and the rest around you.',
+      ja: '反応が速く、しかも正確です。目標が明確な時、注意を一点に集めて長く保ち、不要な刺激に振り回されにくい。ただ、その強い没入が周囲や休息を見落とさせることは忘れずに。',
+    },
+    slap: {
+      ko: '집중력이 무기인 사람일수록, 무엇에 집중할지를 틀리면 가장 빨리 엉뚱한 곳에 도착합니다. 속도보다 방향을 먼저 점검하세요.',
+      en: 'The sharper your focus, the faster you arrive at the wrong place if you aim it wrong. Check the direction before the speed.',
+      ja: '集中力が武器な人ほど、何に集中するかを間違えると最速で見当違いの場所に着きます。速度より先に方向を点検しましょう。',
+    },
+    risks: [
+      { ko: '한 가지에 과몰입해 주변·시간·휴식을 놓치기 쉬움', en: 'Hyperfocus on one thing makes you lose track of people, time, and rest', ja: '一つに過集中して周囲・時間・休息を見落としやすい' },
+      { ko: '자극이 약한 단순반복 과제에선 금세 지루해 실수가 늘 수 있음', en: 'On dull, repetitive tasks you bore quickly and errors creep up', ja: '刺激の弱い単純反復課題ではすぐ退屈しミスが増える' },
+    ],
+    solutions: [
+      { ko: '몰입 전에 "지금 이게 가장 중요한가" 한 번만 확인하세요', en: 'Before diving in, ask once: "is this the most important thing right now?"', ja: '没入の前に「今これが一番大事か」を一度だけ確認' },
+      { ko: '50분 집중–10분 환기로 과열된 주의를 식혀 주세요', en: '50 min focus, 10 min break — cool the overheated attention', ja: '50分集中–10分換気で過熱した注意を冷ます' },
+    ],
+    strengths: [
+      { ko: '목표에 주의를 모아 오래 유지하는 지속 집중력', en: 'Sustained focus that gathers attention on a goal and holds it', ja: '目標に注意を集めて長く保つ持続集中力' },
+      { ko: '빠르면서 정확한 반응 — 처리속도와 정밀도의 균형', en: 'Fast yet accurate responses — balance of speed and precision', ja: '速くて正確な反応—処理速度と精度のバランス' },
+    ],
+  },
+
+  bee: {
+    emoji: '🐝',
+    grad: ['#10B981', '#6EE7B7'],
+    name: { ko: '벌', en: 'Bee', ja: 'ハチ' },
+    title: { ko: '성실한 일꾼형', en: 'The Steady Worker', ja: '勤勉な働き者' },
+    tagline: {
+      ko: '꾸준히, 빠지지 않고 해내는 집중',
+      en: 'Focus that shows up and gets it done, steadily',
+      ja: 'こつこつ、抜けずにやり切る集中',
+    },
+    desc: {
+      ko: '평균에서 평균 상단의 안정적인 집중·반응입니다. 폭발적이진 않아도 꾸준히 유지되고, 대부분의 일상 과제엔 충분해요. 컨디션이 떨어지면 살짝 느려지거나 깜빡할 수 있습니다.',
+      en: 'Your focus and reaction sit from average to upper-average and stay stable. Not explosive, but steady — plenty for most daily tasks. When your condition dips, you may slow a touch or blank out.',
+      ja: '平均から平均上位の安定した集中・反応です。爆発的ではないが着実に保たれ、日常の課題には十分。コンディションが落ちると少し遅くなったり、うっかりすることも。',
+    },
+    slap: {
+      ko: '평범한 집중이라고 얕보지 마세요. 천재의 한 번보다, 당신의 꾸준한 백 번이 더 멀리 갑니다. 다만 "대충 익숙해서" 자동조종으로 흘릴 때 실수가 납니다.',
+      en: 'Don\'t underrate ordinary focus. Your steady hundred reps go farther than a genius\'s single shot. The mistakes come when you coast on autopilot because it feels familiar.',
+      ja: '平凡な集中だと侮らないで。天才の一回より、あなたの地道な百回の方が遠くまで行きます。ただ「慣れて適当に」オートパイロットで流す時にミスが出ます。',
+    },
+    risks: [
+      { ko: '피곤하거나 지루할 때 반응이 느려지고 가끔 놓침', en: 'When tired or bored, reactions slow and you occasionally miss', ja: '疲れや退屈の時、反応が遅れ、時々取りこぼす' },
+      { ko: '익숙한 일을 자동조종으로 처리하다 작은 실수가 남', en: 'Handling familiar work on autopilot lets small errors slip in', ja: '慣れた仕事をオートパイロットで処理し、小さなミスが残る' },
+    ],
+    solutions: [
+      { ko: '중요한 구간엔 알람·체크리스트로 자동조종을 막으세요', en: 'On critical stretches, use alarms and checklists to break autopilot', ja: '重要な区間はアラーム・チェックリストでオートパイロットを防ぐ' },
+      { ko: '충분한 수면이 곧 집중력 — 컨디션 관리가 실력이에요', en: 'Enough sleep is focus itself — managing your condition is skill', ja: '十分な睡眠こそ集中力—コンディション管理が実力' },
+    ],
+    strengths: [
+      { ko: '기복이 적은 안정적인 집중 유지력', en: 'Stable focus with little fluctuation', ja: '起伏の少ない安定した集中維持力' },
+      { ko: '무리 없이 오래 끌고 가는 지구력', en: 'Endurance that carries tasks far without burning out', ja: '無理なく長く引っ張る持久力' },
+    ],
+  },
+
+  otter: {
+    emoji: '🦦',
+    grad: ['#34D399', '#5EEAD4'],
+    name: { ko: '수달', en: 'Otter', ja: 'カワウソ' },
+    title: { ko: '호기심 천국형', en: 'The Curious Wanderer', ja: '好奇心いっぱい型' },
+    tagline: {
+      ko: '온 세상이 다 재미있어 한 곳에 못 있는 뇌',
+      en: 'A brain that finds everything too interesting to sit still',
+      ja: '世界中が面白くて一か所にいられない脳',
+    },
+    desc: {
+      ko: '한 자극에 주의를 오래 묶어두는 점수가 평균 아래로 측정됐어요. 머리가 나쁜 게 아니라, 호기심이 많고 자극에 민감한 뇌입니다. 환경만 정리하면 약점은 크게 줄어요.',
+      en: 'Your score for tying attention to one stimulus measured below average. This is not about intelligence — it is a curious, stimulus-sensitive brain. Tidy the environment and the weakness shrinks a lot.',
+      ja: '一つの刺激に注意を長く縛る点数が平均以下と測定されました。頭が悪いのではなく、好奇心が強く刺激に敏感な脳です。環境を整えるだけで弱点は大きく減ります。',
+    },
+    slap: {
+      ko: '"산만하다"는 건 곧 "여러 곳에 안테나가 켜져 있다"는 뜻이기도 합니다. 문제는 주의력이 아니라, 방해물을 치우지 않고 의지로만 버티려는 습관이에요.',
+      en: '"Distractible" also means "antennae switched on in many directions." The problem isn\'t your attention — it\'s the habit of grinding on willpower instead of removing the distractions.',
+      ja: '「散漫」とは「あちこちにアンテナが立っている」という意味でもあります。問題は注意力ではなく、邪魔を片付けず意志だけで耐えようとする習慣です。',
+    },
+    risks: [
+      { ko: '지루하거나 자극이 약하면 금세 딴 데로 새어 놓치고 실수함', en: 'When bored or under-stimulated, you drift off, miss, and err', ja: '退屈や刺激不足だとすぐ脇に逸れ、取りこぼしミスをする' },
+      { ko: '충동적으로 먼저 반응했다가 되돌리는 일이 잦음', en: 'You often respond impulsively first, then have to walk it back', ja: '衝動的に先に反応してから取り消すことが多い' },
+    ],
+    solutions: [
+      { ko: '방해물(알림·탭·소음)을 물리적으로 제거 — 의지보다 환경이에요', en: 'Physically remove distractions (alerts, tabs, noise) — environment over willpower', ja: '邪魔（通知・タブ・騒音）を物理的に除去—意志より環境' },
+      { ko: '짧게 끊어 몰입(25분)하고 자주 쉬어 흥미를 리셋하세요', en: 'Focus in short blocks (25 min) and rest often to reset interest', ja: '短く区切って没入（25分）し、頻繁に休んで興味をリセット' },
+    ],
+    strengths: [
+      { ko: '여러 곳을 동시에 살피는 넓은 주의 — 위기·변화 감지에 강함', en: 'Wide attention that scans many places at once — great at sensing change and danger', ja: '複数を同時に見渡す広い注意—危機・変化の察知に強い' },
+      { ko: '호기심이 만든 빠른 전환과 아이디어', en: 'Fast switching and ideas, born of curiosity', ja: '好奇心が生む素早い切り替えとアイデア' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -928,6 +1031,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   bamboo: 'resilience', willow: 'resilience', glass: 'resilience',
   fox: 'dark', peacock: 'dark', shark: 'dark', dove: 'dark',
   elephant: 'memory', octopus: 'memory', goldfish: 'memory',
+  hawk: 'focus', bee: 'focus', otter: 'focus',
 }
 
 /** 이모지(글 뱃지) → 검사 매핑 */

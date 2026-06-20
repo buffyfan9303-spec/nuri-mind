@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card } from './ui'
 import Button from './Button'
 import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
-import { referralReady, redeemReferralServer } from '../lib/referral'
+import { ensureReferralCodeServer, referralCountServer, referralReady, redeemReferralServer } from '../lib/referral'
 
 // 누적 초대 보너스 — 신규 유입 LTV로 정당화(일일 상한과 별개). 서버 연동 시 자동 지급.
 // 최상위(10명+)엔 다이아(유료 재화)까지 얹어 강력한 바이럴 후크.
@@ -19,14 +19,33 @@ const MILESTONES: { n: number; p: number; d?: number }[] = [
 /** Temu식 마일스톤 친구 초대 (코드 기반 — 서버 연동 전 로컬 버전) */
 export default function Invite() {
   const t = useT()
-  const referralCode = useStore((s) => s.referralCode)
+  const referralCodeLocal = useStore((s) => s.referralCode)
   const referredBy = useStore((s) => s.referredBy)
   const invitedCount = useStore((s) => s.invitedCount)
   const redeemCode = useStore((s) => s.redeemCode)
 
+  // 표시·공유 코드: 로그인 시 서버 코드(profiles.referral_code = 인바이터 보상 매칭 기준), 아니면 로컬 폴백
+  const [referralCode, setReferralCode] = useState(referralCodeLocal)
+  const [serverCount, setServerCount] = useState<number | null>(null)
   const [copied, setCopied] = useState(false)
   const [input, setInput] = useState('')
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
+
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      const sv = await ensureReferralCodeServer()
+      if (!alive || !sv) return
+      setReferralCode(sv)
+      const n = await referralCountServer(sv)
+      if (alive && n !== null) setServerCount(n)
+    })()
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const shownCount = serverCount ?? invitedCount
 
   const copy = async () => {
     try {
@@ -106,7 +125,7 @@ export default function Invite() {
         <p className="text-[13.5px] font-extrabold text-ink-sub">🏁 {t('invite.ms')}</p>
         <div className="mt-2 grid grid-cols-4 gap-1.5">
           {MILESTONES.map((m) => {
-            const hit = invitedCount >= m.n
+            const hit = shownCount >= m.n
             return (
               <div
                 key={m.n}

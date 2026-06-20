@@ -63,6 +63,18 @@ export const TESTS: TestMeta[] = [
     precision: true,
   },
   {
+    id: 'focus',
+    emoji: '👁️',
+    count: 36,
+    minutes: 3,
+    tint: 'bg-reso-light',
+    text: 'text-reso-deep',
+    gradFrom: '#14B8A6',
+    gradTo: '#34D399',
+    btn: 'reso',
+    precision: true,
+  },
+  {
     id: 'love',
     emoji: '💘',
     count: 20,

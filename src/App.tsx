@@ -12,6 +12,7 @@ import { pageView } from './lib/analytics'
 const TestIntro = lazy(() => import('./pages/TestIntro'))
 const TestRun = lazy(() => import('./pages/TestRun'))
 const MemoryRun = lazy(() => import('./pages/MemoryRun'))
+const FocusRun = lazy(() => import('./pages/FocusRun'))
 const TestResult = lazy(() => import('./pages/TestResult'))
 const Rewards = lazy(() => import('./pages/Rewards'))
 const SurveyTake = lazy(() => import('./pages/SurveyTake'))
@@ -97,6 +98,7 @@ export default function App() {
               <Route path="/test/:id" element={<TestIntro />} />
               <Route path="/test/:id/run" element={<TestRun />} />
               <Route path="/memory/run" element={<MemoryRun />} />
+              <Route path="/focus/run" element={<FocusRun />} />
               <Route path="/result/:rid" element={<TestResult />} />
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/rewards/survey/:id" element={<SurveyTake />} />

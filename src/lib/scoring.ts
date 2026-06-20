@@ -354,6 +354,50 @@ export function scoreMemory(fwd: SpanTrial[], bwd: SpanTrial[]): TestResult {
   })
 }
 
+/* ──────────── FOCUS (정밀 집중력 — Go/No-Go 반응과제) ────────────
+ * 정밀검사 3호. SART(Sustained Attention to Response) 계열 실측 과제.
+ * 처리속도(평균 반응시간) + 집중지속(누락=Go놓침) + 충동억제(오반응=No-Go누름)를 동시 측정.
+ * 합성 = 정확도 z(가중0.6) + 속도 z(가중0.4) → FQ=100+15z. */
+export interface GoTrial {
+  go: boolean
+  responded: boolean
+  rt: number | null
+}
+const FOCUS_ACC_MU = 0.85
+const FOCUS_ACC_SIGMA = 0.1
+const FOCUS_RT_MU = 480
+const FOCUS_RT_SIGMA = 90
+
+export function scoreFocus(trials: GoTrial[]): TestResult {
+  const goTrials = trials.filter((t) => t.go)
+  const nogoTrials = trials.filter((t) => !t.go)
+  const hits = goTrials.filter((t) => t.responded)
+  const correctRej = nogoTrials.filter((t) => !t.responded)
+  const commissions = nogoTrials.length - correctRej.length
+  const accuracy = trials.length ? (hits.length + correctRej.length) / trials.length : 0
+  const rts = hits.map((t) => t.rt).filter((x): x is number => x != null)
+  const meanRT = rts.length ? rts.reduce((a, b) => a + b, 0) / rts.length : 800
+
+  const zAcc = (accuracy - FOCUS_ACC_MU) / FOCUS_ACC_SIGMA
+  const zRT = (FOCUS_RT_MU - meanRT) / FOCUS_RT_SIGMA // 빠를수록 +
+  const z = 0.6 * zAcc + 0.4 * zRT
+  const fq = Math.max(60, Math.min(145, Math.round(100 + 15 * z)))
+  const pct = Math.min(99.5, Math.max(0.5, Math.round(normalCdf(z) * 1000) / 10))
+
+  const band = fq >= 115 ? 'sharp' : fq >= 96 ? 'steady' : 'wander'
+  const persona = band === 'sharp' ? 'hawk' : band === 'steady' ? 'bee' : 'otter'
+
+  const subscales: SubscaleScore[] = [
+    { key: 'sustain', score: hits.length, max: goTrials.length, ratio: laplace(hits.length, goTrials.length) },
+    { key: 'inhibit', score: correctRej.length, max: nogoTrials.length, ratio: laplace(correctRej.length, nogoTrials.length) },
+  ]
+
+  return base('focus', hits.length + correctRej.length, pct, band, persona, subscales, {
+    fq,
+    axes: { rt: Math.round(meanRT), acc: Math.round(accuracy * 100), miss: goTrials.length - hits.length, false: commissions },
+  })
+}
+
 function base(
   testId: TestId,
   raw: number,

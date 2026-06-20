@@ -149,6 +149,25 @@ export default function TestIntro() {
               </Button>
             </div>
           </>
+        ) : id === 'focus' ? (
+          <>
+            {/* 집중력 검사란? 직관 설명 */}
+            <Card className="mt-4">
+              <h2 className="flex items-center gap-2 text-[16px] font-extrabold tracking-tight">👁️ {l({ ko: '정밀 집중력 검사가 뭔가요?', en: 'What is this focus test?', ja: '精密集中力検査とは？' })}</h2>
+              <p className="mt-2 break-keep text-[14.5px] font-medium leading-[1.8] text-ink-sub">
+                {l({
+                  ko: '설문이 아니라 직접 반응하는 인지과제예요. 초록불이 뜨면 최대한 빠르게 탭하고, 빨간불엔 누르지 않고 참아요. 빠르고 정확한 반응(처리속도)·끝까지 놓치지 않는 집중지속·충동을 참는 억제력을 한 번에 재서, 100을 기준으로 한 집중 지수(FQ)로 알려드려요. 약 3분.',
+                  en: 'Not a survey — a task where you actually react. Tap as fast as you can when the light turns green, and hold (don’t tap) on red. It measures fast accurate responses (processing speed), staying on task (sustained attention), and impulse control at once — giving a Focus Quotient (FQ) centered on 100. About 3 minutes.',
+                  ja: 'アンケートではなく、実際に反応する認知課題です。緑が出たら最速でタップ、赤は押さずに我慢。速く正確な反応（処理速度）・最後まで取りこぼさない持続的注意・衝動を抑える力を一度に測り、100を基準にした集中指数(FQ)でお伝えします。約3分。',
+                })}
+              </p>
+            </Card>
+            <div className="mt-5">
+              <Button color={tm.btn} size="lg" onClick={() => nav('/focus/run')}>
+                {t('common.start')} →
+              </Button>
+            </div>
+          </>
         ) : (
           <div className="mt-5">
             <Button color={tm.btn} size="lg" onClick={() => nav(`/test/${id}/run`)}>

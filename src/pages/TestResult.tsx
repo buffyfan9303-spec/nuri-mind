@@ -231,6 +231,11 @@ export default function TestResult() {
                 MQ {result.mq}
               </span>
             )}
+            {result.testId === 'focus' && result.fq !== undefined && (
+              <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
+                FQ {result.fq}
+              </span>
+            )}
           </div>
         </motion.div>
 
@@ -270,6 +275,23 @@ export default function TestResult() {
               <>
                 <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.mq}</div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.mqLabel')}</p>
+                <div className="mt-4">
+                  <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
+                </div>
+              </>
+            ) : result.testId === 'focus' ? (
+              <>
+                <div className="text-5xl font-extrabold tracking-tight text-reso-deep">{result.fq}</div>
+                <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.fqLabel')}</p>
+                {result.axes && (
+                  <p className="mt-1 text-[12px] font-bold text-ink-faint">
+                    {l({
+                      ko: `평균 반응 ${result.axes.rt}ms · 정확도 ${result.axes.acc}%`,
+                      en: `avg ${result.axes.rt}ms · ${result.axes.acc}% accuracy`,
+                      ja: `平均反応 ${result.axes.rt}ms・正確度 ${result.axes.acc}%`,
+                    })}
+                  </p>
+                )}
                 <div className="mt-4">
                   <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
                 </div>
