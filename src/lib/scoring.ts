@@ -398,6 +398,39 @@ export function scoreFocus(trials: GoTrial[]): TestResult {
   })
 }
 
+/* ──────────── SPEED (정밀 처리속도 — 기호-숫자 매칭 DSST) ────────────
+ * 정밀검사 4호. WAIS 기호쓰기(Digit-Symbol Coding) 계열 실측 과제.
+ * 기호↔숫자 대응표를 보고 40개를 빠르고 정확히 매칭 → 처리속도 지수 SQ.
+ * 합성 = 속도 z(가중0.7, 개당 반응시간) + 정확도 z(가중0.3) → SQ=100+15z. */
+const SPEED_MS_MU = 1400
+const SPEED_MS_SIGMA = 400
+const SPEED_ACC_MU = 0.92
+const SPEED_ACC_SIGMA = 0.08
+
+export function scoreSpeed(correct: number, total: number, totalMs: number): TestResult {
+  const perItem = total > 0 ? totalMs / total : 9999
+  const accuracy = total > 0 ? correct / total : 0
+  const zSpeed = (SPEED_MS_MU - perItem) / SPEED_MS_SIGMA // 개당 빠를수록 +
+  const zAcc = (accuracy - SPEED_ACC_MU) / SPEED_ACC_SIGMA
+  const z = 0.7 * zSpeed + 0.3 * zAcc
+  const sq = Math.max(60, Math.min(145, Math.round(100 + 15 * z)))
+  const pct = Math.min(99.5, Math.max(0.5, Math.round(normalCdf(z) * 1000) / 10))
+
+  const band = sq >= 115 ? 'fast' : sq >= 96 ? 'brisk' : 'easy'
+  const persona = band === 'fast' ? 'cheetah' : band === 'brisk' ? 'rabbit' : 'tortoise'
+
+  const tempoRatio = Math.max(0.02, Math.min(0.99, (2200 - perItem) / 1700))
+  const subscales: SubscaleScore[] = [
+    { key: 'tempo', score: Math.round(tempoRatio * 100), max: 100, ratio: tempoRatio },
+    { key: 'matchacc', score: correct, max: total, ratio: laplace(correct, total) },
+  ]
+
+  return base('speed', correct, pct, band, persona, subscales, {
+    sq,
+    axes: { ms: Math.round(perItem), acc: Math.round(accuracy * 100), count: correct },
+  })
+}
+
 function base(
   testId: TestId,
   raw: number,

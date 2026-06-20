@@ -168,6 +168,25 @@ export default function TestIntro() {
               </Button>
             </div>
           </>
+        ) : id === 'speed' ? (
+          <>
+            {/* 처리속도 검사란? 직관 설명 */}
+            <Card className="mt-4">
+              <h2 className="flex items-center gap-2 text-[16px] font-extrabold tracking-tight">⚡ {l({ ko: '정밀 처리속도 검사가 뭔가요?', en: 'What is this speed test?', ja: '精密処理速度検査とは？' })}</h2>
+              <p className="mt-2 break-keep text-[14.5px] font-medium leading-[1.8] text-ink-sub">
+                {l({
+                  ko: '설문이 아니라 직접 손이 반응하는 인지과제예요. 위에 뜬 기호↔숫자 대응표를 보고, 나오는 기호에 맞는 숫자를 최대한 빠르고 정확하게 눌러 40개를 풀어요. 웩슬러 지능검사의 기호쓰기 방식으로 정보 처리속도를 재서, 100을 기준으로 한 처리속도 지수(SQ)로 알려드려요. 약 1~2분.',
+                  en: 'Not a survey — a task where your hands react. Read the symbol↔digit key shown above and press the matching digit for each symbol as fast and accurately as you can, over 40 items. Modeled on the WAIS Digit-Symbol Coding, it measures processing speed as a Speed Quotient (SQ) centered on 100. About 1–2 minutes.',
+                  ja: 'アンケートではなく、手が反応する認知課題です。上の記号↔数字対応表を見て、出てくる記号に合う数字を最速・正確に押し、40問を解きます。ウェクスラー知能検査の符号方式で処理速度を測り、100を基準にした処理速度指数(SQ)でお伝えします。約1〜2分。',
+                })}
+              </p>
+            </Card>
+            <div className="mt-5">
+              <Button color={tm.btn} size="lg" onClick={() => nav('/speed/run')}>
+                {t('common.start')} →
+              </Button>
+            </div>
+          </>
         ) : (
           <div className="mt-5">
             <Button color={tm.btn} size="lg" onClick={() => nav(`/test/${id}/run`)}>

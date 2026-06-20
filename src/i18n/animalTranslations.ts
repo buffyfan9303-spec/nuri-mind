@@ -1018,6 +1018,109 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '호기심이 만든 빠른 전환과 아이디어', en: 'Fast switching and ideas, born of curiosity', ja: '好奇心が生む素早い切り替えとアイデア' },
     ],
   },
+
+  /* ── 정밀 처리속도 검사 페르소나 ── */
+  cheetah: {
+    emoji: '🐆',
+    grad: ['#8B5CF6', '#C4B5FD'],
+    name: { ko: '치타', en: 'Cheetah', ja: 'チーター' },
+    title: { ko: '초고속 처리형', en: 'The Lightning Processor', ja: '超高速処理型' },
+    tagline: {
+      ko: '눈으로 보는 즉시 손이 먼저 움직이는 뇌',
+      en: 'A brain whose hands move before the eyes finish',
+      ja: '見た瞬間に手が先に動く脳',
+    },
+    desc: {
+      ko: '정보를 받아 처리해 반응하는 속도가 최상위권입니다. 단순·반복 과제를 빠르고 정확하게 쳐내고, 마감과 실전에서 강해요. 다만 너무 빨라서 깊이 들여다봐야 할 일도 후딱 넘길 위험이 있습니다.',
+      en: 'Your speed from input to processing to response sits at the top. You blow through simple, repetitive tasks fast and accurately, and you shine under deadlines. Just beware: so fast that you may skim past things that needed a deeper look.',
+      ja: '情報を受け取り処理して反応する速度が最上位圏です。単純・反復課題を速く正確に片付け、締切や実戦に強い。ただ速すぎて、深く見るべきこともさっと流す危険があります。',
+    },
+    slap: {
+      ko: '빠른 게 늘 옳은 건 아닙니다. 속도가 무기인 사람은, 멈춰서 곱씹어야 할 순간조차 빠르게 지나쳐 같은 실수를 빠르게 반복합니다.',
+      en: 'Fast isn\'t always right. When speed is your weapon, you blow past even the moments that needed a pause — and repeat the same mistake, fast.',
+      ja: '速いことが常に正しいわけではありません。速度が武器の人は、立ち止まって考えるべき瞬間さえ速く通り過ぎ、同じミスを速く繰り返します。',
+    },
+    risks: [
+      { ko: '너무 빨리 처리하려다 꼼꼼함이 필요한 일에서 실수', en: 'Rushing makes you slip on tasks that needed care', ja: '速く処理しようとして、丁寧さが要る仕事でミス' },
+      { ko: '속도가 안 나는 깊은 사고 과제에선 답답해하며 대충 넘김', en: 'On slow, deep-thinking tasks you get impatient and cut corners', ja: '速度が出ない深い思考課題では、もどかしくて雑に流す' },
+    ],
+    solutions: [
+      { ko: '중요한 결정엔 일부러 "한 박자 늦추기" 규칙을 두세요', en: 'For big decisions, set a deliberate "wait one beat" rule', ja: '重要な決定には、わざと「一拍置く」ルールを設ける' },
+      { ko: '속도 자랑보다 정확도 더블체크 한 번이 신뢰를 만듭니다', en: 'One accuracy double-check beats showing off speed — it builds trust', ja: '速度自慢より、正確度の再確認一回が信頼を作る' },
+    ],
+    strengths: [
+      { ko: '정보 입력→반응까지의 압도적인 처리속도', en: 'Overwhelming processing speed from input to response', ja: '情報入力→反応までの圧倒的な処理速度' },
+      { ko: '반복·실시간 과제에서의 정확하고 빠른 손', en: 'Accurate, fast hands on repetitive, real-time tasks', ja: '反復・リアルタイム課題での正確で速い手' },
+    ],
+  },
+
+  rabbit: {
+    emoji: '🐇',
+    grad: ['#A78BFA', '#DDD6FE'],
+    name: { ko: '토끼', en: 'Rabbit', ja: 'ウサギ' },
+    title: { ko: '경쾌한 속도형', en: 'The Nimble Mover', ja: '軽快なスピード型' },
+    tagline: {
+      ko: '필요할 땐 빠르게, 무리 없이 경쾌하게',
+      en: 'Quick when needed, light without strain',
+      ja: '必要な時は素早く、無理なく軽快に',
+    },
+    desc: {
+      ko: '평균에서 평균 상단의 경쾌한 처리속도입니다. 대부분의 일상·업무 과제를 무리 없는 속도로 처리하고, 컨디션이 좋으면 더 빨라져요. 피곤하면 속도가 떨어질 수 있습니다.',
+      en: 'Your processing speed runs from average to upper-average and stays nimble. You handle most daily and work tasks at a comfortable pace, and you speed up when your condition is good. Fatigue can slow you down.',
+      ja: '平均から平均上位の軽快な処理速度です。日常・仕事の課題を無理のない速度で処理し、コンディションが良いとさらに速くなる。疲れると速度が落ちることも。',
+    },
+    slap: {
+      ko: '"적당히 빠른" 게 가장 오래갑니다. 다만 늘 적당히에 머물면, 진짜 속도가 필요한 순간 한 끗이 부족할 수 있어요. 가끔은 한계 속도도 시험해 보세요.',
+      en: '"Comfortably quick" lasts the longest. But staying always at comfortable can leave you a hair short when real speed is needed. Test your top speed now and then.',
+      ja: '「ほどよく速い」が一番長続きします。ただ常にほどほどに留まると、本当に速さが要る瞬間に一歩足りないことも。たまには限界速度も試して。',
+    },
+    risks: [
+      { ko: '피곤하거나 지루하면 처리속도가 눈에 띄게 떨어짐', en: 'When tired or bored, your speed drops noticeably', ja: '疲れや退屈で処理速度が目に見えて落ちる' },
+      { ko: '익숙함에 안주해 더 빠른 방법을 안 찾기도 함', en: 'Settling into the familiar, you skip finding faster ways', ja: '慣れに安住し、より速い方法を探さないことも' },
+    ],
+    solutions: [
+      { ko: '타이머로 "내 최고기록 깨기" 게임 — 속도 상한을 끌어올리세요', en: 'Play "beat my record" with a timer — raise your speed ceiling', ja: 'タイマーで「自己ベスト更新」ゲーム—速度の上限を引き上げる' },
+      { ko: '반복 작업은 단축키·템플릿으로 손을 줄이세요', en: 'Cut keystrokes on repetitive work with shortcuts and templates', ja: '反復作業はショートカット・テンプレで手数を減らす' },
+    ],
+    strengths: [
+      { ko: '무리 없이 꾸준한 경쾌한 속도', en: 'Nimble, steady speed without strain', ja: '無理なく着実な軽快さ' },
+      { ko: '상황에 맞춰 속도를 조절하는 균형감', en: 'Balanced sense for adjusting speed to the situation', ja: '状況に合わせて速度を調整するバランス感' },
+    ],
+  },
+
+  tortoise: {
+    emoji: '🐢',
+    grad: ['#C4B5FD', '#EDE9FE'],
+    name: { ko: '거북', en: 'Tortoise', ja: 'カメ' },
+    title: { ko: '신중한 마이페이스형', en: 'The Careful Pacer', ja: '慎重マイペース型' },
+    tagline: {
+      ko: '빠르진 않아도 끝내 정확히 도착하는 뇌',
+      en: 'Not fast, but arrives accurate in the end',
+      ja: '速くはないが最後は正確に着く脳',
+    },
+    desc: {
+      ko: '빠르게 쳐내는 처리속도 점수는 평균 아래로 측정됐어요. 머리가 느린 게 아니라, 하나하나 확인하며 가는 신중한 스타일입니다. 속도보다 정확도가 중요한 일에서 강점이 됩니다.',
+      en: 'Your raw processing-speed score measured below average. This isn\'t slow thinking — it\'s a careful style that checks each step. It becomes a strength where accuracy matters more than speed.',
+      ja: '速く片付ける処理速度の点数は平均以下と測定されました。頭が遅いのではなく、一つ一つ確認して進む慎重なスタイルです。速度より正確さが大事な仕事で強みになります。',
+    },
+    slap: {
+      ko: '느린 게 문제가 아니라, 느린 걸 부끄러워하다 서두르며 실수하는 게 문제입니다. 당신의 무기는 속도가 아니라 정확도예요. 잘하는 걸로 승부하세요.',
+      en: 'Being slow isn\'t the problem — rushing out of shame and making errors is. Your weapon is accuracy, not speed. Compete on what you\'re good at.',
+      ja: '遅いことが問題ではなく、遅さを恥じて焦りミスするのが問題です。あなたの武器は速度ではなく正確さ。得意で勝負しましょう。',
+    },
+    risks: [
+      { ko: '시간 압박·실시간 과제에서 밀리거나 스트레스를 크게 받음', en: 'You fall behind or stress hard under time pressure and real-time tasks', ja: '時間的プレッシャー・リアルタイム課題で遅れたり強くストレスを受ける' },
+      { ko: '빨라야 한다는 압박에 서두르다 오히려 실수함', en: 'Pressure to be fast makes you rush and err instead', ja: '速くという圧力で焦り、かえってミスする' },
+    ],
+    solutions: [
+      { ko: '속도가 필요한 일은 미리 충분한 시간을 확보해 압박을 없애세요', en: 'For speed-critical work, secure ample time in advance to remove the pressure', ja: '速さが要る仕事は前もって十分な時間を確保し、圧力をなくす' },
+      { ko: '단순반복은 도구·자동화로 손을 덜고 본인은 검토에 집중하세요', en: 'Offload repetitive work to tools/automation and focus your effort on review', ja: '単純反復は道具・自動化に任せ、自分は確認に集中' },
+    ],
+    strengths: [
+      { ko: '서두르지 않아 만드는 높은 정확도와 꼼꼼함', en: 'High accuracy and thoroughness born of not rushing', ja: '焦らないことで生む高い正確さと丁寧さ' },
+      { ko: '끝까지 확인하는 신중함 — 큰 실수를 막음', en: 'Careful checking to the end — it prevents big mistakes', ja: '最後まで確認する慎重さ—大きなミスを防ぐ' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -1032,6 +1135,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   fox: 'dark', peacock: 'dark', shark: 'dark', dove: 'dark',
   elephant: 'memory', octopus: 'memory', goldfish: 'memory',
   hawk: 'focus', bee: 'focus', otter: 'focus',
+  cheetah: 'speed', rabbit: 'speed', tortoise: 'speed',
 }
 
 /** 이모지(글 뱃지) → 검사 매핑 */
