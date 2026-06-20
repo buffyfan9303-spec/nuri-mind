@@ -391,23 +391,38 @@ export async function makeCogCard(spec: {
   return new Promise((resolve, reject) => c.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas toBlob 실패'))), 'image/png'))
 }
 
-/** 공유: Web Share(파일) → 실패 시 PNG 다운로드 */
-export async function shareCardBlob(blob: Blob, text: string, filename = 'nuri-mind-result.png'): Promise<'shared' | 'downloaded'> {
+/** 공유: Web Share(파일) → 실패 시 PNG 다운로드.
+ *  반환: 'shared'(네이티브 공유 완료) · 'cancelled'(사용자가 공유 취소) · 'downloaded'(다운로드 폴백) */
+export async function shareCardBlob(blob: Blob, text: string, filename = 'nuri-mind-result.png'): Promise<'shared' | 'downloaded' | 'cancelled'> {
   const file = new File([blob], filename, { type: 'image/png' })
   const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean }
-  if (nav.share && nav.canShare?.({ files: [file] })) {
+  // Web Share(파일) 가능 시 네이티브 공유 시트(카톡 등 선택). canShare 미지원 브라우저는 share만 있으면 시도.
+  if (typeof nav.share === 'function' && (typeof nav.canShare !== 'function' || nav.canShare({ files: [file] }))) {
     try {
       await nav.share({ files: [file], text })
       return 'shared'
-    } catch {
-      /* 취소 → 다운로드 폴백 */
+    } catch (e) {
+      // 사용자가 공유 시트를 '취소'(AbortError) → 원치 않는 다운로드를 만들지 않음
+      if (e instanceof DOMException && (e.name === 'AbortError' || e.name === 'NotAllowedError')) {
+        return e.name === 'AbortError' ? 'cancelled' : await downloadBlob(blob, filename)
+      }
+      // 그 외(미지원 등) → 아래 다운로드 폴백
     }
   }
+  return downloadBlob(blob, filename)
+}
+
+/** PNG 다운로드 — ⚠️ 앵커는 반드시 DOM에 붙여야 모바일/인앱 브라우저(카톡·삼성인터넷 등)에서 click()이 동작한다. */
+async function downloadBlob(blob: Blob, filename: string): Promise<'downloaded'> {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
   a.download = filename
+  a.rel = 'noopener'
+  a.style.display = 'none'
+  document.body.appendChild(a)
   a.click()
+  a.remove()
   setTimeout(() => URL.revokeObjectURL(url), 4000)
   return 'downloaded'
 }
