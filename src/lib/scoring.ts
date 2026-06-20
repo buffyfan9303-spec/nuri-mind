@@ -431,6 +431,39 @@ export function scoreSpeed(correct: number, total: number, totalMs: number): Tes
   })
 }
 
+/* ──────────── SPATIAL (정밀 공간지각 — 심적 회전) ────────────
+ * 정밀검사 5호. Shepard–Metzler/letter-rotation 계열 실측 과제.
+ * 회전·반사된 글자를 머릿속에서 똑바로 돌려 정상/거울을 판별 → 공간 지수 XQ.
+ * 합성 = 정확도 z(가중0.6) + 속도 z(가중0.4) → XQ=100+15z. */
+const SPATIAL_ACC_MU = 0.82
+const SPATIAL_ACC_SIGMA = 0.13
+const SPATIAL_RT_MU = 2500
+const SPATIAL_RT_SIGMA = 900
+
+export function scoreSpatial(correct: number, total: number, totalMs: number): TestResult {
+  const accuracy = total > 0 ? correct / total : 0
+  const meanRT = total > 0 ? totalMs / total : 9999
+  const zAcc = (accuracy - SPATIAL_ACC_MU) / SPATIAL_ACC_SIGMA
+  const zRT = (SPATIAL_RT_MU - meanRT) / SPATIAL_RT_SIGMA // 빠를수록 +
+  const z = 0.6 * zAcc + 0.4 * zRT
+  const xq = Math.max(60, Math.min(145, Math.round(100 + 15 * z)))
+  const pct = Math.min(99.5, Math.max(0.5, Math.round(normalCdf(z) * 1000) / 10))
+
+  const band = xq >= 115 ? 'high' : xq >= 96 ? 'mid' : 'low'
+  const persona = band === 'high' ? 'bat' : band === 'mid' ? 'pigeon' : 'snail'
+
+  const rotRatio = Math.max(0.02, Math.min(0.99, (4500 - meanRT) / 3800))
+  const subscales: SubscaleScore[] = [
+    { key: 'spacc', score: correct, max: total, ratio: laplace(correct, total) },
+    { key: 'rotspeed', score: Math.round(rotRatio * 100), max: 100, ratio: rotRatio },
+  ]
+
+  return base('spatial', correct, pct, band, persona, subscales, {
+    xq,
+    axes: { rt: Math.round(meanRT), acc: Math.round(accuracy * 100) },
+  })
+}
+
 function base(
   testId: TestId,
   raw: number,

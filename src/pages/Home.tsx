@@ -257,6 +257,18 @@ export default function Home() {
           ))}
         </div>
 
+        {/* 종합 인지 프로필 (정밀검사 5종 레이더) */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, type: 'spring', stiffness: 240, damping: 24 }}>
+          <Card onClick={() => nav('/cog')} className="mt-2.5 flex items-center gap-3 !bg-gradient-to-r from-[#5B6CF0] to-[#3B82F6] !p-3.5">
+            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.6, repeatDelay: 2 }} className="text-[24px]">🧩</motion.span>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-[14.5px] font-extrabold leading-tight text-white">{l({ ko: '종합 인지 프로필 보기', en: 'View cognitive profile', ja: '総合認知プロフィール' })}</h3>
+              <p className="mt-0.5 truncate text-[11.5px] font-bold text-white/85">{l({ ko: 'IQ·기억·집중·처리속도·공간 레이더', en: 'IQ·memory·focus·speed·spatial radar', ja: 'IQ·記憶·集中·速度·空間レーダー' })}</p>
+            </div>
+            <span className="text-white/80">›</span>
+          </Card>
+        </motion.div>
+
         {/* ── 다면 기질 검사 (가로형 컴팩트 리스트) ── */}
         <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('home.testsHeader')}</h2>
         <div className="mt-3 space-y-2.5">

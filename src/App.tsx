@@ -14,6 +14,8 @@ const TestRun = lazy(() => import('./pages/TestRun'))
 const MemoryRun = lazy(() => import('./pages/MemoryRun'))
 const FocusRun = lazy(() => import('./pages/FocusRun'))
 const SpeedRun = lazy(() => import('./pages/SpeedRun'))
+const SpatialRun = lazy(() => import('./pages/SpatialRun'))
+const CogProfile = lazy(() => import('./pages/CogProfile'))
 const TestResult = lazy(() => import('./pages/TestResult'))
 const Rewards = lazy(() => import('./pages/Rewards'))
 const SurveyTake = lazy(() => import('./pages/SurveyTake'))
@@ -101,6 +103,8 @@ export default function App() {
               <Route path="/memory/run" element={<MemoryRun />} />
               <Route path="/focus/run" element={<FocusRun />} />
               <Route path="/speed/run" element={<SpeedRun />} />
+              <Route path="/spatial/run" element={<SpatialRun />} />
+              <Route path="/cog" element={<CogProfile />} />
               <Route path="/result/:rid" element={<TestResult />} />
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/rewards/survey/:id" element={<SurveyTake />} />

@@ -1121,6 +1121,109 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '끝까지 확인하는 신중함 — 큰 실수를 막음', en: 'Careful checking to the end — it prevents big mistakes', ja: '最後まで確認する慎重さ—大きなミスを防ぐ' },
     ],
   },
+
+  /* ── 정밀 공간지각 검사 페르소나 ── */
+  bat: {
+    emoji: '🦇',
+    grad: ['#3B82F6', '#60A5FA'],
+    name: { ko: '박쥐', en: 'Bat', ja: 'コウモリ' },
+    title: { ko: '3D 공간 마스터', en: 'The 3D Navigator', ja: '3D空間マスター' },
+    tagline: {
+      ko: '머릿속에서 도형을 자유자재로 돌려보는 뇌',
+      en: 'A brain that spins shapes freely in its head',
+      ja: '頭の中で図形を自在に回す脳',
+    },
+    desc: {
+      ko: '머릿속에서 형태를 회전·반전시켜 비교하는 능력이 최상위권입니다. 지도·도면·조립·길찾기에 강하고, 보이지 않는 구조를 입체로 그려냅니다. 다만 너무 머리로만 그리다 직접 해보는 검증을 건너뛸 수 있어요.',
+      en: 'Your ability to rotate and flip forms in your head sits at the top. You excel at maps, blueprints, assembly, and wayfinding, picturing unseen structure in 3D. Just beware: drawing it all mentally, you may skip verifying it for real.',
+      ja: '頭の中で形を回転・反転して比較する力が最上位圏です。地図・図面・組立・道案内に強く、見えない構造を立体で描く。ただ頭だけで描き、実際に試す検証を飛ばすことも。',
+    },
+    slap: {
+      ko: '머릿속 시뮬레이션이 정교할수록, 현실에서 한 번 만져보는 검증을 게을리하기 쉽습니다. 상상의 정밀함은 실측 앞에서만 증명됩니다.',
+      en: 'The finer your mental simulation, the easier it is to skip touching reality once to check. Imagined precision only proves itself against real measurement.',
+      ja: '頭の中のシミュレーションが精巧なほど、現実で一度触れる検証を怠りがち。想像の精密さは実測の前でのみ証明されます。',
+    },
+    risks: [
+      { ko: '머릿속 그림을 과신해 실제 검증·실측을 건너뜀', en: 'Over-trusting the mental picture, you skip real checks and measurements', ja: '頭の中の絵を過信し、実検証・実測を飛ばす' },
+      { ko: '공간 감각이 약한 사람에게 설명할 때 답답해함', en: 'You get impatient explaining to those weaker in spatial sense', ja: '空間感覚が弱い人への説明でもどかしくなる' },
+    ],
+    solutions: [
+      { ko: '중요한 구조는 머릿속 그림을 한 번은 실물·도면으로 대조하세요', en: 'For key structures, check your mental image against the real thing or a drawing once', ja: '重要な構造は、頭の絵を一度は実物・図面と照合' },
+      { ko: '말 대신 그림·제스처로 설명하면 전달이 훨씬 쉬워져요', en: 'Explain with sketches and gestures instead of words — it lands far better', ja: '言葉より絵・ジェスチャーで説明すると伝わりやすい' },
+    ],
+    strengths: [
+      { ko: '형태를 자유롭게 회전·반전해 비교하는 심적 회전력', en: 'Mental rotation that freely spins and flips forms to compare', ja: '形を自由に回転・反転して比較する心的回転力' },
+      { ko: '지도·도면·조립·길찾기에서 빛나는 입체 감각', en: 'A 3D sense that shines in maps, blueprints, assembly, and wayfinding', ja: '地図・図面・組立・道案内で輝く立体感覚' },
+    ],
+  },
+
+  pigeon: {
+    emoji: '🐦',
+    grad: ['#60A5FA', '#BFDBFE'],
+    name: { ko: '비둘기', en: 'Pigeon', ja: 'ハト' },
+    title: { ko: '길눈 밝은형', en: 'The Homing Navigator', ja: '方向感覚型' },
+    tagline: {
+      ko: '한 번 간 길은 잘 잊지 않는 공간 감각',
+      en: 'A spatial sense that rarely forgets a path once traveled',
+      ja: '一度通った道は忘れにくい空間感覚',
+    },
+    desc: {
+      ko: '평균에서 평균 상단의 안정적인 공간 지각입니다. 일상의 길찾기·배치·정리엔 충분하고, 복잡한 3D 회전이 한꺼번에 몰릴 때만 살짝 헷갈려요. 천천히 보면 대부분 정확히 풀어냅니다.',
+      en: 'Your spatial perception runs from average to upper-average and stays steady. It is plenty for everyday wayfinding, layout, and tidying, and only gets confused when complex 3D rotations pile up at once. Given time, you usually solve them right.',
+      ja: '平均から平均上位の安定した空間知覚です。日常の道案内・配置・整理には十分で、複雑な3D回転が一度に重なる時だけ少し混乱。ゆっくり見ればほぼ正確に解けます。',
+    },
+    slap: {
+      ko: '"천천히 보면 다 맞춘다"는 말은, 시간이 없을 때 틀린다는 뜻이기도 합니다. 속도가 필요한 공간 과제는 미리 충분히 들여다보는 습관이 약점을 메웁니다.',
+      en: '"I get it right when I go slow" also means you slip when time is short. For speed-critical spatial tasks, looking long enough in advance covers the gap.',
+      ja: '「ゆっくり見れば全部当たる」は、時間がない時に間違うという意味でもあります。速さが要る空間課題は、前もって十分見る習慣が弱点を埋めます。',
+    },
+    risks: [
+      { ko: '복잡한 회전·반전이 겹치면 시간 압박에서 헷갈림', en: 'Stacked complex rotations confuse you under time pressure', ja: '複雑な回転・反転が重なると、時間的圧力で混乱' },
+      { ko: '대충 훑고 넘기면 좌우·앞뒤를 바꿔 인식하기도', en: 'Skimming too fast, you may flip left-right or front-back', ja: 'ざっと流すと左右・前後を取り違えることも' },
+    ],
+    solutions: [
+      { ko: '공간 과제는 기준점(랜드마크)을 하나 정해두고 비교하세요', en: 'Fix one reference landmark and compare against it on spatial tasks', ja: '空間課題は基準点（ランドマーク）を一つ決めて比較' },
+      { ko: '헷갈릴 땐 실제로 종이를 돌려보며 손으로 확인하기', en: 'When unsure, actually rotate the paper and check by hand', ja: '迷ったら実際に紙を回し、手で確認' },
+    ],
+    strengths: [
+      { ko: '일상 길찾기·배치·정리에 충분한 안정적 공간 감각', en: 'Steady spatial sense, plenty for everyday wayfinding and layout', ja: '日常の道案内・配置・整理に十分な安定した空間感覚' },
+      { ko: '시간만 주면 정확히 풀어내는 끈기', en: 'Persistence that solves it accurately, given the time', ja: '時間さえあれば正確に解く粘り強さ' },
+    ],
+  },
+
+  snail: {
+    emoji: '🐌',
+    grad: ['#93C5FD', '#DBEAFE'],
+    name: { ko: '달팽이', en: 'Snail', ja: 'カタツムリ' },
+    title: { ko: '차근차근 더듬이형', en: 'The Step-by-Step Feeler', ja: 'じっくり触覚型' },
+    tagline: {
+      ko: '머릿속 회전보다 직접 해보며 익히는 뇌',
+      en: 'A brain that learns by doing, more than by spinning in its head',
+      ja: '頭で回すより、実際にやって覚える脳',
+    },
+    desc: {
+      ko: '머릿속에서 형태를 빠르게 회전시켜 비교하는 점수는 평균 아래로 측정됐어요. 머리가 나쁜 게 아니라, 추상적 회전보다 직접 만지고 움직여 보며 익히는 게 잘 맞는 스타일입니다. 도구를 쓰면 약점은 거의 사라져요.',
+      en: 'Your score for quickly rotating forms in your head measured below average. This isn\'t low intelligence — it\'s a style that learns by touching and moving things rather than abstract rotation. With tools, the weakness nearly vanishes.',
+      ja: '頭の中で形を素早く回転して比較する点数は平均以下と測定されました。頭が悪いのではなく、抽象的な回転より実際に触って動かして覚えるのが合うスタイルです。道具を使えば弱点はほぼ消えます。',
+    },
+    slap: {
+      ko: '"공간 감각이 없다"는 게 아니라, "머릿속으로만 풀려고 한다"는 게 문제입니다. 종이를 돌리고, 모형을 만지세요. 당신의 손은 머리보다 똑똑합니다.',
+      en: 'It\'s not that you "have no spatial sense" — it\'s that you try to solve it only in your head. Rotate the paper, touch the model. Your hands are smarter than your mind\'s eye.',
+      ja: '「空間感覚がない」のではなく、「頭だけで解こうとする」のが問題です。紙を回し、模型に触れて。あなたの手は心の目より賢い。',
+    },
+    risks: [
+      { ko: '지도·도면을 머릿속으로만 돌리려다 방향을 자주 헷갈림', en: 'Rotating maps and plans only in your head, you often confuse directions', ja: '地図・図面を頭だけで回そうとして、方向をよく間違える' },
+      { ko: '시간 압박이 큰 공간 과제에서 크게 스트레스를 받음', en: 'Time-pressured spatial tasks stress you a lot', ja: '時間的圧力の大きい空間課題で強くストレスを受ける' },
+    ],
+    solutions: [
+      { ko: '머리로 돌리지 말고 종이·휴대폰을 실제로 돌려 맞춰보세요', en: 'Don\'t rotate in your head — physically turn the paper or phone to match', ja: '頭で回さず、紙・スマホを実際に回して合わせる' },
+      { ko: '길찾기는 지도 앱의 "내 방향" 표시·랜드마크에 의존하세요', en: 'For wayfinding, lean on the map app\'s heading arrow and landmarks', ja: '道案内は地図アプリの「自分の向き」表示・ランドマークに頼る' },
+    ],
+    strengths: [
+      { ko: '직접 만지고 움직이며 익히는 체험형 학습력', en: 'Hands-on learning that masters things by touching and moving', ja: '実際に触れて動かして覚える体験型の学習力' },
+      { ko: '서두르지 않고 하나씩 확인하는 꼼꼼함', en: 'Thoroughness that checks one thing at a time without rushing', ja: '焦らず一つずつ確認する丁寧さ' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -1136,6 +1239,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   elephant: 'memory', octopus: 'memory', goldfish: 'memory',
   hawk: 'focus', bee: 'focus', otter: 'focus',
   cheetah: 'speed', rabbit: 'speed', tortoise: 'speed',
+  bat: 'spatial', pigeon: 'spatial', snail: 'spatial',
 }
 
 /** 이모지(글 뱃지) → 검사 매핑 */

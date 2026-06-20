@@ -187,6 +187,25 @@ export default function TestIntro() {
               </Button>
             </div>
           </>
+        ) : id === 'spatial' ? (
+          <>
+            {/* 공간지각 검사란? 직관 설명 */}
+            <Card className="mt-4">
+              <h2 className="flex items-center gap-2 text-[16px] font-extrabold tracking-tight">🧭 {l({ ko: '정밀 공간지각 검사가 뭔가요?', en: 'What is this spatial test?', ja: '精密空間知覚検査とは？' })}</h2>
+              <p className="mt-2 break-keep text-[14.5px] font-medium leading-[1.8] text-ink-sub">
+                {l({
+                  ko: '설문이 아니라 머릿속에서 도형을 돌려보는 인지과제예요. 회전하거나 뒤집힌 글자가 나오면, 머릿속에서 똑바로 세워 "정상"인지 좌우가 뒤집힌 "거울상"인지 20문항을 판별해요. Shepard의 심적 회전 방식으로 공간 지각력을 재서, 100을 기준으로 한 공간 지수(XQ)로 알려드려요. 약 3분.',
+                  en: 'Not a survey — a task where you rotate shapes in your head. When a rotated or flipped letter appears, mentally upright it and judge across 20 items whether it is "normal" or a left-right "mirror image". Using Shepard\'s mental rotation, it measures spatial ability as a Spatial Quotient (XQ) centered on 100. About 3 minutes.',
+                  ja: 'アンケートではなく、頭の中で図形を回す認知課題です。回転・反転した文字が出たら、頭の中でまっすぐ起こして「正常」か左右反転の「鏡像」かを20問判別します。Shepardの心的回転方式で空間能力を測り、100を基準にした空間指数(XQ)でお伝えします。約3分。',
+                })}
+              </p>
+            </Card>
+            <div className="mt-5">
+              <Button color={tm.btn} size="lg" onClick={() => nav('/spatial/run')}>
+                {t('common.start')} →
+              </Button>
+            </div>
+          </>
         ) : (
           <div className="mt-5">
             <Button color={tm.btn} size="lg" onClick={() => nav(`/test/${id}/run`)}>

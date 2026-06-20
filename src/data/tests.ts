@@ -87,6 +87,18 @@ export const TESTS: TestMeta[] = [
     precision: true,
   },
   {
+    id: 'spatial',
+    emoji: '🧭',
+    count: 20,
+    minutes: 3,
+    tint: 'bg-iq-light',
+    text: 'text-iq-deep',
+    gradFrom: '#3B82F6',
+    gradTo: '#60A5FA',
+    btn: 'iq',
+    precision: true,
+  },
+  {
     id: 'love',
     emoji: '💘',
     count: 20,

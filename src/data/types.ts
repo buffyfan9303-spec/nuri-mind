@@ -1,7 +1,7 @@
 export type Lang = 'ko' | 'en' | 'ja'
 export type L = Record<Lang, string>
 
-export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark' | 'memory' | 'focus' | 'speed'
+export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark' | 'memory' | 'focus' | 'speed' | 'spatial'
 
 /** 프로필 아바타 — 업로드 사진 또는 동물 페르소나 */
 export type Avatar =
@@ -116,6 +116,8 @@ export interface TestResult {
   fq?: number
   /** 처리속도 지수 (정밀 처리속도 검사 — 기호-숫자 매칭 100±15 척도) */
   sq?: number
+  /** 공간 지수 (정밀 공간지각 검사 — 심적 회전 100±15 척도) */
+  xq?: number
   screener?: number
   maskFlag?: boolean
   axes?: Record<string, number>

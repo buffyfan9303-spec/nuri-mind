@@ -165,6 +165,16 @@ export default function TestResult() {
         testName: t(`test.${result.testId}.name`),
         grad,
         iq: result.iq,
+        scoreChip:
+          result.mq != null
+            ? `MQ ${result.mq}`
+            : result.fq != null
+              ? `FQ ${result.fq}`
+              : result.sq != null
+                ? `SQ ${result.sq}`
+                : result.xq != null
+                  ? `XQ ${result.xq}`
+                  : undefined,
         appName: t('app.name'),
       })
       const how = await shareCardBlob(
@@ -241,6 +251,11 @@ export default function TestResult() {
                 SQ {result.sq}
               </span>
             )}
+            {result.testId === 'spatial' && result.xq !== undefined && (
+              <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
+                XQ {result.xq}
+              </span>
+            )}
           </div>
         </motion.div>
 
@@ -294,6 +309,23 @@ export default function TestResult() {
                       ko: `평균 반응 ${result.axes.rt}ms · 정확도 ${result.axes.acc}%`,
                       en: `avg ${result.axes.rt}ms · ${result.axes.acc}% accuracy`,
                       ja: `平均反応 ${result.axes.rt}ms・正確度 ${result.axes.acc}%`,
+                    })}
+                  </p>
+                )}
+                <div className="mt-4">
+                  <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
+                </div>
+              </>
+            ) : result.testId === 'spatial' ? (
+              <>
+                <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.xq}</div>
+                <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.xqLabel')}</p>
+                {result.axes && (
+                  <p className="mt-1 text-[12px] font-bold text-ink-faint">
+                    {l({
+                      ko: `평균 ${(result.axes.rt / 1000).toFixed(1)}초 · 정확도 ${result.axes.acc}%`,
+                      en: `avg ${(result.axes.rt / 1000).toFixed(1)}s · ${result.axes.acc}% accuracy`,
+                      ja: `平均 ${(result.axes.rt / 1000).toFixed(1)}秒・正確度 ${result.axes.acc}%`,
                     })}
                   </p>
                 )}

@@ -8,6 +8,8 @@ export interface CardSpec {
   testName: string
   grad: [string, string]
   iq?: number
+  /** 정밀검사 지수 칩 (예: "MQ 114", "FQ 120") — iq처럼 상위%와 묶여 표시 */
+  scoreChip?: string
   appName: string
   /** 페르소나 한 줄 태그라인 (따옴표 인용구) */
   subtitle?: string
@@ -231,8 +233,9 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   }
 
   /* 칩 행: 밴드 + 퍼센타일/IQ — 중앙 정렬 그룹 */
-  const hasPct = spec.chipText != null || spec.iq != null || (typeof spec.topPercent === 'number' && spec.topPercent > 0)
-  const chipText = spec.chipText ?? (spec.iq ? `IQ ${spec.iq} · 상위 ${spec.topPercent}%` : `상위 ${spec.topPercent}%`)
+  const idxChip = spec.scoreChip ?? (spec.iq != null ? `IQ ${spec.iq}` : null)
+  const hasPct = spec.chipText != null || idxChip != null || (typeof spec.topPercent === 'number' && spec.topPercent > 0)
+  const chipText = spec.chipText ?? (idxChip ? `${idxChip} · 상위 ${spec.topPercent}%` : `상위 ${spec.topPercent}%`)
   const chips: [string, string, string][] = []
   if (spec.bandLabel) chips.push([spec.bandLabel, 'rgba(255,255,255,0.25)', '#FFFFFF'])
   if (hasPct) chips.push([chipText, '#FFFFFF', spec.grad[0]])
