@@ -205,7 +205,7 @@ export default function Home() {
             </h2>
             <span className="text-[12.5px] font-extrabold text-mind-600">{t('community.all')} ›</span>
           </button>
-          <div className="no-scrollbar -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 pb-1">
+          <div className="no-scrollbar -mx-5 mt-3 flex gap-2.5 overflow-x-auto px-5 pb-1">
             {QUICK_TESTS.map((q, i) => (
               <motion.button
                 key={q.id}
@@ -214,11 +214,11 @@ export default function Home() {
                 transition={{ delay: 0.05 * i, type: 'spring', stiffness: 240, damping: 24 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => nav(`/quick/${q.id}`)}
-                className="flex w-[124px] shrink-0 flex-col items-start gap-2 rounded-3xl p-3.5 text-left text-white shadow-pop"
+                className="flex aspect-square w-[104px] shrink-0 flex-col justify-between rounded-2xl p-3 text-left text-white shadow-pop"
                 style={{ background: `linear-gradient(135deg, ${q.grad[0]}, ${q.grad[1]})` }}
               >
-                <span className="text-[30px] leading-none">{q.emoji}</span>
-                <h3 className="break-keep text-[14.5px] font-extrabold leading-tight">{l(q.title)}</h3>
+                <span className="text-[28px] leading-none">{q.emoji}</span>
+                <h3 className="break-keep text-[13.5px] font-extrabold leading-snug">{l(q.title)}</h3>
               </motion.button>
             ))}
           </div>
