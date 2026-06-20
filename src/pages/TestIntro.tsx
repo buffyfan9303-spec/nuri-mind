@@ -130,6 +130,25 @@ export default function TestIntro() {
               🔬 {l({ ko: '정밀검사 시리즈는 계속 추가될 예정이에요.', en: 'More precision tests are coming soon.', ja: '精密検査シリーズは今後追加予定です。' })}
             </p>
           </>
+        ) : id === 'memory' ? (
+          <>
+            {/* 기억력 검사란? 직관 설명 */}
+            <Card className="mt-4">
+              <h2 className="flex items-center gap-2 text-[16px] font-extrabold tracking-tight">🧠 {l({ ko: '정밀 기억력 검사가 뭔가요?', en: 'What is this memory test?', ja: '精密記憶力検査とは？' })}</h2>
+              <p className="mt-2 break-keep text-[14.5px] font-medium leading-[1.8] text-ink-sub">
+                {l({
+                  ko: '설문이 아니라 직접 숫자를 외워 되짚는 인지과제예요. 본 순서대로 맞히는 "정방향"으로 즉시 기억폭을, 거꾸로 맞히는 "역방향"으로 머릿속에서 정보를 굴리는 작업기억을 측정해, 100을 기준으로 한 작업기억 지수(MQ)로 알려드려요. 약 4분 걸려요.',
+                  en: 'Not a survey — you actually memorize and recall digits. Forward (same order) gauges your immediate span; backward (reversed) gauges the working memory that juggles information. You get a Working-Memory Quotient (MQ) centered on 100. About 4 minutes.',
+                  ja: 'アンケートではなく、実際に数字を覚えて辿る認知課題です。順唱（見た順）で即時記憶幅を、逆唱（逆向き）で頭の中で情報を操る作業記憶を測り、100を基準にしたワーキングメモリ指数(MQ)でお伝えします。約4分。',
+                })}
+              </p>
+            </Card>
+            <div className="mt-5">
+              <Button color={tm.btn} size="lg" onClick={() => nav('/memory/run')}>
+                {t('common.start')} →
+              </Button>
+            </div>
+          </>
         ) : (
           <div className="mt-5">
             <Button color={tm.btn} size="lg" onClick={() => nav(`/test/${id}/run`)}>

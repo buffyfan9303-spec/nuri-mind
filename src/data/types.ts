@@ -1,7 +1,7 @@
 export type Lang = 'ko' | 'en' | 'ja'
 export type L = Record<Lang, string>
 
-export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark'
+export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark' | 'memory'
 
 /** 프로필 아바타 — 업로드 사진 또는 동물 페르소나 */
 export type Avatar =
@@ -110,6 +110,8 @@ export interface TestResult {
   iq?: number
   /** IQ 검사 모드 — 'fast'(빠른·전체무료) / 'pro'(정밀·상세결과 유료) */
   iqMode?: 'fast' | 'pro'
+  /** 기억력 지수 (정밀 기억력 검사 — 작업기억 100±15 척도) */
+  mq?: number
   screener?: number
   maskFlag?: boolean
   axes?: Record<string, number>

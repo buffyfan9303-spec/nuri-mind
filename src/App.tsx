@@ -11,6 +11,7 @@ import { pageView } from './lib/analytics'
 /** 라우트별 코드 스플리팅 — 첫 로딩엔 홈만 받고 나머지는 진입 시 로드 */
 const TestIntro = lazy(() => import('./pages/TestIntro'))
 const TestRun = lazy(() => import('./pages/TestRun'))
+const MemoryRun = lazy(() => import('./pages/MemoryRun'))
 const TestResult = lazy(() => import('./pages/TestResult'))
 const Rewards = lazy(() => import('./pages/Rewards'))
 const SurveyTake = lazy(() => import('./pages/SurveyTake'))
@@ -95,6 +96,7 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/test/:id" element={<TestIntro />} />
               <Route path="/test/:id/run" element={<TestRun />} />
+              <Route path="/memory/run" element={<MemoryRun />} />
               <Route path="/result/:rid" element={<TestResult />} />
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/rewards/survey/:id" element={<SurveyTake />} />

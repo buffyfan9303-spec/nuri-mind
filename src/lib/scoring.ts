@@ -317,6 +317,43 @@ export function scoreDark(items: LikertItem[], answers: Record<string, number>):
   })
 }
 
+/* ──────────── MEMORY (작업기억 — 숫자 폭/역폭 실측 과제) ────────────
+ * 정밀검사 2호. 자기보고가 아닌 실제 인지과제(Digit Span, Wechsler WMS 계열).
+ * 정방향 폭 = 즉시 기억 용량, 역방향 폭 = 작업기억(조작) 부하.
+ * 합성점수 = 정방향 정답수 + 역방향 정답수×1.3(난이도 가중) → MQ=100+15z. */
+export interface SpanTrial {
+  len: number
+  correct: boolean
+}
+const MEM_MU = 7.6
+const MEM_SIGMA = 2.8
+
+export function scoreMemory(fwd: SpanTrial[], bwd: SpanTrial[]): TestResult {
+  const fwdCorrect = fwd.filter((t) => t.correct).length
+  const bwdCorrect = bwd.filter((t) => t.correct).length
+  const spanOf = (arr: SpanTrial[]) => arr.filter((t) => t.correct).reduce((m, t) => Math.max(m, t.len), 0)
+  const fwdSpan = spanOf(fwd)
+  const bwdSpan = spanOf(bwd)
+
+  const composite = fwdCorrect + bwdCorrect * 1.3
+  const z = (composite - MEM_MU) / MEM_SIGMA
+  const mq = Math.max(60, Math.min(145, Math.round(100 + 15 * z)))
+  const pct = Math.min(99.5, Math.max(0.5, Math.round(normalCdf(z) * 1000) / 10))
+
+  const band = mq >= 116 ? 'sharp' : mq >= 96 ? 'solid' : 'quick'
+  const persona = band === 'sharp' ? 'elephant' : band === 'solid' ? 'octopus' : 'goldfish'
+
+  const subscales: SubscaleScore[] = [
+    { key: 'fwd', score: fwdCorrect, max: fwd.length, ratio: laplace(fwdCorrect, fwd.length) },
+    { key: 'bwd', score: bwdCorrect, max: bwd.length, ratio: laplace(bwdCorrect, bwd.length) },
+  ]
+
+  return base('memory', fwdCorrect + bwdCorrect, pct, band, persona, subscales, {
+    mq,
+    axes: { fwd: fwdSpan, bwd: bwdSpan },
+  })
+}
+
 function base(
   testId: TestId,
   raw: number,

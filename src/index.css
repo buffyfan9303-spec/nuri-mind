@@ -12,23 +12,25 @@
   --text-faint: 154 165 158;
   --line: 234 239 236;
 }
-/* ── 다크모드 ── */
+/* ── 다크모드 (눈이 편한 소프트 차콜 — GitHub Dark Dimmed / Material 3 기준, 순수 검정 회피) ──
+   배경은 #000이 아닌 부드러운 청록빛 차콜, 표면은 elevation으로 한 단계씩 밝게,
+   텍스트는 순백 대신 off-white(눈부심·할레이션 방지). */
 .dark {
-  --bg: 18 21 23;
-  --surface: 32 40 44;
-  --surface-2: 45 54 59;
-  --text: 233 238 235;
-  --text-sub: 178 188 183;
-  --text-faint: 128 140 135;
-  --line: 52 62 67;
+  --bg: 33 38 44; /* #21262C — soft charcoal, not black */
+  --surface: 42 48 56; /* #2A3038 — elevated */
+  --surface-2: 52 60 69; /* #343C45 — higher elevation */
+  --text: 221 228 225; /* #DDE4E1 — ~88% off-white */
+  --text-sub: 154 164 160; /* #9AA4A0 */
+  --text-faint: 110 119 114; /* #6E7772 */
+  --line: 58 66 74; /* #3A424A — soft border */
   color-scheme: dark;
 }
-/* 다크모드 카드 입체감 — 녹색 틴트 그림자는 어두운 배경서 안 보이므로 검정 그림자+미세 하이라이트로 대체 */
+/* 다크 카드 입체감 — 부드러운 elevation(표면 명도차) + 은은한 그림자(과한 검정 회피) */
 .dark .shadow-card {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 2px 14px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 2px 12px rgba(0, 0, 0, 0.32);
 }
 .dark .shadow-pop {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 28px rgba(0, 0, 0, 0.42);
 }
 /* 다크모드 — 어두운 브랜드 텍스트(짙은 청록/딥)는 어두운 표면 위에서 묻히므로 밝게 보정.
    라이트 틴트 칩(bg-mind-100 등) 위에서도 가독되는 중간 톤으로 통일. */

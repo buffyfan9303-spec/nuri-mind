@@ -812,6 +812,109 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '꾸준한 반복으로 어떤 도구든 끝내 길들이는 적응력', en: 'Adaptability that eventually tames any tool through repetition', ja: '地道な反復でどんな道具も最後には乗りこなす適応力' },
     ],
   },
+
+  /* ── 정밀 기억력 검사 페르소나 ── */
+  elephant: {
+    emoji: '🐘',
+    grad: ['#5B6CF0', '#34C9D6'],
+    name: { ko: '코끼리', en: 'Elephant', ja: 'ゾウ' },
+    title: { ko: '기억의 도서관', en: 'The Living Library', ja: '記憶の図書館' },
+    tagline: {
+      ko: '한 번 입력된 정보는 좀처럼 새지 않는 뇌',
+      en: 'A brain where stored data rarely leaks',
+      ja: '一度入った情報がなかなか漏れない脳',
+    },
+    desc: {
+      ko: '작업기억 용량이 상위권입니다. 여러 정보를 머릿속에 동시에 띄워 두고 굴리는 힘이 좋아, 복잡한 지시도 한 번에 담아냅니다. 다만 잘 외운다고 이해와 통찰까지 자동으로 따라오는 건 아니라는 점을 기억하세요.',
+      en: 'Your working-memory capacity sits in the top tier. You can hold and juggle several streams of information at once, capturing complex instructions in one pass. But remember — remembering well does not automatically bring understanding.',
+      ja: 'ワーキングメモリ容量は上位圏。複数の情報を同時に頭の中に浮かべて操る力が強く、複雑な指示も一度で取り込めます。ただ、よく覚えることと深く理解することは別だと忘れずに。',
+    },
+    slap: {
+      ko: '잘 외우는 것과 잘 생각하는 것은 다릅니다. 머리에 쌓아둔 정보를 꺼내 연결하지 않으면, 당신의 뛰어난 기억은 그저 문 닫힌 창고일 뿐입니다.',
+      en: 'Remembering and thinking are not the same. If you never pull stored data out and connect it, your remarkable memory is just a warehouse with the doors shut.',
+      ja: 'よく覚えることと、よく考えることは違います。蓄えた情報を取り出して繋げなければ、その優れた記憶もただの閉ざされた倉庫です。',
+    },
+    risks: [
+      { ko: '정보를 너무 잘 붙잡아 불필요한 걱정·후회까지 오래 곱씹게 됨', en: 'You hold on so well that needless worries and regrets also linger', ja: '情報をよく掴むぶん、不要な心配や後悔まで長く反芻してしまう' },
+      { ko: '암기에 의존해 메모·기록 습관을 소홀히 하면 결정적 순간에 빈다', en: 'Leaning on memory and skipping notes leaves gaps at the worst moment', ja: '暗記に頼ってメモの習慣を怠ると、肝心な時に抜ける' },
+    ],
+    solutions: [
+      { ko: '외운 것을 남에게 설명·요약해 "인출"로 굳히면 장기기억으로 넘어가요', en: 'Explain or summarize what you learned — retrieval cements it into long-term memory', ja: '覚えたことを誰かに説明・要約し「想起」で固めると長期記憶へ移る' },
+      { ko: '큰 정보는 의미 단위(청킹)로 묶으면 같은 용량으로 더 많이 담아요', en: 'Chunk big data into meaningful units to fit more into the same capacity', ja: '大きな情報を意味のかたまり（チャンク）にまとめると、同じ容量でより多く入る' },
+    ],
+    strengths: [
+      { ko: '복잡한 지시·숫자·이름을 한 번에 담는 높은 작업기억', en: 'High working memory that captures complex instructions, numbers, and names at once', ja: '複雑な指示・数字・名前を一度に収める高いワーキングメモリ' },
+      { ko: '여러 갈래의 정보를 동시에 굴리는 멀티 처리력', en: 'Multi-processing that runs several threads of information in parallel', ja: '複数の情報を同時に回すマルチ処理力' },
+    ],
+  },
+
+  octopus: {
+    emoji: '🐙',
+    grad: ['#4F86E0', '#48C4B0'],
+    name: { ko: '문어', en: 'Octopus', ja: 'タコ' },
+    title: { ko: '분산 저장가', en: 'The Distributed Mind', ja: '分散ストレージ' },
+    tagline: {
+      ko: '필요한 만큼은 정확히 붙잡는 균형형 기억',
+      en: 'Holds exactly as much as it needs',
+      ja: '必要な分はきちんと掴む均衡型の記憶',
+    },
+    desc: {
+      ko: '평균에서 평균 상단의 안정적인 기억폭입니다. 일상 대부분의 과제엔 충분한 용량이고, 정보가 한꺼번에 몰리거나 피곤할 때만 살짝 흔들립니다. 도구와 협업할 줄 아는 현실적인 머리예요.',
+      en: 'Your span runs from average to upper-average and stays stable. It is plenty for most daily tasks and only wobbles when information floods in at once or when you are tired. A pragmatic mind that knows how to work with tools.',
+      ja: '平均から平均上位の安定した記憶幅です。日常のほとんどの課題には十分な容量で、情報が一度に押し寄せたり疲れている時だけ少し揺れます。道具と協働できる現実的な頭です。',
+    },
+    slap: {
+      ko: '"평소엔 충분하다"는 말은, 결정적 순간엔 모자랄 수 있다는 뜻이기도 합니다. 용량을 믿고 메모를 버리는 순간, 하필 가장 중요한 한 개가 빠져나갑니다.',
+      en: '"Enough for now" also means it can fall short when it matters most. The moment you trust capacity and drop your notes, the single most important item slips out.',
+      ja: '「普段は十分」とは、肝心な時には足りないこともあるという意味でもあります。容量を信じてメモを捨てた瞬間、よりによって一番大事な一つが抜け落ちます。',
+    },
+    risks: [
+      { ko: '정보량이 한계를 넘으면 가장 최근·중요한 항목부터 흘림', en: 'Past your limit, the most recent and important items drop first', ja: '情報量が限界を超えると、最も新しく重要な項目から漏れる' },
+      { ko: '피곤하거나 멀티태스킹할 때 기억폭이 눈에 띄게 줄어듦', en: 'Your span shrinks noticeably when tired or multitasking', ja: '疲れている時やマルチタスク時に記憶幅が目に見えて縮む' },
+    ],
+    solutions: [
+      { ko: '중요한 건 즉시 한 줄 메모로 머리 밖에 내려놓으세요', en: 'Offload anything important into a one-line note right away', ja: '大事なことはすぐ一行メモにして頭の外へ下ろす' },
+      { ko: '한 번에 하나씩 — 작업을 직렬화하면 실수율이 급감해요', en: 'One thing at a time — serializing tasks slashes your error rate', ja: '一度に一つずつ—作業を直列化するとミス率が激減' },
+    ],
+    strengths: [
+      { ko: '상황에 맞게 용량을 배분하는 유연한 기억 운용', en: 'Flexible memory use that allocates capacity to the situation', ja: '状況に応じて容量を配分する柔軟な記憶運用' },
+      { ko: '메모·캘린더 같은 외부 도구와 잘 협업하는 현실 감각', en: 'Real-world sense for teaming up with notes and calendars', ja: 'メモやカレンダーなど外部ツールとうまく協働する現実感覚' },
+    ],
+  },
+
+  goldfish: {
+    emoji: '🐠',
+    grad: ['#56B0E8', '#5ED6C0'],
+    name: { ko: '금붕어', en: 'Goldfish', ja: '金魚' },
+    title: { ko: '지금 이 순간형', en: 'The Here-and-Now', ja: '今この瞬間型' },
+    tagline: {
+      ko: '과거에 얽매이지 않는 가벼운 기억',
+      en: 'A light memory unchained from the past',
+      ja: '過去に縛られない軽い記憶',
+    },
+    desc: {
+      ko: '순간적으로 붙잡는 기억폭이 평균 아래로 측정됐어요. 이건 머리가 나쁘다는 뜻이 아니라, 정보를 "머리 밖"에 두고 사는 방식이 더 잘 맞는다는 신호입니다. 시스템만 갖추면 약점은 거의 사라져요.',
+      en: 'Your momentary span measured below average. This is not about being unintelligent — it is a signal that storing information "outside your head" suits you better. With the right system, the weakness all but disappears.',
+      ja: '瞬間的に掴む記憶幅が平均以下と測定されました。これは頭が悪いという意味ではなく、情報を「頭の外」に置いて生きる方式が合っているという合図です。仕組みさえ整えば弱点はほぼ消えます。',
+    },
+    slap: {
+      ko: '"금붕어는 3초밖에 기억 못 한다"는 건 사실 낭설입니다. 문제는 기억력이 아니라, 안 적어두고 머리만 믿는 습관이에요. 시스템을 만들면 약점은 그냥 사라집니다.',
+      en: 'The "goldfish forgets in 3 seconds" line is a myth. Your problem isn\'t memory — it\'s the habit of trusting your head instead of writing things down. Build a system and the weakness simply vanishes.',
+      ja: '「金魚は3秒しか覚えられない」は実は俗説です。問題は記憶力ではなく、書かずに頭だけ信じる習慣です。仕組みを作れば弱点はただ消えます。',
+    },
+    risks: [
+      { ko: '들은 지시·약속을 자주 놓쳐 신뢰에 금이 갈 수 있음', en: 'Missing spoken instructions and promises can crack others\' trust', ja: '聞いた指示・約束をよく取りこぼし、信頼にひびが入りかねない' },
+      { ko: '머리로만 처리하려다 같은 실수를 반복하기 쉬움', en: 'Trying to handle it all in your head invites the same mistake twice', ja: '頭だけで処理しようとして、同じミスを繰り返しやすい' },
+    ],
+    solutions: [
+      { ko: '모든 약속·할 일은 즉시 메모로 — 머리는 생각용, 기억은 도구에게 맡기세요', en: 'Capture every task the instant it appears — heads are for thinking, let tools remember', ja: 'すべての約束・タスクは即メモへ。頭は考える用、記憶は道具に任せる' },
+      { ko: '정보를 소리 내 반복하거나 덩어리로 묶어 짧은 폭을 보완하세요', en: 'Say it aloud or chunk it to stretch a short span', ja: '情報を声に出して反復したり、かたまりにまとめて短い幅を補う' },
+    ],
+    strengths: [
+      { ko: '과거에 매이지 않아 회복·전환이 빠른 가벼움', en: 'Lightness that recovers and switches gears fast, unchained from the past', ja: '過去に縛られず、回復・切り替えが速い軽やかさ' },
+      { ko: '지금 눈앞의 일에 강하게 몰입하는 현재 집중력', en: 'Present-focus that dives hard into what is right in front of you', ja: '今目の前のことに強く没入する現在集中力' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -824,6 +927,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   bear: 'dopamine', hamster: 'dopamine', raccoon: 'dopamine',
   bamboo: 'resilience', willow: 'resilience', glass: 'resilience',
   fox: 'dark', peacock: 'dark', shark: 'dark', dove: 'dark',
+  elephant: 'memory', octopus: 'memory', goldfish: 'memory',
 }
 
 /** 이모지(글 뱃지) → 검사 매핑 */

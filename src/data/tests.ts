@@ -11,6 +11,8 @@ export interface TestMeta {
   gradFrom: string
   gradTo: string
   btn: 'adhd' | 'ego' | 'iq' | 'love' | 'burn' | 'dopa' | 'reso' | 'dk'
+  /** 정밀검사(실측 인지과제) — 홈에서 별도 섹션으로 묶음 */
+  precision?: boolean
 }
 
 export const TESTS: TestMeta[] = [
@@ -46,6 +48,19 @@ export const TESTS: TestMeta[] = [
     gradFrom: '#6E7BF2',
     gradTo: '#8FB8E8',
     btn: 'iq',
+    precision: true,
+  },
+  {
+    id: 'memory',
+    emoji: '🧠',
+    count: 11,
+    minutes: 4,
+    tint: 'bg-iq-light',
+    text: 'text-iq-deep',
+    gradFrom: '#5B6CF0',
+    gradTo: '#34C9D6',
+    btn: 'iq',
+    precision: true,
   },
   {
     id: 'love',

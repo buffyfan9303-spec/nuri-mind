@@ -226,6 +226,11 @@ export default function TestResult() {
                 {t('result.iqLabel')} {result.iq}
               </span>
             )}
+            {result.testId === 'memory' && result.mq !== undefined && (
+              <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
+                MQ {result.mq}
+              </span>
+            )}
           </div>
         </motion.div>
 
@@ -261,11 +266,49 @@ export default function TestResult() {
                   <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
                 </div>
               </>
+            ) : result.testId === 'memory' ? (
+              <>
+                <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.mq}</div>
+                <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.mqLabel')}</p>
+                <div className="mt-4">
+                  <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
+                </div>
+              </>
             ) : (
               <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
             )}
           </div>
         </Card>
+
+        {/* 빠른 IQ → 정밀 IQ 업셀 (더 정확한 측정으로 유도) */}
+        {result.testId === 'iq' && result.iqMode === 'fast' && !gate && (
+          <motion.button
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, type: 'spring', stiffness: 280, damping: 22 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => nav('/test/iq/run?mode=pro')}
+            className="mt-4 flex w-full items-center gap-3 rounded-3xl p-4 text-left text-white shadow-pop"
+            style={{ background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
+          >
+            <motion.span animate={{ rotate: [0, -10, 8, 0] }} transition={{ repeat: Infinity, duration: 3, repeatDelay: 1.5 }} className="text-[30px]">
+              🔬
+            </motion.span>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-[15.5px] font-extrabold leading-tight">
+                {l({ ko: '정밀 IQ로 더 정확하게 측정', en: 'Measure more precisely', ja: '精密IQでもっと正確に' })}
+              </h3>
+              <p className="mt-0.5 break-keep text-[12px] font-bold text-white/90">
+                {l({
+                  ko: '20문항 · 인지영역별 분석 · 정밀 점수로 다시 보기 →',
+                  en: '20 Qs · cognitive breakdown · precise score →',
+                  ja: '20問・認知領域分析・精密スコアで →',
+                })}
+              </p>
+            </div>
+            <span className="shrink-0 text-lg text-white/80">›</span>
+          </motion.button>
+        )}
 
         {/* 심리 날씨 — 재검사 추이 (2회 이상부터) */}
         <Trend testId={result.testId} />
