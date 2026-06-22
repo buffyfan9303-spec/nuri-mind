@@ -11,7 +11,7 @@ import type { Lang } from '../data/types'
 import { fileToAvatarDataUrl } from '../lib/image'
 import { scheduleStreakReminder } from '../lib/notify'
 import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
-import { useStore } from '../store/useStore'
+import { useStore, OPERATOR_NICKS } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 
 const LANGS: { key: Lang; label: string }[] = [
@@ -25,6 +25,7 @@ export default function Profile() {
   const l = useL()
   const nav = useNavigate()
   const s = useStore()
+  const isOperator = OPERATOR_NICKS.includes(s.nickname)
   const [resetOpen, setResetOpen] = useState(false)
   const [editing, setEditing] = useState(false)
   const [nick, setNick] = useState(s.nickname)
@@ -332,13 +333,15 @@ export default function Profile() {
               <span className="text-[15.5px] font-bold">🔐 {t('legal.privacy')}</span>
               <span className="text-ink-faint">›</span>
             </button>
-            <button
-              onClick={() => nav('/admin')}
-              className="flex w-full items-center justify-between border-t border-line px-3 py-3"
-            >
-              <span className="text-[15.5px] font-bold">🛠 {t('profile.adminMode')}</span>
-              <span className="text-ink-faint">›</span>
-            </button>
+            {isOperator && (
+              <button
+                onClick={() => nav('/admin')}
+                className="flex w-full items-center justify-between border-t border-line px-3 py-3"
+              >
+                <span className="text-[15.5px] font-bold">🛠 {t('profile.adminMode')}</span>
+                <span className="text-ink-faint">›</span>
+              </button>
+            )}
             <button
               onClick={() => setResetOpen(true)}
               className="flex w-full items-center justify-between border-t border-line px-3 py-3 text-red-500"

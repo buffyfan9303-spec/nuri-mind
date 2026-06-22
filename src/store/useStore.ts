@@ -44,6 +44,8 @@ export const FORTUNE_FREE_PER_MONTH = 3
 export const FORTUNE_DIA_COST = 5
 /** IQ 정밀검사 전체 해제(영구) */
 export const IQ_DIA_COST = 10
+/** 운영자 콘솔이 보이는 계정(닉네임 화이트리스트). 콘솔 진입은 PIN(5690)으로 2차 보호. */
+export const OPERATOR_NICKS = ['누리', 'WTA']
 /** 정밀검사(기억/집중/처리속도/공간) 상세분석 전체 해제 비용 */
 export const PRECISION_DIA_COST = 10
 export interface DiaBundle {

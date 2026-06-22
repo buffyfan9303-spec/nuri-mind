@@ -9,6 +9,11 @@ import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem } fro
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 
+/** 만료까지 남은 일수(올림). */
+function expDays(iso: string): number {
+  return Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000)
+}
+
 export default function Mailbox() {
   const l = useL()
   const addDiamonds = useStore((s) => s.addDiamonds)
@@ -141,6 +146,11 @@ export default function Mailbox() {
                             <button onClick={() => onCancel(it)} className="rounded-full border-2 border-line px-3 py-1.5 text-[12px] font-extrabold text-ink-sub">
                               {l({ ko: '청약철회(환불)', en: 'Refund', ja: '返金' })}
                             </button>
+                          )}
+                          {!it.claimed && it.expires_at && (
+                            <span className={`ml-auto shrink-0 text-[11px] font-extrabold ${expDays(it.expires_at) <= 3 ? 'text-red-400' : 'text-ink-faint'}`}>
+                              ⏳ D-{Math.max(0, expDays(it.expires_at))}
+                            </span>
                           )}
                         </div>
                       </div>

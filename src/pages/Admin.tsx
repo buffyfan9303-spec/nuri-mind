@@ -6,6 +6,7 @@ import { useStore, PRECISION_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { expById, TIERS } from '../data/rank'
 import { sfx } from '../lib/sound'
+import { grantDiamondsNick, sendMailNick } from '../lib/mailbox'
 
 type Tab = 'surveys' | 'redeem' | 'exp' | 'reports' | 'stats'
 
@@ -64,6 +65,29 @@ function Console() {
   const t = useT()
   const l = useL()
   const [tab, setTab] = useState<Tab>('surveys')
+  const addDiamonds = useStore((s) => s.addDiamonds)
+  const [diaNick, setDiaNick] = useState('')
+  const [diaAmt, setDiaAmt] = useState('')
+  const [mailNick, setMailNick] = useState('')
+  const [mailTitle, setMailTitle] = useState('')
+  const [mailBody, setMailBody] = useState('')
+  const [mailDia, setMailDia] = useState('')
+  const [opMsg, setOpMsg] = useState('')
+  const opResult = (r: string, okMsg: string) =>
+    setOpMsg(r === 'ok' ? okMsg : r === 'no_user' ? '그 닉네임의 유저가 없어요' : '권한 없음/오류 — 운영자(WTA) 로그인이 필요해요')
+  const onGrantNick = async () => {
+    const n = parseInt(diaAmt, 10)
+    if (!diaNick.trim() || !n || n <= 0) return setOpMsg('닉네임과 개수를 확인하세요')
+    const r = await grantDiamondsNick(diaNick.trim(), n)
+    opResult(r, `${diaNick}님에게 💎${n} 지급(우편함으로)`)
+    if (r === 'ok') sfx.coin()
+  }
+  const onSendMail = async () => {
+    if (!mailNick.trim() || !mailTitle.trim()) return setOpMsg('받는 사람과 제목을 확인하세요')
+    const r = await sendMailNick(mailNick.trim(), mailTitle.trim(), mailBody.trim(), parseInt(mailDia, 10) || 0)
+    opResult(r, `${mailNick}님에게 우편을 보냈어요`)
+    if (r === 'ok') sfx.tap()
+  }
   const surveys = useStore((s) => s.surveys)
   const redemptions = useStore((s) => s.redemptions)
   const results = useStore((s) => s.results)
@@ -327,6 +351,34 @@ function Console() {
             >
               <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white transition-transform ${precisionGate ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
             </button>
+          </div>
+
+          {/* 운영자 도구 — 다이아 지급 / 개인 우편 */}
+          <div className="mt-3 rounded-2xl bg-white/10 p-4">
+            <h3 className="text-[14px] font-extrabold text-white">🎁 다이아 지급</h3>
+            <button
+              onClick={() => { addDiamonds(10000); setOpMsg('이 기기에 💎10,000 지급됨'); sfx.coin() }}
+              className="mt-2 w-full rounded-xl bg-[#1ab394] py-2.5 text-[13px] font-extrabold text-white"
+            >
+              내 기기에 💎10,000 지급 (로컬)
+            </button>
+            <div className="mt-2 flex gap-2">
+              <input value={diaNick} onChange={(e) => setDiaNick(e.target.value)} placeholder="닉네임(서버 유저)" className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+              <input value={diaAmt} onChange={(e) => setDiaAmt(e.target.value.replace(/\D/g, ''))} placeholder="개수" inputMode="numeric" className="w-20 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+              <button onClick={onGrantNick} className="shrink-0 rounded-xl bg-[#6E7BF2] px-4 py-2.5 text-[13px] font-extrabold text-white">지급</button>
+            </div>
+
+            <h3 className="mt-4 text-[14px] font-extrabold text-white">✉️ 개인 우편 보내기</h3>
+            <input value={mailNick} onChange={(e) => setMailNick(e.target.value)} placeholder="받는 사람 닉네임" className="mt-2 w-full rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+            <input value={mailTitle} onChange={(e) => setMailTitle(e.target.value)} placeholder="제목" className="mt-2 w-full rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+            <textarea value={mailBody} onChange={(e) => setMailBody(e.target.value)} placeholder="내용" rows={2} className="mt-2 w-full resize-none rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+            <div className="mt-2 flex gap-2">
+              <input value={mailDia} onChange={(e) => setMailDia(e.target.value.replace(/\D/g, ''))} placeholder="첨부 💎(선택)" inputMode="numeric" className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+              <button onClick={onSendMail} className="shrink-0 rounded-xl bg-[#6E7BF2] px-4 py-2.5 text-[13px] font-extrabold text-white">보내기</button>
+            </div>
+
+            {opMsg && <p className="mt-2.5 text-[12.5px] font-bold text-white/90">{opMsg}</p>}
+            <p className="mt-2 text-[11px] leading-relaxed text-white/45">ⓘ '내 기기' 지급은 이 기기에 즉시 반영(로컬). 닉네임 지급·개인우편은 운영자(WTA)를 is_admin으로 설정하고 운영자로 로그인해야 동작해요.</p>
           </div>
           </>
         )}

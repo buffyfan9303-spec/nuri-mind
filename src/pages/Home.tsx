@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import AdSlot from '../components/AdSlot'
@@ -14,6 +14,7 @@ import { useT } from '../i18n/useT'
 import { useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import { unreadMailCount } from '../lib/mailbox'
 
 const todayStr = () => new Date().toISOString().slice(0, 10)
 
@@ -23,8 +24,10 @@ export default function Home() {
   const nav = useNavigate()
   const s = useStore()
 
+  const [unreadMail, setUnreadMail] = useState(0)
   useEffect(() => {
     s.ensureLeague()
+    unreadMailCount().then(setUnreadMail)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -67,10 +70,15 @@ export default function Home() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => nav('/mail')}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-surface2 text-[18px] shadow-card"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full bg-surface2 text-[18px] shadow-card"
             aria-label="mailbox"
           >
             📬
+            {unreadMail > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-extrabold text-white">
+                {unreadMail > 9 ? '9+' : unreadMail}
+              </span>
+            )}
           </motion.button>
           <PointsPill />
         </div>

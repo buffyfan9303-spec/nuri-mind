@@ -16,6 +16,7 @@ export interface MailItem {
   claimed: boolean
   refundable: boolean
   at: string
+  expires_at: string | null
 }
 
 export async function fetchMail(): Promise<MailItem[]> {
@@ -50,6 +51,36 @@ export async function claimAllMail(): Promise<number> {
     return data
   } catch {
     return 0
+  }
+}
+
+/** 안 받은 우편 개수(홈 배지용). 비로그인/미배포면 0. */
+export async function unreadMailCount(): Promise<number> {
+  const m = await fetchMail()
+  return m.filter((x) => !x.claimed).length
+}
+
+/** 운영자: 닉네임으로 다이아 지급. 반환 'ok'·'no_user'·'unavailable'(권한없음/오류) */
+export async function grantDiamondsNick(nick: string, amount: number): Promise<string> {
+  if (!supabase) return 'unavailable'
+  try {
+    const { data, error } = await supabase.rpc('grant_diamonds_nick', { p_nick: nick, p_amount: amount })
+    if (error) return 'unavailable'
+    return (data as string) ?? 'unavailable'
+  } catch {
+    return 'unavailable'
+  }
+}
+
+/** 운영자: 닉네임으로 개인 우편 발송. 반환 'ok'·'no_user'·'unavailable' */
+export async function sendMailNick(nick: string, title: string, body: string, dia: number): Promise<string> {
+  if (!supabase) return 'unavailable'
+  try {
+    const { data, error } = await supabase.rpc('send_mail_nick', { p_nick: nick, p_title: title, p_body: body, p_dia: dia })
+    if (error) return 'unavailable'
+    return (data as string) ?? 'unavailable'
+  } catch {
+    return 'unavailable'
   }
 }
 
