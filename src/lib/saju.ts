@@ -4,6 +4,8 @@
  */
 import { FORTUNE_TEMPLATES, BIRTH_FLOWERS, COMPAT_TEMPLATES, SHORT_LINES, YEAR_LINES, MONTH_LINES, type FortuneTemplate, type BirthFlower, type CompatTemplate } from '../data/fortune'
 import type { L } from '../data/types'
+import { buildDetail, type FortuneDetail } from '../data/fortuneDetail'
+export type { FortuneDetail }
 
 const STEMS = [
   { ko: '갑', el: '목', ym: '양' }, { ko: '을', el: '목', ym: '음' },
@@ -123,6 +125,11 @@ export function fortuneOf(birth: { y: number; m: number; d: number }, today: { y
     luckyDir: DIR_KO[todayEl],
     grad: GRAD[todayEl],
   }
+}
+
+/** 오늘의 '상세 운세'(유료/광고 해제 영역) — 결정론적. */
+export function detailOf(birth: { y: number; m: number; d: number }, today: { y: number; m: number; d: number }): FortuneDetail {
+  return buildDetail(dayPillarIndex(birth.y, birth.m, birth.d), dayPillarIndex(today.y, today.m, today.d))
 }
 
 export interface Compat {

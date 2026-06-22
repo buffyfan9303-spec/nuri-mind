@@ -42,6 +42,8 @@ export const FREEZE_MAX = 3
 /** 운세 종합: 매월 무료 3회, 이후 다이아 결제 */
 export const FORTUNE_FREE_PER_MONTH = 3
 export const FORTUNE_DIA_COST = 5
+/** 오늘의 상세 운세 해제 비용(다이아) — 광고 시청 시 무료 */
+export const FORTUNE_DETAIL_DIA_COST = 5
 /** IQ 정밀검사 전체 해제(영구) */
 export const IQ_DIA_COST = 10
 /** 운영자 콘솔이 보이는 계정(닉네임 화이트리스트). 콘솔 진입은 PIN(5690)으로 2차 보호. */
@@ -95,6 +97,8 @@ interface State {
   /** 운세 종합 무료횟수 리셋 기준 월(YYYY-MM) */
   fortuneMonth: string
   fortuneFreeUses: number
+  /** 오늘의 상세 운세를 해제한 날짜(YYYY-MM-DD) — 오늘과 같으면 해제 상태(하루 1회) */
+  fortuneDetailDate: string
   /** IQ 정밀검사 전체 해제 여부(영구) */
   iqUnlocked: boolean
   /** 정밀검사 상세분석 💎 게이팅 on/off (운영자 토글) */
@@ -208,6 +212,8 @@ interface State {
   spendDiamonds: (n: number) => boolean
   /** 운세 종합 열람 시도 — 'free'(월무료)·'dia'(차감)·'need'(잔액부족) */
   viewFortuneFull: () => 'free' | 'dia' | 'need'
+  /** 오늘의 상세 운세 해제 표시(오늘 날짜로) — 광고 시청 또는 다이아 차감 후 호출 */
+  markFortuneDetail: () => void
   /** IQ 정밀검사 전체 해제(10다이아) — 부족 시 false */
   unlockIq: () => boolean
   /** 정밀검사 상세 게이팅 on/off (운영자) */
@@ -237,6 +243,7 @@ const initial = () => ({
   diamonds: 0,
   fortuneMonth: '',
   fortuneFreeUses: 0,
+  fortuneDetailDate: '',
   iqUnlocked: false,
   precisionGate: false,
   precisionUnlocked: false,
@@ -674,6 +681,7 @@ export const useStore = create<State>()(
           }
           return 'need'
         },
+        markFortuneDetail: () => set({ fortuneDetailDate: new Date().toISOString().slice(0, 10) }),
         /** IQ 정밀검사 전체 해제 — 1회 10다이아(영구) */
         unlockIq: () => {
           const s = get()

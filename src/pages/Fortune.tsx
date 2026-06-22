@@ -3,9 +3,10 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { TopBar, Card, ProgressBar, Modal } from '../components/ui'
 import Button from '../components/Button'
-import { useStore, FORTUNE_FREE_PER_MONTH, FORTUNE_DIA_COST } from '../store/useStore'
+import AdGate from '../components/AdGate'
+import { useStore, FORTUNE_FREE_PER_MONTH, FORTUNE_DIA_COST, FORTUNE_DETAIL_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
-import { sajuOf, fortuneOf, weekOf, yearOf, monthOf, zodiacTodayLines } from '../lib/saju'
+import { sajuOf, fortuneOf, weekOf, yearOf, monthOf, zodiacTodayLines, detailOf } from '../lib/saju'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { ELEMENT_SVG } from '../lib/characters'
 import { WEEK_LINES } from '../data/fortune'
@@ -22,11 +23,15 @@ export default function Fortune() {
   const fortuneMonth = useStore((s) => s.fortuneMonth)
   const fortuneFreeUses = useStore((s) => s.fortuneFreeUses)
   const viewFortuneFull = useStore((s) => s.viewFortuneFull)
+  const fortuneDetailDate = useStore((s) => s.fortuneDetailDate)
+  const markFortuneDetail = useStore((s) => s.markFortuneDetail)
+  const spendDiamonds = useStore((s) => s.spendDiamonds)
   const [draft, setDraft] = useState(birthDate)
   const [editing, setEditing] = useState(!birthDate)
   const [saved, setSaved] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
   const [needCharge, setNeedCharge] = useState(false)
+  const [showAd, setShowAd] = useState(false)
 
   const data = useMemo(() => {
     if (!birthDate) return null
@@ -42,6 +47,7 @@ export default function Fortune() {
       year: yearOf(birth, today.y),
       month: monthOf(birth, today.y, today.m),
       zodiac: zodiacTodayLines(today),
+      detail: detailOf(birth, today),
     }
   }, [birthDate])
 
@@ -112,7 +118,7 @@ export default function Fortune() {
     )
   }
 
-  const { saju, fortune, week, year, month, zodiac } = data
+  const { saju, fortune, week, year, month, zodiac, detail } = data
   const tpl = fortune.template
   const now2 = new Date()
   const thisYear = now2.getFullYear()
@@ -128,6 +134,16 @@ export default function Fortune() {
     }
     setUnlocked(true)
     burst()
+  }
+  const todayStr = new Date().toISOString().slice(0, 10)
+  const detailUnlocked = fortuneDetailDate === todayStr
+  const unlockDetailDia = () => {
+    if (spendDiamonds(FORTUNE_DETAIL_DIA_COST)) {
+      markFortuneDetail()
+      burst()
+    } else {
+      setNeedCharge(true)
+    }
   }
   const gauges = [
     { key: 'overall', emoji: '✨', label: t('fortune.overall'), score: fortune.overall, text: l(tpl.overall) },
@@ -204,6 +220,116 @@ export default function Fortune() {
               <p className="mt-0.5 text-[15px] font-extrabold">{x.val}</p>
             </div>
           ))}
+        </div>
+
+        {/* ── 오늘의 상세 운세 (광고 또는 5💎 해제 · 하루 무제한 열람) ── */}
+        <div className="mt-7 flex items-center gap-2 px-1">
+          <h2 className="text-[17px] font-extrabold tracking-tight">🔮 {l({ ko: '오늘의 상세 운세', en: 'Detailed Daily Fortune', ja: '今日の詳細運勢' })}</h2>
+          {detailUnlocked ? (
+            <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">{l({ ko: '열람 중', en: 'unlocked', ja: '閲覧中' })}</span>
+          ) : (
+            <span className="rounded-full bg-adhd-light px-2 py-0.5 text-[11px] font-extrabold text-adhd-deep">{l({ ko: '프리미엄', en: 'Premium', ja: 'プレミアム' })}</span>
+          )}
+        </div>
+        <p className="mt-1 break-keep px-1 text-[12.5px] font-medium leading-relaxed text-ink-sub">
+          {l({ ko: '시간대별 흐름부터 행운의 방향·장소·아이템까지, 오늘 하루를 아주 자세하게 풀어드려요.', en: 'From hour-by-hour flow to lucky direction, place, and item — your whole day in full detail.', ja: '時間帯ごとの流れから幸運の方角・場所・アイテムまで、今日を詳しく解説。' })}
+        </p>
+
+        <div className="relative mt-3">
+          <div className={detailUnlocked ? 'space-y-3' : 'pointer-events-none max-h-[440px] space-y-3 overflow-hidden select-none blur-[5px]'} aria-hidden={!detailUnlocked}>
+            {/* 시간대별 */}
+            <Card>
+              <h3 className="text-[14px] font-extrabold">⏰ {l({ ko: '시간대별 운세', en: 'By Time of Day', ja: '時間帯別の運勢' })}</h3>
+              <div className="mt-2.5 space-y-2.5">
+                {[
+                  { emoji: '🌅', label: l({ ko: '아침', en: 'Morning', ja: '朝' }), text: l(detail.morning) },
+                  { emoji: '☀️', label: l({ ko: '낮', en: 'Noon', ja: '昼' }), text: l(detail.noon) },
+                  { emoji: '🌙', label: l({ ko: '저녁', en: 'Evening', ja: '夜' }), text: l(detail.evening) },
+                ].map((r) => (
+                  <div key={r.label} className="rounded-2xl bg-surface2 p-3">
+                    <span className="text-[12.5px] font-extrabold text-mind-700">{r.emoji} {r.label}</span>
+                    <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink">{r.text}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* 행운 포인트 */}
+            <Card>
+              <h3 className="text-[14px] font-extrabold">🍀 {l({ ko: '오늘의 행운 포인트', en: 'Lucky Points', ja: '今日のラッキーポイント' })}</h3>
+              <div className="mt-2.5 space-y-2">
+                {[
+                  { emoji: '⏳', label: l({ ko: '행운의 시간', en: 'Lucky time', ja: 'ラッキー時間' }), val: detail.luckyTime },
+                  { emoji: '🧭', label: l({ ko: '좋은 방향', en: 'Good direction', ja: '良い方角' }), val: fortune.luckyDir },
+                  { emoji: '📍', label: l({ ko: '행운의 장소', en: 'Lucky place', ja: 'ラッキー場所' }), val: l(detail.place) },
+                  { emoji: '🎁', label: l({ ko: '행운의 아이템', en: 'Lucky item', ja: 'ラッキーアイテム' }), val: l(detail.item) },
+                  { emoji: '🍴', label: l({ ko: '행운의 음식', en: 'Lucky food', ja: 'ラッキーフード' }), val: l(detail.food) },
+                ].map((r) => (
+                  <div key={r.label} className="flex items-start gap-2.5 rounded-2xl bg-surface2 p-2.5">
+                    <span className="text-[18px] leading-none">{r.emoji}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11.5px] font-bold text-ink-faint">{r.label}</p>
+                      <p className="mt-0.5 break-keep text-[13.5px] font-extrabold text-ink">{r.val}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* 분야별 상세 */}
+            <Card>
+              <h3 className="text-[14px] font-extrabold">📊 {l({ ko: '분야별 상세', en: 'By Area', ja: '分野別の詳細' })}</h3>
+              <div className="mt-2.5 space-y-3">
+                {[
+                  { emoji: '🤝', label: l({ ko: '인간관계', en: 'Relationships', ja: '人間関係' }), text: l(detail.relation) },
+                  { emoji: '💼', label: l({ ko: '일·학업', en: 'Work & Study', ja: '仕事・学業' }), text: l(detail.work) },
+                  { emoji: '💰', label: l({ ko: '재물', en: 'Wealth', ja: '財運' }), text: l(detail.wealth) },
+                  { emoji: '🌿', label: l({ ko: '건강', en: 'Health', ja: '健康' }), text: l(detail.health) },
+                ].map((r) => (
+                  <div key={r.label}>
+                    <span className="text-[12.5px] font-extrabold text-mind-700">{r.emoji} {r.label}</span>
+                    <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink">{r.text}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* 조심 & 조언 */}
+            <Card>
+              <h3 className="text-[14px] font-extrabold">⚠️ {l({ ko: '오늘 조심할 것', en: 'Watch Out For', ja: '今日の注意点' })}</h3>
+              <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink">{l(detail.caution)}</p>
+              <h3 className="mt-3.5 text-[14px] font-extrabold">💡 {l({ ko: '오늘의 조언', en: 'Today’s Advice', ja: '今日の助言' })}</h3>
+              <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink">{l(detail.advice)}</p>
+            </Card>
+
+            {/* 총평 */}
+            <div className="rounded-3xl p-4 text-white shadow-pop" style={{ background: `linear-gradient(135deg, ${fortune.grad[0]}, ${fortune.grad[1]})` }}>
+              <h3 className="text-[12.5px] font-extrabold text-white/85">📝 {l({ ko: '오늘의 총평', en: 'Summary', ja: '今日の総評' })}</h3>
+              <p className="mt-1.5 break-keep text-[14px] font-extrabold leading-relaxed">{l(detail.summary)}</p>
+            </div>
+          </div>
+
+          {/* 잠금 오버레이 */}
+          {!detailUnlocked && (
+            <div className="absolute inset-0 flex items-end justify-center rounded-3xl bg-gradient-to-b from-transparent via-cream/60 to-cream pb-1">
+              <div className="w-full rounded-3xl border-2 border-mind-200 bg-surface p-5 text-center shadow-pop">
+                <div className="text-[34px] leading-none">🔒</div>
+                <h3 className="mt-2 break-keep text-[16px] font-extrabold">{l({ ko: '상세 운세 잠금 해제', en: 'Unlock Detailed Fortune', ja: '詳細運勢を解除' })}</h3>
+                <p className="mt-1 break-keep text-[12.5px] font-medium leading-relaxed text-ink-sub">
+                  {l({ ko: '광고를 보거나 다이아 5개로 오늘 하루 종일 열람할 수 있어요.', en: 'Watch an ad or spend 5💎 to view all day today.', ja: '広告視聴または5💎で今日一日中閲覧できます。' })}
+                </p>
+                <div className="mt-4 space-y-2.5">
+                  <Button color="mind" size="lg" onClick={() => setShowAd(true)}>
+                    📺 {l({ ko: '광고 보고 무료로 해제', en: 'Watch Ad — Free', ja: '広告を見て無料で解除' })}
+                  </Button>
+                  <Button color="white" size="lg" onClick={unlockDetailDia}>
+                    💎 {l({ ko: `다이아 ${FORTUNE_DETAIL_DIA_COST}개로 해제`, en: `Unlock with ${FORTUNE_DETAIL_DIA_COST}💎`, ja: `${FORTUNE_DETAIL_DIA_COST}💎で解除` })}
+                  </Button>
+                </div>
+                <p className="mt-2.5 text-[11.5px] font-bold text-ink-faint">{l({ ko: '보유', en: 'Balance', ja: '保有' })} 💎 {diamonds.toLocaleString()}</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── 종합 운세 (프리미엄: 매월 무료 3회 → 이후 5다이아) ── */}
@@ -350,6 +476,16 @@ export default function Fortune() {
             </div>
           </div>
         </Modal>
+
+        {showAd && (
+          <AdGate
+            onDone={() => {
+              markFortuneDetail()
+              setShowAd(false)
+              burst()
+            }}
+          />
+        )}
       </main>
     </div>
   )
