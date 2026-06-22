@@ -4,7 +4,7 @@ import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
-import { authReady, getAuthUser } from '../lib/auth'
+import { authReady, getAuthUser, signInWithKakao } from '../lib/auth'
 import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem } from '../lib/mailbox'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
@@ -37,6 +37,11 @@ export default function Mailbox() {
   const flash = (t: string) => {
     setMsg(t)
     setTimeout(() => setMsg(''), 2200)
+  }
+
+  const onLogin = async () => {
+    const r = await signInWithKakao()
+    if (!r.ok) flash(l({ ko: '카카오 로그인 준비 중이에요. 잠시 후 다시 시도해 주세요.', en: 'Kakao login is being set up. Please try again later.', ja: 'カカオログイン準備中です。後ほどお試しください。' }))
   }
 
   const onClaim = async (it: MailItem) => {
@@ -90,10 +95,13 @@ export default function Mailbox() {
         ) : !authReady() || loggedIn === false ? (
           <Card className="mt-6 text-center">
             <div className="text-[44px]">📭</div>
-            <h2 className="mt-2 text-[17px] font-extrabold">{l({ ko: '로그인하면 우편을 받을 수 있어요', en: 'Log in to receive mail', ja: 'ログインで郵便を受取' })}</h2>
+            <h2 className="mt-2 break-keep text-[17px] font-extrabold">{l({ ko: '카카오로 로그인하면 우편을 받아요', en: 'Log in with Kakao to get mail', ja: 'カカオログインで郵便を受取' })}</h2>
             <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
-              {l({ ko: '카카오 로그인하면 운영자 지급·결제 다이아·개인 우편을 여기서 받아요.', en: 'After Kakao login, claim operator gifts, purchased diamonds, and personal mail here.', ja: 'カカオログイン後、運営者ギフト・購入ダイヤ・個人郵便をここで受取。' })}
+              {l({ ko: '지금은 이 기기에만 저장돼요. 카카오 계정으로 로그인하면 운영자 지급·결제 다이아·개인 우편을 어느 기기에서나 받을 수 있어요.', en: "You're using this device locally. Log in with Kakao to claim operator gifts, purchased diamonds, and personal mail on any device.", ja: '今はこの端末のみ。カカオでログインすると、運営者ギフト・購入ダイヤ・個人郵便をどの端末でも受取れます。' })}
             </p>
+            <button onClick={onLogin} className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[#FEE500] py-3 text-[15px] font-extrabold text-[#191919] shadow-card transition-transform active:translate-y-[2px]">
+              💬 {l({ ko: '카카오로 로그인', en: 'Log in with Kakao', ja: 'カカオでログイン' })}
+            </button>
           </Card>
         ) : mail.length === 0 ? (
           <Card className="mt-6 text-center">

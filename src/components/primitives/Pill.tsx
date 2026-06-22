@@ -14,7 +14,7 @@ export function DiamondPill() {
       animate={{ scale: 1 }}
       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
       onClick={() => nav('/charge')}
-      className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold text-[#6E7BF2] shadow-card"
+      className="flex items-center gap-1 rounded-full bg-surface px-2 py-1 text-sm font-extrabold text-[#6E7BF2] shadow-card"
     >
       💎 {diamonds.toLocaleString()}
       <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#6E7BF2] text-[11px] leading-none text-white">+</span>
@@ -22,12 +22,12 @@ export function DiamondPill() {
   )
 }
 
-export function PointsPill() {
+export function PointsPill({ showStreak = true }: { showStreak?: boolean } = {}) {
   const points = useStore((s) => s.points)
   const streak = useStore((s) => s.streak)
   return (
-    <div className="flex items-center gap-1.5">
-      {streak > 0 && (
+    <div className="flex items-center gap-1">
+      {showStreak && streak > 0 && (
         <span className="flex items-center gap-0.5 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold text-orange-500 shadow-card">
           🔥{streak}
         </span>
@@ -38,7 +38,7 @@ export function PointsPill() {
         initial={{ scale: 1.25 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-        className="flex items-center gap-1 rounded-full bg-surface px-3 py-1 text-sm font-extrabold text-mind-700 shadow-card"
+        className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold text-mind-700 shadow-card"
       >
         🪙 {points.toLocaleString()}
       </motion.span>

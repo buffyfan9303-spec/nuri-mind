@@ -100,7 +100,7 @@ export const JellyChip = memo(function JellyChip({
  */
 export default function ScrollChips({ items, baseDelay = 0 }: { items: ChipItem[]; baseDelay?: number }) {
   return (
-    <div className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 pt-1 [overscroll-behavior-x:contain]">
+    <div className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory scroll-pl-5 gap-3 overflow-x-auto px-5 pb-4 pt-1 [overscroll-behavior-x:contain]">
       {items.map((it, i) => (
         <motion.div
           key={it.id}
