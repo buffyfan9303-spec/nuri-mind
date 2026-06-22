@@ -6,6 +6,7 @@ import Onboarding from './components/Onboarding'
 import ReConsent from './components/ReConsent'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
+import { onAuthChange } from './lib/auth'
 import { pageView } from './lib/analytics'
 
 /** 라우트별 코드 스플리팅 — 첫 로딩엔 홈만 받고 나머지는 진입 시 로드 */
@@ -81,6 +82,14 @@ export default function App() {
     window.scrollTo(0, 0)
     pageView(location.pathname)
   }, [location.pathname])
+
+  // 운영자 서버 지급 다이아 수령 — 앱 진입 + 로그인 시(서버가 claimed 처리해 중복 가산 차단)
+  useEffect(() => {
+    void useStore.getState().claimDiamonds()
+    return onAuthChange(() => {
+      void useStore.getState().claimDiamonds()
+    })
+  }, [])
 
   // 회원가입(온보딩) 전이면 입장 대신 가입 화면
   // 단, 약관·개인정보 페이지는 가입 화면에서 탭해 열 수 있도록 통과시킴

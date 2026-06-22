@@ -23,6 +23,7 @@ import { uid } from '../lib/random'
 import { setSoundEnabled } from '../lib/sound'
 import { track } from '../lib/analytics'
 import { moderateText } from '../lib/moderation'
+import { claimDiamondGrantsServer } from '../lib/diamonds'
 
 /** 운영자 PIN — 배포 전 반드시 변경 (실서비스는 Supabase Auth 권장) */
 const OPERATOR_PIN = '5690'
@@ -193,6 +194,8 @@ interface State {
   setAiReportText: (id: string, text: string) => void
   /** 다이아 충전(결제 성공 후 호출) */
   addDiamonds: (n: number) => void
+  /** 운영자 서버 지급분 수령(로그인 시) → 받은 다이아 합계. 없으면 0 */
+  claimDiamonds: () => Promise<number>
   /** 다이아 차감 — 잔액 부족 시 false */
   spendDiamonds: (n: number) => boolean
   /** 운세 종합 열람 시도 — 'free'(월무료)·'dia'(차감)·'need'(잔액부족) */
@@ -632,6 +635,12 @@ export const useStore = create<State>()(
         setAiReportText: (id, text) => set((s) => ({ aiReportText: { ...s.aiReportText, [id]: text } })),
 
         addDiamonds: (n) => set((s) => ({ diamonds: s.diamonds + Math.max(0, Math.round(n)) })),
+        /** 운영자 서버 지급분 수령 → 로컬 잔액에 1회 가산(서버가 claimed 처리해 중복 차단) */
+        claimDiamonds: async () => {
+          const got = await claimDiamondGrantsServer()
+          if (got > 0) set((s) => ({ diamonds: s.diamonds + got }))
+          return got
+        },
         spendDiamonds: (n) => {
           const s = get()
           if (s.diamonds < n) return false
