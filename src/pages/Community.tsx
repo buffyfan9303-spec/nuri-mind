@@ -51,6 +51,8 @@ export default function Community() {
   const hiddenPosts = useStore((s) => s.hiddenPosts)
   const addComment = useStore((s) => s.addComment)
   const reportPost = useStore((s) => s.reportPost)
+  const blockUser = useStore((s) => s.blockUser)
+  const blockedNicks = useStore((s) => s.blockedNicks)
   const claimFirstPost = useStore((s) => s.claimFirstPost)
   const claimFirstComment = useStore((s) => s.claimFirstComment)
 
@@ -164,10 +166,10 @@ export default function Community() {
 
   /** 숨김 제외 + 주제 필터 + 정렬 */
   const posts = useMemo(() => {
-    let list = raw.filter((p) => !hiddenPosts.includes(p.id))
+    let list = raw.filter((p) => !hiddenPosts.includes(p.id) && !blockedNicks.includes(p.nick))
     if (filter !== 'all') list = list.filter((p) => p.badge && EMOJI_TEST[p.badge] === filter)
     return [...list].sort((a, b) => (sort === 'hot' ? b.likes - a.likes || b.at - a.at : b.at - a.at))
-  }, [raw, filter, sort, hiddenPosts])
+  }, [raw, filter, sort, hiddenPosts, blockedNicks])
 
   const submit = async () => {
     if (!text.trim()) return
@@ -241,6 +243,12 @@ export default function Community() {
     }
     reportPost(p.id, p.nick, p.text, 'user-report') // 로컬 기록(신고자 콘솔 확인용)
     flash(t('community.reportDone'))
+    sfx.tap()
+  }
+
+  const onBlock = (p: CommunityPost) => {
+    blockUser(p.nick)
+    flash(t('community.blockDone'))
     sfx.tap()
   }
 
@@ -480,12 +488,14 @@ export default function Community() {
                           📤
                         </button>
                         {!p.mine && (
-                          <button
-                            onClick={() => onReport(p)}
-                            className="ml-auto shrink-0 rounded-full px-2.5 py-1.5 text-[11.5px] font-bold text-ink-faint"
-                          >
-                            🚩 {t('community.report')}
-                          </button>
+                          <div className="ml-auto flex shrink-0 items-center gap-1">
+                            <button onClick={() => onBlock(p)} className="rounded-full px-2.5 py-1.5 text-[11.5px] font-bold text-ink-faint">
+                              🚫 {t('community.block')}
+                            </button>
+                            <button onClick={() => onReport(p)} className="rounded-full px-2.5 py-1.5 text-[11.5px] font-bold text-ink-faint">
+                              🚩 {t('community.report')}
+                            </button>
+                          </div>
                         )}
                       </div>
 

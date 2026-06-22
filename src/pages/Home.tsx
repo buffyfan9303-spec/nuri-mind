@@ -63,7 +63,17 @@ export default function Home() {
           <img src="/icon.svg" alt="" className="floaty h-8 w-8 rounded-xl" />
           <span className="text-lg font-extrabold tracking-tight text-mind-800">{t('app.name')}</span>
         </div>
-        <PointsPill />
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => nav('/mail')}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-surface2 text-[18px] shadow-card"
+            aria-label="mailbox"
+          >
+            📬
+          </motion.button>
+          <PointsPill />
+        </div>
       </header>
 
       <main className="mx-auto max-w-md px-5">

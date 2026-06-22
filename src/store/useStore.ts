@@ -106,6 +106,8 @@ interface State {
   comments: Record<string, CommunityComment[]>
   reports: Report[]
   hiddenPosts: string[]
+  /** 차단한 유저 닉네임 — 이 유저의 글/댓글을 피드에서 숨김(기기 단위) */
+  blockedNicks: string[]
   firstPostDone: boolean
   firstCommentDone: boolean
   points: number
@@ -165,6 +167,10 @@ interface State {
   deletePost: (id: string) => void
   addComment: (postId: string, text: string, badge?: string) => void
   reportPost: (postId: string, nick: string, excerpt: string, reason: string) => void
+  /** 유저 차단 — 해당 닉네임의 글/댓글 숨김 */
+  blockUser: (nick: string) => void
+  /** 차단 해제 */
+  unblockUser: (nick: string) => void
   resolveReport: (id: string, hide: boolean) => void
   claimFirstPost: () => number
   claimFirstComment: () => number
@@ -242,6 +248,7 @@ const initial = () => ({
   comments: {} as Record<string, CommunityComment[]>,
   reports: [] as Report[],
   hiddenPosts: [] as string[],
+  blockedNicks: [] as string[],
   firstPostDone: false,
   firstCommentDone: false,
   points: 100,
@@ -374,6 +381,9 @@ export const useStore = create<State>()(
             ],
           })
         },
+        blockUser: (nick) =>
+          set((s) => (s.blockedNicks.includes(nick) ? s : { blockedNicks: [...s.blockedNicks, nick] })),
+        unblockUser: (nick) => set((s) => ({ blockedNicks: s.blockedNicks.filter((n) => n !== nick) })),
         resolveReport: (id, hide) =>
           set((s) => {
             const rep = s.reports.find((r) => r.id === id)
