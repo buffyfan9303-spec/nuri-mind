@@ -25,6 +25,7 @@ import { setSoundEnabled } from '../lib/sound'
 import { track } from '../lib/analytics'
 import { moderateText } from '../lib/moderation'
 import { claimDiamondGrantsServer } from '../lib/diamonds'
+import { createSettingsSlice } from './slices/settingsSlice'
 
 /** 운영자 PIN — 배포 전 반드시 변경 (실서비스는 Supabase Auth 권장) */
 const OPERATOR_PIN = '5690'
@@ -329,22 +330,8 @@ export const useStore = create<State>()(
       return {
         ...initial(),
 
-        setLang: (lang) => set({ lang }),
-        setSound: (sound) => {
-          setSoundEnabled(sound)
-          set({ sound })
-        },
-        setAmbient: (ambient) => set({ ambient }),
-        setTheme: (theme) => set({ theme }),
-        setFontScale: (fontScale) => set({ fontScale: Math.min(1.3, Math.max(0.9, fontScale)) }),
-        setNotify: (notify) => set({ notify }),
-        setNickname: (nickname) => set({ nickname: nickname.slice(0, 12) || '누리' }),
-        setAvatar: (avatar) => set({ avatar }),
-        /** 회원가입 완료 — 닉네임·아바타 설정 후 입장 */
-        completeOnboarding: (nickname, avatar) =>
-          set({ nickname: nickname.trim().slice(0, 12) || '친구', avatar, onboarded: true, consent: { v: LEGAL_VERSION, at: today() } }),
-        acceptConsent: () => set({ consent: { v: LEGAL_VERSION, at: today() } }),
-        setBirthDate: (birthDate) => set({ birthDate }),
+        // ── 설정/계정 슬라이스(분리 적용) — 동작·필드 100% 동일 ──
+        ...createSettingsSlice(set),
 
         addPost: (text, badge) => {
           const body = text.trim().slice(0, 280)
