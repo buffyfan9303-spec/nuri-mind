@@ -6,12 +6,14 @@ export interface ChipItem {
   emoji: string
   /** 이미 현지화된 라벨 */
   label: string
-  /** 카테고리 브랜드 색(HEX) — 파스텔 단색 배경·짙은 텍스트·한 톤 어두운 그림자를 자동 생성 */
+  /** 카테고리 브랜드 색(HEX) — 파스텔 배경·짙은 텍스트·바닥 모서리를 자동 생성 */
   color: string
   onClick: () => void
+  /** 코너 리본 — 'NEW'(신규) 파랑 · 'HOT'(인기) 빨강 */
+  badge?: 'NEW' | 'HOT'
 }
 
-/* ── 브랜드 HEX → 젤리 파스텔 3색(배경/그림자/텍스트). 그라데이션 없이 단색만. ── */
+/* ── 브랜드 HEX → 젤리 칩 3색(배경/바닥모서리/텍스트). 그라데이션 없이 단색만. ── */
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace('#', '')
   const v = h.length === 3 ? h.split('').map((c) => c + c).join('') : h
@@ -28,27 +30,29 @@ const mix = (a: [number, number, number], b: [number, number, number], t: number
 const WHITE: [number, number, number] = [255, 255, 255]
 const INK: [number, number, number] = [20, 24, 28]
 
-/** 브랜드 색 → { bg: 밝은 파스텔, sh: 한 톤 어두운 그림자, fg: 짙은 채도 텍스트 } */
-export function pastelOf(color: string): { bg: string; sh: string; fg: string } {
+/** 브랜드 색 → { bg: 밝은 파스텔, edge: 한 톤 어두운 바닥 모서리(입체), fg: 짙은 텍스트 } */
+export function pastelOf(color: string): { bg: string; edge: string; fg: string } {
   const base = hexToRgb(color)
   return {
-    bg: mix(base, WHITE, 0.76), // 부드러운 파스텔 단색
-    sh: mix(base, WHITE, 0.42), // 배경보다 한 톤 어두운 입체 그림자
+    bg: mix(base, WHITE, 0.74), // 부드러운 파스텔 단색
+    edge: mix(base, INK, 0.12), // 3D 바닥 모서리 — 브랜드색을 살짝 어둡게
     fg: mix(base, INK, 0.52), // 배경과 어울리는 짙은 텍스트
   }
 }
 
+const BADGE_BG: Record<NonNullable<ChipItem['badge']>, string> = { NEW: '#3B9EFF', HOT: '#FF4D4D' }
+
 /**
  * 듀오링고식 가로 스크롤 '젤리 칩' 줄.
- * - 단색 파스텔(그라데이션 금지) + blur 0 두께 그림자(5px) + :active 꾹 눌림(translate-y 4px + 그림자 1px).
- * - CSS Scroll Snap(snap-x mandatory + 자식 snap-start), 스크롤바 숨김(no-scrollbar),
- *   부모 -mx-5 px-5 로 우측 칩이 살짝 잘려 스크롤 가능을 암시, 칩 간격 12px(gap-3).
+ * - 단색 파스텔(그라데이션 금지) + 자연스러운 입체(.jelly-chip: 상단 광택 + 컬러 바닥 모서리 + 부드러운 그림자)
+ *   + :active 젤리 눌림. CSS Scroll Snap, 스크롤바 숨김, 우측 칩 살짝 잘림(부모 -mx-5 px-5), 칩 간격 12px.
+ * - 콤팩트 86×84(과한 높이 제거). 선택적 NEW/HOT 코너 리본.
  */
 export default function ScrollChips({ items, baseDelay = 0 }: { items: ChipItem[]; baseDelay?: number }) {
   return (
-    <div className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 [overscroll-behavior-x:contain]">
+    <div className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 pt-1 [overscroll-behavior-x:contain]">
       {items.map((it, i) => {
-        const { bg, sh, fg } = pastelOf(it.color)
+        const { bg, edge, fg } = pastelOf(it.color)
         return (
           <motion.div
             key={it.id}
@@ -61,11 +65,19 @@ export default function ScrollChips({ items, baseDelay = 0 }: { items: ChipItem[
               type="button"
               onClick={it.onClick}
               aria-label={it.label}
-              style={{ background: bg, color: fg, '--sh': sh } as CSSProperties}
-              className="flex h-[106px] w-[92px] flex-col items-center justify-center gap-2 rounded-3xl px-2 outline-none transition-[transform,box-shadow] duration-100 ease-out [box-shadow:0_5px_0_var(--sh)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-current active:translate-y-[4px] active:[box-shadow:0_1px_0_var(--sh)]"
+              style={{ background: bg, color: fg, '--edge': edge } as CSSProperties}
+              className="jelly-chip relative flex h-[84px] w-[86px] flex-col items-center justify-center gap-1.5 rounded-3xl px-2 outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-current"
             >
-              <span aria-hidden="true" className="text-[30px] leading-none [filter:drop-shadow(0_1.5px_0.5px_rgba(0,0,0,0.18))]">{it.emoji}</span>
-              <span className="line-clamp-2 break-keep px-0.5 text-center text-[13px] font-extrabold leading-tight">{it.label}</span>
+              {it.badge && (
+                <span
+                  className="pointer-events-none absolute right-1.5 top-1.5 rounded-full px-1.5 py-px text-[8.5px] font-extrabold leading-[1.4] tracking-wide text-white"
+                  style={{ background: BADGE_BG[it.badge] }}
+                >
+                  {it.badge}
+                </span>
+              )}
+              <span aria-hidden="true" className="text-[26px] leading-none">{it.emoji}</span>
+              <span className="line-clamp-2 break-keep px-0.5 text-center text-[12.5px] font-extrabold leading-tight">{it.label}</span>
             </button>
           </motion.div>
         )

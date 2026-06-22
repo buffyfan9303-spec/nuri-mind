@@ -225,12 +225,13 @@ export default function Home() {
             <span className="text-[12.5px] font-extrabold text-mind-600">{t('community.all')} ›</span>
           </button>
           <ScrollChips
-            items={QUICK_TESTS.map((q) => ({
+            items={QUICK_TESTS.map((q, i) => ({
               id: q.id,
               emoji: q.emoji,
               label: l(q.title),
               color: q.grad[0],
               onClick: () => nav(`/quick/${q.id}`),
+              badge: i === 0 ? ('HOT' as const) : i >= QUICK_TESTS.length - 2 ? ('NEW' as const) : undefined,
             }))}
           />
         </div>
@@ -238,12 +239,13 @@ export default function Home() {
         {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}
         <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('home.testsHeader')}</h2>
         <ScrollChips
-          items={TESTS.filter((tm) => !tm.precision).map((tm) => ({
+          items={TESTS.filter((tm) => !tm.precision).map((tm, i) => ({
             id: tm.id,
             emoji: tm.emoji,
             label: t(`test.${tm.id}.name`),
             color: tm.gradFrom,
             onClick: () => nav(`/test/${tm.id}`),
+            badge: i === 0 ? ('HOT' as const) : undefined,
           }))}
         />
 

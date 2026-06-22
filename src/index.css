@@ -99,6 +99,29 @@ h1, h2, h3, h4 {
 }
 .sparkle { animation: sparkle 2.4s ease-in-out infinite; }
 
+/* 듀오링고식 '젤리 칩' — 자연스러운 입체감: 상단 광택(inset) + 얇은 컬러 바닥 모서리 + 부드러운 그림자로 그라운딩.
+   --edge(브랜드색 어둡게)를 칩별 인라인 스타일로 주입. :active 시 살짝 가라앉고 눌리는 젤리 탄성. */
+.jelly-chip {
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    0 3px 0 0 var(--edge),
+    0 8px 13px -5px rgba(31, 41, 48, 0.30);
+  transition: transform 0.13s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.13s ease-out;
+}
+.jelly-chip:active {
+  transform: translateY(2px) scale(0.985);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 1px 0 0 var(--edge),
+    0 3px 6px -3px rgba(31, 41, 48, 0.26);
+}
+.dark .jelly-chip {
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    0 3px 0 0 var(--edge),
+    0 8px 14px -5px rgba(0, 0, 0, 0.5);
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-8px); }
