@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { LEGAL_VERSION } from '../data/legal'
+import type { FortuneDetailText } from '../lib/fortuneAi'
 import type {
   Avatar,
   CommunityComment,
@@ -99,6 +100,9 @@ interface State {
   fortuneFreeUses: number
   /** 오늘의 상세 운세를 해제한 날짜(YYYY-MM-DD) — 오늘과 같으면 해제 상태(하루 1회) */
   fortuneDetailDate: string
+  /** AI 개인화 상세 운세 캐시(해당 날짜 1회 생성) */
+  fortuneAiDate: string
+  fortuneAiData: FortuneDetailText | null
   /** IQ 정밀검사 전체 해제 여부(영구) */
   iqUnlocked: boolean
   /** 정밀검사 상세분석 💎 게이팅 on/off (운영자 토글) */
@@ -214,6 +218,8 @@ interface State {
   viewFortuneFull: () => 'free' | 'dia' | 'need'
   /** 오늘의 상세 운세 해제 표시(오늘 날짜로) — 광고 시청 또는 다이아 차감 후 호출 */
   markFortuneDetail: () => void
+  /** AI 개인화 상세 운세 캐시 저장(날짜+데이터) */
+  setFortuneAi: (date: string, data: FortuneDetailText) => void
   /** IQ 정밀검사 전체 해제(10다이아) — 부족 시 false */
   unlockIq: () => boolean
   /** 정밀검사 상세 게이팅 on/off (운영자) */
@@ -244,6 +250,8 @@ const initial = () => ({
   fortuneMonth: '',
   fortuneFreeUses: 0,
   fortuneDetailDate: '',
+  fortuneAiDate: '',
+  fortuneAiData: null,
   iqUnlocked: false,
   precisionGate: false,
   precisionUnlocked: false,
@@ -682,6 +690,7 @@ export const useStore = create<State>()(
           return 'need'
         },
         markFortuneDetail: () => set({ fortuneDetailDate: new Date().toISOString().slice(0, 10) }),
+        setFortuneAi: (date, data) => set({ fortuneAiDate: date, fortuneAiData: data }),
         /** IQ 정밀검사 전체 해제 — 1회 10다이아(영구) */
         unlockIq: () => {
           const s = get()

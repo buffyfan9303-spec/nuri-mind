@@ -7,6 +7,8 @@ import AdGate from '../components/AdGate'
 import { useStore, FORTUNE_FREE_PER_MONTH, FORTUNE_DIA_COST, FORTUNE_DETAIL_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sajuOf, fortuneOf, weekOf, yearOf, monthOf, zodiacTodayLines, detailOf } from '../lib/saju'
+import { fetchFortuneDetailAi, type FortuneDetailText } from '../lib/fortuneAi'
+import { FUNCTIONS_URL } from '../lib/supabase'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { ELEMENT_SVG } from '../lib/characters'
 import { WEEK_LINES } from '../data/fortune'
@@ -26,6 +28,10 @@ export default function Fortune() {
   const fortuneDetailDate = useStore((s) => s.fortuneDetailDate)
   const markFortuneDetail = useStore((s) => s.markFortuneDetail)
   const spendDiamonds = useStore((s) => s.spendDiamonds)
+  const fortuneAiDate = useStore((s) => s.fortuneAiDate)
+  const fortuneAiData = useStore((s) => s.fortuneAiData)
+  const setFortuneAi = useStore((s) => s.setFortuneAi)
+  const lang = useStore((s) => s.lang)
   const [draft, setDraft] = useState(birthDate)
   const [editing, setEditing] = useState(!birthDate)
   const [saved, setSaved] = useState(false)
@@ -54,6 +60,30 @@ export default function Fortune() {
   useEffect(() => {
     if (data) track('fortune_view')
   }, [data])
+
+  // 상세 운세 해제 상태면 AI 개인화본을 하루 1회 생성·캐싱 (미배포/실패 시 결정론 템플릿 폴백)
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10)
+    if (!data || fortuneDetailDate !== today) return // 잠금 상태면 호출 안 함(과금 절약)
+    if (fortuneAiDate === today && fortuneAiData) return // 오늘 캐시 있음
+    if (!FUNCTIONS_URL) return // 엣지 함수 미배포 → 결정론 폴백
+    let cancelled = false
+    fetchFortuneDetailAi({
+      ilju: data.saju.iljuKo,
+      element: data.saju.ilganEl,
+      zodiac: data.saju.zodiacKo,
+      luckyDir: data.fortune.luckyDir,
+      luckyTime: data.detail.luckyTime,
+      lang,
+      date: today,
+    }).then((res) => {
+      if (res && !cancelled) setFortuneAi(today, res)
+    })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, fortuneDetailDate, lang])
 
   const shareFortune = async () => {
     if (!data) return
@@ -87,6 +117,7 @@ export default function Fortune() {
   const shareDetail = async () => {
     if (!data) return
     const { saju, fortune, detail } = data
+    const aiT = fortuneAiDate === new Date().toISOString().slice(0, 10) ? fortuneAiData : null
     track('share', { channel: 'fortune_detail' })
     try {
       const blob = await makeResultCard({
@@ -94,8 +125,8 @@ export default function Fortune() {
         name: `${saju.zodiacKo}${t('fortune.zodiacSuffix')} · ${saju.iljuKo}`,
         title: l({ ko: `행운의 방향 ${fortune.luckyDir}쪽`, en: `Lucky way: ${fortune.luckyDir}`, ja: `幸運の方角 ${fortune.luckyDir}` }),
         topPercent: 0,
-        subtitle: l(detail.summary),
-        chipText: `⏳ ${detail.luckyTime}`,
+        subtitle: aiT ? aiT.summary : l(detail.summary),
+        chipText: `⏳ ${aiT ? aiT.luckyTime : detail.luckyTime}`,
         testName: l({ ko: '오늘의 상세 운세', en: 'Detailed Daily Fortune', ja: '今日の詳細運勢' }),
         grad: fortune.grad,
         appName: t('app.name'),
@@ -167,6 +198,14 @@ export default function Fortune() {
   }
   const todayStr = new Date().toISOString().slice(0, 10)
   const detailUnlocked = fortuneDetailDate === todayStr
+  const aiDetail = fortuneAiDate === todayStr ? fortuneAiData : null
+  const usingAi = !!aiDetail
+  const v: FortuneDetailText = aiDetail ?? {
+    morning: l(detail.morning), noon: l(detail.noon), evening: l(detail.evening),
+    luckyTime: detail.luckyTime, place: l(detail.place), item: l(detail.item), food: l(detail.food),
+    caution: l(detail.caution), advice: l(detail.advice), relation: l(detail.relation),
+    work: l(detail.work), wealth: l(detail.wealth), health: l(detail.health), summary: l(detail.summary),
+  }
   const unlockDetailDia = () => {
     if (spendDiamonds(FORTUNE_DETAIL_DIA_COST)) {
       markFortuneDetail()
@@ -256,7 +295,9 @@ export default function Fortune() {
         <div className="mt-7 flex items-center gap-2 px-1">
           <h2 className="text-[17px] font-extrabold tracking-tight">🔮 {l({ ko: '오늘의 상세 운세', en: 'Detailed Daily Fortune', ja: '今日の詳細運勢' })}</h2>
           {detailUnlocked ? (
-            <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">{l({ ko: '열람 중', en: 'unlocked', ja: '閲覧中' })}</span>
+            <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">
+              {usingAi ? `✨ ${l({ ko: 'AI 맞춤', en: 'AI personalized', ja: 'AI個別' })}` : l({ ko: '열람 중', en: 'unlocked', ja: '閲覧中' })}
+            </span>
           ) : (
             <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">📺 {l({ ko: '오늘 무료', en: 'Free today', ja: '今日無料' })}</span>
           )}
@@ -272,9 +313,9 @@ export default function Fortune() {
               <h3 className="text-[14px] font-extrabold">⏰ {l({ ko: '시간대별 운세', en: 'By Time of Day', ja: '時間帯別の運勢' })}</h3>
               <div className="mt-2.5 space-y-2.5">
                 {[
-                  { emoji: '🌅', label: l({ ko: '아침', en: 'Morning', ja: '朝' }), text: l(detail.morning) },
-                  { emoji: '☀️', label: l({ ko: '낮', en: 'Noon', ja: '昼' }), text: l(detail.noon) },
-                  { emoji: '🌙', label: l({ ko: '저녁', en: 'Evening', ja: '夜' }), text: l(detail.evening) },
+                  { emoji: '🌅', label: l({ ko: '아침', en: 'Morning', ja: '朝' }), text: v.morning },
+                  { emoji: '☀️', label: l({ ko: '낮', en: 'Noon', ja: '昼' }), text: v.noon },
+                  { emoji: '🌙', label: l({ ko: '저녁', en: 'Evening', ja: '夜' }), text: v.evening },
                 ].map((r) => (
                   <div key={r.label} className="rounded-2xl bg-surface2 p-3">
                     <span className="text-[12.5px] font-extrabold text-mind-700">{r.emoji} {r.label}</span>
@@ -289,11 +330,11 @@ export default function Fortune() {
               <h3 className="text-[14px] font-extrabold">🍀 {l({ ko: '오늘의 행운 포인트', en: 'Lucky Points', ja: '今日のラッキーポイント' })}</h3>
               <div className="mt-2.5 space-y-2">
                 {[
-                  { emoji: '⏳', label: l({ ko: '행운의 시간', en: 'Lucky time', ja: 'ラッキー時間' }), val: detail.luckyTime },
+                  { emoji: '⏳', label: l({ ko: '행운의 시간', en: 'Lucky time', ja: 'ラッキー時間' }), val: v.luckyTime },
                   { emoji: '🧭', label: l({ ko: '좋은 방향', en: 'Good direction', ja: '良い方角' }), val: fortune.luckyDir },
-                  { emoji: '📍', label: l({ ko: '행운의 장소', en: 'Lucky place', ja: 'ラッキー場所' }), val: l(detail.place) },
-                  { emoji: '🎁', label: l({ ko: '행운의 아이템', en: 'Lucky item', ja: 'ラッキーアイテム' }), val: l(detail.item) },
-                  { emoji: '🍴', label: l({ ko: '행운의 음식', en: 'Lucky food', ja: 'ラッキーフード' }), val: l(detail.food) },
+                  { emoji: '📍', label: l({ ko: '행운의 장소', en: 'Lucky place', ja: 'ラッキー場所' }), val: v.place },
+                  { emoji: '🎁', label: l({ ko: '행운의 아이템', en: 'Lucky item', ja: 'ラッキーアイテム' }), val: v.item },
+                  { emoji: '🍴', label: l({ ko: '행운의 음식', en: 'Lucky food', ja: 'ラッキーフード' }), val: v.food },
                 ].map((r) => (
                   <div key={r.label} className="flex items-start gap-2.5 rounded-2xl bg-surface2 p-2.5">
                     <span className="text-[18px] leading-none">{r.emoji}</span>
@@ -311,10 +352,10 @@ export default function Fortune() {
               <h3 className="text-[14px] font-extrabold">📊 {l({ ko: '분야별 상세', en: 'By Area', ja: '分野別の詳細' })}</h3>
               <div className="mt-2.5 space-y-3">
                 {[
-                  { emoji: '🤝', label: l({ ko: '인간관계', en: 'Relationships', ja: '人間関係' }), text: l(detail.relation) },
-                  { emoji: '💼', label: l({ ko: '일·학업', en: 'Work & Study', ja: '仕事・学業' }), text: l(detail.work) },
-                  { emoji: '💰', label: l({ ko: '재물', en: 'Wealth', ja: '財運' }), text: l(detail.wealth) },
-                  { emoji: '🌿', label: l({ ko: '건강', en: 'Health', ja: '健康' }), text: l(detail.health) },
+                  { emoji: '🤝', label: l({ ko: '인간관계', en: 'Relationships', ja: '人間関係' }), text: v.relation },
+                  { emoji: '💼', label: l({ ko: '일·학업', en: 'Work & Study', ja: '仕事・学業' }), text: v.work },
+                  { emoji: '💰', label: l({ ko: '재물', en: 'Wealth', ja: '財運' }), text: v.wealth },
+                  { emoji: '🌿', label: l({ ko: '건강', en: 'Health', ja: '健康' }), text: v.health },
                 ].map((r) => (
                   <div key={r.label}>
                     <span className="text-[12.5px] font-extrabold text-mind-700">{r.emoji} {r.label}</span>
@@ -327,15 +368,15 @@ export default function Fortune() {
             {/* 조심 & 조언 */}
             <Card>
               <h3 className="text-[14px] font-extrabold">⚠️ {l({ ko: '오늘 조심할 것', en: 'Watch Out For', ja: '今日の注意点' })}</h3>
-              <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink">{l(detail.caution)}</p>
+              <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink">{v.caution}</p>
               <h3 className="mt-3.5 text-[14px] font-extrabold">💡 {l({ ko: '오늘의 조언', en: 'Today’s Advice', ja: '今日の助言' })}</h3>
-              <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink">{l(detail.advice)}</p>
+              <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink">{v.advice}</p>
             </Card>
 
             {/* 총평 */}
             <div className="rounded-3xl p-4 text-white shadow-pop" style={{ background: `linear-gradient(135deg, ${fortune.grad[0]}, ${fortune.grad[1]})` }}>
               <h3 className="text-[12.5px] font-extrabold text-white/85">📝 {l({ ko: '오늘의 총평', en: 'Summary', ja: '今日の総評' })}</h3>
-              <p className="mt-1.5 break-keep text-[14px] font-extrabold leading-relaxed">{l(detail.summary)}</p>
+              <p className="mt-1.5 break-keep text-[14px] font-extrabold leading-relaxed">{v.summary}</p>
             </div>
 
             {detailUnlocked && (
