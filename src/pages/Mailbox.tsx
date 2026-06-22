@@ -44,6 +44,18 @@ export default function Mailbox() {
     if (!r.ok) flash(l({ ko: '카카오 로그인 준비 중이에요. 잠시 후 다시 시도해 주세요.', en: 'Kakao login is being set up. Please try again later.', ja: 'カカオログイン準備中です。後ほどお試しください。' }))
   }
 
+  // OAuth 콜백에 에러가 실려오면(설정 문제 등) 사용자에게 그대로 보여줌 → 원인 진단
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search.slice(1))
+    const h = new URLSearchParams(window.location.hash.slice(1))
+    const err = q.get('error_description') || h.get('error_description') || q.get('error') || h.get('error')
+    if (err) {
+      flash(l({ ko: `카카오 로그인 실패: ${decodeURIComponent(err).slice(0, 90)}`, en: `Login failed: ${err.slice(0, 90)}`, ja: `ログイン失敗: ${err.slice(0, 90)}` }))
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const onClaim = async (it: MailItem) => {
     const got = await claimMail(it.id)
     if (got > 0) addDiamonds(got)
