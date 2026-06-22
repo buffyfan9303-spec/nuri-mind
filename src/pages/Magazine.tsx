@@ -1,7 +1,11 @@
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { Card, Chip, TopBar } from '../components/ui'
+import { JellyChip } from '../components/ScrollChips'
 import { ARTICLES } from '../data/magazine'
+import { testMeta } from '../data/tests'
+import type { L } from '../data/types'
 import { useT, useL } from '../i18n/useT'
 import { useStore } from '../store/useStore'
 
@@ -10,6 +14,20 @@ export default function Magazine() {
   const l = useL()
   const nav = useNavigate()
   const readArticles = useStore((s) => s.readArticles)
+  const [tag, setTag] = useState<string | null>(null)
+
+  const FALLBACK = ['#4FA882', '#6E9FDC', '#F25C8E', '#8B7CF6', '#12A5C2', '#FFB020']
+  const tags = useMemo(() => {
+    const map = new Map<string, { key: string; label: L; emoji: string; color: string }>()
+    for (const a of ARTICLES) {
+      if (map.has(a.tag.ko)) continue
+      const color = (a.test && testMeta(a.test)?.gradFrom) || FALLBACK[map.size % FALLBACK.length]
+      map.set(a.tag.ko, { key: a.tag.ko, label: a.tag, emoji: a.emoji, color })
+    }
+    return [...map.values()]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  const filtered = tag ? ARTICLES.filter((a) => a.tag.ko === tag) : ARTICLES
 
   return (
     <div className="min-h-dvh pb-36">
@@ -17,8 +35,20 @@ export default function Magazine() {
       <main className="mx-auto max-w-md px-5">
         <p className="px-1 text-[14px] font-medium leading-relaxed text-ink-sub">{t('mag.sub')}</p>
 
-        <div className="mt-4 space-y-3">
-          {ARTICLES.map((a, i) => {
+        {/* 태그 필터 (젤리 칩) */}
+        <div className="no-scrollbar -mx-5 mt-3 flex snap-x gap-3 overflow-x-auto px-5 pb-3 pt-1 [overscroll-behavior-x:contain]">
+          <div className="shrink-0 snap-start">
+            <JellyChip emoji="📚" label={l({ ko: '전체', en: 'All', ja: '全て' })} color="#4FA882" selected={tag === null} onClick={() => setTag(null)} />
+          </div>
+          {tags.map((tg) => (
+            <div key={tg.key} className="shrink-0 snap-start">
+              <JellyChip emoji={tg.emoji} label={l(tg.label)} color={tg.color} selected={tag === tg.key} onClick={() => setTag(tg.key)} />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-2 space-y-3">
+          {filtered.map((a, i) => {
             const read = readArticles.includes(a.id)
             return (
               <motion.div
