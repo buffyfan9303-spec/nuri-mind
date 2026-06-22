@@ -469,7 +469,7 @@ const ko: Record<string, string> = {
   'test.love.name': '연애 애착 검사',
   'test.love.short': '애착',
   'test.love.desc': '내가 왜 연애가 힘든지 알아봐요',
-  'test.burnout.name': '번아웃(지침) 검사',
+  'test.burnout.name': '번아웃 검사',
   'test.burnout.short': '번아웃',
   'test.burnout.desc': '게으른 게 아니라 지쳐서 그런 걸 수도 있어요',
   'test.dopamine.name': '도파민 중독 검사',

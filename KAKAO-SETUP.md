@@ -31,7 +31,8 @@
 1. **Authentication → Providers → Kakao → Enable(켜기)**
 2. **Kakao Client ID** = A-2의 **REST API 키**
 3. **Kakao Client Secret** = A-6의 **Client Secret 코드**
-4. **Save**
+4. ⚠️ **Allow users without an email → ON (필수!)** — 이 앱은 닉네임만 요청(이메일 X)하므로, 이 토글이 꺼져 있으면 "이메일 없음" 오류로 **로그인이 실패**합니다.
+5. **Save**
 5. **Authentication → URL Configuration**:
    - **Site URL**: `https://www.nurimind.co.kr`
    - **Redirect URLs** 에 추가(와일드카드 — 로그인 후 원래 페이지로 복귀):
