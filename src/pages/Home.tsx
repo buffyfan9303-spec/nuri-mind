@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import AdSlot from '../components/AdSlot'
 import Avatar from '../components/Avatar'
+import ScrollChips from '../components/ScrollChips'
 import { PointsPill, Card } from '../components/ui'
 import { TESTS } from '../data/tests'
 import { QUICK_TESTS } from '../data/quick'
@@ -223,52 +224,28 @@ export default function Home() {
             </h2>
             <span className="text-[12.5px] font-extrabold text-mind-600">{t('community.all')} ›</span>
           </button>
-          <div className="no-scrollbar -mx-5 mt-3 flex gap-2.5 overflow-x-auto px-5 pb-1">
-            {QUICK_TESTS.map((q, i) => (
-              <motion.button
-                key={q.id}
-                initial={{ opacity: 0, x: 16 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 * i, type: 'spring', stiffness: 240, damping: 24 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => nav(`/quick/${q.id}`)}
-                className="flex aspect-square w-[104px] shrink-0 flex-col justify-between rounded-2xl p-3 text-left text-white shadow-pop"
-                style={{ background: `linear-gradient(135deg, ${q.grad[0]}, ${q.grad[1]})` }}
-              >
-                <span className="text-[28px] leading-none">{q.emoji}</span>
-                <h3 className="break-keep text-[13.5px] font-extrabold leading-snug">{l(q.title)}</h3>
-              </motion.button>
-            ))}
-          </div>
+          <ScrollChips
+            items={QUICK_TESTS.map((q) => ({
+              id: q.id,
+              emoji: q.emoji,
+              label: l(q.title),
+              color: q.grad[0],
+              onClick: () => nav(`/quick/${q.id}`),
+            }))}
+          />
         </div>
 
-        {/* ── 심층 심리검사 (가로형 컴팩트 리스트) — 정밀검사보다 위 ── */}
+        {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}
         <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('home.testsHeader')}</h2>
-        <div className="mt-3 space-y-2.5">
-          {TESTS.filter((tm) => !tm.precision).map((tm, i) => (
-            <motion.div
-              key={tm.id}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 * i, type: 'spring', stiffness: 240, damping: 24 }}
-            >
-              <Card onClick={() => nav(`/test/${tm.id}`)} className="flex items-center gap-3 !p-3">
-                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-[22px] ${tm.tint}`}>
-                  {tm.emoji}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="break-keep text-[15.5px] font-extrabold leading-tight tracking-tight">{t(`test.${tm.id}.name`)}</h3>
-                  <p className={`mt-0.5 truncate text-[12px] font-extrabold ${tm.text}`}>
-                    {tm.count}
-                    {t('common.q')} · {tm.minutes}
-                    {t('common.min')}
-                  </p>
-                </div>
-                <span className="shrink-0 text-lg text-ink-faint">›</span>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        <ScrollChips
+          items={TESTS.filter((tm) => !tm.precision).map((tm) => ({
+            id: tm.id,
+            emoji: tm.emoji,
+            label: t(`test.${tm.id}.name`),
+            color: tm.gradFrom,
+            onClick: () => nav(`/test/${tm.id}`),
+          }))}
+        />
 
         {/* ── 정밀검사 (실측 인지과제) ── */}
         <div className="mt-6 flex items-center gap-2 px-1">
