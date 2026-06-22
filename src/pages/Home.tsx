@@ -14,7 +14,7 @@ import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
-import { TERMS, TEST_NAME_KEY } from '../data/terms'
+import { TERMS, TEST_SHORT_KEY } from '../data/terms'
 import { unreadMailCount } from '../lib/mailbox'
 
 const todayStr = () => new Date().toISOString().slice(0, 10)
@@ -246,13 +246,12 @@ export default function Home() {
           </span>
         </div>
         <ScrollChips
-          items={TESTS.filter((tm) => !tm.precision).map((tm, i) => ({
+          items={TESTS.filter((tm) => !tm.precision).map((tm) => ({
             id: tm.id,
             emoji: tm.emoji,
-            label: t(TEST_NAME_KEY(tm.id)),
+            label: t(TEST_SHORT_KEY(tm.id)),
             color: tm.gradFrom,
             onClick: () => nav(`/test/${tm.id}`),
-            badge: i === 0 ? ('HOT' as const) : undefined,
           }))}
         />
 
@@ -268,10 +267,10 @@ export default function Home() {
           items={TESTS.filter((tm) => tm.precision).map((tm, i, arr) => ({
             id: tm.id,
             emoji: tm.emoji,
-            label: t(TEST_NAME_KEY(tm.id)),
+            label: t(TEST_SHORT_KEY(tm.id)),
             color: tm.gradFrom,
             onClick: () => nav(`/test/${tm.id}`),
-            badge: i === 0 ? ('HOT' as const) : i >= arr.length - 2 ? ('NEW' as const) : undefined,
+            badge: i >= arr.length - 2 ? ('NEW' as const) : undefined,
           }))}
         />
 
