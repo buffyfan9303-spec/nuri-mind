@@ -236,7 +236,7 @@ export const QUICK_TESTS: QuickTest[] = [
   {
     id: 'energy',
     emoji: '🔋',
-    title: { ko: '에너지 충전 타입', en: 'Energy Type', ja: 'エネルギータイプ' },
+    title: { ko: '에너지 타입', en: 'Energy Type', ja: 'エネルギータイプ' },
     desc: { ko: 'MBTI가 못 잡는 진짜 내향·외향', en: 'Your true intro/extra beyond MBTI', ja: 'MBTIを超える内向·外向' },
     grad: ['#10B981', '#5BD9A8'],
     funnel: 'ego',
@@ -340,7 +340,7 @@ export const QUICK_TESTS: QuickTest[] = [
   {
     id: 'lovecell',
     emoji: '💘',
-    title: { ko: '연애세포 검사', en: 'Love Cells', ja: '恋愛細胞' },
+    title: { ko: '연애세포', en: 'Love Cells', ja: '恋愛細胞' },
     desc: { ko: '내 연애세포는 지금 몇 살?', en: 'How alive are your love cells?', ja: '恋愛細胞は今元気？' },
     grad: ['#F25C8E', '#FF9EC0'],
     funnel: 'love',
@@ -392,7 +392,7 @@ export const QUICK_TESTS: QuickTest[] = [
   {
     id: 'soulmate',
     emoji: '💞',
-    title: { ko: '소울메이트 유형', en: 'Soulmate Type', ja: 'ソウルメイトタイプ' },
+    title: { ko: '소울메이트', en: 'Soulmate', ja: 'ソウルメイト' },
     desc: { ko: '나랑 찰떡인 짝꿍은?', en: 'Who\'s your perfect match?', ja: 'ピッタリの相手は？' },
     grad: ['#F25C8E', '#C58BF2'],
     funnel: 'love',
@@ -497,9 +497,9 @@ export const QUICK_TESTS: QuickTest[] = [
     "id": "flower",
     "emoji": "🌸",
     "title": {
-      "ko": "나에게 맞는 꽃",
+      "ko": "나의 꽃",
       "en": "Your Flower",
-      "ja": "あなたに合う花"
+      "ja": "あなたの花"
     },
     "desc": {
       "ko": "4문항으로 보는 내 마음을 닮은 꽃",
