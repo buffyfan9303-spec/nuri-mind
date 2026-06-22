@@ -7,7 +7,7 @@ import { SHOP_ITEMS } from '../data/seed'
 import type { ShopItem } from '../data/types'
 import { FREEZE_MAX, useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
-import { burst } from '../lib/confetti'
+import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { sfx } from '../lib/sound'
 
 export default function Shop() {
@@ -18,6 +18,7 @@ export default function Shop() {
   const redeem = useStore((s) => s.redeem)
   const buyFreeze = useStore((s) => s.buyFreeze)
   const freezes = useStore((s) => s.streakFreezes)
+  const { fire } = useRewardAnimation()
   const [confirm, setConfirm] = useState<ShopItem | null>(null)
   const [requested, setRequested] = useState(false)
 
@@ -26,8 +27,7 @@ export default function Shop() {
     // 스트릭 프리즈: 운영자 승인 없이 즉시 지급되는 디지털 아이템
     const ok = confirm.id === 'item_freeze' ? buyFreeze() : redeem(confirm, l(confirm.name))
     if (ok) {
-      sfx.coin()
-      burst()
+      fire('coin')
       setRequested(true)
       setTimeout(() => setRequested(false), 2200)
     } else {

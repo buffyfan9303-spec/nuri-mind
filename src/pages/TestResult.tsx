@@ -15,6 +15,7 @@ import { LOVE_CHEMI } from '../data/love'
 import { useStore, IQ_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { celebrate, burst } from '../lib/confetti'
+import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { track } from '../lib/analytics'
@@ -44,13 +45,13 @@ export default function TestResult() {
   const precisionUnlocked = useStore((s) => s.precisionUnlocked)
   const unlockPrecision = useStore((s) => s.unlockPrecision)
   const diamonds = useStore((s) => s.diamonds)
+  const { fire } = useRewardAnimation()
   const celebrated = useRef(false)
 
   useEffect(() => {
     if (!gate && state.fresh && !celebrated.current) {
       celebrated.current = true
-      celebrate()
-      sfx.fanfare()
+      fire('win')
     }
   }, [gate, state.fresh])
 
@@ -79,8 +80,7 @@ export default function TestResult() {
       setNeedCharge(true)
       return
     }
-    burst()
-    sfx.coin()
+    fire('coin')
   }
 
   /* 검사별 게이지 제목 (키 없으면 기본 제목) */

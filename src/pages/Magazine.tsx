@@ -53,6 +53,7 @@ export default function Magazine() {
             return (
               <motion.div
                 key={a.id}
+                className="[content-visibility:auto] [contain-intrinsic-size:auto_150px]"
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 * i, type: 'spring', stiffness: 240, damping: 24 }}

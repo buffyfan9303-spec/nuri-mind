@@ -4,8 +4,7 @@ import { Card, Chip, Section, TopBar } from '../components/ui'
 import { EXPERIENCES, TIERS, lifetimeOf, nextTierOf, tierAtLeast, tierOf, expById } from '../data/rank'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
-import { celebrate } from '../lib/confetti'
-import { sfx } from '../lib/sound'
+import { useRewardAnimation } from '../hooks/useRewardAnimation'
 
 export default function Rank() {
   const t = useT()
@@ -13,6 +12,7 @@ export default function Rank() {
   const ledger = useStore((s) => s.ledger)
   const applications = useStore((s) => s.applications)
   const applyExperience = useStore((s) => s.applyExperience)
+  const { fire } = useRewardAnimation()
 
   const lifetime = lifetimeOf(ledger)
   const tier = tierOf(lifetime)
@@ -20,10 +20,7 @@ export default function Rank() {
   const progress = next ? (lifetime - tier.min) / (next.min - tier.min) : 1
 
   const onApply = (expId: string) => {
-    if (applyExperience(expId)) {
-      celebrate()
-      sfx.coin()
-    }
+    if (applyExperience(expId)) fire('win')
   }
 
   return (

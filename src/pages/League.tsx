@@ -4,6 +4,7 @@ import { Card, Chip, TopBar } from '../components/ui'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, nextResetMs, weekKeyOf } from '../lib/league'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
+import { useRewardAnimation } from '../hooks/useRewardAnimation'
 
 export default function League() {
   const t = useT()
@@ -17,6 +18,7 @@ export default function League() {
   const leagueMsg = useStore((s) => s.leagueMsg)
   const ensureLeague = useStore((s) => s.ensureLeague)
   const clearLeagueMsg = useStore((s) => s.clearLeagueMsg)
+  const { fire } = useRewardAnimation()
 
   useEffect(() => {
     ensureLeague()
@@ -25,6 +27,7 @@ export default function League() {
 
   useEffect(() => {
     if (!leagueMsg) return
+    if (leagueMsg === 'up') fire('levelup') // 리그 승급 = 레벨업 연출
     const tm = setTimeout(clearLeagueMsg, 4000)
     return () => clearTimeout(tm)
     // eslint-disable-next-line react-hooks/exhaustive-deps

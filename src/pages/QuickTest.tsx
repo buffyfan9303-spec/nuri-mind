@@ -7,7 +7,7 @@ import { quickById } from '../data/quick'
 import { useT, useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
-import { burst } from '../lib/confetti'
+import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { shiftGrad } from '../lib/color'
@@ -19,6 +19,7 @@ export default function QuickTest() {
   const l = useL()
   const nav = useNavigate()
   const test = quickById(id || '')
+  const { fire } = useRewardAnimation()
 
   const [step, setStep] = useState(0)
   const [tally, setTally] = useState<Record<string, number>>({})
@@ -55,8 +56,7 @@ export default function QuickTest() {
     if (step + 1 < test.questions.length) setStep(step + 1)
     else {
       setDone(true)
-      burst()
-      sfx.fanfare()
+      fire('win')
       track('quick_complete', { id: test.id })
     }
   }

@@ -423,7 +423,7 @@ export default function Community() {
               const hot = p.likes >= HOT
               const comments = server ? serverComments[p.id] || [] : commentsMap[p.id] || []
               return (
-                <div key={p.id}>
+                <div key={p.id} className="[content-visibility:auto] [contain-intrinsic-size:auto_180px]">
                   <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}

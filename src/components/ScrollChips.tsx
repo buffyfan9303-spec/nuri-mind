@@ -1,5 +1,6 @@
-import { type CSSProperties } from 'react'
+import { memo, type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
+import { SPRING } from '../lib/motion'
 
 export interface ChipItem {
   id: string
@@ -50,7 +51,7 @@ const BADGE_BG: Record<NonNullable<ChipItem['badge']>, string> = { NEW: '#3B9EFF
  * 듀오링고식 '젤리 칩' 버튼 — 단색 파스텔(그라데이션❌) + 자연스러운 입체(.jelly-chip)
  * + :active 젤리 눌림. ScrollChips(가로 스크롤)·그리드·필터 어디서나 재사용.
  */
-export function JellyChip({
+export const JellyChip = memo(function JellyChip({
   emoji,
   label,
   color,
@@ -92,7 +93,7 @@ export function JellyChip({
       <span className="line-clamp-2 break-keep px-0.5 text-center text-[12.5px] font-extrabold leading-tight">{label}</span>
     </button>
   )
-}
+})
 
 /**
  * 가로 스크롤 젤리 칩 줄. CSS Scroll Snap + 스크롤바 숨김 + 우측 칩 살짝 잘림(부모 -mx-5 px-5) + 칩 간격 12px.
@@ -105,7 +106,7 @@ export default function ScrollChips({ items, baseDelay = 0 }: { items: ChipItem[
           key={it.id}
           initial={{ opacity: 0, x: 18 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: baseDelay + 0.045 * i, type: 'spring', stiffness: 260, damping: 24 }}
+          transition={{ ...SPRING.jelly, delay: baseDelay + 0.045 * i }}
           className="shrink-0 snap-start"
         >
           <JellyChip emoji={it.emoji} label={it.label} color={it.color} badge={it.badge} selected={it.selected} onClick={it.onClick} />
