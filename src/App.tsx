@@ -4,6 +4,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Onboarding from './components/Onboarding'
 import ReConsent from './components/ReConsent'
+import Skeleton from './components/Skeleton'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
 import { pageView } from './lib/analytics'
@@ -40,20 +41,6 @@ const Insight = lazy(() => import('./pages/Insight'))
 const Fortune = lazy(() => import('./pages/Fortune'))
 const Compat = lazy(() => import('./pages/Compat'))
 const Charge = lazy(() => import('./pages/Charge'))
-
-function Loader() {
-  return (
-    <div className="flex min-h-dvh items-center justify-center">
-      <motion.div
-        animate={{ scale: [1, 1.15, 1], rotate: [0, 8, -8, 0] }}
-        transition={{ repeat: Infinity, duration: 1.1 }}
-        className="text-4xl"
-      >
-        🧠
-      </motion.div>
-    </div>
-  )
-}
 
 export default function App() {
   const location = useLocation()
@@ -98,7 +85,7 @@ export default function App() {
           exit={{ opacity: 0, y: -8, scale: 0.99 }}
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Suspense fallback={<Loader />}>
+          <Suspense fallback={<Skeleton />}>
             <Routes location={location}>
               <Route path="/" element={<Home />} />
               <Route path="/test/:id" element={<TestIntro />} />

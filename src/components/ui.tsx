@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore'
 
@@ -84,7 +85,8 @@ export function TopBar({
 export function Card({ children, className = '', onClick }: { children: ReactNode; className?: string; onClick?: () => void }) {
   return (
     <motion.div
-      whileTap={onClick ? { scale: 0.98 } : undefined}
+      whileTap={onClick ? { scale: 0.97 } : undefined}
+      transition={SPRING.snappy}
       onClick={onClick}
       className={`rounded-3xl bg-surface p-5 shadow-card ${onClick ? 'cursor-pointer' : ''} ${className}`}
     >
@@ -136,10 +138,10 @@ export function Modal({
           onClick={onClose}
         >
           <motion.div
-            initial={{ y: 80, opacity: 0, scale: 0.98 }}
+            initial={{ y: 90, opacity: 0, scale: 0.96 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 80, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+            exit={{ y: 90, opacity: 0 }}
+            transition={SPRING.bounce}
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md rounded-t-3xl bg-surface p-6 pb-8 shadow-pop sm:rounded-3xl sm:pb-6"
           >
