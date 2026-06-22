@@ -242,7 +242,35 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── 정밀검사 (실측 인지과제 — IQ·기억력) ── */}
+        {/* ── 심층 심리검사 (가로형 컴팩트 리스트) — 정밀검사보다 위 ── */}
+        <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('home.testsHeader')}</h2>
+        <div className="mt-3 space-y-2.5">
+          {TESTS.filter((tm) => !tm.precision).map((tm, i) => (
+            <motion.div
+              key={tm.id}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 * i, type: 'spring', stiffness: 240, damping: 24 }}
+            >
+              <Card onClick={() => nav(`/test/${tm.id}`)} className="flex items-center gap-3 !p-3">
+                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-[22px] ${tm.tint}`}>
+                  {tm.emoji}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="break-keep text-[15.5px] font-extrabold leading-tight tracking-tight">{t(`test.${tm.id}.name`)}</h3>
+                  <p className={`mt-0.5 truncate text-[12px] font-extrabold ${tm.text}`}>
+                    {tm.count}
+                    {t('common.q')} · {tm.minutes}
+                    {t('common.min')}
+                  </p>
+                </div>
+                <span className="shrink-0 text-lg text-ink-faint">›</span>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* ── 정밀검사 (실측 인지과제) ── */}
         <div className="mt-6 flex items-center gap-2 px-1">
           <h2 className="text-[17px] font-extrabold tracking-tight">🔬 {l({ ko: '정밀검사', en: 'Precision tests', ja: '精密検査' })}</h2>
           <span className="rounded-full bg-iq-light px-2 py-0.5 text-[11px] font-extrabold text-iq-deep">
@@ -275,7 +303,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* 종합 인지 프로필 (정밀검사 5종 레이더) */}
+        {/* 종합 인지 프로필 (정밀검사 레이더) */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, type: 'spring', stiffness: 240, damping: 24 }}>
           <Card onClick={() => nav('/cog')} className="mt-2.5 flex items-center gap-3 !bg-gradient-to-r from-[#5B6CF0] to-[#3B82F6] !p-3.5">
             <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.6, repeatDelay: 2 }} className="text-[24px]">🧩</motion.span>
@@ -286,34 +314,6 @@ export default function Home() {
             <span className="text-white/80">›</span>
           </Card>
         </motion.div>
-
-        {/* ── 다면 기질 검사 (가로형 컴팩트 리스트) ── */}
-        <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('home.testsHeader')}</h2>
-        <div className="mt-3 space-y-2.5">
-          {TESTS.filter((tm) => !tm.precision).map((tm, i) => (
-            <motion.div
-              key={tm.id}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 * i, type: 'spring', stiffness: 240, damping: 24 }}
-            >
-              <Card onClick={() => nav(`/test/${tm.id}`)} className="flex items-center gap-3 !p-3">
-                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-[22px] ${tm.tint}`}>
-                  {tm.emoji}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="break-keep text-[15.5px] font-extrabold leading-tight tracking-tight">{t(`test.${tm.id}.name`)}</h3>
-                  <p className={`mt-0.5 truncate text-[12px] font-extrabold ${tm.text}`}>
-                    {tm.count}
-                    {t('common.q')} · {tm.minutes}
-                    {t('common.min')}
-                  </p>
-                </div>
-                <span className="shrink-0 text-lg text-ink-faint">›</span>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
 
         {/* 광고 — 검사 그리드 직하단 */}
         <div className="mt-5">
