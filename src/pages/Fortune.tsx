@@ -83,6 +83,36 @@ export default function Fortune() {
     }
   }
 
+  // 상세 운세(총평·행운 방향) 공유 카드
+  const shareDetail = async () => {
+    if (!data) return
+    const { saju, fortune, detail } = data
+    track('share', { channel: 'fortune_detail' })
+    try {
+      const blob = await makeResultCard({
+        emoji: saju.zodiacEmoji,
+        name: `${saju.zodiacKo}${t('fortune.zodiacSuffix')} · ${saju.iljuKo}`,
+        title: l({ ko: `행운의 방향 ${fortune.luckyDir}쪽`, en: `Lucky way: ${fortune.luckyDir}`, ja: `幸運の方角 ${fortune.luckyDir}` }),
+        topPercent: 0,
+        subtitle: l(detail.summary),
+        chipText: `⏳ ${detail.luckyTime}`,
+        testName: l({ ko: '오늘의 상세 운세', en: 'Detailed Daily Fortune', ja: '今日の詳細運勢' }),
+        grad: fortune.grad,
+        appName: t('app.name'),
+        heroLabel: l({ ko: '오늘의 상세 운세', en: 'Detailed Fortune', ja: '今日の詳細運勢' }),
+        ctaTop: l({ ko: '내 오늘의 상세 운세는? 🔮', en: "What's my detailed fortune? 🔮", ja: '私の詳細運勢は？🔮' }),
+        ctaSub: l({ ko: '지금 누리 마인드에서 →', en: 'Now on NURI MIND →', ja: '今すぐ NURI MIND で →' }),
+      })
+      const how = await shareCardBlob(blob, `[누리 마인드] 오늘의 상세 운세 · ${saju.zodiacKo}${t('fortune.zodiacSuffix')}`, 'nurimind-fortune-detail.png')
+      if (how === 'downloaded') {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2200)
+      }
+    } catch {
+      /* noop */
+    }
+  }
+
   // ── 생일 입력 ──
   if (editing || !data) {
     return (
@@ -228,11 +258,11 @@ export default function Fortune() {
           {detailUnlocked ? (
             <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">{l({ ko: '열람 중', en: 'unlocked', ja: '閲覧中' })}</span>
           ) : (
-            <span className="rounded-full bg-adhd-light px-2 py-0.5 text-[11px] font-extrabold text-adhd-deep">{l({ ko: '프리미엄', en: 'Premium', ja: 'プレミアム' })}</span>
+            <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">📺 {l({ ko: '오늘 무료', en: 'Free today', ja: '今日無料' })}</span>
           )}
         </div>
         <p className="mt-1 break-keep px-1 text-[12.5px] font-medium leading-relaxed text-ink-sub">
-          {l({ ko: '시간대별 흐름부터 행운의 방향·장소·아이템까지, 오늘 하루를 아주 자세하게 풀어드려요.', en: 'From hour-by-hour flow to lucky direction, place, and item — your whole day in full detail.', ja: '時間帯ごとの流れから幸運の方角・場所・アイテムまで、今日を詳しく解説。' })}
+          {l({ ko: '시간대별 흐름부터 행운의 방향·장소·아이템까지 아주 자세하게. 매일 광고 한 번이면 무료로 볼 수 있어요.', en: 'From hour-by-hour flow to lucky direction, place, and item — in full detail. One ad a day unlocks it free.', ja: '時間帯ごとの流れから幸運の方角・場所・アイテムまで詳しく。毎日広告1回で無料。' })}
         </p>
 
         <div className="relative mt-3">
@@ -307,23 +337,29 @@ export default function Fortune() {
               <h3 className="text-[12.5px] font-extrabold text-white/85">📝 {l({ ko: '오늘의 총평', en: 'Summary', ja: '今日の総評' })}</h3>
               <p className="mt-1.5 break-keep text-[14px] font-extrabold leading-relaxed">{l(detail.summary)}</p>
             </div>
+
+            {detailUnlocked && (
+              <Button color="sky" size="lg" onClick={shareDetail}>
+                🖼 {l({ ko: '상세 운세 공유하기', en: 'Share Detailed Fortune', ja: '詳細運勢をシェア' })}
+              </Button>
+            )}
           </div>
 
           {/* 잠금 오버레이 */}
           {!detailUnlocked && (
             <div className="absolute inset-0 flex items-end justify-center rounded-3xl bg-gradient-to-b from-transparent via-cream/60 to-cream pb-1">
               <div className="w-full rounded-3xl border-2 border-mind-200 bg-surface p-5 text-center shadow-pop">
-                <div className="text-[34px] leading-none">🔒</div>
-                <h3 className="mt-2 break-keep text-[16px] font-extrabold">{l({ ko: '상세 운세 잠금 해제', en: 'Unlock Detailed Fortune', ja: '詳細運勢を解除' })}</h3>
+                <div className="text-[34px] leading-none">🔮</div>
+                <h3 className="mt-2 break-keep text-[16px] font-extrabold">{l({ ko: '오늘의 상세 운세 — 광고 1회면 무료!', en: 'Detailed fortune — free with 1 ad!', ja: '今日の詳細運勢 — 広告1回で無料！' })}</h3>
                 <p className="mt-1 break-keep text-[12.5px] font-medium leading-relaxed text-ink-sub">
-                  {l({ ko: '광고를 보거나 다이아 5개로 오늘 하루 종일 열람할 수 있어요.', en: 'Watch an ad or spend 5💎 to view all day today.', ja: '広告視聴または5💎で今日一日中閲覧できます。' })}
+                  {l({ ko: '광고 한 번이면 오늘 하루 종일 열람할 수 있어요. 내일 다시 오면 또 무료!', en: 'One ad unlocks it all day — come back tomorrow for another free view!', ja: '広告1回で今日一日中閲覧OK。明日また来ればまた無料！' })}
                 </p>
                 <div className="mt-4 space-y-2.5">
                   <Button color="mind" size="lg" onClick={() => setShowAd(true)}>
-                    📺 {l({ ko: '광고 보고 무료로 해제', en: 'Watch Ad — Free', ja: '広告を見て無料で解除' })}
+                    📺 {l({ ko: '광고 보고 무료로 보기', en: 'Watch ad — free', ja: '広告を見て無料で見る' })}
                   </Button>
                   <Button color="white" size="lg" onClick={unlockDetailDia}>
-                    💎 {l({ ko: `다이아 ${FORTUNE_DETAIL_DIA_COST}개로 해제`, en: `Unlock with ${FORTUNE_DETAIL_DIA_COST}💎`, ja: `${FORTUNE_DETAIL_DIA_COST}💎で解除` })}
+                    💎 {l({ ko: `광고 없이 바로 보기 (${FORTUNE_DETAIL_DIA_COST}개)`, en: `Skip the ad (${FORTUNE_DETAIL_DIA_COST}💎)`, ja: `広告なしで見る (${FORTUNE_DETAIL_DIA_COST}💎)` })}
                   </Button>
                 </div>
                 <p className="mt-2.5 text-[11.5px] font-bold text-ink-faint">{l({ ko: '보유', en: 'Balance', ja: '保有' })} 💎 {diamonds.toLocaleString()}</p>
