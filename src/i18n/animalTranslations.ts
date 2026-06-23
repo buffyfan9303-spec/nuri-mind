@@ -1327,6 +1327,126 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '방해만 없으면 끝까지 파고드는 지속력', en: 'Staying power that drills to the end when undisturbed', ja: '邪魔さえなければ最後まで掘り下げる持続力' },
     ],
   },
+
+  lion: {
+    emoji: '🦁',
+    grad: ['#F2A23E', '#FFD08A'],
+    name: { ko: '당당한 사자', en: 'Proud Lion', ja: '堂々ライオン' },
+    title: { ko: '흔들림 없는 자기 신뢰', en: 'Unshakeable self-trust', ja: '揺るがない自己信頼' },
+    tagline: { ko: '나는 있는 그대로 충분하다', en: 'I am enough, as I am', ja: '私はそのままで十分だ' },
+    desc: {
+      ko: '자신을 깊이 존중하고, 실수해도 내 가치가 깎이지 않는다고 믿습니다. 남의 평가에 휘둘리지 않고 내 기준으로 살아가는, 자존감의 가장 단단한 형태예요.',
+      en: 'You deeply respect yourself and trust that mistakes don\'t lower your worth. Living by your own standard rather than others\' verdicts — the sturdiest form of self-esteem.',
+      ja: '自分を深く尊重し、ミスをしても自分の価値は下がらないと信じています。他人の評価に振り回されず自分の基準で生きる、自尊心の最も堅い形です。',
+    },
+    slap: {
+      ko: '단, 당당함이 "나는 틀릴 리 없다"로 굳으면 피드백이 안 들립니다. 진짜 강한 자존감은 쓴소리도 차분히 들을 수 있는 여유예요.',
+      en: 'But if pride hardens into "I can\'t be wrong," feedback stops landing. Truly strong self-esteem is the room to hear criticism calmly.',
+      ja: 'ただ、堂々さが「自分が間違うはずない」と固まると助言が届きません。本当に強い自尊心は、苦言も落ち着いて聞ける余裕です。',
+    },
+    risks: [
+      { ko: '자기 확신이 과하면 타인의 조언을 흘려들을 수 있음', en: 'Over-confidence can make you tune out others\' advice', ja: '自信過剰だと他人の助言を聞き流しがち' },
+      { ko: '약한 모습을 안 보이려다 속으로 외로워질 수 있음', en: 'Hiding weakness can leave you quietly lonely', ja: '弱さを見せまいとして内心孤独になりがち' },
+    ],
+    solutions: [
+      { ko: '칭찬뿐 아니라 쓴소리도 일부러 한 번 끝까지 들어보기', en: 'Deliberately hear out criticism to the end, not just praise', ja: '称賛だけでなく苦言も一度最後まで聞いてみる' },
+      { ko: '완벽하지 않은 모습을 보여주면 관계가 더 깊어져요', en: 'Showing your imperfect side deepens relationships', ja: '完璧でない姿を見せると関係が深まる' },
+    ],
+    strengths: [
+      { ko: '실패에도 자기 가치가 흔들리지 않는 단단한 회복력', en: 'Worth that stays steady even through failure', ja: '失敗しても自分の価値が揺るがない回復力' },
+      { ko: '남 눈치 안 보고 결정하고 밀고 나가는 추진력', en: 'Drive to decide and push ahead without seeking approval', ja: '人目を気にせず決めて進める推進力' },
+    ],
+  },
+
+  swan: {
+    emoji: '🦢',
+    grad: ['#FF7AA8', '#FFB5CE'],
+    name: { ko: '우아한 백조', en: 'Graceful Swan', ja: '優雅な白鳥' },
+    title: { ko: '잔잔한 자기 수용', en: 'Calm self-acceptance', ja: '穏やかな自己受容' },
+    tagline: { ko: '가끔 흔들려도, 나를 미워하진 않아', en: 'I waver, but I don\'t hate myself', ja: '揺れても自分を嫌わない' },
+    desc: {
+      ko: '대체로 자신을 긍정하고, 가끔 위축돼도 곧 균형을 되찾습니다. 잘난 척하지 않으면서도 자기를 지킬 줄 아는 건강한 자존감이에요.',
+      en: 'You mostly affirm yourself and quickly regain balance when you shrink. Healthy self-esteem that protects itself without showing off.',
+      ja: '概して自分を肯定し、時に萎縮してもすぐ均衡を取り戻します。偉ぶらずに自分を守れる健康な自尊心です。',
+    },
+    slap: {
+      ko: '단, "이 정도면 됐지"가 도전을 미루는 핑계가 되진 않나요? 안정적인 자존감은 더 큰 시도를 받쳐주는 발판이 될 수 있어요.',
+      en: 'But does "this is good enough" become an excuse to delay challenges? Stable self-esteem can be the platform for bigger attempts.',
+      ja: 'ただ「これで十分」が挑戦を先延ばしする言い訳になっていませんか？安定した自尊心はより大きな挑戦の足場になれます。',
+    },
+    risks: [
+      { ko: '안정감에 머물러 새로운 도전을 자꾸 미룰 수 있음', en: 'Comfort can lead you to keep postponing new challenges', ja: '安定に留まり新たな挑戦を先延ばししがち' },
+      { ko: '남을 배려하다 내 욕구를 뒤로 미룰 때가 있음', en: 'Caring for others, you sometimes shelve your own needs', ja: '他人を気遣い自分の欲求を後回しにしがち' },
+    ],
+    solutions: [
+      { ko: '한 분기에 하나, 살짝 두려운 목표에 도전해보기', en: 'Each quarter, take on one slightly scary goal', ja: '四半期に一つ、少し怖い目標に挑戦する' },
+      { ko: '"나는 무엇을 원하지?"를 남보다 먼저 묻는 연습', en: 'Practice asking "what do I want?" before others\' needs', ja: '「自分は何を望む？」を先に問う練習' },
+    ],
+    strengths: [
+      { ko: '비교에 덜 휘둘리는 안정된 자기 기준', en: 'A steady self-standard less swayed by comparison', ja: '比較に振り回されにくい安定した自己基準' },
+      { ko: '위축돼도 빠르게 평정을 되찾는 회복 탄력', en: 'Resilience that quickly restores calm after a dip', ja: '萎縮しても素早く平静を取り戻す回復力' },
+    ],
+  },
+
+  squirrel: {
+    emoji: '🐿️',
+    grad: ['#E08A5B', '#F2B591'],
+    name: { ko: '살피는 다람쥐', en: 'Watchful Squirrel', ja: '気にする栗鼠' },
+    title: { ko: '상황 따라 흔들리는 자존감', en: 'Self-worth that sways with the day', ja: '状況で揺れる自尊心' },
+    tagline: { ko: '칭찬엔 반짝, 비판엔 쪼그라들고', en: 'Praise lifts me, criticism shrinks me', ja: '称賛で輝き、批判で縮む' },
+    desc: {
+      ko: '잘 풀리는 날엔 자신감이 넘치지만, 한마디 지적에 쉽게 위축됩니다. 자존감의 뿌리가 \'외부 평가\'에 걸쳐 있어 오르내림이 큰 상태예요.',
+      en: 'On good days you brim with confidence, but one remark can shrink you. Your self-worth is rooted in outside approval, so it swings a lot.',
+      ja: '上手くいく日は自信に満ちますが、一言の指摘で簡単に萎縮します。自尊心の根が「外部評価」にかかり、浮き沈みが大きい状態です。',
+    },
+    slap: {
+      ko: '남의 반응이 당신의 가치를 정하게 두지 마세요. 매일 오늘의 나를 칭찬할 한 가지를 찾는 것부터가 뿌리를 내 안으로 옮기는 연습이에요.',
+      en: 'Don\'t let others\' reactions set your worth. Finding one thing to praise in yourself daily is how you move the roots inside.',
+      ja: '他人の反応に自分の価値を決めさせないで。毎日自分を一つ褒めることが、根を自分の内側へ移す練習です。',
+    },
+    risks: [
+      { ko: '타인의 인정에 따라 자존감이 크게 출렁임', en: 'Self-esteem swings hard with others\' approval', ja: '他人の承認で自尊心が大きく揺れる' },
+      { ko: '비판 한마디를 오래 곱씹어 자기비난으로 번짐', en: 'One critique can spiral into long self-blame', ja: '一つの批判を引きずり自己批判に広がる' },
+    ],
+    solutions: [
+      { ko: '매일 밤 "오늘 잘한 일 1가지" 적기 — 자기 인정 근육 키우기', en: 'Each night write "one thing I did well" — build the self-credit muscle', ja: '毎晩「今日よくできた事1つ」を書く — 自己承認の筋トレ' },
+      { ko: '비판은 "행동에 대한 것"과 "나라는 사람"을 분리해 듣기', en: 'Hear criticism as about the action, not about who you are', ja: '批判は「行動への指摘」と「自分という人」を分けて聞く' },
+    ],
+    strengths: [
+      { ko: '피드백에 민감해 빠르게 배우고 성장하는 유연함', en: 'Sensitivity to feedback that fuels fast growth', ja: 'フィードバックに敏感で素早く成長する柔軟さ' },
+      { ko: '잘될 때의 자신감과 추진력은 누구보다 큼', en: 'When things click, your confidence and drive soar', ja: '上手くいく時の自信と推進力は誰より大きい' },
+    ],
+  },
+
+  mouse: {
+    emoji: '🐭',
+    grad: ['#9AA0B5', '#C5C9D8'],
+    name: { ko: '조심스런 생쥐', en: 'Timid Mouse', ja: '臆病なネズミ' },
+    title: { ko: '나를 자꾸 깎아내리는 마음', en: 'A mind that keeps discounting itself', ja: '自分を削ってしまう心' },
+    tagline: { ko: '"내가 뭐라고…"가 입버릇', en: '"Who am I to…" on repeat', ja: '「私なんて」が口癖' },
+    desc: {
+      ko: '자신을 남보다 낮게 보고, 잘한 일도 "운이었다"며 흘려보냅니다. 가치의 기준이 너무 엄격해 스스로에게 가장 가혹한 상태예요. 충분히, 분명히 나아질 수 있어요.',
+      en: 'You rate yourself below others and brush off wins as "just luck." Your bar is so strict you\'re harshest on yourself. This can absolutely get better.',
+      ja: '自分を人より低く見て、上手くいっても「運だった」と流します。基準が厳しすぎて自分に最も過酷な状態です。きっと良くなれます。',
+    },
+    slap: {
+      ko: '친구에게는 절대 하지 않을 말을, 자신에게는 매일 하고 있진 않나요? 나를 대하는 말투를 친구 대하듯 바꾸는 것부터 자존감은 자랍니다.',
+      en: 'Are you saying to yourself daily what you\'d never say to a friend? Self-esteem grows the moment you talk to yourself like you\'d talk to a friend.',
+      ja: '友達には絶対言わない言葉を、自分には毎日言っていませんか？自分への口調を友達に話すように変えることから自尊心は育ちます。',
+    },
+    risks: [
+      { ko: '자기비난이 습관이 되어 도전 자체를 회피함', en: 'Habitual self-blame leads you to avoid trying at all', ja: '自己批判が癖になり挑戦自体を避ける' },
+      { ko: '성취를 평가절하해 성장의 동력을 잃음', en: 'Discounting your wins drains your momentum', ja: '成果を過小評価し成長の原動力を失う' },
+    ],
+    solutions: [
+      { ko: '"친구라면 뭐라고 말해줄까?"로 자기 대화 바꾸기', en: 'Reframe self-talk with "what would I tell a friend?"', ja: '「友達なら何と言う？」で自己対話を変える' },
+      { ko: '작은 성공을 기록해 \'증거\'를 모으기 — 감정이 아닌 사실로 보기', en: 'Log small wins to collect "evidence" — see facts, not feelings', ja: '小さな成功を記録し「証拠」を集める — 感情でなく事実で見る' },
+    ],
+    strengths: [
+      { ko: '자신을 깊이 돌아볼 줄 아는 성찰력', en: 'A deep capacity for honest self-reflection', ja: '自分を深く省みる内省力' },
+      { ko: '타인의 아픔에 진심으로 공감하는 따뜻함', en: 'Warmth that genuinely empathizes with others\' pain', ja: '他人の痛みに心から共感する温かさ' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -1339,6 +1459,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   bear: 'dopamine', hamster: 'dopamine', raccoon: 'dopamine',
   bamboo: 'resilience', willow: 'resilience', glass: 'resilience',
   fox: 'dark', peacock: 'dark', shark: 'dark', dove: 'dark',
+  lion: 'selfesteem', swan: 'selfesteem', squirrel: 'selfesteem', mouse: 'selfesteem',
   elephant: 'memory', octopus: 'memory', goldfish: 'memory',
   hawk: 'focus', bee: 'focus', otter: 'focus',
   cheetah: 'speed', rabbit: 'speed', tortoise: 'speed',

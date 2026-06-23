@@ -1,7 +1,7 @@
 export type Lang = 'ko' | 'en' | 'ja'
 export type L = Record<Lang, string>
 
-export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark' | 'memory' | 'focus' | 'speed' | 'spatial' | 'switch'
+export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark' | 'selfesteem' | 'memory' | 'focus' | 'speed' | 'spatial' | 'switch'
 
 /** 프로필 아바타 — 업로드 사진 또는 동물 페르소나 */
 export type Avatar =

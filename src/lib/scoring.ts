@@ -279,6 +279,31 @@ export function scoreResilience(items: LikertItem[], answers: Record<string, num
   return base('resilience', raw, pct, band, persona, subscales, {})
 }
 
+/* ──────────── SELF-ESTEEM (Rosenberg RSES 10문항) ──────────── */
+/** 1~5 동의, 10문항(부정 5 역채점). raw 10~50. μ=34 σ=6.5 → 높을수록 자존감↑.
+ *  근거: Rosenberg Self-Esteem Scale(1965)을 5점 척도로 환산. 일반 성인은 중상위로 약하게 치우침. */
+export function scoreSelfEsteem(items: LikertItem[], answers: Record<string, number>): TestResult {
+  const ax: Record<string, { s: number; m: number; n: number }> = {}
+  let raw = 0
+  for (const it of items) {
+    let v = answers[it.id] ?? 3
+    if (it.reverse) v = 6 - v
+    raw += v
+    const acc = (ax[it.sub] ??= { s: 0, m: 0, n: 0 })
+    acc.s += v
+    acc.m += 5
+    acc.n++
+  }
+  const pct = percentile(raw, 34, 6.5)
+  const band = pct >= 78 ? 'high' : pct >= 50 ? 'secure' : pct >= 25 ? 'moderate' : 'low'
+  const persona = band === 'high' ? 'lion' : band === 'secure' ? 'swan' : band === 'moderate' ? 'squirrel' : 'mouse'
+  const subscales: SubscaleScore[] = ['POS', 'NEG'].map((key) => {
+    const a = ax[key] ?? { s: 0, m: 1, n: 0 }
+    return { key, score: a.s, max: a.m, ratio: laplace(a.s - a.n, a.m - a.n) }
+  })
+  return base('selfesteem', raw, pct, band, persona, subscales, {})
+}
+
 /* ──────────── DARK TRIAD (SD3 3요인) ──────────── */
 /** 1~5 동의. MA/NA 7문항, PS 5문항, VAL 1. 종합 백분위 = 3축 평균.
  *  SD3(Jones&Paulhus 2014) 실규준: 사이코패시(PS) 평균이 MA/NA보다 낮음 → PS μ=10.5 σ=3.0(문항평균 ~2.1)으로 정렬 */

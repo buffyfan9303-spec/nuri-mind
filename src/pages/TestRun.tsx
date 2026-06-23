@@ -11,11 +11,12 @@ import { BURNOUT_ITEMS } from '../data/burnout'
 import { DOPA_ITEMS } from '../data/dopamine'
 import { RESILIENCE_ITEMS } from '../data/resilience'
 import { DARK_ITEMS } from '../data/dark'
+import { SELFESTEEM_ITEMS } from '../data/selfesteem'
 import { IQ_ITEMS, IQ_PROMPTS } from '../data/iq'
 import { testMeta } from '../data/tests'
 import type { IqItem, LikertItem, TestId } from '../data/types'
 import { mulberry32, shuffle } from '../lib/random'
-import { scoreAdhd, scoreBurnout, scoreDark, scoreDopamine, scoreEgo, scoreIq, scoreLove, scoreResilience } from '../lib/scoring'
+import { scoreAdhd, scoreBurnout, scoreDark, scoreDopamine, scoreEgo, scoreIq, scoreLove, scoreResilience, scoreSelfEsteem } from '../lib/scoring'
 import { LIKERT_AGREE, LIKERT_FREQ } from '../i18n/translations'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
@@ -32,9 +33,10 @@ const BANKS: Partial<Record<TestId, LikertItem[]>> = {
   dopamine: DOPA_ITEMS,
   resilience: RESILIENCE_ITEMS,
   dark: DARK_ITEMS,
+  selfesteem: SELFESTEEM_ITEMS,
 }
 /** 1~5 동의 척도를 쓰는 검사 (나머지 리커트는 0~4 빈도) */
-const AGREE_TESTS: TestId[] = ['ego', 'love', 'resilience', 'dark']
+const AGREE_TESTS: TestId[] = ['ego', 'love', 'resilience', 'dark', 'selfesteem']
 
 export default function TestRun() {
   const { id } = useParams<{ id: TestId }>()
@@ -103,7 +105,9 @@ export default function TestRun() {
                 ? scoreDopamine(DOPA_ITEMS, likertMap)
                 : testId === 'resilience'
                   ? scoreResilience(RESILIENCE_ITEMS, likertMap)
-                  : scoreDark(DARK_ITEMS, likertMap)
+                  : testId === 'dark'
+                    ? scoreDark(DARK_ITEMS, likertMap)
+                    : scoreSelfEsteem(SELFESTEEM_ITEMS, likertMap)
     result.durationMs = Date.now() - startRef.current
     if (isIq) result.iqMode = iqMode
     const reward = addResult(result)
