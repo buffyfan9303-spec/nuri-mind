@@ -117,6 +117,7 @@ export default function TestResult() {
     love: ['fearful'],
     selfesteem: ['low'],
     perfect: ['strain'],
+    socialanx: ['high'],
   }
   const needsDoctor = doctorBands[result.testId]?.includes(result.band) ?? false
 

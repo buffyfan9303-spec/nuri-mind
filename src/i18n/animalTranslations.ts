@@ -1687,6 +1687,126 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '무리하지 않고 자신을 보호할 줄 아는 신중함', en: 'Prudence that protects yourself without overreaching', ja: '無理せず自分を守れる慎重さ' },
     ],
   },
+
+  parrot: {
+    emoji: '🦜',
+    grad: ['#4FB0C9', '#9BD5E3'],
+    name: { ko: '사교적 앵무새', en: 'Social Parrot', ja: '社交的オウム' },
+    title: { ko: '사람들 사이에서 편안한 마음', en: 'At ease among people', ja: '人の中で楽な心' },
+    tagline: { ko: '누구랑도 금방 친해져', en: 'I click with anyone fast', ja: '誰とでもすぐ仲良く' },
+    desc: {
+      ko: '낯선 자리에서도 긴장보다 호기심이 앞섭니다. 남의 시선을 크게 의식하지 않고 대화를 즐기는, 사회불안이 가장 낮은 유형이에요.',
+      en: 'In unfamiliar settings, curiosity comes before nerves. You enjoy talking without minding others\' eyes much — the lowest social-anxiety type.',
+      ja: '不慣れな場でも緊張より好奇心が先。人の視線を気にせず会話を楽しむ、社交不安が最も低いタイプです。',
+    },
+    slap: {
+      ko: '단, 당신에겐 쉬운 \'먼저 말 걸기\'가 누군가에겐 큰 용기예요. 조용한 사람에게 한 번 더 자리를 내어주면, 당신의 편안함이 그 사람의 안전지대가 됩니다.',
+      en: 'But "speaking first," easy for you, is real courage for someone else. Give a quiet person room, and your ease becomes their safe zone.',
+      ja: 'ただ、あなたには簡単な「先に話しかける」が誰かには大きな勇気。静かな人に席を譲れば、あなたの余裕がその人の安全地帯に。',
+    },
+    risks: [
+      { ko: '말이 앞서 남의 긴장을 못 알아챌 수 있음', en: 'Talking first, you may miss others\' tension', ja: '話が先で他人の緊張に気づきにくい' },
+      { ko: '혼자 충전하는 시간이 부족해 지칠 수 있음', en: 'Too little solo recharge can wear you out', ja: '一人で充電する時間が足りず疲れがち' },
+    ],
+    solutions: [
+      { ko: '모임에서 조용한 사람에게 질문 한 번 건네 보기', en: 'Toss a question to the quiet person at a gathering', ja: '集まりで静かな人に質問を一つ投げてみる' },
+      { ko: '사람을 많이 만난 날은 의도적으로 혼자만의 시간 갖기', en: 'After people-heavy days, deliberately take solo time', ja: '人と多く会った日はあえて一人の時間を' },
+    ],
+    strengths: [
+      { ko: '처음 보는 사람과도 자연스럽게 어울리는 사교성', en: 'Sociability that mingles naturally with strangers', ja: '初対面でも自然に馴染む社交性' },
+      { ko: '분위기를 부드럽게 만드는 따뜻한 에너지', en: 'Warm energy that softens the mood', ja: '空気を和らげる温かいエネルギー' },
+    ],
+  },
+
+  giraffe: {
+    emoji: '🦒',
+    grad: ['#7CC0A0', '#B6E0CB'],
+    name: { ko: '느긋한 기린', en: 'Easy Giraffe', ja: 'のんびりキリン' },
+    title: { ko: '살짝 긴장하지만 곧 풀려요', en: 'A little tense, then it eases', ja: '少し緊張、でもすぐ和らぐ' },
+    tagline: { ko: '처음만 어색하지, 금방 괜찮아', en: 'Awkward at first, soon fine', ja: '最初だけ気まずい、すぐ平気' },
+    desc: {
+      ko: '새로운 자리에서 잠깐 긴장하지만 곧 적응합니다. 사회불안이 일상에 큰 지장을 주지 않는, 건강한 범위예요.',
+      en: 'You tense briefly in new settings, then adapt. Social anxiety that doesn\'t much disrupt daily life — a healthy range.',
+      ja: '新しい場で少し緊張するがすぐ適応。社交不安が日常に大きく支障しない健康な範囲です。',
+    },
+    slap: {
+      ko: '단, "원래 낯가려"라며 편한 사람만 만나고 있진 않나요? 당신의 적응력이면 한 걸음만 더 나가도 세상이 꽤 넓어져요.',
+      en: 'But are you sticking to comfortable people, calling it "I\'m just shy"? With your adaptability, one more step widens your world a lot.',
+      ja: 'ただ「人見知りだから」と楽な人だけと会っていませんか？あなたの適応力なら一歩出るだけで世界がぐっと広がります。',
+    },
+    risks: [
+      { ko: '익숙한 관계에만 머물러 새 인연을 놓칠 수 있음', en: 'Staying in familiar circles can cost new connections', ja: '慣れた関係に留まり新たな縁を逃しがち' },
+      { ko: '첫인상의 어색함을 스스로 과대평가함', en: 'You overrate the awkwardness of first impressions', ja: '第一印象の気まずさを自分で過大評価' },
+    ],
+    solutions: [
+      { ko: '한 달에 한 번, 살짝 낯선 모임에 발 들여보기', en: 'Once a month, step into a slightly unfamiliar gathering', ja: '月に一度、少し不慣れな集まりに足を踏み入れる' },
+      { ko: '어색한 침묵은 자연스러운 것 — 굳이 채우려 애쓰지 않기', en: 'Awkward silence is natural — don\'t strain to fill it', ja: '気まずい沈黙は自然 — 無理に埋めようとしない' },
+    ],
+    strengths: [
+      { ko: '처음만 지나면 깊고 편안한 관계를 맺는 힘', en: 'Once past the start, you form deep, easy bonds', ja: '最初を過ぎれば深く楽な関係を結ぶ力' },
+      { ko: '상대를 관찰하고 배려하는 차분함', en: 'Calm that observes and considers others', ja: '相手を観察し気遣う落ち着き' },
+    ],
+  },
+
+  seal: {
+    emoji: '🦭',
+    grad: ['#6E8FC9', '#A9C2E8'],
+    name: { ko: '조심스런 물범', en: 'Wary Seal', ja: '慎重なアザラシ' },
+    title: { ko: '주목받는 순간이 버거운 마음', en: 'Being watched feels heavy', ja: '注目される瞬間が重い' },
+    tagline: { ko: '사람들 앞에만 서면 작아져', en: 'I shrink in front of people', ja: '人前だと縮こまる' },
+    desc: {
+      ko: '평가받는 상황에서 긴장이 크고, 그런 자리를 피하고 싶어집니다. 일상에 어느 정도 영향을 주는 사회불안 경향이 보여요. 충분히 다룰 수 있어요.',
+      en: 'You tense up a lot in evaluative situations and want to avoid them. A social-anxiety leaning that affects daily life somewhat. It\'s very manageable.',
+      ja: '評価される状況で緊張が強く、その場を避けたくなる。日常にある程度影響する社交不安傾向。十分に扱えます。',
+    },
+    slap: {
+      ko: '불안은 \'피하면 잠깐 편하지만 더 커지는\' 성질이 있어요. 아주 작은 노출(짧은 발언 한 번)부터 \'견뎌냈다\'는 경험을 쌓으면, 불안은 조금씩 줄어듭니다.',
+      en: 'Anxiety has a trait: avoiding eases it briefly but grows it. Stack "I got through it" from tiny exposures (one short remark), and it slowly shrinks.',
+      ja: '不安は「避けると一瞬楽だが大きくなる」性質が。ごく小さな露出(短い発言一つ)から「耐えた」を積めば、少しずつ減ります。',
+    },
+    risks: [
+      { ko: '회피가 반복되며 불안이 더 굳어질 수 있음', en: 'Repeated avoidance can harden the anxiety', ja: '回避の繰り返しで不安が固まりうる' },
+      { ko: '긴장 때문에 기회(발표·만남)를 놓침', en: 'Tension makes you miss chances (talks, meetings)', ja: '緊張で機会(発表・出会い)を逃す' },
+    ],
+    solutions: [
+      { ko: '작은 노출부터: 회의에서 한 문장만 먼저 말해보기', en: 'Start small: say just one sentence first in a meeting', ja: '小さな露出から: 会議で一文だけ先に話す' },
+      { ko: '긴장될 때 \'4초 들이쉬고 6초 내쉬기\' 호흡으로 몸 진정', en: 'When tense, calm the body with 4-in / 6-out breathing', ja: '緊張時は「4秒吸って6秒吐く」呼吸で体を鎮める' },
+    ],
+    strengths: [
+      { ko: '상대의 감정을 섬세하게 읽는 공감력', en: 'Empathy that reads others\' feelings finely', ja: '相手の感情を繊細に読む共感力' },
+      { ko: '신중하게 준비하고 임하는 성실함', en: 'Diligence that prepares carefully before acting', ja: '慎重に準備して臨む誠実さ' },
+    ],
+  },
+
+  badger: {
+    emoji: '🦡',
+    grad: ['#7E7BB0', '#B3B0DC'],
+    name: { ko: '굴 속 오소리', en: 'Burrowed Badger', ja: '巣穴のアナグマ' },
+    title: { ko: '사람이 많이 두려운 마음', en: 'People feel genuinely scary', ja: '人がとても怖い心' },
+    tagline: { ko: '차라리 안 나가는 게 편해', en: 'Staying in just feels safer', ja: 'いっそ出ない方が楽' },
+    desc: {
+      ko: '사회적 상황에 대한 두려움이 크고, 회피가 일상에 꽤 영향을 줍니다. 신체 증상(떨림·심장 두근거림)도 자주 동반돼요. 이건 성격 결함이 아니라, 도움으로 분명히 나아지는 영역이에요.',
+      en: 'Strong fear of social situations, with avoidance affecting daily life quite a bit. Physical symptoms (trembling, racing heart) often come along. This isn\'t a character flaw — it\'s an area that clearly improves with help.',
+      ja: '社交場面への恐れが強く、回避が日常にかなり影響します。身体症状(震え・動悸)も伴いがち。これは性格の欠陥でなく、助けで確実に良くなる領域です。',
+    },
+    slap: {
+      ko: '혼자 견디는 게 가장 힘든 방법이에요. 사회불안은 상담·인지행동치료로 가장 효과가 잘 나타나는 영역 중 하나예요. 전문가의 도움을 받는 건 약함이 아니라 가장 현명한 선택이에요.',
+      en: 'Enduring it alone is the hardest path. Social anxiety is among the most treatable areas with counseling and CBT. Getting professional help isn\'t weakness — it\'s the wisest move.',
+      ja: '一人で耐えるのが最も辛い方法。社交不安は相談・認知行動療法で最も効果が出やすい領域の一つ。専門家の助けは弱さでなく最も賢い選択です。',
+    },
+    risks: [
+      { ko: '회피가 일·관계·기회를 점점 좁힐 수 있음', en: 'Avoidance can steadily shrink work, ties, and chances', ja: '回避が仕事・関係・機会を次第に狭めうる' },
+      { ko: '신체 증상에 대한 두려움이 또 다른 불안을 키움(악순환)', en: 'Fear of the physical symptoms fuels more anxiety (a loop)', ja: '身体症状への恐れが更なる不安を生む(悪循環)' },
+    ],
+    solutions: [
+      { ko: '혼자 애쓰기보다 전문가 상담(인지행동치료)을 한 번 알아보기', en: 'Rather than going it alone, look into counseling (CBT)', ja: '一人で頑張るより専門家の相談(認知行動療法)を調べてみる' },
+      { ko: '\'안전행동\'(눈 안 마주치기 등)을 조금씩 줄여 불안이 스스로 가라앉음을 경험하기', en: 'Gradually drop "safety behaviors" (no eye contact, etc.) to feel anxiety settle on its own', ja: '「安全行動」(目を合わせない等)を少しずつ減らし不安が自ら収まるのを体験' },
+    ],
+    strengths: [
+      { ko: '깊이 사고하고 공감하는 풍부한 내면', en: 'A rich inner world that thinks deeply and empathizes', ja: '深く考え共感する豊かな内面' },
+      { ko: '소수의 사람과 진하고 신뢰로운 관계를 맺는 힘', en: 'The power to form deep, trusting bonds with a few', ja: '少数と濃く信頼できる関係を結ぶ力' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -1702,6 +1822,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   lion: 'selfesteem', swan: 'selfesteem', squirrel: 'selfesteem', mouse: 'selfesteem',
   beaver: 'perfect', eagle: 'perfect', butterfly: 'perfect', duck: 'perfect',
   horse: 'efficacy', kangaroo: 'efficacy', chick: 'efficacy', jellyfish: 'efficacy',
+  parrot: 'socialanx', giraffe: 'socialanx', seal: 'socialanx', badger: 'socialanx',
   elephant: 'memory', octopus: 'memory', goldfish: 'memory',
   hawk: 'focus', bee: 'focus', otter: 'focus',
   cheetah: 'speed', rabbit: 'speed', tortoise: 'speed',

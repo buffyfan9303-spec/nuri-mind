@@ -198,6 +198,17 @@ export const TESTS: TestMeta[] = [
     gradTo: '#5FD39A',
     btn: 'reso',
   },
+  {
+    id: 'socialanx',
+    emoji: '😰',
+    count: 15,
+    minutes: 4,
+    tint: 'bg-dopa-light',
+    text: 'text-dopa-deep',
+    gradFrom: '#4FB0C9',
+    gradTo: '#9BD5E3',
+    btn: 'dopa',
+  },
 ]
 
 export const testMeta = (id: TestId): TestMeta => TESTS.find((t) => t.id === id)!

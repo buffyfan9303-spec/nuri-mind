@@ -358,6 +358,30 @@ export function scoreEfficacy(items: LikertItem[], answers: Record<string, numbe
   return base('efficacy', raw, pct, band, persona, subscales, {})
 }
 
+/* ──────────── SOCIAL ANXIETY (SPIN 3요인) ──────────── */
+/** 1~5 동의, 15문항. raw 15~75. μ=42 σ=12 → 높을수록 사회불안↑. 3요인 FEAR/AVOID/PHYS.
+ *  근거: Social Phobia Inventory(SPIN, Connor 2000)의 두려움·회피·생리증상 축 차용. */
+export function scoreSocialAnx(items: LikertItem[], answers: Record<string, number>): TestResult {
+  const ax: Record<string, { s: number; m: number; n: number }> = {}
+  let raw = 0
+  for (const it of items) {
+    const v = answers[it.id] ?? 3
+    raw += v
+    const acc = (ax[it.sub] ??= { s: 0, m: 0, n: 0 })
+    acc.s += v
+    acc.m += 5
+    acc.n++
+  }
+  const pct = percentile(raw, 42, 12)
+  const band = pct >= 80 ? 'high' : pct >= 55 ? 'caution' : pct >= 30 ? 'mild' : 'low'
+  const persona = band === 'high' ? 'badger' : band === 'caution' ? 'seal' : band === 'mild' ? 'giraffe' : 'parrot'
+  const subscales: SubscaleScore[] = ['FEAR', 'AVOID', 'PHYS'].map((key) => {
+    const a = ax[key] ?? { s: 0, m: 1, n: 0 }
+    return { key, score: a.s, max: a.m, ratio: laplace(a.s - a.n, a.m - a.n) }
+  })
+  return base('socialanx', raw, pct, band, persona, subscales, {})
+}
+
 /* ──────────── DARK TRIAD (SD3 3요인) ──────────── */
 /** 1~5 동의. MA/NA 7문항, PS 5문항, VAL 1. 종합 백분위 = 3축 평균.
  *  SD3(Jones&Paulhus 2014) 실규준: 사이코패시(PS) 평균이 MA/NA보다 낮음 → PS μ=10.5 σ=3.0(문항평균 ~2.1)으로 정렬 */
