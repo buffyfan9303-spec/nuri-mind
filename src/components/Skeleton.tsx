@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 
 /** 펄스 스켈레톤 블록 — 토큰 색(bg-line)이라 라이트/다크 자동 대응. 레이아웃 시프트 방지용 자리표시. */
 export function SkeletonBlock({ className = '' }: { className?: string }) {
-  return <div className={`animate-pulse rounded-2xl bg-line ${className}`} aria-hidden="true" />
+  return <div className={`skeleton rounded-2xl ${className}`} aria-hidden="true" />
 }
 
 /**

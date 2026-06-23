@@ -239,19 +239,60 @@ export default function TestResult() {
           className="rounded-3xl p-7 text-center shadow-pop"
           style={{ background: `linear-gradient(140deg, ${persona.grad[0]}, ${persona.grad[1]})` }}
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={gate ? {} : { scale: 1, rotate: [0, -8, 6, 0] }}
-            transition={{ type: 'spring', stiffness: 260, damping: 14, delay: 0.25 }}
-            className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-white/90 text-6xl shadow-pop"
+          <div className="relative mx-auto h-28 w-28">
+            {/* 파티클 링 — 이모지 팝과 함께 사방으로 퍼짐 */}
+            {!gate &&
+              [
+                { e: '✨', a: -90 }, { e: '⭐', a: -45 }, { e: '💫', a: 0 }, { e: '✨', a: 45 },
+                { e: '⭐', a: 90 }, { e: '💫', a: 135 }, { e: '✨', a: 180 }, { e: '⭐', a: 225 },
+              ].map((s, i) => {
+                const rad = (s.a * Math.PI) / 180
+                return (
+                  <motion.span
+                    key={i}
+                    aria-hidden="true"
+                    className="absolute left-1/2 top-1/2 text-[18px] leading-none"
+                    initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
+                    animate={{ x: Math.cos(rad) * 82, y: Math.sin(rad) * 82, scale: [0, 1.1, 0], opacity: [0, 1, 0] }}
+                    transition={{ duration: 0.95, delay: 0.34 + i * 0.025, ease: 'easeOut' }}
+                  >
+                    {s.e}
+                  </motion.span>
+                )
+              })}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={gate ? {} : { scale: 1, rotate: [0, -8, 6, 0] }}
+              transition={{ type: 'spring', stiffness: 280, damping: 12, delay: 0.25 }}
+              className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 text-6xl shadow-pop"
+            >
+              {persona.emoji}
+            </motion.div>
+          </div>
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={gate ? {} : { opacity: 1, y: 0 }}
+            transition={{ delay: 0.42, duration: 0.3 }}
+            className="mt-4 text-[15px] font-extrabold tracking-wide text-white/85"
           >
-            {persona.emoji}
-          </motion.div>
-          <p className="mt-4 text-[15px] font-extrabold tracking-wide text-white/85">{l(persona.title)}</p>
-          <h1 className="mt-1 text-[32px] font-extrabold tracking-tight text-white">{l(persona.name)}</h1>
-          <p className="mt-2.5 text-[15px] font-bold leading-relaxed tracking-wide text-white/90">
+            {l(persona.title)}
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 10, scale: 0.96 }}
+            animate={gate ? {} : { opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.5, type: 'spring', stiffness: 320, damping: 18 }}
+            className="mt-1 text-[32px] font-extrabold tracking-tight text-white"
+          >
+            {l(persona.name)}
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={gate ? {} : { opacity: 1, y: 0 }}
+            transition={{ delay: 0.58, duration: 0.3 }}
+            className="mt-2.5 text-[15px] font-bold leading-relaxed tracking-wide text-white/90"
+          >
             “{l(persona.tagline)}”
-          </p>
+          </motion.p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
               {t(`band.${result.testId}.${result.band}`)}
