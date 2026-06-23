@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { ADSENSE_CLIENT, ADSENSE_SLOT_BANNER, ADSENSE_SLOT_RECT, adsEnabled, pushAd } from '../lib/ads'
+import { useStore, isPremium } from '../store/useStore'
 import { useT } from '../i18n/useT'
 
 /**
@@ -13,11 +14,14 @@ import { useT } from '../i18n/useT'
  */
 export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'rect' }) {
   const t = useT()
+  const premiumUntil = useStore((s) => s.premiumUntil)
   const isRect = variant === 'rect'
 
   useEffect(() => {
-    pushAd()
-  }, [])
+    if (!isPremium(premiumUntil)) pushAd()
+  }, [premiumUntil])
+
+  if (isPremium(premiumUntil)) return null // 프리미엄 = 광고 제거
 
   if (adsEnabled()) {
     return (

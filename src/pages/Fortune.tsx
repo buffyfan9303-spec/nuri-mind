@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { TopBar, Card, ProgressBar, Modal } from '../components/ui'
 import Button from '../components/Button'
 import AdGate from '../components/AdGate'
-import { useStore, FORTUNE_FREE_PER_MONTH, FORTUNE_DIA_COST, FORTUNE_DETAIL_DIA_COST } from '../store/useStore'
+import { useStore, isPremium, FORTUNE_FREE_PER_MONTH, FORTUNE_DIA_COST, FORTUNE_DETAIL_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sajuOf, fortuneOf, weekOf, yearOf, monthOf, zodiacTodayLines, detailOf } from '../lib/saju'
 import { fetchFortuneDetailAi, type FortuneDetailText } from '../lib/fortuneAi'
@@ -32,6 +32,8 @@ export default function Fortune() {
   const fortuneAiData = useStore((s) => s.fortuneAiData)
   const setFortuneAi = useStore((s) => s.setFortuneAi)
   const lang = useStore((s) => s.lang)
+  const premiumUntil = useStore((s) => s.premiumUntil)
+  const premium = isPremium(premiumUntil)
   const [draft, setDraft] = useState(birthDate)
   const [editing, setEditing] = useState(!birthDate)
   const [saved, setSaved] = useState(false)
@@ -197,7 +199,7 @@ export default function Fortune() {
     burst()
   }
   const todayStr = new Date().toISOString().slice(0, 10)
-  const detailUnlocked = fortuneDetailDate === todayStr
+  const detailUnlocked = fortuneDetailDate === todayStr || premium
   const aiDetail = fortuneAiDate === todayStr ? fortuneAiData : null
   const usingAi = !!aiDetail
   const v: FortuneDetailText = aiDetail ?? {
@@ -506,21 +508,25 @@ export default function Fortune() {
                   <div key={h.label} className="flex items-center gap-1.5 rounded-2xl border border-line bg-surface px-2.5 py-2 text-left">
                     <span className="shrink-0 text-[16px] leading-none">{h.e}</span>
                     <span className="min-w-0 flex-1 truncate text-[12px] font-extrabold">{h.label}</span>
-                    <span className="shrink-0 text-[11px]">{h.free ? '✅' : '🔒'}</span>
+                    <span className="shrink-0 text-[11px]">{h.free || premium ? '✅' : '🔒'}</span>
                   </div>
                 ))}
               </div>
               <div className="mx-auto mt-4 max-w-[280px]">
                 <Button color="burn" onClick={openFull}>
-                  {freeLeft > 0
-                    ? l({ ko: `무료로 보기 · 이번 달 ${freeLeft}회 남음`, en: `View free · ${freeLeft} left this month`, ja: `無料で見る・今月あと${freeLeft}回` })
-                    : l({ ko: `💎 ${FORTUNE_DIA_COST}개로 보기`, en: `View for 💎${FORTUNE_DIA_COST}`, ja: `💎${FORTUNE_DIA_COST}で見る` })}
+                  {premium
+                    ? l({ ko: '✨ 프리미엄 무제한 보기', en: '✨ Premium · unlimited', ja: '✨ プレミアム無制限' })
+                    : freeLeft > 0
+                      ? l({ ko: `무료로 보기 · 이번 달 ${freeLeft}회 남음`, en: `View free · ${freeLeft} left this month`, ja: `無料で見る・今月あと${freeLeft}回` })
+                      : l({ ko: `💎 ${FORTUNE_DIA_COST}개로 보기`, en: `View for 💎${FORTUNE_DIA_COST}`, ja: `💎${FORTUNE_DIA_COST}で見る` })}
                 </Button>
               </div>
               <p className="mt-2 text-[11.5px] font-medium text-ink-faint">
-                {freeLeft > 0
-                  ? l({ ko: `매월 ${FORTUNE_FREE_PER_MONTH}회 무료 · 이후 1회 ${FORTUNE_DIA_COST}다이아`, en: `${FORTUNE_FREE_PER_MONTH} free/month, then 💎${FORTUNE_DIA_COST}`, ja: `毎月${FORTUNE_FREE_PER_MONTH}回無料・以降💎${FORTUNE_DIA_COST}` })
-                  : l({ ko: `보유 💎 ${diamonds}`, en: `You have 💎${diamonds}`, ja: `保有💎${diamonds}` })}
+                {premium
+                  ? l({ ko: '프리미엄 구독 중 · 운세 무제한', en: 'Premium active · unlimited', ja: 'プレミアム中・運勢無制限' })
+                  : freeLeft > 0
+                    ? l({ ko: `매월 ${FORTUNE_FREE_PER_MONTH}회 무료 · 이후 1회 ${FORTUNE_DIA_COST}다이아`, en: `${FORTUNE_FREE_PER_MONTH} free/month, then 💎${FORTUNE_DIA_COST}`, ja: `毎月${FORTUNE_FREE_PER_MONTH}回無料・以降💎${FORTUNE_DIA_COST}` })
+                    : l({ ko: `보유 💎 ${diamonds}`, en: `You have 💎${diamonds}`, ja: `保有💎${diamonds}` })}
               </p>
             </div>
           </div>

@@ -52,6 +52,11 @@ export const IQ_DIA_COST = 10
 export const OPERATOR_NICKS = ['누리', 'WTA']
 /** 정밀검사(기억/집중/처리속도/공간) 상세분석 전체 해제 비용 */
 export const PRECISION_DIA_COST = 10
+/** 프리미엄 구독 — 월 9,900원(광고 제거·상세운세 무제한·전 정밀검사 해제) */
+export const PREMIUM_KRW = 9900
+export const PREMIUM_DAYS = 30
+/** 프리미엄 활성 여부 — premiumUntil(만료 ms 타임스탬프)이 현재보다 미래면 true */
+export const isPremium = (premiumUntil: number): boolean => premiumUntil > Date.now()
 export interface DiaBundle {
   dia: number
   krw: number
@@ -110,6 +115,8 @@ interface State {
   precisionGate: boolean
   /** 정밀검사(기억/집중/처리속도/공간) 상세 전체 해제됨 */
   precisionUnlocked: boolean
+  /** 프리미엄 구독 만료 타임스탬프(ms). 0=미구독. isPremium()로 활성 판정 */
+  premiumUntil: number
   /** 전광판(확성기) 메시지 — 최신순 */
   tickerMsgs: TickerMsg[]
   deviceId: string
@@ -231,6 +238,10 @@ interface State {
   setPrecisionGate: (v: boolean) => void
   /** 정밀검사 상세 전체 해제(10다이아) — 부족 시 false */
   unlockPrecision: () => boolean
+  /** 프리미엄 구독(베타 즉시지급) — 30일 연장 + 정밀/IQ 즉시 해제 */
+  subscribePremiumBeta: () => void
+  /** 프리미엄 해지(테스트/환불용) — 즉시 만료 */
+  cancelPremium: () => void
   /** 전광판 게시(1다이아) — 'ok'·'dia'(잔액부족)·'bad'(AI필터 차단) */
   postTicker: (text: string) => 'ok' | 'dia' | 'bad'
   readArticle: (id: string) => number
@@ -260,6 +271,7 @@ const initial = () => ({
   iqUnlocked: false,
   precisionGate: false,
   precisionUnlocked: false,
+  premiumUntil: 0,
   tickerMsgs: [
     { id: 'tk_s1', text: '🎉 검사 8종 올클리어 도전 중! 같이 하실 분?', nick: '누리', at: Date.now() - 5400000 },
     { id: 'tk_s2', text: '💪 오늘도 출석 도장 찍고 갑니다', nick: '민지', at: Date.now() - 3600000 },
@@ -680,6 +692,7 @@ export const useStore = create<State>()(
         /** 운세 종합 열람 — 월 무료 3회 → 이후 5다이아 차감 */
         viewFortuneFull: () => {
           const s = get()
+          if (isPremium(s.premiumUntil)) return 'free' // 프리미엄 = 무제한 무료
           const m = new Date().toISOString().slice(0, 7)
           const used = s.fortuneMonth === m ? s.fortuneFreeUses : 0
           if (used < FORTUNE_FREE_PER_MONTH) {
@@ -711,6 +724,13 @@ export const useStore = create<State>()(
           set({ diamonds: s.diamonds - PRECISION_DIA_COST, precisionUnlocked: true })
           return true
         },
+        /** 프리미엄 구독(베타: PG 연동 전 즉시지급) — 30일 연장 + 정밀/IQ 즉시 해제 */
+        subscribePremiumBeta: () => {
+          const s = get()
+          const base = Math.max(Date.now(), s.premiumUntil)
+          set({ premiumUntil: base + PREMIUM_DAYS * 86400000, iqUnlocked: true, precisionUnlocked: true })
+        },
+        cancelPremium: () => set({ premiumUntil: 0 }),
         /** 전광판 게시 — AI 필터 통과 + 1다이아 차감 후 노출 */
         postTicker: (text) => {
           const s = get()

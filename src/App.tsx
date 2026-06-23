@@ -41,6 +41,7 @@ const Insight = lazy(() => import('./pages/Insight'))
 const Fortune = lazy(() => import('./pages/Fortune'))
 const Compat = lazy(() => import('./pages/Compat'))
 const Charge = lazy(() => import('./pages/Charge'))
+const Premium = lazy(() => import('./pages/Premium'))
 
 export default function App() {
   const location = useLocation()
@@ -117,6 +118,7 @@ export default function App() {
               <Route path="/legal/:doc" element={<Legal />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/charge" element={<Charge />} />
+              <Route path="/premium" element={<Premium />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<Navigate to="/" replace />} />

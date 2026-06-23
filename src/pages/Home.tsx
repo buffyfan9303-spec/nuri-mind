@@ -11,7 +11,7 @@ import { QUICK_TESTS } from '../data/quick'
 import { SHOP_ITEMS } from '../data/seed'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
-import { useStore } from '../store/useStore'
+import { useStore, isPremium } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
@@ -72,6 +72,8 @@ export default function Home() {
   const onClaimQuest = () => {
     if (s.claimDailyQuest() > 0) fire('coin')
   }
+  const premium = isPremium(s.premiumUntil)
+  const premiumDaysLeft = premium ? Math.max(0, Math.ceil((s.premiumUntil - Date.now()) / 86400000)) : 0
 
   return (
     <div className="bg-dots min-h-dvh pb-36">
@@ -255,6 +257,30 @@ export default function Home() {
               <span className="shrink-0 text-[15px] text-white/70">›</span>
             </Card>
           </div>
+        </motion.div>
+
+        {/* ── 프리미엄 구독 CTA ── */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11, type: 'spring', stiffness: 220, damping: 22 }} className="mt-3.5">
+          <button
+            onClick={() => nav('/premium')}
+            className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
+            style={{ background: premium ? 'linear-gradient(135deg,#F2B01E,#FF7E5F)' : 'linear-gradient(135deg,#6E7BF2,#A88BF2)' }}
+          >
+            <IconBadge emoji="✨" tone="frost" size={44} radius={14} wiggle />
+            <div className="min-w-0 flex-1">
+              <h3 className="text-[15px] font-extrabold tracking-tight text-white">
+                {premium
+                  ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
+                  : l({ ko: '프리미엄 · 광고 제거 + 무제한', en: 'Premium · no ads + unlimited', ja: 'プレミアム・広告除去+無制限' })}
+              </h3>
+              <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
+                {premium
+                  ? l({ ko: `남은 기간 D-${premiumDaysLeft}`, en: `D-${premiumDaysLeft} left`, ja: `残りD-${premiumDaysLeft}` })
+                  : l({ ko: '운세·정밀검사 무제한 · 월 ₩9,900', en: 'Unlimited fortune & tests · ₩9,900/mo', ja: '運勢・検査無制限・月₩9,900' })}
+              </p>
+            </div>
+            <span className="text-xl text-white/80">›</span>
+          </button>
         </motion.div>
 
         {/* ── 1분 바이럴 퀵 테스트 (메인 전면 노출) ── */}
