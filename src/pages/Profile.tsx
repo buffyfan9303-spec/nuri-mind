@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import Avatar from '../components/Avatar'
 import Badges from '../components/Badges'
+import IconBadge from '../components/IconBadge'
 import { Card, Chip, Modal, Section, TopBar } from '../components/ui'
 import { PERSONAS, PERSONA_TEST } from '../i18n/animalTranslations'
 import { lifetimeOf, tierOf } from '../data/rank'
@@ -11,7 +12,7 @@ import type { Lang } from '../data/types'
 import { fileToAvatarDataUrl } from '../lib/image'
 import { scheduleStreakReminder } from '../lib/notify'
 import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
-import { useStore, OPERATOR_NICKS } from '../store/useStore'
+import { useStore, OPERATOR_NICKS, isPremium } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 
 const LANGS: { key: Lang; label: string }[] = [
@@ -139,6 +140,29 @@ export default function Profile() {
           <div className="min-w-0 flex-1">
             <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">{t('insight.title')}</h3>
             <p className="mt-0.5 text-[12.5px] font-bold text-white/90">{t('insight.entry')}</p>
+          </div>
+          <span className="text-lg text-white/80">›</span>
+        </Card>
+
+        {/* 프리미엄 구독 */}
+        <Card
+          onClick={() => nav('/premium')}
+          className={`mt-3 flex items-center gap-3.5 !p-4 text-white ${
+            isPremium(s.premiumUntil) ? '!bg-gradient-to-r from-[#F2B01E] to-[#FF7E5F]' : '!bg-gradient-to-r from-[#6E7BF2] to-[#A88BF2]'
+          }`}
+        >
+          <IconBadge emoji="✨" tone="frost" size={42} radius={13} wiggle />
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">
+              {isPremium(s.premiumUntil)
+                ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
+                : l({ ko: '프리미엄 · 광고 제거 + 무제한', en: 'Premium · no ads + unlimited', ja: 'プレミアム・広告除去+無制限' })}
+            </h3>
+            <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">
+              {isPremium(s.premiumUntil)
+                ? l({ ko: '눌러서 구독 관리', en: 'Manage subscription', ja: '購読を管理' })
+                : l({ ko: '운세·정밀검사 무제한 · 월 ₩9,900', en: 'Unlimited · ₩9,900/mo', ja: '無制限・月₩9,900' })}
+            </p>
           </div>
           <span className="text-lg text-white/80">›</span>
         </Card>

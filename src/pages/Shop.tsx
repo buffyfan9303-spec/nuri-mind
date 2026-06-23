@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import AdSlot from '../components/AdSlot'
+import IconBadge from '../components/IconBadge'
 import { Card, Chip, Modal, Section, TopBar } from '../components/ui'
 import { SHOP_ITEMS } from '../data/seed'
 import type { ShopItem } from '../data/types'
-import { FREEZE_MAX, useStore } from '../store/useStore'
+import { FREEZE_MAX, isPremium, useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { sfx } from '../lib/sound'
@@ -19,6 +21,9 @@ export default function Shop() {
   const buyFreeze = useStore((s) => s.buyFreeze)
   const freezes = useStore((s) => s.streakFreezes)
   const { fire } = useRewardAnimation()
+  const nav = useNavigate()
+  const premiumUntil = useStore((s) => s.premiumUntil)
+  const premium = isPremium(premiumUntil)
   const [confirm, setConfirm] = useState<ShopItem | null>(null)
   const [requested, setRequested] = useState(false)
 
@@ -41,6 +46,28 @@ export default function Shop() {
       <TopBar title={t('shop.title')} />
       <main className="mx-auto max-w-md px-5">
         <p className="px-1 text-[15px] font-medium leading-relaxed tracking-wide text-ink-sub">{t('shop.sub')}</p>
+
+        {/* 프리미엄 구독 CTA */}
+        <button
+          onClick={() => nav('/premium')}
+          className="mt-3 flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
+          style={{ background: premium ? 'linear-gradient(135deg,#F2B01E,#FF7E5F)' : 'linear-gradient(135deg,#6E7BF2,#A88BF2)' }}
+        >
+          <IconBadge emoji="✨" tone="frost" size={42} radius={13} wiggle />
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[15px] font-extrabold tracking-tight text-white">
+              {premium
+                ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
+                : l({ ko: '광고 제거 · 프리미엄', en: 'Remove ads · Premium', ja: '広告除去・プレミアム' })}
+            </h3>
+            <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
+              {premium
+                ? l({ ko: '혜택 이용 중 · 눌러서 관리', en: 'Active · tap to manage', ja: '利用中・管理する' })
+                : l({ ko: '운세·검사 무제한 · 월 ₩9,900', en: 'Unlimited · ₩9,900/mo', ja: '無制限・月₩9,900' })}
+            </p>
+          </div>
+          <span className="text-xl text-white/80">›</span>
+        </button>
 
         {requested && (
           <motion.p

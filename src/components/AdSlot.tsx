@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { ADSENSE_CLIENT, ADSENSE_SLOT_BANNER, ADSENSE_SLOT_RECT, adsEnabled, pushAd } from '../lib/ads'
 import { useStore, isPremium } from '../store/useStore'
-import { useT } from '../i18n/useT'
+import { useNavigate } from 'react-router-dom'
+import { useT, useL } from '../i18n/useT'
 
 /**
  * 수익화 광고 슬롯.
@@ -14,6 +15,8 @@ import { useT } from '../i18n/useT'
  */
 export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'rect' }) {
   const t = useT()
+  const l = useL()
+  const nav = useNavigate()
   const premiumUntil = useStore((s) => s.premiumUntil)
   const isRect = variant === 'rect'
 
@@ -23,21 +26,17 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
 
   if (isPremium(premiumUntil)) return null // 프리미엄 = 광고 제거
 
-  if (adsEnabled()) {
-    return (
-      <ins
-        key={variant}
-        className="adsbygoogle mx-auto block w-full overflow-hidden rounded-2xl"
-        style={{ display: 'block', minHeight: isRect ? 250 : 60, maxHeight: isRect ? 280 : 110 }}
-        data-ad-client={ADSENSE_CLIENT}
-        data-ad-slot={isRect ? ADSENSE_SLOT_RECT : ADSENSE_SLOT_BANNER}
-        data-ad-format={isRect ? 'rectangle' : 'horizontal'}
-        data-full-width-responsive="true"
-      />
-    )
-  }
-
-  return (
+  const adEl = adsEnabled() ? (
+    <ins
+      key={variant}
+      className="adsbygoogle mx-auto block w-full overflow-hidden rounded-2xl"
+      style={{ display: 'block', minHeight: isRect ? 250 : 60, maxHeight: isRect ? 280 : 110 }}
+      data-ad-client={ADSENSE_CLIENT}
+      data-ad-slot={isRect ? ADSENSE_SLOT_RECT : ADSENSE_SLOT_BANNER}
+      data-ad-format={isRect ? 'rectangle' : 'horizontal'}
+      data-full-width-responsive="true"
+    />
+  ) : (
     <div
       className={`flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-line bg-surface2 ${
         isRect ? 'h-[250px]' : 'h-[64px]'
@@ -49,4 +48,17 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
       <span className="text-[13px] font-bold text-ink-faint">{t('ad.placeholder')}</span>
     </div>
   )
+
+  // rect(페이지 하단) 광고 아래에만 광고제거 업셀 — 인라인 배너엔 미표시(과노출 방지)
+  if (isRect) {
+    return (
+      <div>
+        {adEl}
+        <button onClick={() => nav('/premium')} className="mx-auto mt-1.5 block text-[11.5px] font-extrabold text-mind-500">
+          ✨ {l({ ko: '광고 없이 이용하기 · 프리미엄', en: 'Remove ads · Premium', ja: '広告なしで利用・プレミアム' })}
+        </button>
+      </div>
+    )
+  }
+  return adEl
 }
