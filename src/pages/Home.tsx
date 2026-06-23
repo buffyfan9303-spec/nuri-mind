@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import AdSlot from '../components/AdSlot'
 import Avatar from '../components/Avatar'
 import ScrollChips from '../components/ScrollChips'
+import IconBadge from '../components/IconBadge'
 import { PointsPill, Card } from '../components/ui'
 import { TESTS } from '../data/tests'
 import { QUICK_TESTS } from '../data/quick'
@@ -244,12 +245,12 @@ export default function Home() {
         >
           <div className="mt-3.5 grid grid-cols-2 gap-2.5">
             <Card onClick={() => nav('/fortune')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-3.5">
-              <motion.span animate={{ rotate: [0, -11, 11, -7, 7, 0] }} transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut', repeatDelay: 2 }} className="shrink-0 text-[24px] leading-none">🔮</motion.span>
+              <IconBadge emoji="🔮" tone="frost" size={40} radius={13} wiggle />
               <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</h3>
               <span className="shrink-0 text-[15px] text-white/70">›</span>
             </Card>
             <Card onClick={() => nav('/compat')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#F25C8E] to-[#FF9EC0] !p-3.5">
-              <motion.span animate={{ rotate: [0, 11, -11, 7, -7, 0] }} transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut', repeatDelay: 2.2 }} className="shrink-0 text-[24px] leading-none">💞</motion.span>
+              <IconBadge emoji="💞" tone="frost" size={40} radius={13} wiggle />
               <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('compat.title')}</h3>
               <span className="shrink-0 text-[15px] text-white/70">›</span>
             </Card>
@@ -320,7 +321,7 @@ export default function Home() {
         {/* 종합 인지 프로필 (정밀검사 레이더) */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, type: 'spring', stiffness: 240, damping: 24 }}>
           <Card onClick={() => nav('/cog')} className="mt-2.5 flex items-center gap-3 !bg-gradient-to-r from-[#5B6CF0] to-[#3B82F6] !p-3.5">
-            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.6, repeatDelay: 2 }} className="text-[24px]">🧩</motion.span>
+            <IconBadge emoji="🧩" tone="frost" size={40} radius={13} wiggle />
             <div className="min-w-0 flex-1">
               <h3 className="text-[14.5px] font-extrabold leading-tight text-white">{l({ ko: '종합 인지 프로필 보기', en: 'View cognitive profile', ja: '総合認知プロフィール' })}</h3>
               <p className="mt-0.5 truncate text-[11.5px] font-bold text-white/85">{l({ ko: 'IQ·기억·집중·처리속도·공간 레이더', en: 'IQ·memory·focus·speed·spatial radar', ja: 'IQ·記憶·集中·速度·空間レーダー' })}</p>
@@ -341,7 +342,7 @@ export default function Home() {
           className="mt-4"
         >
           <Card onClick={() => nav('/rewards')} className="flex items-center gap-3.5 !p-4">
-            <motion.span animate={{ rotate: [0, -9, 9, -5, 5, 0] }} transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut', repeatDelay: 2.4 }} className="text-[28px]">🪙</motion.span>
+            <IconBadge emoji="🪙" color="#F2B01E" size={46} radius={15} wiggle />
             <div className="min-w-0 flex-1">
               <h3 className="text-[16px] font-extrabold tracking-tight">{t('home.rewardsBanner')}</h3>
               <p className="mt-0.5 text-[13px] font-bold text-ink-faint">{t('home.rewardsBannerSub')}</p>
@@ -357,7 +358,7 @@ export default function Home() {
             className="flex w-full items-center gap-3.5 rounded-3xl p-4 text-left shadow-pop"
             style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)' }}
           >
-            <motion.span animate={{ rotate: [0, 10, -10, 6, -6, 0] }} transition={{ repeat: Infinity, duration: 2.3, ease: 'easeInOut', repeatDelay: 2 }} className="text-[28px]">🎁</motion.span>
+            <IconBadge emoji="🎁" tone="frost" size={46} radius={15} wiggle />
             <div className="min-w-0 flex-1">
               <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">{l({ ko: '친구 초대하고 +100P', en: 'Invite a friend, +100P', ja: '友達招待で+100P' })}</h3>
               <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/85">{l({ ko: '친구도 나도 +100P · 많이 부를수록 보너스 ↑', en: 'You both get +100P · more invites, bigger bonus', ja: '二人とも+100P・招待ほどボーナス↑' })}</p>
@@ -369,7 +370,7 @@ export default function Home() {
         {/* 심리 매거진 */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
           <Card onClick={() => nav('/magazine')} className="flex items-center gap-3.5 !p-4">
-            <span className="text-[28px]">📖</span>
+            <IconBadge emoji="📖" color="#8B95F6" size={46} radius={15} wiggle />
             <div className="min-w-0 flex-1">
               <h3 className="text-[16px] font-extrabold tracking-tight">{t('mag.title')}</h3>
               <p className="mt-0.5 truncate text-[13px] font-bold text-ink-faint">{t('mag.banner')}</p>
