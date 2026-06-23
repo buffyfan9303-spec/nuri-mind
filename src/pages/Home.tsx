@@ -74,6 +74,7 @@ export default function Home() {
   }
   const premium = isPremium(s.premiumUntil)
   const premiumDaysLeft = premium ? Math.max(0, Math.ceil((s.premiumUntil - Date.now()) / 86400000)) : 0
+  const trioDone = (['selfesteem', 'perfect', 'efficacy'] as const).every((id) => s.results.some((r) => r.testId === id))
 
   return (
     <div className="bg-dots min-h-dvh pb-36">
@@ -282,6 +283,28 @@ export default function Home() {
             <span className="text-xl text-white/80">›</span>
           </button>
         </motion.div>
+
+        {/* ── 통합 자기 리포트 (자기 3부작 완료 시) ── */}
+        {trioDone && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, type: 'spring', stiffness: 220, damping: 22 }} className="mt-3.5">
+            <button
+              onClick={() => nav('/self-report')}
+              className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
+              style={{ background: 'linear-gradient(135deg,#5B6CF0,#9AA6FF)' }}
+            >
+              <IconBadge emoji="🪞" tone="frost" size={44} radius={14} wiggle />
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[15px] font-extrabold tracking-tight text-white">
+                  ✨ {l({ ko: '통합 자기 리포트 완성!', en: 'Self report ready!', ja: '統合セルフレポート完成！' })}
+                </h3>
+                <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
+                  {l({ ko: '자존감·완벽주의·효능감 종합 분석', en: 'Your combined self-profile', ja: '自尊心・完璧主義・効力感の統合分析' })}
+                </p>
+              </div>
+              <span className="text-xl text-white/80">›</span>
+            </button>
+          </motion.div>
+        )}
 
         {/* ── 1분 바이럴 퀵 테스트 (메인 전면 노출) ── */}
         <div className="mt-6">
