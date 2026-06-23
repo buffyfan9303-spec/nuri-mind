@@ -20,6 +20,8 @@ export default function Avatar({
       <img
         src={avatar.dataUrl}
         alt=""
+        decoding="async"
+        loading="lazy"
         className={`shrink-0 rounded-full object-cover shadow-card ${className}`}
         style={px}
       />
