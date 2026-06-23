@@ -20,6 +20,7 @@ import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
+import { encodeDuel } from '../lib/duel'
 
 export default function TestResult() {
   const { rid } = useParams<{ rid: string }>()
@@ -45,6 +46,7 @@ export default function TestResult() {
   const precisionUnlocked = useStore((s) => s.precisionUnlocked)
   const unlockPrecision = useStore((s) => s.unlockPrecision)
   const diamonds = useStore((s) => s.diamonds)
+  const nickname = useStore((s) => s.nickname)
   const { fire } = useRewardAnimation()
   const celebrated = useRef(false)
 
@@ -195,6 +197,27 @@ export default function TestResult() {
       afterShare()
     } catch {
       sfx.err()
+    }
+  }
+
+  const shareDuel = async () => {
+    const enc = encodeDuel({ t: result.testId, p: result.percentile, b: result.band, n: nickname, a: result.persona })
+    const url = `${window.location.origin}/api/duel?r=${enc}` // 크롤러=동적 OG, 사람=/vs로 리다이렉트
+    const text = l({
+      ko: `나랑 ${t(`test.${result.testId}.name`)} 대결할래? 누가 이기나 보자! 🆚`,
+      en: `Beat my ${t(`test.${result.testId}.name`)} result? 🆚`,
+      ja: `${t(`test.${result.testId}.name`)}で勝負しよう！🆚`,
+    })
+    try {
+      if (navigator.share) await navigator.share({ title: '누리 마인드 결과 대결', text, url })
+      else {
+        await navigator.clipboard.writeText(url)
+        setShareMsg(l({ ko: '🆚 대결 링크가 복사됐어요!', en: '🆚 Duel link copied!', ja: '🆚 リンクをコピー！' }))
+        setTimeout(() => setShareMsg(''), 2400)
+      }
+      track('share', { channel: 'duel' })
+    } catch {
+      /* 사용자 취소 — 무시 */
     }
   }
 
@@ -681,6 +704,13 @@ export default function TestResult() {
               {copied ? t('common.copied') : t('share.text')}
             </Button>
           </div>
+          <button
+            onClick={shareDuel}
+            className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-extrabold text-white"
+            style={{ background: `linear-gradient(135deg, ${persona.grad[0]}, ${persona.grad[1]})` }}
+          >
+            🆚 {l({ ko: '친구와 결과 대결', en: 'Challenge a friend', ja: '友達と結果バトル' })}
+          </button>
         </Card>
 
         {/* 친구 초대 CTA — 결과 공유 직후 바이럴 (둘 다 +100P) */}
