@@ -115,6 +115,8 @@ export default function TestResult() {
     burnout: ['high'],
     dopamine: ['high'],
     love: ['fearful'],
+    selfesteem: ['low'],
+    perfect: ['strain'],
   }
   const needsDoctor = doctorBands[result.testId]?.includes(result.band) ?? false
 

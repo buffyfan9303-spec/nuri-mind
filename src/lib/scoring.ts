@@ -304,6 +304,43 @@ export function scoreSelfEsteem(items: LikertItem[], answers: Record<string, num
   return base('selfesteem', raw, pct, band, persona, subscales, {})
 }
 
+/* ──────────── PERFECTIONISM (Frost MPS 4차원) ──────────── */
+/** 1~5 동의, 20문항. raw 20~100. μ=58 σ=13. STD=적응 축, CM+DA+SOC=부적응 축.
+ *  근거: Frost Multidimensional Perfectionism Scale(Frost et al. 1990). 부적응 비중으로 고완벽 유형 구분. */
+export function scorePerfection(items: LikertItem[], answers: Record<string, number>): TestResult {
+  const ax: Record<string, { s: number; m: number; n: number }> = {}
+  let raw = 0
+  for (const it of items) {
+    const v = answers[it.id] ?? 3
+    raw += v
+    const acc = (ax[it.sub] ??= { s: 0, m: 0, n: 0 })
+    acc.s += v
+    acc.m += 5
+    acc.n++
+  }
+  const STD = ax.STD?.s ?? 0
+  const malad = (ax.CM?.s ?? 0) + (ax.DA?.s ?? 0) + (ax.SOC?.s ?? 0)
+  const maladRatio = malad / Math.max(1, malad + STD)
+  const pct = percentile(raw, 58, 13)
+  let band: string
+  let persona: string
+  if (pct >= 68) {
+    if (maladRatio >= 0.6) { band = 'strain'; persona = 'beaver' }
+    else { band = 'driven'; persona = 'eagle' }
+  } else if (pct >= 38) {
+    band = 'balanced'
+    persona = 'butterfly'
+  } else {
+    band = 'easy'
+    persona = 'duck'
+  }
+  const subscales: SubscaleScore[] = ['STD', 'CM', 'DA', 'SOC'].map((key) => {
+    const a = ax[key] ?? { s: 0, m: 1, n: 0 }
+    return { key, score: a.s, max: a.m, ratio: laplace(a.s - a.n, a.m - a.n) }
+  })
+  return base('perfect', raw, pct, band, persona, subscales, {})
+}
+
 /* ──────────── DARK TRIAD (SD3 3요인) ──────────── */
 /** 1~5 동의. MA/NA 7문항, PS 5문항, VAL 1. 종합 백분위 = 3축 평균.
  *  SD3(Jones&Paulhus 2014) 실규준: 사이코패시(PS) 평균이 MA/NA보다 낮음 → PS μ=10.5 σ=3.0(문항평균 ~2.1)으로 정렬 */

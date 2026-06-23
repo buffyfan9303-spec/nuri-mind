@@ -1447,6 +1447,126 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '타인의 아픔에 진심으로 공감하는 따뜻함', en: 'Warmth that genuinely empathizes with others\' pain', ja: '他人の痛みに心から共感する温かさ' },
     ],
   },
+
+  beaver: {
+    emoji: '🦫',
+    grad: ['#6E59D9', '#A99BEA'],
+    name: { ko: '멈출 수 없는 비버', en: 'Restless Beaver', ja: '止まれないビーバー' },
+    title: { ko: '완벽해야만 멈추는 마음', en: 'A mind that only stops at perfect', ja: '完璧でないと止まれない心' },
+    tagline: { ko: '다 했는데도, 어딘가 부족해', en: 'Even when it\'s done, it feels short', ja: 'やり切っても、どこか足りない' },
+    desc: {
+      ko: '높은 기준을 세우고 끝까지 밀어붙이지만, 실수 하나에 전체가 무너진 듯 느낍니다. 완벽주의가 동력을 넘어 자신을 조이는 단계예요. 성과는 빛나지만 마음은 자주 지칩니다.',
+      en: 'You set high standards and push to the end, but one mistake feels like it topples everything. Perfectionism has crossed from fuel into strain. Your output shines, yet your mind often tires.',
+      ja: '高い基準を立てて最後まで押し進めますが、一つのミスで全体が崩れた気がします。完璧主義が原動力を超え自分を締める段階です。成果は輝きますが心はよく疲れます。',
+    },
+    slap: {
+      ko: '완벽은 목표가 아니라 닿지 못할 신기루일 때가 많아요. "이만하면 충분하다"를 자신에게 허락하는 연습이, 비버에게 가장 어렵지만 가장 필요한 일이에요.',
+      en: 'Perfect is often not a goal but a mirage you never reach. Letting yourself say "this is enough" is the hardest — and most needed — practice for a beaver.',
+      ja: '完璧は目標でなく届かない蜃気楼であることが多い。「これで十分」を自分に許す練習が、ビーバーに最も難しく最も必要なことです。',
+    },
+    risks: [
+      { ko: '실수 걱정·자기 의심이 불안과 번아웃으로 이어질 수 있음', en: 'Fear of mistakes and self-doubt can spill into anxiety and burnout', ja: 'ミスへの懸念や自己疑念が不安・燃え尽きに繋がりうる' },
+      { ko: '\'완벽하지 않으면 시작도 못 하는\' 미루기에 빠질 수 있음', en: 'You can fall into "can\'t even start unless it\'s perfect" procrastination', ja: '「完璧でないと始められない」先延ばしに陥りやすい' },
+    ],
+    solutions: [
+      { ko: '"80%면 제출" 규칙을 정해 완성을 완벽보다 앞에 두기', en: 'Set an "80% and ship" rule — put done ahead of perfect', ja: '「80%で提出」ルールを決め、完成を完璧より優先する' },
+      { ko: '실수를 \'실패\'가 아닌 \'데이터\'로 다시 정의하기', en: 'Reframe mistakes as "data," not "failure"', ja: 'ミスを「失敗」でなく「データ」と再定義する' },
+    ],
+    strengths: [
+      { ko: '디테일을 놓치지 않는 압도적인 완성도', en: 'Outstanding polish that never misses a detail', ja: 'ディテールを逃さない圧倒的な完成度' },
+      { ko: '한번 맡으면 끝까지 책임지는 철저함', en: 'Thoroughness that sees every commitment through', ja: '一度引き受ければ最後まで責任を持つ徹底さ' },
+    ],
+  },
+
+  eagle: {
+    emoji: '🦅',
+    grad: ['#3E7BD9', '#8FB8E8'],
+    name: { ko: '높이 나는 독수리', en: 'Soaring Eagle', ja: '高く飛ぶ鷲' },
+    title: { ko: '기준은 높되, 나를 갉아먹진 않는다', en: 'High standards that don\'t eat you alive', ja: '基準は高く、でも自分を削らない' },
+    tagline: { ko: '더 잘하고 싶다, 그래도 괜찮다', en: 'I want better — and I\'m still OK', ja: 'もっと上を、それでも大丈夫' },
+    desc: {
+      ko: '스스로 높은 목표를 세우지만, 실수에 무너지지 않고 다음으로 나아갑니다. 완벽주의의 가장 건강한 형태 — 기준은 추진력이 되고, 실패는 배움이 됩니다.',
+      en: 'You set high goals yourself, yet you don\'t crumble at mistakes — you move on. The healthiest form of perfectionism: standards become drive, failure becomes learning.',
+      ja: '自ら高い目標を立てつつ、ミスに崩れず次へ進みます。完璧主義の最も健康な形 — 基準は推進力に、失敗は学びになります。',
+    },
+    slap: {
+      ko: '단, 주변 사람에게도 같은 높이를 무심코 기대하진 않나요? 당신에겐 동력인 기준이 누군가에겐 부담일 수 있어요. 기준을 나눌 땐 한 템포 부드럽게.',
+      en: 'But do you unconsciously expect the same heights from others? A standard that fuels you can burden someone else. Share it a beat more gently.',
+      ja: 'ただ、周囲にも同じ高さを無意識に期待していませんか？あなたには原動力の基準が誰かには負担かも。共有する時は一拍やわらかく。',
+    },
+    risks: [
+      { ko: '자신의 높은 기준을 타인에게도 기대해 갈등이 생길 수 있음', en: 'Expecting your high bar from others can spark friction', ja: '自分の高い基準を他人にも期待し摩擦を生みうる' },
+      { ko: '쉴 타이밍을 놓쳐 천천히 소진될 수 있음', en: 'Missing the moment to rest, you can slowly deplete', ja: '休むタイミングを逃しゆっくり消耗しうる' },
+    ],
+    solutions: [
+      { ko: '협업 땐 "내 기준"과 "필요한 기준"을 구분해 말하기', en: 'In teamwork, separate "my bar" from "the needed bar"', ja: '協業では「自分の基準」と「必要な基準」を分けて伝える' },
+      { ko: '성취 직후 의도적으로 \'아무것도 안 하는 시간\' 넣기', en: 'Right after a win, deliberately schedule "do-nothing" time', ja: '達成直後にあえて「何もしない時間」を入れる' },
+    ],
+    strengths: [
+      { ko: '높은 기준을 실력으로 바꾸는 강한 성취력', en: 'The power to turn high standards into real skill', ja: '高い基準を実力に変える強い達成力' },
+      { ko: '실패를 빠르게 배움으로 전환하는 회복력', en: 'Resilience that converts failure into learning fast', ja: '失敗を素早く学びに変える回復力' },
+    ],
+  },
+
+  butterfly: {
+    emoji: '🦋',
+    grad: ['#7AB8C9', '#B5DCE6'],
+    name: { ko: '유연한 나비', en: 'Easy Butterfly', ja: 'しなやかな蝶' },
+    title: { ko: '잘하고 싶지만, 매달리진 않아', en: 'I want to do well, without clinging', ja: '上手くやりたい、でも執着しない' },
+    tagline: { ko: '완벽보단 \'충분히 좋은\'을 택해', en: 'I choose "good enough" over perfect', ja: '完璧より「十分良い」を選ぶ' },
+    desc: {
+      ko: '적당히 높은 기준을 갖되 상황에 따라 힘을 뺄 줄 압니다. 완벽과 여유 사이에서 균형을 잡는, 가장 다루기 편한 완벽주의 유형이에요.',
+      en: 'You hold reasonably high standards yet know when to loosen up. Balancing perfect and ease — the most manageable perfectionism type.',
+      ja: 'ほどよく高い基準を持ちつつ、状況に応じて力を抜けます。完璧と余裕の間で均衡を取る、最も扱いやすい完璧主義タイプです。',
+    },
+    slap: {
+      ko: '단, 그 유연함이 가끔 "이 정도면 됐지"로 너무 일찍 멈추게 하진 않나요? 진짜 하고 싶은 한 가지엔 평소보다 한 뼘 더 욕심내봐도 좋아요.',
+      en: 'But does that flexibility sometimes stop you too early at "good enough"? On the one thing you truly want, it\'s OK to reach a notch higher.',
+      ja: 'ただ、その柔軟さが時に「これで十分」と早く止めていませんか？本当にやりたい一つには、いつもより一歩欲張っても良いのです。',
+    },
+    risks: [
+      { ko: '중요한 일에도 적당히 멈춰 잠재력을 덜 쓸 수 있음', en: 'Stopping at "fine" even on big things can leave potential unused', ja: '重要な事も適当に止め潜在力を使い切らない事も' },
+      { ko: '기준이 유동적이라 가끔 일관성이 흔들림', en: 'A fluid bar can make consistency wobble at times', ja: '基準が流動的で時に一貫性が揺れる' },
+    ],
+    solutions: [
+      { ko: '진짜 중요한 1가지를 정해 거기엔 기준을 한 칸 올리기', en: 'Pick one truly important thing and raise the bar a notch there', ja: '本当に大切な一つを決め、そこは基準を一段上げる' },
+      { ko: '"충분히 좋음"의 선을 미리 정해두면 흔들림이 줄어요', en: 'Pre-deciding your "good enough" line steadies the wobble', ja: '「十分良い」の線を先に決めると揺れが減る' },
+    ],
+    strengths: [
+      { ko: '완벽과 여유를 상황에 맞게 조절하는 균형감', en: 'A balance that dials perfect and ease to fit the moment', ja: '完璧と余裕を状況に合わせ調整する均衡感' },
+      { ko: '실수에 크게 흔들리지 않는 단단한 멘탈', en: 'A steady mind that isn\'t shaken much by mistakes', ja: 'ミスに大きく揺れない安定したメンタル' },
+    ],
+  },
+
+  duck: {
+    emoji: '🦆',
+    grad: ['#5BB98C', '#A7DCC0'],
+    name: { ko: '느긋한 오리', en: 'Easygoing Duck', ja: 'のんびりアヒル' },
+    title: { ko: '물 흐르듯, 굳이 완벽하지 않아도', en: 'Like water — perfect isn\'t the point', ja: '水のように、完璧でなくていい' },
+    tagline: { ko: '됐으면 됐지, 뭘 그렇게까지', en: 'It\'s done — why fuss?', ja: '終わればOK、そこまでしなくても' },
+    desc: {
+      ko: '결과에 크게 집착하지 않고 과정을 즐기는 편입니다. 스트레스가 적은 대신, 더 잘할 수 있는 일도 일찍 손을 놓을 때가 있어요.',
+      en: 'You don\'t fixate on results and tend to enjoy the process. Low stress is your gift — though you sometimes let go early of things you could push further.',
+      ja: '結果に強く執着せず過程を楽しむ方です。ストレスが少ない反面、もっとできる事も早めに手を離す事があります。',
+    },
+    slap: {
+      ko: '느긋함은 큰 강점이지만, 가끔은 "조금만 더"가 결과를 확 바꿔요. 정말 아끼는 일 하나엔 평소보다 5%만 더 공들여 보세요 — 그 차이가 의외로 큽니다.',
+      en: 'Easygoing is a real strength, but sometimes "just a bit more" changes everything. On one thing you cherish, add 5% more care — the gap is surprisingly large.',
+      ja: 'のんびりは大きな強みですが、時に「もう少し」が結果を一変させます。本当に大切な一つに、普段より5%だけ手をかけて — その差は意外と大きい。',
+    },
+    risks: [
+      { ko: '더 잘할 수 있는 일도 적당히 마무리해 아쉬움이 남을 수 있음', en: 'Wrapping up "fine" can leave better-possible work unfinished', ja: 'もっとできる事も適当に終え心残りになりうる' },
+      { ko: '마감·디테일을 가볍게 봐 신뢰를 잃을 때가 있음', en: 'Taking deadlines and details lightly can cost trust', ja: '締切やディテールを軽く見て信頼を失う事も' },
+    ],
+    solutions: [
+      { ko: '중요한 일엔 "한 번 더 점검" 체크 하나만 추가하기', en: 'On important tasks, add a single "one more check" step', ja: '重要な事には「もう一度点検」を一つだけ追加する' },
+      { ko: '마감 30분 전 알람으로 \'마지막 다듬기\' 습관 만들기', en: 'Set an alarm 30 min before deadline for a "final polish" habit', ja: '締切30分前のアラームで「最後の仕上げ」習慣を作る' },
+    ],
+    strengths: [
+      { ko: '결과에 덜 휘둘리는 낮은 스트레스와 회복력', en: 'Low stress and resilience, less swayed by outcomes', ja: '結果に振り回されにくい低ストレスと回復力' },
+      { ko: '과정을 즐기며 꾸준히 해내는 지속력', en: 'Staying power that enjoys the process and keeps going', ja: '過程を楽しみ着実にやり遂げる持続力' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -1460,6 +1580,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   bamboo: 'resilience', willow: 'resilience', glass: 'resilience',
   fox: 'dark', peacock: 'dark', shark: 'dark', dove: 'dark',
   lion: 'selfesteem', swan: 'selfesteem', squirrel: 'selfesteem', mouse: 'selfesteem',
+  beaver: 'perfect', eagle: 'perfect', butterfly: 'perfect', duck: 'perfect',
   elephant: 'memory', octopus: 'memory', goldfish: 'memory',
   hawk: 'focus', bee: 'focus', otter: 'focus',
   cheetah: 'speed', rabbit: 'speed', tortoise: 'speed',

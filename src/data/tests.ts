@@ -176,6 +176,17 @@ export const TESTS: TestMeta[] = [
     gradTo: '#FFB5CE',
     btn: 'love',
   },
+  {
+    id: 'perfect',
+    emoji: '💯',
+    count: 20,
+    minutes: 5,
+    tint: 'bg-dk-light',
+    text: 'text-dk-deep',
+    gradFrom: '#6E59D9',
+    gradTo: '#A99BEA',
+    btn: 'dk',
+  },
 ]
 
 export const testMeta = (id: TestId): TestMeta => TESTS.find((t) => t.id === id)!
