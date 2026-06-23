@@ -3,13 +3,20 @@ export const config = { runtime: 'edge' }
 // 결과 대결 공유 랜딩 — 크롤러(카카오/트위터)엔 동적 OG 메타를 주고, 사람은 SPA /vs 로 즉시 리다이렉트.
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-function decode(r: string): { t: string; p: string; n: string } | null {
+type Decoded =
+  | { quick: false; t: string; p: string; n: string }
+  | { quick: true; nm: string; e: string; n: string }
+
+function decode(r: string): Decoded | null {
   try {
     const b = r.replace(/-/g, '+').replace(/_/g, '/')
     const json = decodeURIComponent(escape(atob(b)))
     const arr = JSON.parse(json)
     if (!Array.isArray(arr)) return null
-    return { t: String(arr[0] ?? ''), p: String(arr[1] ?? ''), n: String(arr[3] ?? '') }
+    if (arr[0] === 'Q') {
+      return { quick: true, nm: String(arr[3] ?? ''), e: String(arr[4] ?? ''), n: String(arr[5] ?? '') }
+    }
+    return { quick: false, t: String(arr[0] ?? ''), p: String(arr[1] ?? ''), n: String(arr[3] ?? '') }
   } catch {
     return null
   }
@@ -22,12 +29,17 @@ export default function handler(req: Request) {
   const d = decode(r)
 
   const vs = d ? `${origin}/vs?r=${encodeURIComponent(r)}` : `${origin}/`
-  const ogImg = d ? `${origin}/api/og?t=${encodeURIComponent(d.t)}&p=${encodeURIComponent(d.p)}` : `${origin}/og.jpg`
   const rawNick = (d?.n || '').slice(0, 16)
   const title = '누리 마인드 결과 대결 🆚'
-  const desc = rawNick
-    ? `${rawNick} 님의 심리검사 결과에 도전해보세요!`
-    : '내 심리검사 결과와 친구를 비교해보세요!'
+  let ogImg = `${origin}/og.jpg`
+  let desc = '내 심리검사 결과와 친구를 비교해보세요!'
+  if (d && d.quick) {
+    ogImg = `${origin}/api/og?e=${encodeURIComponent(d.e)}`
+    desc = rawNick ? `${rawNick} 님은 "${d.nm}"! 너도 해보고 같은 결과인지 확인해봐` : `친구의 결과 "${d.nm}"! 너도 해볼래?`
+  } else if (d) {
+    ogImg = `${origin}/api/og?t=${encodeURIComponent(d.t)}&p=${encodeURIComponent(d.p)}`
+    desc = rawNick ? `${rawNick} 님의 심리검사 결과에 도전해보세요!` : '내 심리검사 결과와 친구를 비교해보세요!'
+  }
 
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">

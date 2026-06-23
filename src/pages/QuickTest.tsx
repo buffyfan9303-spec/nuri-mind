@@ -12,6 +12,8 @@ import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { shiftGrad } from '../lib/color'
 import { CHARACTERS } from '../lib/characters'
+import { encodeQuickDuel } from '../lib/duel'
+import { useStore } from '../store/useStore'
 
 export default function QuickTest() {
   const { id } = useParams<{ id: string }>()
@@ -20,6 +22,7 @@ export default function QuickTest() {
   const nav = useNavigate()
   const test = quickById(id || '')
   const { fire } = useRewardAnimation()
+  const nickname = useStore((s) => s.nickname)
 
   const [step, setStep] = useState(0)
   const [tally, setTally] = useState<Record<string, number>>({})
@@ -122,6 +125,28 @@ export default function QuickTest() {
     if (!ok) share()
   }
 
+  const shareDuelQuick = async () => {
+    if (!winner || !test) return
+    const enc = encodeQuickDuel({ qid: test.id, key: winner.key, nm: l(winner.name), e: winner.emoji, n: nickname })
+    const url = `${location.origin}/api/duel?r=${enc}` // 크롤러=동적 OG, 사람=/vs로 리다이렉트
+    const text = l({
+      ko: `나는 ${l(test.title)}에서 "${winner.emoji} ${l(winner.name)}"! 너도 해볼래? 🆚`,
+      en: `I got "${winner.emoji} ${l(winner.name)}" on ${l(test.title)}! Your turn 🆚`,
+      ja: `${l(test.title)}で「${winner.emoji} ${l(winner.name)}」だった！君もやる？🆚`,
+    })
+    try {
+      track('share', { channel: 'quick_duel', id: test.id })
+      if (navigator.share) await navigator.share({ title: '누리 마인드 결과 대결', text, url })
+      else {
+        await navigator.clipboard.writeText(`${text} ${url}`)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1600)
+      }
+    } catch {
+      /* 사용자 취소 — 무시 */
+    }
+  }
+
   const reset = () => {
     setTally({})
     setStep(0)
@@ -191,6 +216,13 @@ export default function QuickTest() {
                 📤 {t('quick.share')}
               </Button>
             </div>
+            <button
+              onClick={shareDuelQuick}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-extrabold text-white"
+              style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }}
+            >
+              🆚 {l({ ko: '친구와 대결', en: 'Challenge a friend', ja: '友達とバトル' })}
+            </button>
             {test.funnel && (
               <Button color="white" onClick={() => nav(`/test/${test.funnel}`)}>
                 🔬 {t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}

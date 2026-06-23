@@ -5,6 +5,7 @@ import { TopBar } from '../components/ui'
 import Button from '../components/Button'
 import { PERSONAS } from '../i18n/animalTranslations'
 import { testMeta } from '../data/tests'
+import { quickById } from '../data/quick'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { decodeDuel } from '../lib/duel'
@@ -21,22 +22,61 @@ export default function Duel() {
   const results = useStore((s) => s.results)
   const friend = useMemo(() => decodeDuel(params.get('r') ?? ''), [params])
 
-  if (!friend || !PERSONAS[friend.a]) {
+  const invalidView = (
+    <div className="min-h-dvh pb-20">
+      <TopBar back="/" title={l({ ko: '결과 대결', en: 'Result duel', ja: '結果バトル' })} />
+      <main className="mx-auto max-w-md px-5 pt-12 text-center">
+        <p className="text-[44px]">🤔</p>
+        <p className="mt-3 text-[15px] font-bold text-ink-sub">
+          {l({ ko: '대결 링크가 올바르지 않아요.', en: 'This duel link is invalid.', ja: 'リンクが正しくありません。' })}
+        </p>
+        <div className="mt-5">
+          <Button color="mind" onClick={() => nav('/')}>{l({ ko: '검사하러 가기', en: 'Take a test', ja: '検査へ' })}</Button>
+        </div>
+      </main>
+    </div>
+  )
+
+  if (!friend) return invalidView
+
+  // 퀵 테스트 대결 — 퀵 결과는 미저장이라 친구 타입만 보여주고 "너도 해보기"
+  if ('quick' in friend) {
+    const qt = quickById(friend.qid)
     return (
-      <div className="min-h-dvh pb-20">
+      <div className="min-h-dvh pb-24">
         <TopBar back="/" title={l({ ko: '결과 대결', en: 'Result duel', ja: '結果バトル' })} />
-        <main className="mx-auto max-w-md px-5 pt-12 text-center">
-          <p className="text-[44px]">🤔</p>
-          <p className="mt-3 text-[15px] font-bold text-ink-sub">
-            {l({ ko: '대결 링크가 올바르지 않아요.', en: 'This duel link is invalid.', ja: 'リンクが正しくありません。' })}
+        <main className="mx-auto max-w-md px-5 text-center">
+          <p className="mt-4 text-[13px] font-bold text-ink-faint">{qt ? l(qt.title) : l({ ko: '퀵 테스트', en: 'Quick test', ja: 'クイズ' })}</p>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 16 }}
+            className="mx-auto mt-3 flex w-full max-w-[280px] flex-col items-center rounded-3xl p-6 text-white"
+            style={{ background: `linear-gradient(150deg, ${qt?.grad[0] ?? '#9AA6FF'}, ${qt?.grad[1] ?? '#C7B8FF'})` }}
+          >
+            <span className="text-[64px] leading-none">{friend.e}</span>
+            <span className="mt-2 text-[12px] font-extrabold text-white/85">
+              {(friend.n || l({ ko: '친구', en: 'Friend', ja: '友達' })) + l({ ko: ' 님의 결과', en: '’s result', ja: 'の結果' })}
+            </span>
+            <span className="mt-1 break-keep text-[20px] font-extrabold">{friend.nm}</span>
+          </motion.div>
+          <p className="mt-5 break-keep text-[15px] font-bold text-ink-sub">
+            {l({ ko: '너도 해보고 같은 결과인지 확인해봐!', en: 'Take it and see if you match!', ja: 'あなたもやって一致するか見てみて！' })}
           </p>
           <div className="mt-5">
-            <Button color="mind" onClick={() => nav('/')}>{l({ ko: '검사하러 가기', en: 'Take a test', ja: '検査へ' })}</Button>
+            <Button color="mind" onClick={() => nav(qt ? `/quick/${friend.qid}` : '/quick')}>
+              🆚 {l({ ko: '나도 해보기', en: 'Take it too', ja: '自分もやる' })}
+            </Button>
           </div>
+          <button onClick={() => nav('/')} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">
+            {l({ ko: '홈으로', en: 'Home', ja: 'ホーム' })}
+          </button>
         </main>
       </div>
     )
   }
+
+  if (!PERSONAS[friend.a]) return invalidView
 
   const fPersona = PERSONAS[friend.a]
   const fTop = topOf(friend.p)
