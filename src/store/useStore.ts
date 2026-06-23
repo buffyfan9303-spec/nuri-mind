@@ -140,6 +140,8 @@ interface State {
   lastSpinDate: string
   lastAdSpinDate: string
   lastQuizDate: string
+  /** 오늘의 퀘스트 보너스를 받은 날짜(YYYY-MM-DD) */
+  questClaimedDate: string
   moodLog: Record<string, number>
   challengeDate: string
   routineDone: Record<string, number[]>
@@ -198,6 +200,8 @@ interface State {
   decideApplication: (id: string, approve: boolean) => void
   spin: (viaAd: boolean) => { rolled: number; granted: number } | null
   answerQuiz: (correct: boolean) => number
+  /** 오늘의 퀘스트(출석+퀴즈+검사 1개) 완료 보너스 +50P — 하루 1회 */
+  claimDailyQuest: () => number
   setMood: (mood: number) => void
   toggleChallenge: () => void
   toggleRoutineDay: (testId: string, day: number) => void
@@ -286,6 +290,7 @@ const initial = () => ({
   lastSpinDate: '',
   lastAdSpinDate: '',
   lastQuizDate: '',
+  questClaimedDate: '',
   moodLog: {} as Record<string, number>,
   challengeDate: '',
   routineDone: {} as Record<string, number[]>,
@@ -565,6 +570,17 @@ export const useStore = create<State>()(
           if (s.lastQuizDate === today()) return 0
           set({ lastQuizDate: today() })
           return correct ? grantFree(5, '🧠 데일리 심리 퀴즈 정답') : 0
+        },
+
+        /** 오늘의 퀘스트 — 출석 + 데일리퀴즈 + 검사 1개 모두 완료 시 보너스 +50P(하루 1회) */
+        claimDailyQuest: () => {
+          const s = get()
+          const t = today()
+          if (s.questClaimedDate === t) return 0
+          const tested = s.results.some((r) => new Date(r.at).toISOString().slice(0, 10) === t)
+          if (!(s.lastCheckIn === t && s.lastQuizDate === t && tested)) return 0
+          set({ questClaimedDate: t })
+          return grantFree(50, '🎯 오늘의 퀘스트 완료 보너스')
         },
 
         /** 오늘 기분 기록 (보상 없음 — 자기 관찰 도구) */

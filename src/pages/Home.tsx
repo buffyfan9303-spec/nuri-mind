@@ -58,6 +58,20 @@ export default function Home() {
     if (s.checkIn()) fire('coin')
   }
 
+  // 오늘의 퀘스트 (출석 + 데일리퀴즈 + 검사 1개 → +50P)
+  const quizDoneToday = s.lastQuizDate === todayStr()
+  const testedToday = s.results.some((r) => new Date(r.at).toISOString().slice(0, 10) === todayStr())
+  const questClaimed = s.questClaimedDate === todayStr()
+  const quests = [
+    { key: 'checkin', emoji: '📅', label: l({ ko: '출석 체크', en: 'Check in', ja: '出席チェック' }), done: checkedToday, go: onCheckIn },
+    { key: 'quiz', emoji: '🧠', label: l({ ko: '데일리 퀴즈 풀기', en: 'Daily quiz', ja: 'デイリークイズ' }), done: quizDoneToday, go: () => nav('/rewards') },
+    { key: 'test', emoji: '🔬', label: l({ ko: '심리검사 1개 완료', en: 'Finish 1 test', ja: '検査を1つ' }), done: testedToday, go: () => document.getElementById('deep-tests')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
+  ]
+  const questDone = quests.filter((q) => q.done).length
+  const onClaimQuest = () => {
+    if (s.claimDailyQuest() > 0) fire('coin')
+  }
+
   return (
     <div className="bg-dots min-h-dvh pb-36">
       <header className="mx-auto flex max-w-md items-center justify-between gap-2 px-5 pt-5">
@@ -166,6 +180,35 @@ export default function Home() {
           </div>
         </motion.div>
 
+        {/* ── 오늘의 퀘스트 ── */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, type: 'spring', stiffness: 220, damping: 22 }}>
+          <Card className="mt-3.5 !p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="flex items-center gap-1.5 text-[15px] font-extrabold">🎯 {l({ ko: '오늘의 퀘스트', en: 'Daily quest', ja: '今日のクエスト' })}</h3>
+              <span className="text-[12.5px] font-extrabold text-mind-600">{questDone}/3</span>
+            </div>
+            <div className="mt-3 space-y-2">
+              {quests.map((q) => (
+                <div key={q.key} className="flex items-center gap-2.5">
+                  <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] ${q.done ? 'bg-mind-500 text-white' : 'bg-surface2'}`}>{q.done ? '✓' : q.emoji}</span>
+                  <span className={`flex-1 break-keep text-[13.5px] font-bold ${q.done ? 'text-ink-faint line-through' : 'text-ink'}`}>{q.label}</span>
+                  {!q.done && (
+                    <button onClick={q.go} className="shrink-0 rounded-full bg-surface2 px-2.5 py-1 text-[11.5px] font-extrabold text-mind-700">{l({ ko: '하기', en: 'Go', ja: 'やる' })} ›</button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {questDone === 3 && !questClaimed && (
+              <button onClick={onClaimQuest} className="mt-3 w-full rounded-2xl bg-mind-500 py-3 text-[14.5px] font-extrabold text-white shadow-[0_3px_0_#2F6B52] transition-transform active:translate-y-[3px]">
+                🎁 {l({ ko: '보너스 +50P 받기', en: 'Claim +50P', ja: 'ボーナス+50P受取' })}
+              </button>
+            )}
+            {questClaimed && (
+              <p className="mt-3 rounded-2xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">✅ {l({ ko: '오늘 퀘스트 완료! +50P', en: 'Quest done! +50P', ja: 'クエスト完了！+50P' })}</p>
+            )}
+          </Card>
+        </motion.div>
+
         {/* ── 돈 버는 리워드 설문 (즉시 적립) ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -235,7 +278,7 @@ export default function Home() {
         </div>
 
         {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}
-        <div className="mt-6 flex items-center justify-between px-1">
+        <div id="deep-tests" className="mt-6 flex items-center justify-between px-1">
           <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
             <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.4 }}>🧠</motion.span>
             {t('home.testsHeader')}
