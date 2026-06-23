@@ -16,6 +16,16 @@ const emit = () => listeners.forEach((cb) => cb(!!deferred))
 export function registerSW(): void {
   if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return
   if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return
+  // 배포로 새 SW가 제어권을 잡으면(=업데이트) 1회 자동 새로고침 → 최신 에셋 즉시 반영.
+  // 최초 설치(controller 없음)에는 reload 안 함(불필요한 새로고침 방지).
+  if (navigator.serviceWorker.controller) {
+    let reloaded = false
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloaded) return
+      reloaded = true
+      window.location.reload()
+    })
+  }
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {})
   })

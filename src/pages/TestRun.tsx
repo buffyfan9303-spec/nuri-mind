@@ -24,6 +24,7 @@ import { LIKERT_AGREE, LIKERT_FREQ } from '../i18n/translations'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx, startAmbient, stopAmbient } from '../lib/sound'
+import { haptic } from '../lib/haptic'
 
 const IQ_TIME = 45
 
@@ -151,6 +152,7 @@ export default function TestRun() {
     advancingRef.current = true
     setSel(v)
     sfx.tap()
+    haptic(7)
     const item = likertItems[idx]
     const map = { ...answers, [item.id]: v }
     setAnswers(map)
@@ -162,6 +164,7 @@ export default function TestRun() {
     if (finishedRef.current) return
     setSel(optId)
     sfx.tap()
+    haptic(7)
   }
   const confirmIq = () => {
     if (sel === null || advancingRef.current) return
@@ -291,8 +294,9 @@ export default function TestRun() {
                       <motion.button
                         key={i}
                         onClick={() => pickLikert(v)}
-                        animate={active ? { scale: [1, 1.045, 1] } : { scale: 1 }}
-                        transition={{ duration: 0.25 }}
+                        whileTap={{ scale: 0.96 }}
+                        animate={active ? { scale: [1, 1.06, 0.98, 1] } : { scale: 1 }}
+                        transition={active ? { duration: 0.34, ease: [0.34, 1.4, 0.5, 1] } : { type: 'spring', stiffness: 600, damping: 30 }}
                         className="flex w-full items-center justify-between rounded-2xl border-2 bg-surface px-5 py-4 text-left text-[17px] font-bold leading-relaxed"
                         style={{
                           borderColor: active ? tm.gradFrom : '#E3EAE5',

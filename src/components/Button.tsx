@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useRef, useState, type ReactNode } from 'react'
+import { haptic } from '../lib/haptic'
 
 export type BtnColor = 'mind' | 'sky' | 'adhd' | 'ego' | 'iq' | 'love' | 'burn' | 'dopa' | 'reso' | 'dk' | 'white' | 'danger'
 
@@ -59,6 +60,7 @@ export default function Button({
   const [bursts, setBursts] = useState<number[]>([])
   const handleClick = () => {
     if (disabled) return
+    haptic(7)
     const id = ++idRef.current
     setBursts((b) => [...b, id])
     setTimeout(() => setBursts((b) => b.filter((x) => x !== id)), 650)

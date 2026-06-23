@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { SPRING } from '../lib/motion'
 import { pastelOf } from '../lib/chipColor'
 import IconBadge from './IconBadge'
+import { haptic } from '../lib/haptic'
 
 export interface ChipItem {
   id: string
@@ -50,7 +51,10 @@ export const JellyChip = memo(function JellyChip({
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={() => {
+        haptic(6)
+        onClick?.()
+      }}
       aria-label={label}
       aria-pressed={selected}
       style={style}

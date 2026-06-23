@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import confetti from 'canvas-confetti'
 import { sfx } from '../lib/sound'
+import { haptic } from '../lib/haptic'
 
 const BRAND = ['#4FA882', '#8FB8E8', '#F4B08C', '#FFB020', '#FF6F61', '#6E7BF2']
 
@@ -23,12 +24,14 @@ export function useRewardAnimation() {
 
     if (kind === 'tap') {
       sfx.tap()
+      haptic(6)
       confetti({ particleCount: 22, spread: 52, startVelocity: 24, origin: o, colors: BRAND, scalar: 0.8, disableForReducedMotion: true })
       return
     }
 
     if (kind === 'coin') sfx.coin()
     else sfx.fanfare()
+    haptic(kind === 'coin' ? 14 : [12, 36, 16])
 
     confetti({ particleCount: 80, spread: 78, origin: o, colors: BRAND, disableForReducedMotion: true })
 
