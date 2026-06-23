@@ -341,6 +341,23 @@ export function scorePerfection(items: LikertItem[], answers: Record<string, num
   return base('perfect', raw, pct, band, persona, subscales, {})
 }
 
+/* ──────────── SELF-EFFICACY (GSE-10) ──────────── */
+/** 1~5 동의, 10문항(전 문항 긍정). raw 10~50. μ=33 σ=6.5 → 높을수록 자기효능감↑.
+ *  근거: General Self-Efficacy Scale(Schwarzer & Jerusalem 1995)을 5점 척도로 환산. */
+export function scoreEfficacy(items: LikertItem[], answers: Record<string, number>): TestResult {
+  let raw = 0
+  let n = 0
+  for (const it of items) {
+    raw += answers[it.id] ?? 3
+    n++
+  }
+  const pct = percentile(raw, 33, 6.5)
+  const band = pct >= 78 ? 'high' : pct >= 50 ? 'secure' : pct >= 25 ? 'moderate' : 'low'
+  const persona = band === 'high' ? 'horse' : band === 'secure' ? 'kangaroo' : band === 'moderate' ? 'chick' : 'jellyfish'
+  const subscales: SubscaleScore[] = [{ key: 'EFF', score: raw, max: n * 5, ratio: laplace(raw - n, n * 5 - n) }]
+  return base('efficacy', raw, pct, band, persona, subscales, {})
+}
+
 /* ──────────── DARK TRIAD (SD3 3요인) ──────────── */
 /** 1~5 동의. MA/NA 7문항, PS 5문항, VAL 1. 종합 백분위 = 3축 평균.
  *  SD3(Jones&Paulhus 2014) 실규준: 사이코패시(PS) 평균이 MA/NA보다 낮음 → PS μ=10.5 σ=3.0(문항평균 ~2.1)으로 정렬 */

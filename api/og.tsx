@@ -6,12 +6,12 @@ export const config = { runtime: 'edge' }
 const NAME: Record<string, string> = {
   iq: 'IQ', adhd: 'Focus', ego: 'Altruism', love: 'Attachment',
   burnout: 'Burnout', dopamine: 'Dopamine', resilience: 'Resilience', dark: 'Dark Triad',
-  selfesteem: 'Self-Esteem', perfect: 'Perfectionism',
+  selfesteem: 'Self-Esteem', perfect: 'Perfectionism', efficacy: 'Self-Efficacy',
   memory: 'Memory', focus: 'Focus', speed: 'Speed', spatial: 'Spatial',
 }
 const EMOJI: Record<string, string> = {
   iq: '🧠', adhd: '🎯', ego: '😇', love: '💘', burnout: '🔥', dopamine: '🍫',
-  resilience: '🌱', dark: '🦊', selfesteem: '🪞', perfect: '💯', memory: '🧩', focus: '🎯', speed: '⚡', spatial: '🧭',
+  resilience: '🌱', dark: '🦊', selfesteem: '🪞', perfect: '💯', efficacy: '💪', memory: '🧩', focus: '🎯', speed: '⚡', spatial: '🧭',
 }
 
 export default function handler(req: Request) {

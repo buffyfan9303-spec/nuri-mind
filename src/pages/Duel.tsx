@@ -11,7 +11,7 @@ import { decodeDuel } from '../lib/duel'
 
 const topOf = (p: number) => Math.max(0.5, Math.round((100 - p) * 10) / 10)
 /** 점수가 높을수록 '우세'로 볼 수 있는 검사(IQ·회복탄력성). 임상검사는 중립 비교만. */
-const HIGHER_BETTER = new Set(['iq', 'resilience', 'selfesteem'])
+const HIGHER_BETTER = new Set(['iq', 'resilience', 'selfesteem', 'efficacy'])
 
 export default function Duel() {
   const [params] = useSearchParams()

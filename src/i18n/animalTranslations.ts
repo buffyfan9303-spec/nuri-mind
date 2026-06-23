@@ -1567,6 +1567,126 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '과정을 즐기며 꾸준히 해내는 지속력', en: 'Staying power that enjoys the process and keeps going', ja: '過程を楽しみ着実にやり遂げる持続力' },
     ],
   },
+
+  horse: {
+    emoji: '🐎',
+    grad: ['#16A34A', '#5FD39A'],
+    name: { ko: '거침없는 준마', en: 'Bold Stallion', ja: '果敢な駿馬' },
+    title: { ko: '무엇이든 해낼 수 있다는 믿음', en: 'The belief that I can pull anything off', ja: '何でもやれるという信念' },
+    tagline: { ko: '길이 막히면, 길을 만든다', en: 'If the road is blocked, I make one', ja: '道が塞がれば、道を作る' },
+    desc: {
+      ko: '어떤 문제가 와도 "방법을 찾을 수 있다"는 확신이 단단합니다. 새로운 도전 앞에서 위축되기보다 흥분하는 쪽 — 자기효능감이 가장 높은 유형이에요.',
+      en: 'Whatever the problem, you firmly trust "I can find a way." You get excited rather than shrink before a new challenge — the highest-efficacy type.',
+      ja: 'どんな問題でも「方法を見つけられる」という確信が堅い。新しい挑戦の前で萎縮より高揚する方 — 自己効力感が最も高いタイプです。',
+    },
+    slap: {
+      ko: '단, "나는 다 할 수 있다"가 가끔 준비 없이 뛰어들게 하진 않나요? 자신감에 \'한 번의 점검\'을 더하면, 준마의 질주는 훨씬 멀리 갑니다.',
+      en: 'But does "I can do it all" sometimes make you leap unprepared? Add "one check" to your confidence, and the stallion runs much farther.',
+      ja: 'ただ「全部やれる」が時に準備なく飛び込ませていませんか？自信に「一度の点検」を足せば、駿馬の疾走はずっと遠くへ。',
+    },
+    risks: [
+      { ko: '과한 자신감으로 위험을 과소평가할 수 있음', en: 'Over-confidence can lead you to underrate risks', ja: '自信過剰でリスクを過小評価しがち' },
+      { ko: '혼자 다 해내려다 도움 요청이 늦어질 수 있음', en: 'Doing it all alone can delay asking for help', ja: '一人で全てやろうとし助けを求めるのが遅れがち' },
+    ],
+    solutions: [
+      { ko: '큰 결정 전 "최악의 경우 한 가지"만 미리 적어보기', en: 'Before big calls, jot down just "one worst case"', ja: '大きな決断前に「最悪の一つ」だけ書き出す' },
+      { ko: '잘하는 일일수록 의도적으로 한 명에게 검토 요청하기', en: 'The better you are at it, the more deliberately ask one person to review', ja: '得意な事ほど意図的に一人に確認を頼む' },
+    ],
+    strengths: [
+      { ko: '어떤 난관도 해결 가능하다고 믿는 강한 추진력', en: 'Drive fueled by believing any obstacle is solvable', ja: 'どんな難関も解決できると信じる強い推進力' },
+      { ko: '새로운 도전을 즐기는 두려움 없는 마음', en: 'A fearless mind that enjoys new challenges', ja: '新しい挑戦を楽しむ恐れ知らずの心' },
+    ],
+  },
+
+  kangaroo: {
+    emoji: '🦘',
+    grad: ['#3EB97A', '#8FD9B4'],
+    name: { ko: '튀어오르는 캥거루', en: 'Bouncy Kangaroo', ja: '跳ねるカンガルー' },
+    title: { ko: '넘어져도 다시 튀어오른다', en: 'I stumble, then bounce right back', ja: 'つまずいても跳ね返る' },
+    tagline: { ko: '일단 해보면 대개 된다', en: 'Give it a go — it usually works out', ja: 'とりあえずやれば大抵いける' },
+    desc: {
+      ko: '대부분의 일을 "노력하면 된다"고 믿고, 막혀도 곧 다른 길을 찾습니다. 무모하지 않으면서 도전을 즐기는, 건강한 효능감이에요.',
+      en: 'You believe most things work out with effort, and quickly find another route when blocked. Healthy efficacy that enjoys challenge without being reckless.',
+      ja: '大抵の事は「努力すればいける」と信じ、塞がってもすぐ別の道を探す。無謀でなく挑戦を楽しむ健康な効力感です。',
+    },
+    slap: {
+      ko: '단, 잘 튀어오르는 만큼 가끔 너무 많은 일을 동시에 떠안진 않나요? 효능감이 높을수록 "안 할 일"을 고르는 결정도 똑같이 중요해요.',
+      en: 'But do you sometimes take on too much at once because you bounce back so well? The higher your efficacy, the more "what not to do" matters too.',
+      ja: 'ただ、よく跳ねる分つい多くを同時に抱えていませんか？効力感が高いほど「やらない事」を選ぶ決断も同じく重要です。',
+    },
+    risks: [
+      { ko: '자신 있어 일을 너무 많이 떠안다 과부하될 수 있음', en: 'Confidence can pile on too much and overload you', ja: '自信から抱え込みすぎて過負荷になりうる' },
+      { ko: '익숙한 방식에 안주해 더 큰 도약을 미룰 수 있음', en: 'Settling into the familiar can delay bigger leaps', ja: '慣れた方法に安住し大きな飛躍を先延ばししがち' },
+    ],
+    solutions: [
+      { ko: '"이번 달 핵심 3가지"만 정해 나머지는 과감히 미루기', en: 'Pick "the month\'s 3 essentials" and boldly defer the rest', ja: '「今月の核3つ」だけ決め残りは大胆に後回し' },
+      { ko: '한 분기에 한 번, 평소보다 한 단계 큰 도전 넣기', en: 'Once a quarter, add a challenge one level above usual', ja: '四半期に一度、普段より一段大きな挑戦を入れる' },
+    ],
+    strengths: [
+      { ko: '막혀도 곧 다른 길을 찾는 문제해결 탄력', en: 'Problem-solving spring that finds another way fast', ja: '塞がってもすぐ別の道を見つける問題解決力' },
+      { ko: '실패를 가볍게 털고 다시 시도하는 회복력', en: 'Resilience that shrugs off failure and retries', ja: '失敗を軽く払って再挑戦する回復力' },
+    ],
+  },
+
+  chick: {
+    emoji: '🐥',
+    grad: ['#F2B84B', '#FAD98E' ],
+    name: { ko: '갓 나온 병아리', en: 'Fresh Chick', ja: '生まれたてのヒヨコ' },
+    title: { ko: '할 수 있을까, 망설이는 마음', en: '"Can I really?" — the hesitant heart', ja: 'できるかな、と迷う心' },
+    tagline: { ko: '해보고 싶지만, 자신은 아직', en: 'I want to try, but I\'m not sure yet', ja: 'やってみたい、でも自信はまだ' },
+    desc: {
+      ko: '잘하고 싶은 마음은 크지만, 새로운 일 앞에서 "내가 할 수 있을까" 망설입니다. 효능감의 씨앗은 충분 — 작은 성공 경험만 쌓이면 쑥쑥 자라요.',
+      en: 'You want to do well, yet hesitate at "can I?" before new things. The seed of efficacy is there — stack small wins and it grows fast.',
+      ja: '上手くやりたい気持ちは大きいが、新しい事の前で「できるかな」と迷う。効力感の種は十分 — 小さな成功を積めばぐんぐん育つ。',
+    },
+    slap: {
+      ko: '자신감은 마음먹기가 아니라 \'경험\'에서 자랍니다. 완벽하게 해낼 한 가지를 기다리지 말고, 작게라도 끝내는 경험을 하나씩 쌓아보세요. 그게 가장 빠른 길이에요.',
+      en: 'Confidence grows from experience, not resolve. Don\'t wait for the one perfect win — stack small finished experiences. That\'s the fastest path.',
+      ja: '自信は決意でなく「経験」で育ちます。完璧な一つを待たず、小さくても終える経験を積んで。それが一番の近道です。',
+    },
+    risks: [
+      { ko: '실패가 두려워 시작 자체를 미룰 수 있음', en: 'Fear of failure can delay starting at all', ja: '失敗が怖くて始めること自体を先延ばししがち' },
+      { ko: '남과 비교하며 자기 능력을 과소평가함', en: 'Comparing to others, you underrate your ability', ja: '他人と比べ自分の能力を過小評価する' },
+    ],
+    solutions: [
+      { ko: '큰 목표를 "오늘 끝낼 수 있는 작은 조각"으로 쪼개기', en: 'Split big goals into "a small piece I can finish today"', ja: '大きな目標を「今日終わる小さな塊」に分ける' },
+      { ko: '해낸 일은 작아도 기록 — \'할 수 있다\'는 증거 모으기', en: 'Log what you finish, however small — collect "I can" evidence', ja: 'やり遂げた事は小さくても記録 — 「できる」証拠を集める' },
+    ],
+    strengths: [
+      { ko: '신중하게 준비하는 성실함', en: 'Diligence that prepares carefully', ja: '慎重に準備する誠実さ' },
+      { ko: '잘하고 싶은 마음이 큰 강한 성장 욕구', en: 'A strong drive to grow, born of wanting to do well', ja: '上手くやりたい気持ちが大きい強い成長欲求' },
+    ],
+  },
+
+  jellyfish: {
+    emoji: '🪼',
+    grad: ['#7E8AC9', '#B6BEE6'],
+    name: { ko: '떠다니는 해파리', en: 'Drifting Jellyfish', ja: '漂うクラゲ' },
+    title: { ko: '내 힘으로 바꿀 수 있을까', en: '"Can I change anything myself?"', ja: '自分の力で変えられるかな' },
+    tagline: { ko: '어차피 해도 안 될 것 같아', en: '"It won\'t work anyway"', ja: 'どうせやってもダメな気がする' },
+    desc: {
+      ko: '어려운 일 앞에서 "나는 못 할 것 같다"는 생각이 먼저 듭니다. 상황에 떠밀린다고 느끼지만, 그건 능력이 없어서가 아니라 \'해낸 경험\'이 아직 적어서예요. 분명히 달라질 수 있어요.',
+      en: 'Before hard things, "I probably can\'t" comes first. You feel pushed by circumstance — but that\'s not a lack of ability, just a lack of "I did it" experiences yet. This can absolutely change.',
+      ja: '難しい事の前で「できない気がする」が先に来ます。状況に流される感覚は能力不足でなく「やり遂げた経験」がまだ少ないだけ。きっと変われます。',
+    },
+    slap: {
+      ko: '무력감은 사실이 아니라 \'습관이 된 예측\'일 때가 많아요. 아주 작은 일 하나를 끝까지 해내는 경험이 그 예측을 깨뜨립니다 — "거봐, 되잖아"를 자신에게 한 번 들려주세요.',
+      en: 'Helplessness is often not fact but a habitual prediction. Finishing one tiny thing breaks that prediction — let yourself hear "see, I can."',
+      ja: '無力感は事実でなく「癖になった予測」であることが多い。ごく小さな一つをやり遂げる経験がその予測を壊す — 「ほら、できた」を自分に聞かせて。',
+    },
+    risks: [
+      { ko: '\'해도 안 된다\'는 예측이 시도를 막아 무력감이 굳어짐', en: 'The "it won\'t work" prediction blocks trying and hardens helplessness', ja: '「やってもダメ」の予測が試みを止め無力感を固める' },
+      { ko: '통제할 수 있는 일까지 미리 포기해버릴 수 있음', en: 'You may give up even on things you could control', ja: 'コントロールできる事まで先に諦めてしまいがち' },
+    ],
+    solutions: [
+      { ko: '5분이면 끝낼 아주 작은 일부터 \'완료\' 경험 만들기', en: 'Start with a 5-minute task to build a "done" experience', ja: '5分で終わるごく小さな事から「完了」体験を作る' },
+      { ko: '결과가 아닌 \'시도한 나\'를 칭찬하는 연습', en: 'Practice praising "the me who tried," not the outcome', ja: '結果でなく「試した自分」を褒める練習' },
+    ],
+    strengths: [
+      { ko: '상황을 민감하게 읽는 섬세함', en: 'Sensitivity that reads situations finely', ja: '状況を敏感に読む繊細さ' },
+      { ko: '무리하지 않고 자신을 보호할 줄 아는 신중함', en: 'Prudence that protects yourself without overreaching', ja: '無理せず自分を守れる慎重さ' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -1581,6 +1701,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   fox: 'dark', peacock: 'dark', shark: 'dark', dove: 'dark',
   lion: 'selfesteem', swan: 'selfesteem', squirrel: 'selfesteem', mouse: 'selfesteem',
   beaver: 'perfect', eagle: 'perfect', butterfly: 'perfect', duck: 'perfect',
+  horse: 'efficacy', kangaroo: 'efficacy', chick: 'efficacy', jellyfish: 'efficacy',
   elephant: 'memory', octopus: 'memory', goldfish: 'memory',
   hawk: 'focus', bee: 'focus', otter: 'focus',
   cheetah: 'speed', rabbit: 'speed', tortoise: 'speed',
