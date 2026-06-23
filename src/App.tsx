@@ -5,6 +5,7 @@ import BottomNav from './components/BottomNav'
 import Onboarding from './components/Onboarding'
 import ReConsent from './components/ReConsent'
 import Skeleton from './components/Skeleton'
+import InstallPrompt from './components/InstallPrompt'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
 import { pageView } from './lib/analytics'
@@ -132,6 +133,7 @@ export default function App() {
       </AnimatePresence>
       {!hideNav && <BottomNav />}
       <ReConsent />
+      <InstallPrompt />
     </div>
   )
 }

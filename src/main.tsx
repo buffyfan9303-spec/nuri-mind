@@ -7,9 +7,13 @@ import { loadAdSenseScript } from './lib/ads'
 import { loadAnalytics } from './lib/analytics'
 import { loadKakao } from './lib/kakao'
 import { initSentry, SentryErrorBoundary } from './lib/sentry'
+import { registerSW, initInstallPrompt } from './lib/pwa'
 
 // 에러 모니터링 — VITE_SENTRY_DSN 설정 시에만 (미설정이면 no-op)
 initSentry()
+// PWA — 서비스워커(라이브 도메인만) + 홈화면 설치 프롬프트 후킹
+registerSW()
+initInstallPrompt()
 // AdSense 로더 — VITE_ADSENSE_CLIENT 설정 시에만 주입(미설정이면 no-op)
 loadAdSenseScript()
 // GA4 — VITE_GA_ID 설정 시에만 (미설정이면 no-op)

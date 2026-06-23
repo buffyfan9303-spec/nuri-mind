@@ -1,12 +1,12 @@
 {
   "name": "누리 마인드 NURI MIND",
   "short_name": "NuriMind",
-  "description": "ADHD·이기주의·유동 IQ 다면 기질 검사 + 설문 리워드 플랫폼",
+  "description": "심리검사 11종·운세·리워드를 한 곳에서 — 누리 마인드",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FAFCF9",
   "theme_color": "#4FA882",
   "icons": [
-    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }
