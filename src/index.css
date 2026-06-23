@@ -45,6 +45,16 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* 네이티브 감 — 탭 지연(300ms) 제거 + 길게 눌러도 텍스트 선택/콜아웃 없음(인터랙션 요소) */
+button,
+[role='button'],
+label {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 body {
   @apply bg-cream text-ink font-sans antialiased;
   overscroll-behavior-y: none;
@@ -144,19 +154,18 @@ ins.adsbygoogle[data-ad-status='unfilled'] {
   display: none !important;
 }
 
-/* 접근성·절제 — OS '동작 줄이기' 설정 시 무한 애니메이션/장식 모션 비활성 */
+/* 접근성·절제 — OS '동작 줄이기' 시 멀미 유발 큰 모션·무한 루프만 비활성.
+   ⚠️ 과거 버그: `*` 셀렉터로 모든 transition을 0.01ms로 강제 → 버튼·칩 누름·토글 등
+   촉각 피드백(부드러움의 핵심)까지 통째로 사라짐. '동작 줄이기' 켠 폰에선 앱이 뻣뻣해짐.
+   수정: 무한 장식 애니메이션 + 스무스 스크롤만 끄고, 0.1~0.2s 미세 인터랙션은 유지(네이티브 느낌 보존). */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
   .floaty,
   .sparkle,
-  .progress-shine {
+  .progress-shine,
+  .shake {
     animation: none !important;
+  }
+  html {
+    scroll-behavior: auto !important;
   }
 }
