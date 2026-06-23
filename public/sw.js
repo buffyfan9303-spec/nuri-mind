@@ -60,3 +60,39 @@ self.addEventListener('fetch', (e) => {
     })(),
   )
 })
+
+/* 웹 푸시 — 서버(Supabase 엣지 push-send)가 보낸 메시지 표시 */
+self.addEventListener('push', (e) => {
+  let data = {}
+  try {
+    data = e.data ? e.data.json() : {}
+  } catch {
+    data = {}
+  }
+  const title = data.title || '누리 마인드'
+  e.waitUntil(
+    self.registration.showNotification(title, {
+      body: data.body || '',
+      icon: '/icon.svg',
+      badge: '/icon.svg',
+      data: { url: data.url || '/' },
+    }),
+  )
+})
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close()
+  const target = (e.notification.data && e.notification.data.url) || '/'
+  e.waitUntil(
+    (async () => {
+      const all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      for (const c of all) {
+        if ('focus' in c) {
+          c.navigate(target).catch(() => {})
+          return c.focus()
+        }
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(target)
+    })(),
+  )
+})

@@ -11,6 +11,7 @@ import { lifetimeOf, tierOf } from '../data/rank'
 import type { Lang } from '../data/types'
 import { fileToAvatarDataUrl } from '../lib/image'
 import { scheduleStreakReminder } from '../lib/notify'
+import { enablePush, disablePush, pushSupported, pushConfigured, pushPermission } from '../lib/push'
 import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
 import { useStore, OPERATOR_NICKS, isPremium } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
@@ -31,6 +32,7 @@ export default function Profile() {
   const [editing, setEditing] = useState(false)
   const [nick, setNick] = useState(s.nickname)
   const [avatarOpen, setAvatarOpen] = useState(false)
+  const [pushOn, setPushOn] = useState(() => pushPermission() === 'granted')
   const [authUser, setAuthUser] = useState<AuthUser | null>(null)
   useEffect(() => {
     if (!authReady()) return
@@ -256,6 +258,32 @@ export default function Profile() {
                 />
               </button>
             </div>
+
+            {/* 푸시 알림 (VAPID 설정 시에만 노출) */}
+            {pushSupported() && pushConfigured() && (
+              <div className="flex items-center justify-between border-t border-line px-3 py-3">
+                <span className="text-[15.5px] font-bold">🔔 {l({ ko: '푸시 알림', en: 'Push notifications', ja: 'プッシュ通知' })}</span>
+                <button
+                  onClick={async () => {
+                    if (pushOn) {
+                      await disablePush()
+                      setPushOn(false)
+                    } else {
+                      setPushOn(await enablePush())
+                    }
+                  }}
+                  className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
+                  style={{ background: pushOn ? '#4FA882' : '#D9E2DC' }}
+                  aria-label="push"
+                >
+                  <motion.span
+                    animate={{ x: pushOn ? 22 : 0 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                    className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
+                  />
+                </button>
+              </div>
+            )}
 
             {/* 검사 중 배경음 */}
             <div className="flex items-center justify-between border-t border-line px-3 py-3">
