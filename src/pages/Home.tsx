@@ -338,15 +338,34 @@ export default function Home() {
             {l(TERMS.unitTests)}
           </span>
         </div>
-        <ScrollChips
-          items={TESTS.filter((tm) => !tm.precision).map((tm) => ({
-            id: tm.id,
-            emoji: tm.emoji,
-            label: t(TEST_SHORT_KEY(tm.id)),
-            color: tm.gradFrom,
-            onClick: () => nav(`/test/${tm.id}`),
-          }))}
-        />
+        {/* 카테고리 허브 — 기질·마음 / 나를 알기 / 관계 속 나 (인지=아래 정밀검사 섹션) */}
+        {(
+          [
+            { key: 'temper', emoji: '🧘', label: { ko: '기질 · 마음 컨디션', en: 'Mind & temperament', ja: '気質・心のコンディション' }, ids: ['adhd', 'burnout', 'dopamine', 'resilience', 'socialanx'], newIds: ['socialanx'] },
+            { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['selfesteem', 'perfect', 'efficacy'], newIds: ['efficacy'] },
+            { key: 'relation', emoji: '💞', label: { ko: '관계 속 나', en: 'Me in relationships', ja: '関係の中の私' }, ids: ['love', 'ego', 'dark'], newIds: [] },
+          ] as const
+        ).map((cat) => (
+          <div key={cat.key}>
+            <p className="mt-3 flex items-center gap-1 px-1 text-[13px] font-extrabold text-ink-sub">
+              <span aria-hidden="true">{cat.emoji}</span>
+              {l(cat.label)}
+            </p>
+            <ScrollChips
+              items={cat.ids
+                .map((id) => TESTS.find((tm) => tm.id === id))
+                .filter((tm): tm is NonNullable<typeof tm> => !!tm)
+                .map((tm) => ({
+                  id: tm.id,
+                  emoji: tm.emoji,
+                  label: t(TEST_SHORT_KEY(tm.id)),
+                  color: tm.gradFrom,
+                  onClick: () => nav(`/test/${tm.id}`),
+                  badge: (cat.newIds as readonly string[]).includes(tm.id) ? ('NEW' as const) : undefined,
+                }))}
+            />
+          </div>
+        ))}
 
         {/* ── 정밀검사 (실측 인지과제) — 1분 테스트식 헤더(앞 아이콘+뒤 배지) + 젤리 칩 ── */}
         <div className="mt-6 flex items-center justify-between px-1">

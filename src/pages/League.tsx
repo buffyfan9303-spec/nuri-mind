@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import Celebration from '../components/Celebration'
 import { Card, Chip, TopBar } from '../components/ui'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, nextResetMs, weekKeyOf } from '../lib/league'
 import { useStore } from '../store/useStore'
@@ -19,6 +20,7 @@ export default function League() {
   const ensureLeague = useStore((s) => s.ensureLeague)
   const clearLeagueMsg = useStore((s) => s.clearLeagueMsg)
   const { fire } = useRewardAnimation()
+  const [celebrate, setCelebrate] = useState(false)
 
   useEffect(() => {
     ensureLeague()
@@ -27,7 +29,10 @@ export default function League() {
 
   useEffect(() => {
     if (!leagueMsg) return
-    if (leagueMsg === 'up') fire('levelup') // 리그 승급 = 레벨업 연출
+    if (leagueMsg === 'up') {
+      fire('levelup') // 리그 승급 = 레벨업 연출
+      setCelebrate(true) // + 풀스크린 축하 테이크오버
+    }
     const tm = setTimeout(clearLeagueMsg, 4000)
     return () => clearTimeout(tm)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -54,6 +59,16 @@ export default function League() {
   return (
     <div className="min-h-dvh pb-36">
       <TopBar back="/rewards" title={t('league.title')} />
+
+      {/* 승급 풀스크린 축하 */}
+      <Celebration
+        open={celebrate}
+        emoji={tier.emoji}
+        title={t('league.up')}
+        subtitle={`${l(tier.name)} · ${l({ ko: '이번 주도 달려보자!', en: 'Keep it rolling this week!', ja: '今週も走ろう！' })}`}
+        grad={[tier.color, `${tier.color}99`]}
+        onClose={() => setCelebrate(false)}
+      />
 
       {/* 승급/강등 배너 */}
       <AnimatePresence>

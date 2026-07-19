@@ -169,6 +169,25 @@ export default function QuickTest() {
             {/* 동물 일러스트(자체 아트) — 없으면 이모지 폴백, 광배+그림자로 매력↑ */}
             <div className="relative mx-auto flex h-[120px] w-[120px] items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-white/25 blur-xl" />
+              {/* 파티클 링 — 캐릭터 등장과 함께 사방 버스트(결과지와 동일 연출) */}
+              {[
+                { e: '✨', a: -90 }, { e: '⭐', a: -45 }, { e: '💫', a: 0 }, { e: '✨', a: 45 },
+                { e: '⭐', a: 90 }, { e: '💫', a: 135 }, { e: '✨', a: 180 }, { e: '⭐', a: 225 },
+              ].map((s, i) => {
+                const rad = (s.a * Math.PI) / 180
+                return (
+                  <motion.span
+                    key={i}
+                    aria-hidden="true"
+                    className="absolute left-1/2 top-1/2 text-[18px] leading-none"
+                    initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
+                    animate={{ x: Math.cos(rad) * 86, y: Math.sin(rad) * 86, scale: [0, 1.1, 0], opacity: [0, 1, 0] }}
+                    transition={{ duration: 0.95, delay: 0.3 + i * 0.025, ease: 'easeOut' }}
+                  >
+                    {s.e}
+                  </motion.span>
+                )
+              })}
               <motion.div
                 initial={{ scale: 0.5, y: 8 }}
                 animate={{ scale: 1, y: 0, rotate: [0, -8, 6, 0] }}
@@ -188,9 +207,30 @@ export default function QuickTest() {
                 </span>
               </motion.div>
             </div>
-            <h1 className="mt-3 text-[28px] font-extrabold tracking-tight">{l(winner.name)}</h1>
-            <p className="mt-2 text-[15px] font-extrabold text-white/90">“{l(winner.tag)}”</p>
-            <p className="mt-3 break-keep text-[14.5px] font-medium leading-relaxed text-white/95">{l(winner.desc)}</p>
+            <motion.h1
+              initial={{ opacity: 0, y: 10, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.42, type: 'spring', stiffness: 320, damping: 18 }}
+              className="mt-3 text-[28px] font-extrabold tracking-tight"
+            >
+              {l(winner.name)}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.3 }}
+              className="mt-2 text-[15px] font-extrabold text-white/90"
+            >
+              “{l(winner.tag)}”
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.58, duration: 0.3 }}
+              className="mt-3 break-keep text-[14.5px] font-medium leading-relaxed text-white/95"
+            >
+              {l(winner.desc)}
+            </motion.p>
           </motion.div>
 
           {(copied || saved) && (

@@ -1,10 +1,15 @@
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
+import Celebration from '../components/Celebration'
 import { Card, Chip, Section, TopBar } from '../components/ui'
 import { EXPERIENCES, TIERS, lifetimeOf, nextTierOf, tierAtLeast, tierOf, expById } from '../data/rank'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
+
+/** 마지막으로 '본' 등급 인덱스 — persist 스토어 비침습(별도 키). 상승 감지 시 축하 발동 */
+const SEEN_TIER_KEY = 'nuri-rank-seen-tier'
 
 export default function Rank() {
   const t = useT()
@@ -13,11 +18,33 @@ export default function Rank() {
   const applications = useStore((s) => s.applications)
   const applyExperience = useStore((s) => s.applyExperience)
   const { fire } = useRewardAnimation()
+  const [celebrate, setCelebrate] = useState(false)
 
   const lifetime = lifetimeOf(ledger)
   const tier = tierOf(lifetime)
   const next = nextTierOf(lifetime)
   const progress = next ? (lifetime - tier.min) / (next.min - tier.min) : 1
+
+  // 등급 상승 감지 — 지난 방문보다 티어가 올랐으면 풀스크린 축하
+  useEffect(() => {
+    const idx = TIERS.findIndex((tr) => tr.id === tier.id)
+    let seen = -1
+    try {
+      seen = Number(localStorage.getItem(SEEN_TIER_KEY) ?? '-1')
+    } catch {
+      /* ignore */
+    }
+    if (seen >= 0 && idx > seen) {
+      setCelebrate(true)
+      fire('levelup')
+    }
+    try {
+      localStorage.setItem(SEEN_TIER_KEY, String(idx))
+    } catch {
+      /* ignore */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tier.id])
 
   const onApply = (expId: string) => {
     if (applyExperience(expId)) fire('win')
@@ -26,6 +53,17 @@ export default function Rank() {
   return (
     <div className="min-h-dvh pb-36">
       <TopBar back="/rewards" title={t('rank.title')} />
+
+      {/* 등급 상승 풀스크린 축하 */}
+      <Celebration
+        open={celebrate}
+        emoji={tier.emoji}
+        title={l({ ko: '등급 상승!', en: 'Rank up!', ja: 'ランクアップ！' })}
+        subtitle={`${l(tier.name)} · ${l({ ko: '축하해요, 계속 성장 중!', en: 'Congrats — keep growing!', ja: 'おめでとう、成長中！' })}`}
+        grad={tier.grad}
+        onClose={() => setCelebrate(false)}
+      />
+
       <main className="mx-auto max-w-md px-5">
         {/* 현재 등급 히어로 */}
         <motion.div
