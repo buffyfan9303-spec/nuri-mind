@@ -637,6 +637,37 @@ export default function TestResult() {
           </ul>
         </Card>
 
+        {/* 이 검사의 과학 — 척도 근거·백분위 읽는 법·결과 활용법 (결과지 읽을거리 심화) */}
+        <Card className="mt-4 !p-5">
+          <h2 className="text-[15.5px] font-extrabold">📖 {l({ ko: '이 검사의 과학', en: 'The science behind this test', ja: 'この検査の科学' })}</h2>
+          {t(`intro.${result.testId}.basis`) !== `intro.${result.testId}.basis` && (
+            <div className="mt-3">
+              <p className="text-[12.5px] font-extrabold text-mind-600">🧪 {l({ ko: '무엇을 재나요?', en: 'What does it measure?', ja: '何を測る？' })}</p>
+              <p className="mt-1 break-keep text-[13.5px] font-medium leading-[1.8] text-ink-sub">{t(`intro.${result.testId}.basis`)}</p>
+            </div>
+          )}
+          <div className="mt-3">
+            <p className="text-[12.5px] font-extrabold text-mind-600">📊 {l({ ko: '상위 %는 어떻게 읽나요?', en: 'How to read the top %', ja: '上位%の読み方' })}</p>
+            <p className="mt-1 break-keep text-[13.5px] font-medium leading-[1.8] text-ink-sub">
+              {l({
+                ko: `"상위 ${topPercent}%"는 같은 검사를 본 사람 100명을 한 줄로 세웠을 때 당신의 위치예요. 점수는 정규분포(종 모양 곡선) 기반 추정치라, 응답 컨디션에 따라 몇 % 정도는 자연스럽게 오르내릴 수 있어요. 숫자 하나보다 "어느 구간에 있는가"를 보는 게 정확한 해석이에요.`,
+                en: `"Top ${topPercent}%" is your position if 100 test-takers stood in one line. Scores are estimates based on the normal (bell-curve) distribution, so a few percentage points of natural variation is expected. Reading your band matters more than any single number.`,
+                ja: `「上位${topPercent}%」は同じ検査を受けた100人を一列に並べた時のあなたの位置。スコアは正規分布に基づく推定値で、コンディションにより数%は自然に変動します。数字一つより「どの区間か」を見るのが正確な解釈です。`,
+              })}
+            </p>
+          </div>
+          <div className="mt-3">
+            <p className="text-[12.5px] font-extrabold text-mind-600">🌱 {l({ ko: '결과, 이렇게 쓰세요', en: 'How to use your result', ja: '結果の活かし方' })}</p>
+            <p className="mt-1 break-keep text-[13.5px] font-medium leading-[1.8] text-ink-sub">
+              {l({
+                ko: '심리 상태는 계절처럼 변해요. 결과는 "지금의 나"를 비추는 거울이지 낙인이 아니에요. 위의 솔루션 중 하나를 골라 2~3주 실천해 보고, 4~6주 뒤 재검사로 변화를 확인해 보세요 — 같은 검사를 2회 이상 하면 결과지에 추이 그래프가 생겨요.',
+                en: "Your mind shifts like seasons. This result mirrors the present you — it isn't a label. Pick one solution above, practice it for 2–3 weeks, then retest in 4–6 weeks; take the same test twice or more and a trend graph appears here.",
+                ja: '心の状態は季節のように変わります。結果は「今の自分」を映す鏡でありレッテルではありません。上のソリューションを一つ選び2〜3週間実践し、4〜6週間後に再検査を。同じ検査を2回以上受けると推移グラフが表示されます。',
+              })}
+            </p>
+          </div>
+        </Card>
+
         {/* 전문가 상담 권유 — 심각 구간에서만 강조 표시 */}
         {needsDoctor && (
           <motion.div
