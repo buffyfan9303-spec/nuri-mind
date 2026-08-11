@@ -120,6 +120,16 @@ export default function TestIntro() {
                 <span className="shrink-0 text-lg text-white/80">›</span>
               </motion.button>
             </div>
+            {/* 난이도별 제한시간 안내 — 검사 설계의 근거를 공개해 신뢰도↑ */}
+            <div className="mt-3 rounded-2xl bg-surface2 px-4 py-3">
+              <p className="break-keep text-center text-[12px] font-bold leading-relaxed text-ink-sub">
+                ⏱ {l({
+                  ko: '제한시간은 문항 난이도에 따라 45·60·75초로 달라져요. 어려운 문항일수록 시간이 더 걸린다는 연구에 맞춰, 시간 압박이 아닌 실제 추론 능력을 재도록 설계했어요.',
+                  en: 'Time limits scale with difficulty: 45·60·75s per item. Following research that harder items simply take longer, the test measures reasoning — not time pressure.',
+                  ja: '制限時間は難易度に応じて45・60・75秒。難しい問題ほど時間がかかるという研究に沿い、時間圧でなく推論力を測る設計です。',
+                })}
+              </p>
+            </div>
             <p className="mt-2.5 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">
               🔬 {l({ ko: '정밀검사 시리즈는 계속 추가될 예정이에요.', en: 'More precision tests are coming soon.', ja: '精密検査シリーズは今後追加予定です。' })}
             </p>
