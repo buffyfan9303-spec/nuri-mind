@@ -438,7 +438,7 @@ const ko: Record<string, string> = {
   'share.earned': '+{p}P 적립!',
   'share.saved': '카드 이미지를 저장했어요!',
   'freeze.own': '보유 복구권',
-  'freeze.desc': '하루 빠져도 연속출석이 유지돼요',
+  'freeze.desc': '하루 빠져도 연속 출석이 유지돼요',
   'freeze.full': '복구권은 최대 3개까지 보유할 수 있어요',
   'legal.title': '약관 및 정책',
   'legal.terms': '포인트 이용약관',
