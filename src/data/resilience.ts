@@ -39,7 +39,7 @@ export const RESILIENCE_ITEMS: LikertItem[] = [
     en: 'I believe I ultimately steer my own life',
     ja: '自分の人生の方向は結局自分が決めると信じている' } },
   { id: 'rs08', sub: 'CTL', text: {
-    ko: '압박을 받을 때 오히려 더 집중이 잘 되는 편이다',
+    ko: '압박을 받을 때 오히려 더 집중이 잘되는 편이다',
     en: 'Under pressure I tend to focus even better',
     ja: 'プレッシャーがかかると、むしろ集中できる方だ' } },
   { id: 'rs09', sub: 'CTL', text: {

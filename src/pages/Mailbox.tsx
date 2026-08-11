@@ -14,6 +14,18 @@ function expDays(iso: string): number {
   return Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000)
 }
 
+/**
+ * DB에 깨진 인코딩으로 저장된 한글 감지(우편 제목은 SQL 함수가 서버에서 조립 —
+ * SQL Editor 실행 시 인코딩이 깨지면 'ë‹¤ì´ì•„' 같은 모지바케가 그대로 옴).
+ * 한글이 하나도 없는데 라틴 확장 문자가 연속되거나 대체문자(�)가 있으면 깨진 것으로 판정.
+ */
+function isMojibake(s: string | null | undefined): boolean {
+  if (!s) return false
+  if (/�/.test(s)) return true
+  if (/[가-힣]/.test(s)) return false
+  return /[À-ɏˀ-˿]{2}/.test(s) || /^[?\s·]+$/.test(s)
+}
+
 export default function Mailbox() {
   const l = useL()
   const addDiamonds = useStore((s) => s.addDiamonds)
@@ -132,6 +144,18 @@ export default function Mailbox() {
             <div className="mt-4 space-y-2.5">
               {mail.map((it) => {
                 const refundable = it.kind === 'purchase' && it.refundable && !it.claimed
+                // 서버 문자열이 깨졌으면 클라에서 재구성(폰트 깨짐 방지)
+                const title = isMojibake(it.title)
+                  ? it.amount > 0
+                    ? l({ ko: `💎 다이아 ${it.amount}개 도착`, en: `💎 ${it.amount} diamonds arrived`, ja: `💎 ダイヤ${it.amount}個到着` })
+                    : it.kind === 'personal'
+                      ? l({ ko: '✉️ 개인 우편', en: '✉️ Personal mail', ja: '✉️ 個人郵便' })
+                      : it.kind === 'system'
+                        ? l({ ko: '📢 공지', en: '📢 Notice', ja: '📢 お知らせ' })
+                        : l({ ko: '📬 새 우편', en: '📬 New mail', ja: '📬 新着郵便' })
+                  : it.title
+                const sender = isMojibake(it.sender) ? l({ ko: '운영자', en: 'Operator', ja: '運営' }) : it.sender
+                const body = isMojibake(it.body) ? null : it.body
                 return (
                   <Card key={it.id} className={`!p-4 ${it.claimed ? 'opacity-60' : ''}`}>
                     <div className="flex items-start gap-3">
@@ -140,10 +164,10 @@ export default function Mailbox() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="truncate text-[15px] font-extrabold leading-tight">{it.title}</p>
-                          <span className="shrink-0 text-[11px] font-bold text-ink-faint">{it.sender}</span>
+                          <p className="truncate text-[15px] font-extrabold leading-tight">{title}</p>
+                          <span className="shrink-0 text-[11px] font-bold text-ink-faint">{sender}</span>
                         </div>
-                        {it.body && <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{it.body}</p>}
+                        {body && <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{body}</p>}
                         {(it.amount > 0 || it.points > 0) && (
                           <p className="mt-1.5 text-[13px] font-extrabold text-mind-700">
                             {it.amount > 0 && `💎 ${it.amount}`}

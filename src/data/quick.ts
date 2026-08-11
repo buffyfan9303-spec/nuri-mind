@@ -90,7 +90,7 @@ export const QUICK_TESTS: QuickTest[] = [
         options: [
           { text: { ko: '그냥 터뜨림', en: 'Let it out', ja: 'ぶちまける' }, to: 'erupt' },
           { text: { ko: '조용히 사라짐', en: 'Disappear', ja: '消える' }, to: 'dive' },
-          { text: { ko: '먹는 걸로 품', en: 'Eat it away', ja: '食べる' }, to: 'eat' },
+          { text: { ko: '먹는 걸로 풂', en: 'Eat it away', ja: '食べる' }, to: 'eat' },
           { text: { ko: '일에 더 몰두', en: 'Work harder', ja: '仕事に没頭' }, to: 'work' },
         ],
       },
@@ -386,7 +386,7 @@ export const QUICK_TESTS: QuickTest[] = [
       { key: 'max', emoji: '💘', name: { ko: '만렙 연애세포', en: 'Max-Level Cells', ja: 'マックス恋愛細胞' }, tag: { ko: '지금 당장 연애 가능', en: 'Ready to fall in love', ja: '今すぐ恋愛OK' }, desc: { ko: '연애세포가 펄떡펄떡 살아있는 상태! 설렘에 솔직하고 표현도 잘해요. 다만 너무 빠지기 전에 상대를 천천히 알아가는 여유도 챙겨요.', en: 'Your love cells are wide awake — honest with butterflies and expressive. Just pace getting to know them.', ja: '恋愛細胞が元気いっぱい！ときめきに正直。ただ夢中になる前に相手をゆっくり知る余裕も。' } },
       { key: 'sleep', emoji: '😴', name: { ko: '휴면 연애세포', en: 'Dormant Cells', ja: '休眠細胞' }, tag: { ko: '자는 중, 깨우면 됨', en: 'Asleep, just needs a nudge', ja: '寝てるだけ、起こせばOK' }, desc: { ko: '바빠서 연애를 잠시 미뤄둔 상태예요. 세포가 죽은 게 아니라 자는 것! 설레는 콘텐츠나 새 사람을 만나면 금방 깨어나요.', en: 'You\'ve just put love on pause — cells asleep, not dead. New people or a good romance will wake them fast.', ja: '忙しくて恋愛を一時保留中。死んでなく寝てるだけ！新しい出会いですぐ目覚める。' } },
       { key: 'tease', emoji: '😼', name: { ko: '밀당 연애세포', en: 'Tease Cells', ja: '駆け引き細胞' }, tag: { ko: '관심 있어도 재는 중', en: 'Interested but playing it cool', ja: '興味あるけど様子見' }, desc: { ko: '마음은 있는데 들키기 싫어 재는 타입. 신중함이 강점이지만, 너무 재다 보면 좋은 인연을 놓칠 수도 있어요. 가끔은 직진도 필요해요.', en: 'Interested but hiding it — cautious is good, but over-vetting can cost good connections. Go direct sometimes.', ja: '気はあるけど隠す型。慎重さは強みだが、見極めすぎは良縁を逃す。たまに直進も。' } },
-      { key: 'stone', emoji: '🪨', name: { ko: '돌멩이 연애세포', en: 'Stone Cells', ja: '石の細胞' }, tag: { ko: '지금은 연애 0순위 아님', en: 'Love isn\'t a priority now', ja: '今は恋愛優先度0' }, desc: { ko: '지금은 연애보다 나에게 집중하는 시기예요. 나쁜 게 아니라 자연스러운 흐름! 다만 마음의 문을 아예 닫진 말고, 좋은 사람엔 살짝 열어두세요.', en: 'Right now you\'re focused on yourself, not romance — totally natural. Just keep the door slightly open for the right person.', ja: '今は恋愛より自分に集中する時期。自然な流れ！ただ心の扉は少し開けておいて。' } },
+      { key: 'stone', emoji: '🪨', name: { ko: '돌멩이 연애세포', en: 'Stone Cells', ja: '石の細胞' }, tag: { ko: '지금은 연애 0순위 아님', en: 'Love isn\'t a priority now', ja: '今は恋愛優先度0' }, desc: { ko: '지금은 연애보다 나에게 집중하는 시기예요. 나쁜 게 아니라 자연스러운 흐름! 다만 마음의 문을 아예 닫진 말고, 좋은 사람에겐 살짝 열어두세요.', en: 'Right now you\'re focused on yourself, not romance — totally natural. Just keep the door slightly open for the right person.', ja: '今は恋愛より自分に集中する時期。自然な流れ！ただ心の扉は少し開けておいて。' } },
     ],
   },
   {

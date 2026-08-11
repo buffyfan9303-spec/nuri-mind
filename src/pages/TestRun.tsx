@@ -26,7 +26,16 @@ import { useT, useL } from '../i18n/useT'
 import { sfx, startAmbient, stopAmbient } from '../lib/sound'
 import { haptic } from '../lib/haptic'
 
-const IQ_TIME = 45
+/**
+ * IQ 문항별 제한시간 — 난이도 차등(문헌 기반).
+ *  · 표준 관행: Raven SPM 60문항/40분 ≈ 40s/문항, Mensa Norway 35문항/25분 ≈ 43s, APM은 문항당 60~100s.
+ *  · 시간 압박 연구: 짧은 제한은 첫 문항부터 과속을 유발하고 검사 구조를 "능력+속도" 2차원으로
+ *    오염시켜 순수 추론능력(g) 측정력을 떨어뜨림 → 파워테스트 성격 보존엔 '관대한 제한'이 권고.
+ *  · 난이도-소요시간은 양의 상관: 쉬운 행렬 중앙값 ~11s vs 어려운 행렬 >23s(2배+)
+ *    → 어려운 문항에 더 긴 시간을 배정해야 능력이 아닌 속도로 변별되는 것을 막음.
+ *  · 적용: 쉬움(d=1)=45s · 중간(d=1.5)=60s · 어려움(d=2)=75s — 각 난이도 중앙 소요시간의 3~4배 여유.
+ */
+const iqTimeFor = (d: number): number => (d >= 2 ? 75 : d >= 1.5 ? 60 : 45)
 
 /** 리커트형 검사 문항 뱅크 */
 const BANKS: Partial<Record<TestId, LikertItem[]>> = {
@@ -85,7 +94,7 @@ export default function TestRun() {
   const [answers, setAnswers] = useState<Record<string, number | string | null>>({})
   const [quitOpen, setQuitOpen] = useState(false)
   const [bubble, setBubble] = useState<string | null>(null)
-  const [timeLeft, setTimeLeft] = useState(IQ_TIME)
+  const [timeLeft, setTimeLeft] = useState(() => (iqItems[0] ? iqTimeFor(iqItems[0].difficulty) : 45))
   const startRef = useRef(Date.now())
   const finishedRef = useRef(false)
   const advancingRef = useRef(false)
@@ -175,7 +184,7 @@ export default function TestRun() {
     advance(map)
   }
 
-  /* IQ 문항당 45초 타이머 */
+  /* IQ 문항당 타이머 — 난이도 차등(45/60/75s) */
   const timeoutRef = useRef<() => void>(() => {})
   timeoutRef.current = () => {
     if (finishedRef.current || advancingRef.current) return
@@ -188,7 +197,7 @@ export default function TestRun() {
   }
   useEffect(() => {
     if (!isIq) return
-    setTimeLeft(IQ_TIME)
+    setTimeLeft(iqItems[idx] ? iqTimeFor(iqItems[idx].difficulty) : 45)
     const iv = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -235,7 +244,7 @@ export default function TestRun() {
                 strokeWidth="5"
                 strokeLinecap="round"
                 strokeDasharray={2 * Math.PI * 16}
-                strokeDashoffset={2 * Math.PI * 16 * (1 - timeLeft / IQ_TIME)}
+                strokeDashoffset={2 * Math.PI * 16 * (1 - timeLeft / iqTimeFor((item as IqItem).difficulty))}
                 style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
               />
             </svg>

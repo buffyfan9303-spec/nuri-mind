@@ -127,6 +127,13 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   })
   ctx.globalAlpha = 1
 
+  /* 비네트 — 가장자리를 은은하게 눌러 중앙 히어로에 시선 집중(깊이감) */
+  const vig = ctx.createRadialGradient(cx, H * 0.42, W * 0.35, cx, H * 0.5, W * 0.95)
+  vig.addColorStop(0, 'rgba(0,0,0,0)')
+  vig.addColorStop(1, 'rgba(0,0,0,0.16)')
+  ctx.fillStyle = vig
+  ctx.fillRect(0, 0, W, H)
+
   /* 반짝이 ✦ 흩뿌리기 */
   const sparkPos: [number, number, number, number][] = [
     [150, 360, 30, 0.55], [930, 430, 22, 0.45], [220, 720, 18, 0.4],
@@ -247,10 +254,16 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   const totalW = widths.reduce((a, b) => a + b, 0) + gap * (chips.length - 1)
   let cxStart = cx - totalW / 2
   const chipY = 1075
+  ctx.shadowColor = 'rgba(0,0,0,0.18)'
+  ctx.shadowBlur = 14
+  ctx.shadowOffsetY = 5
   chips.forEach(([txt, b, f], i) => {
     cxStart = chip(ctx, txt, cxStart, chipY, chipH, b, f) + gap
     void i
   })
+  ctx.shadowColor = 'transparent'
+  ctx.shadowBlur = 0
+  ctx.shadowOffsetY = 0
 
   /* 하단 CTA */
   ctx.textBaseline = 'alphabetic'
@@ -261,6 +274,10 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   ctx.fillStyle = 'rgba(255,255,255,0.85)'
   ctx.font = `700 32px ${FAM}`
   ctx.fillText(spec.ctaSub ?? '지금 누리 마인드에서 무료로 확인 →', cx, 1268)
+  // 도메인 워터마크 — 이미지가 홀로 돌아다녀도 유입 경로가 남도록
+  ctx.fillStyle = 'rgba(255,255,255,0.65)'
+  ctx.font = `700 27px ${FAM}`
+  ctx.fillText('www.nurimind.co.kr', cx, 1316)
 
   return new Promise((resolve, reject) =>
     c.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas toBlob 실패'))), 'image/png'),
@@ -387,6 +404,9 @@ export async function makeCogCard(spec: {
   ctx.fillStyle = 'rgba(255,255,255,0.85)'
   ctx.font = `700 31px ${FAM}`
   ctx.fillText(spec.ctaSub ?? '누리 마인드 정밀검사로 무료 확인 →', cx, 1292)
+  ctx.fillStyle = 'rgba(255,255,255,0.6)'
+  ctx.font = `700 26px ${FAM}`
+  ctx.fillText('www.nurimind.co.kr', cx, 1330)
 
   return new Promise((resolve, reject) => c.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas toBlob 실패'))), 'image/png'))
 }
