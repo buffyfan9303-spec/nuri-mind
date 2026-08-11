@@ -184,6 +184,27 @@ export default function Home() {
           </div>
         </motion.div>
 
+        {/* ── 1분 바이럴 퀵 테스트 — 첫 화면 핵심 가치(신규 방문자 즉시 체험) ── */}
+        <div className="mt-5">
+          <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
+            <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
+              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
+              {t('quick.banner')}
+            </h2>
+            <span className="text-[12.5px] font-extrabold text-mind-600">{t('community.all')} ›</span>
+          </button>
+          <ScrollChips
+            items={QUICK_TESTS.map((q, i) => ({
+              id: q.id,
+              emoji: q.emoji,
+              label: l(q.title),
+              color: q.grad[0],
+              onClick: () => nav(`/quick/${q.id}`),
+              badge: i === 0 ? ('HOT' as const) : i >= QUICK_TESTS.length - 2 ? ('NEW' as const) : undefined,
+            }))}
+          />
+        </div>
+
         {/* ── 오늘의 퀘스트 ── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, type: 'spring', stiffness: 220, damping: 22 }}>
           <Card className="mt-3.5 !p-4">
@@ -260,73 +281,6 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* ── 프리미엄 구독 CTA ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11, type: 'spring', stiffness: 220, damping: 22 }} className="mt-3.5">
-          <button
-            onClick={() => nav('/premium')}
-            className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
-            style={{ background: premium ? 'linear-gradient(135deg,#F2B01E,#FF7E5F)' : 'linear-gradient(135deg,#6E7BF2,#A88BF2)' }}
-          >
-            <IconBadge emoji="✨" tone="frost" size={44} radius={14} wiggle />
-            <div className="min-w-0 flex-1">
-              <h3 className="text-[15px] font-extrabold tracking-tight text-white">
-                {premium
-                  ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
-                  : l({ ko: '프리미엄 · 광고 제거 + 무제한', en: 'Premium · no ads + unlimited', ja: 'プレミアム・広告除去+無制限' })}
-              </h3>
-              <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
-                {premium
-                  ? l({ ko: `남은 기간 D-${premiumDaysLeft}`, en: `D-${premiumDaysLeft} left`, ja: `残りD-${premiumDaysLeft}` })
-                  : l({ ko: '운세·정밀검사 무제한 · 월 ₩9,900', en: 'Unlimited fortune & tests · ₩9,900/mo', ja: '運勢・検査無制限・月₩9,900' })}
-              </p>
-            </div>
-            <span className="text-xl text-white/80">›</span>
-          </button>
-        </motion.div>
-
-        {/* ── 통합 자기 리포트 (자기 3부작 완료 시) ── */}
-        {trioDone && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, type: 'spring', stiffness: 220, damping: 22 }} className="mt-3.5">
-            <button
-              onClick={() => nav('/self-report')}
-              className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
-              style={{ background: 'linear-gradient(135deg,#5B6CF0,#9AA6FF)' }}
-            >
-              <IconBadge emoji="🪞" tone="frost" size={44} radius={14} wiggle />
-              <div className="min-w-0 flex-1">
-                <h3 className="text-[15px] font-extrabold tracking-tight text-white">
-                  ✨ {l({ ko: '통합 자기 리포트 완성!', en: 'Self report ready!', ja: '統合セルフレポート完成！' })}
-                </h3>
-                <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
-                  {l({ ko: '자존감·완벽주의·효능감 종합 분석', en: 'Your combined self-profile', ja: '自尊心・完璧主義・効力感の統合分析' })}
-                </p>
-              </div>
-              <span className="text-xl text-white/80">›</span>
-            </button>
-          </motion.div>
-        )}
-
-        {/* ── 1분 바이럴 퀵 테스트 (메인 전면 노출) ── */}
-        <div className="mt-6">
-          <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
-            <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
-              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
-              {t('quick.banner')}
-            </h2>
-            <span className="text-[12.5px] font-extrabold text-mind-600">{t('community.all')} ›</span>
-          </button>
-          <ScrollChips
-            items={QUICK_TESTS.map((q, i) => ({
-              id: q.id,
-              emoji: q.emoji,
-              label: l(q.title),
-              color: q.grad[0],
-              onClick: () => nav(`/quick/${q.id}`),
-              badge: i === 0 ? ('HOT' as const) : i >= QUICK_TESTS.length - 2 ? ('NEW' as const) : undefined,
-            }))}
-          />
-        </div>
-
         {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}
         <div id="deep-tests" className="mt-6 flex items-center justify-between px-1">
           <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
@@ -396,6 +350,52 @@ export default function Home() {
             </div>
             <span className="text-white/80">›</span>
           </Card>
+        </motion.div>
+
+        {/* ── 통합 자기 리포트 (자기 3부작 완료 시) — 검사 섹션 뒤 완료자 대상 ── */}
+        {trioDone && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+            <button
+              onClick={() => nav('/self-report')}
+              className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
+              style={{ background: 'linear-gradient(135deg,#5B6CF0,#9AA6FF)' }}
+            >
+              <IconBadge emoji="🪞" tone="frost" size={44} radius={14} wiggle />
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[15px] font-extrabold tracking-tight text-white">
+                  ✨ {l({ ko: '통합 자기 리포트 완성!', en: 'Self report ready!', ja: '統合セルフレポート完成！' })}
+                </h3>
+                <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
+                  {l({ ko: '자존감·완벽주의·효능감 종합 분석', en: 'Your combined self-profile', ja: '自尊心・完璧主義・効力感の統合分析' })}
+                </p>
+              </div>
+              <span className="text-xl text-white/80">›</span>
+            </button>
+          </motion.div>
+        )}
+
+        {/* ── 프리미엄 구독 CTA — 수익화 존(검사 가치 체험 뒤) ── */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+          <button
+            onClick={() => nav('/premium')}
+            className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
+            style={{ background: premium ? 'linear-gradient(135deg,#F2B01E,#FF7E5F)' : 'linear-gradient(135deg,#6E7BF2,#A88BF2)' }}
+          >
+            <IconBadge emoji="✨" tone="frost" size={44} radius={14} wiggle />
+            <div className="min-w-0 flex-1">
+              <h3 className="text-[15px] font-extrabold tracking-tight text-white">
+                {premium
+                  ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
+                  : l({ ko: '프리미엄 · 광고 제거 + 무제한', en: 'Premium · no ads + unlimited', ja: 'プレミアム・広告除去+無制限' })}
+              </h3>
+              <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
+                {premium
+                  ? l({ ko: `남은 기간 D-${premiumDaysLeft}`, en: `D-${premiumDaysLeft} left`, ja: `残りD-${premiumDaysLeft}` })
+                  : l({ ko: '운세·정밀검사 무제한 · 월 ₩9,900', en: 'Unlimited fortune & tests · ₩9,900/mo', ja: '運勢・検査無制限・月₩9,900' })}
+              </p>
+            </div>
+            <span className="text-xl text-white/80">›</span>
+          </button>
         </motion.div>
 
         <motion.div

@@ -316,6 +316,48 @@ export const ARTICLES: Article[] = [
     ],
     close: { ko: '용기는 떨리지 않는 게 아니라, 떨리는 채로 그 자리에 있는 것입니다.', en: 'Courage isn\'t the absence of trembling — it\'s staying while you tremble.', ja: '勇気は震えない事でなく、震えたままそこに居る事です。' },
   },
+  {
+    id: 'sleep-phone',
+    emoji: '🌙',
+    test: 'dopamine',
+    tag: { ko: '수면·도파민', en: 'Sleep·Dopamine', ja: '睡眠·ドーパミン' },
+    readMin: 4,
+    title: { ko: '잠들기 전 스마트폰이 잠을 훔치는 법', en: 'How your phone steals sleep at bedtime', ja: '寝る前のスマホが眠りを盗む仕組み' },
+    summary: { ko: '"딱 5분만"이 새벽 1시가 되는 이유(보복성 취침 미루기)와 뇌과학적으로 검증된 수면 루틴', en: 'Why "just 5 minutes" becomes 1 a.m. (revenge bedtime procrastination) and science-backed sleep routines', ja: '「あと5分」が深夜1時になる理由(報復性就寝先延ばし)と検証済み睡眠ルーティン' },
+    intro: { ko: '분명 피곤한데, 이불 속에서 휴대폰을 놓지 못한 채 새벽을 맞아본 적 있나요? 그건 의지가 약해서가 아니라, 뇌의 보상 회로와 하루의 구조가 함께 만든 패턴이에요.', en: 'Exhausted, yet greeting dawn with the phone still in hand under the covers? That isn\'t weak will — it\'s a pattern built jointly by your brain\'s reward loop and the shape of your day.', ja: '確かに疲れているのに、布団の中でスマホを手放せず朝を迎えた事は？それは意志の弱さでなく、脳の報酬回路と一日の構造が作ったパターンです。' },
+    sections: [
+      {
+        h: { ko: '"내 시간"을 되찾으려는 반란', en: 'A rebellion to reclaim "my time"', ja: '「自分の時間」を取り戻す反乱' },
+        key: { ko: '보복성 취침 미루기 = 낮에 뺏긴 자유의 보상', en: 'Revenge bedtime procrastination = payback for a stolen day', ja: '報復性就寝先延ばし＝奪われた昼の補償' },
+        p: { ko: '심리학은 이 현상에 "보복성 취침 미루기(revenge bedtime procrastination)"라는 이름을 붙였어요. 낮이 일·공부·타인에게 완전히 점령당한 사람일수록, 밤에 "온전한 내 시간"을 포기하지 못해 잠을 미룹니다. 즉 밤의 스마트폰은 게으름이 아니라 자율성 회복 시도예요. 문제는 그 대가를 내일의 내가 수면 부족으로 치른다는 것이죠.', en: 'Psychology named this "revenge bedtime procrastination." The more your day is fully occupied by work, study, and other people, the harder it is to surrender the night — your only "own time" — so you postpone sleep. The bedtime phone isn\'t laziness; it\'s an attempt to reclaim autonomy. The catch: tomorrow-you pays the bill in sleep debt.', ja: '心理学はこれを「報復性就寝先延ばし」と名付けました。昼が仕事・勉強・他人に完全に占領された人ほど、夜の「自分だけの時間」を手放せず眠りを先延ばしします。夜のスマホは怠惰でなく自律性回復の試み。問題はその代償を明日の自分が睡眠不足で払う事です。', },
+        tip: { ko: '낮에 10분이라도 "온전한 내 시간"을 미리 확보하면, 밤의 보복 욕구가 줄어요.', en: 'Carve out even 10 minutes of true "my time" during the day — the night\'s revenge urge shrinks.', ja: '昼に10分でも「自分の時間」を先に確保すると夜の報復欲求が減ります。' },
+      },
+      {
+        h: { ko: '무한 스크롤은 잠들 틈을 안 준다', en: 'Infinite scroll never offers a stopping point', ja: '無限スクロールは眠る隙を与えない' },
+        key: { ko: '변동 보상 = 뇌가 멈출 신호를 못 받음', en: 'Variable rewards give the brain no stop signal', ja: '変動報酬＝脳に停止信号が来ない' },
+        p: { ko: '책은 챕터가 끝나면 "여기서 멈출까?"라는 자연스러운 정지 신호를 줍니다. 반면 피드는 끝이 없고, 다음 콘텐츠가 재미있을지 없을지 모르는 "변동 보상" 구조라 도파민 회로가 계속 "한 번만 더"를 외치게 만들어요. 슬롯머신과 같은 원리입니다. 멈추지 못하는 건 당신 탓이 아니라 설계 탓 — 그래서 대응도 의지가 아니라 설계로 해야 해요.', en: 'A book gives a natural stop cue at each chapter\'s end. Feeds never end, and their "variable reward" structure — you never know if the next item will be good — keeps the dopamine loop shouting "one more." It\'s the slot-machine principle. Not stopping isn\'t your fault; it\'s the design. So the counter-move must be design, not willpower.', ja: '本は章の終わりに「ここでやめようか」という自然な停止信号をくれます。フィードには終わりがなく、次が面白いか分からない「変動報酬」構造がドーパミン回路に「もう一回」と叫ばせ続ける。スロットマシンと同じ原理。止められないのはあなたのせいでなく設計のせい — だから対策も意志でなく設計で。', },
+        tip: { ko: '자기 전 콘텐츠는 "끝이 있는 것"(에피소드 1개·챕터 1개)으로 바꿔보세요.', en: 'Switch bedtime content to things with an end — one episode, one chapter.', ja: '寝る前は「終わりがあるもの」(1話・1章)に切り替えを。' },
+      },
+      {
+        h: { ko: '빛과 각성의 이중 공격', en: 'The double hit: light and arousal', ja: '光と覚醒のダブル攻撃' },
+        key: { ko: '블루라이트↓멜라토닌 + 자극 콘텐츠↑각성', en: 'Blue light cuts melatonin; hot content raises arousal', ja: 'ブルーライト↓メラトニン＋刺激↑覚醒' },
+        p: { ko: '화면의 청색광은 수면 호르몬 멜라토닌 분비를 늦춰 "졸린 시점" 자체를 뒤로 미룹니다. 여기에 자극적인 영상·SNS 논쟁·업무 알림은 교감신경을 깨워 몸을 "전투 모드"로 되돌려요. 빛과 각성이 동시에 작동하니, 휴대폰을 내려놓은 뒤에도 잠들기까지 한참 걸리는 거예요. 반대로 조명을 낮추고 지루한 콘텐츠로 바꾸는 것만으로 입면 시간은 눈에 띄게 짧아집니다.', en: 'Screen blue light delays melatonin, pushing back the very moment you feel sleepy. Add stimulating videos, SNS arguments, and work alerts, and your sympathetic nervous system flips back to combat mode. Light and arousal strike together — which is why sleep takes ages even after you put the phone down. Dim the lights and switch to boring content, and sleep latency shortens noticeably.', ja: '画面のブルーライトはメラトニン分泌を遅らせ「眠くなる時点」自体を後ろへ押します。さらに刺激的な動画・SNS論争・仕事の通知が交感神経を起こし体を「戦闘モード」に戻す。光と覚醒が同時に働くから、スマホを置いた後もなかなか眠れないのです。逆に照明を落とし退屈な内容に変えるだけで入眠時間は目に見えて短くなります。', },
+        tip: { ko: '취침 1시간 전 화면 밝기 최저 + 다크모드, 침실 조명은 주황빛으로.', en: 'An hour before bed: lowest brightness + dark mode, and warm orange room light.', ja: '就寝1時間前は画面輝度最低＋ダークモード、寝室は橙色の照明に。' },
+      },
+      {
+        h: { ko: '침대를 "잠의 장소"로 되돌리기', en: 'Give the bed back to sleep', ja: 'ベッドを「眠りの場所」に戻す' },
+        key: { ko: '자극 통제 + 충전기 위치 바꾸기 = 가장 검증된 처방', en: 'Stimulus control + moving the charger = best-proven fix', ja: '刺激統制＋充電場所の変更＝最も検証された処方' },
+        p: { ko: '수면의학의 1차 처방인 "자극 통제"는 단순합니다: 침대에서는 잠만 자기. 뇌가 침대=수면으로 다시 연결되면 눕는 것만으로 졸음이 오기 시작해요. 실행법도 단순합니다 — 충전기를 침실 밖(또는 손이 안 닿는 곳)에 두는 것. 알람이 걱정되면 저렴한 알람시계 하나면 충분해요. 2주만 지켜도 "눕자마자 스크롤"의 고리가 눈에 띄게 약해집니다.', en: 'Sleep medicine\'s first-line "stimulus control" is simple: the bed is for sleep only. Once the brain re-links bed=sleep, lying down itself starts to trigger drowsiness. Execution is simple too — charge your phone outside the bedroom (or out of reach). Worried about alarms? A cheap alarm clock covers it. Keep it two weeks and the lie-down-and-scroll loop visibly weakens.', ja: '睡眠医学の第一処方「刺激統制」は単純：ベッドでは眠るだけ。脳がベッド＝睡眠と再連結されれば、横になるだけで眠気が来始めます。実行も単純 — 充電器を寝室の外(または手の届かない場所)へ。アラームが心配なら安い目覚まし時計で十分。2週間守れば「横になって即スクロール」の輪が目に見えて弱まります。', },
+        tip: { ko: '오늘 밤부터 충전기를 침실 밖으로 — 이 한 가지가 이 글의 전부예요.', en: 'Starting tonight, charge outside the bedroom — this one move is the whole article.', ja: '今夜から充電は寝室の外へ — この一つがこの記事の全てです。' },
+      },
+    ],
+    takeaways: [
+      { ko: '밤샘 스크롤 = 게으름이 아니라 뺏긴 낮의 보복', en: 'Night scrolling = revenge for a stolen day, not laziness', ja: '夜更かしスクロール＝怠惰でなく奪われた昼の報復' },
+      { ko: '멈추지 못하는 건 변동 보상 설계 탓 — 끝이 있는 콘텐츠로', en: 'Blame variable-reward design — switch to content with an end', ja: '止まれないのは変動報酬設計のせい — 終わりある内容へ' },
+      { ko: '충전기를 침실 밖으로(자극 통제) — 가장 검증된 한 수', en: 'Charger out of the bedroom (stimulus control) — the proven move', ja: '充電器を寝室の外へ(刺激統制) — 最も検証された一手' },
+    ],
+    close: { ko: '좋은 아침은 전날 밤, 휴대폰을 내려놓는 그 순간에 시작됩니다.', en: 'A good morning begins the night before — the moment you put the phone down.', ja: '良い朝は前夜、スマホを置くその瞬間に始まります。' },
+  },
 ]
 
 export function articleById(id: string): Article | undefined {
