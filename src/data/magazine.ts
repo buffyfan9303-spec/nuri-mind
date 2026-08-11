@@ -232,6 +232,90 @@ export const ARTICLES: Article[] = [
     ],
     close: { ko: '단단한 사람은 안 흔들리는 게 아니라, 흔들린 뒤 돌아올 줄 아는 사람입니다.', en: 'The resilient aren\'t unshakable — they know how to return after shaking.', ja: '強い人は揺れない人でなく、揺れた後戻れる人。' },
   },
+  {
+    id: 'selfesteem-grow',
+    emoji: '🪞',
+    test: 'selfesteem',
+    tag: { ko: '자존감', en: 'Self-esteem', ja: '自尊心' },
+    readMin: 4,
+    title: { ko: '자존감은 "잘나서" 생기는 게 아니에요', en: 'Self-esteem doesn\'t come from being great', ja: '自尊心は「優秀さ」から生まれない' },
+    summary: { ko: '조건부 자존감의 함정과, 실수한 나를 대하는 말투부터 바꾸는 자기 존중 연습', en: 'The trap of conditional self-worth, and practicing self-respect starting with self-talk', ja: '条件付き自尊心の罠と、自分への口調から変える自己尊重の練習' },
+    intro: { ko: '"이번 시험만 잘 보면, 살만 빠지면, 취업만 되면 나를 좋아할 수 있을 것 같아." 이런 생각을 해본 적 있나요? 조건이 채워지면 자존감이 생길 것 같지만, 심리학이 발견한 진실은 반대에 가깝습니다.', en: '"If I ace this exam, lose the weight, land the job — then I could like myself." Sound familiar? It feels like self-esteem will come once conditions are met, but psychology finds nearly the opposite.', ja: '「試験さえ、痩せさえ、就職さえすれば自分を好きになれる」。そう思った事は？条件が満たされれば自尊心が生まれそうですが、心理学の発見はほぼ逆です。' },
+    sections: [
+      {
+        h: { ko: '조건부 자존감의 함정', en: 'The conditional self-worth trap', ja: '条件付き自尊心の罠' },
+        key: { ko: '성취로 쌓은 자존감은 성취와 함께 무너진다', en: 'Worth built on wins collapses with losses', ja: '成果で築いた自尊心は成果と共に崩れる' },
+        p: { ko: '심리학자 크로커(Crocker)의 연구에 따르면, 외모·성적·타인의 인정 같은 "조건"에 자존감을 거는 사람일수록 우울과 불안에 취약했습니다. 조건은 언젠가 반드시 흔들리기 때문이에요. 시험을 잘 봐도 다음 시험이 오고, 칭찬을 받아도 다음 평가가 옵니다. 성취는 기쁨을 주지만, 자존감의 "기초 공사"로는 쓸 수 없어요. 기초는 조건이 아니라 태도 — 나를 대하는 방식에 있습니다.', en: 'Psychologist Jennifer Crocker found that people who stake their worth on "conditions" — looks, grades, others\' approval — are more vulnerable to depression and anxiety, because conditions always eventually wobble. Ace one exam and the next arrives; win praise and the next review looms. Achievement brings joy, but it can\'t be the foundation. The foundation is not a condition but an attitude — how you treat yourself.', ja: '心理学者クロッカーの研究では、外見・成績・承認など「条件」に自尊心を賭ける人ほど鬱と不安に脆弱でした。条件は必ずいつか揺らぐから。試験に受かっても次が来て、称賛されても次の評価が来る。成果は喜びをくれますが、自尊心の「基礎工事」には使えません。基礎は条件でなく態度 — 自分の扱い方にあります。' },
+        tip: { ko: '오늘 "~하면 괜찮은 사람"이라는 생각이 들면, 조건 부분을 지우고 읽어보세요.', en: 'When "I\'m OK if..." appears today, delete the "if" clause and reread it.', ja: '今日「〜なら価値がある」と思ったら、条件部分を消して読んで。' },
+      },
+      {
+        h: { ko: '자기비난은 채찍이 아니라 브레이크', en: 'Self-blame is a brake, not a whip', ja: '自己批判は鞭でなくブレーキ' },
+        key: { ko: '자책은 동기를 높이지 않는다 — 회피를 높인다', en: 'Self-blame fuels avoidance, not motivation', ja: '自責は動機でなく回避を増やす' },
+        p: { ko: '"나를 몰아붙여야 발전한다"는 믿음은 널리 퍼져 있지만, 연구 결과는 다릅니다. 자기비난이 심할수록 실패 후 재도전율이 낮아지고 미루기가 늘어요. 뇌는 비난받을 일을 "위협"으로 분류해 아예 피하게 만들기 때문입니다. 반대로 실수를 인정하되 자신을 다그치지 않는 사람(자기자비)이 더 빨리 다시 시도하고, 장기적으로 더 많이 성장했습니다. 나에게 관대한 건 나태가 아니라 전략이에요.', en: 'The belief "I must push myself hard to improve" is widespread, but research says otherwise. The harsher the self-blame, the lower the retry rate after failure and the greater the procrastination — the brain files blame-worthy tasks as "threats" and avoids them. People who acknowledge mistakes without flogging themselves (self-compassion) retry sooner and grow more over time. Being kind to yourself isn\'t laziness; it\'s strategy.', ja: '「自分を追い込めば成長する」という信念は広く浸透していますが、研究は逆を示します。自己批判が強いほど失敗後の再挑戦率が下がり先延ばしが増える。脳は責められる事を「脅威」に分類し回避させるから。逆にミスを認めつつ責めない人(セルフコンパッション)がより早く再挑戦し、長期的に成長しました。自分への寛容は怠惰でなく戦略です。' },
+        tip: { ko: '실수했을 때 "또 이러네" 대신 "누구나 그래, 다음엔 이렇게"로 문장을 바꿔보세요.', en: 'After a slip, swap "again?!" for "happens to everyone — next time I\'ll...".', ja: 'ミスした時「またか」でなく「誰でもある、次はこうしよう」に言い換えを。' },
+      },
+      {
+        h: { ko: '친구에게 하듯 나에게', en: 'Talk to yourself like a friend', ja: '友達に話すように自分へ' },
+        key: { ko: '자기 대화의 톤 = 자존감의 온도', en: 'Your self-talk tone = your self-worth temperature', ja: '自己対話のトーン＝自尊心の温度' },
+        p: { ko: '친한 친구가 시험에 떨어졌다면 뭐라고 말해줄 건가요? "네가 그럼 그렇지"라고 할 사람은 없을 겁니다. 그런데 우리는 자신에게 매일 그렇게 말해요. 심리학자 크리스틴 네프(Neff)는 이 간극을 좁히는 것이 자존감 회복의 핵심이라고 말합니다. 방법은 단순해요. 힘든 순간에 ① "지금 힘들구나"라고 알아차리고 ② "나만 그런 게 아니야"라고 연결하고 ③ 친구에게 건넬 말을 나에게 건네는 것. 이 세 단계를 반복하면 자기 대화의 기본 톤이 바뀝니다.', en: 'What would you say to a close friend who failed an exam? Nobody would say "typical you." Yet we say that to ourselves daily. Psychologist Kristin Neff argues that closing this gap is the core of rebuilding self-worth. The method is simple: in a hard moment, (1) notice "this is hard right now," (2) connect — "I\'m not the only one," (3) offer yourself the words you\'d offer a friend. Repeat, and your default self-talk tone shifts.', ja: '親友が試験に落ちたら何と言いますか？「やっぱりね」と言う人はいない。なのに私たちは自分に毎日そう言います。心理学者ネフはこの差を縮める事が自尊心回復の核心だと言います。方法は単純。辛い瞬間に①「今辛いんだな」と気づき②「自分だけじゃない」と繋がり③友に掛ける言葉を自分に掛ける。繰り返せば自己対話の基本トーンが変わります。' },
+        tip: { ko: '지금 걱정거리 하나를 두고, 친구에게 보낼 위로 문자를 나에게 써보세요.', en: 'Take one current worry and write yourself the comfort text you\'d send a friend.', ja: '今の心配事一つに、友へ送る慰めの文を自分宛てに書いて。' },
+      },
+      {
+        h: { ko: '기록이 감정을 이긴다', en: 'Records beat feelings', ja: '記録が感情に勝つ' },
+        key: { ko: '"잘한 일 1개" 기록 = 자기 인정의 증거 수집', en: 'Logging one win a day = collecting evidence', ja: '「良かった事1つ」の記録＝証拠集め' },
+        p: { ko: '자존감이 낮을 때 뇌는 부정적인 기억만 선택적으로 재생합니다. 잘한 일 아홉 개는 잊고 실수 한 개만 곱씹죠. 이 편향을 이기는 가장 검증된 도구가 "기록"입니다. 매일 밤 오늘 잘한 일을 딱 한 가지만 적어보세요. 거창할 필요 없어요 — "미루던 설거지를 했다"면 충분합니다. 몇 주치가 쌓이면, 기분이 바닥일 때 감정이 아닌 "증거"를 다시 읽을 수 있게 됩니다. 자존감은 느낌이 아니라 누적된 사실 위에 다시 세울 수 있어요.', en: 'When self-worth is low, the brain selectively replays only the negatives — nine wins forgotten, one mistake on loop. The best-validated tool against this bias is recording. Each night, write down just one thing you did well. It needn\'t be grand — "finally did the dishes" counts. After a few weeks, on rock-bottom days you can reread evidence instead of trusting feelings. Self-esteem can be rebuilt on accumulated facts, not moods.', ja: '自尊心が低い時、脳は否定的記憶だけ選択再生します。九つの善行を忘れ一つのミスを反芻する。この偏りに勝つ最も検証された道具が「記録」。毎晩、今日良くできた事を一つだけ書く。大層な事は不要 —「後回しの皿洗いをした」で十分。数週間分溜まれば、どん底の日に感情でなく「証拠」を読み返せます。自尊心は気分でなく累積した事実の上に再建できます。' },
+        tip: { ko: '오늘 밤, 휴대폰 메모에 "오늘 잘한 일 1개"를 적는 것부터 시작해 보세요.', en: 'Tonight, start by noting "one thing I did well today" in your phone.', ja: '今夜、スマホのメモに「今日良くできた事1つ」から始めて。' },
+      },
+    ],
+    takeaways: [
+      { ko: '조건("~하면")에 건 자존감은 반드시 흔들린다', en: 'Worth staked on conditions always wobbles', ja: '条件に賭けた自尊心は必ず揺れる' },
+      { ko: '자기비난은 동기가 아니라 회피를 만든다', en: 'Self-blame breeds avoidance, not drive', ja: '自己批判は回避を生む' },
+      { ko: '친구에게 하듯 말하기 + 잘한 일 1개 기록', en: 'Friend-talk to yourself + log one daily win', ja: '友への言葉＋良かった事1つの記録' },
+    ],
+    close: { ko: '자존감은 "잘난 나"를 찾는 일이 아니라, "있는 그대로의 나"를 대하는 방식을 바꾸는 일입니다.', en: 'Self-esteem isn\'t about finding a better you — it\'s about changing how you treat the you that\'s here.', ja: '自尊心は「優れた自分」探しでなく、「そのままの自分」への接し方を変える事です。' },
+  },
+  {
+    id: 'socialanx-ease',
+    emoji: '😰',
+    test: 'socialanx',
+    tag: { ko: '사회불안', en: 'Social anxiety', ja: '社交不安' },
+    readMin: 4,
+    title: { ko: '사람들 앞에서 떨리는 건, 고장이 아니에요', en: 'Trembling in front of people isn\'t a malfunction', ja: '人前で震えるのは故障ではない' },
+    summary: { ko: '사회불안의 작동 원리(스포트라이트 착각·회피의 역설)와 조금씩 편해지는 검증된 연습', en: 'How social anxiety works (spotlight illusion, the avoidance paradox) and proven ways to ease it', ja: '社交不安の仕組み(スポットライト錯覚・回避の逆説)と楽になる練習' },
+    intro: { ko: '발표 전날 잠이 안 오고, 모임 약속이 다가올수록 취소하고 싶어지고, 말 한마디 하고 밤새 곱씹은 적이 있나요? 사회불안은 성격 결함이 아니라, 아주 흔하고 — 무엇보다 잘 좋아지는 마음의 패턴입니다.', en: 'Sleepless before a presentation, itching to cancel as the gathering nears, replaying one remark all night? Social anxiety isn\'t a character flaw — it\'s very common, and above all, very improvable.', ja: '発表前夜に眠れず、集まりが近づくほどキャンセルしたくなり、一言を夜通し反芻した事は？社交不安は性格の欠陥でなく、とても一般的で — 何より良くなりやすい心のパターンです。' },
+    sections: [
+      {
+        h: { ko: '스포트라이트 착각', en: 'The spotlight illusion', ja: 'スポットライト錯覚' },
+        key: { ko: '남들은 나를 생각보다 훨씬 덜 본다', en: 'People notice you far less than you think', ja: '他人は思うよりずっと見ていない' },
+        p: { ko: '심리학자 길로비치(Gilovich)의 유명한 실험에서, 민망한 티셔츠를 입고 파티에 들어간 참가자는 "절반은 봤을 것"이라 예상했지만 실제로 알아챈 사람은 23%뿐이었습니다. 우리는 자신에게 쏟아지는 스포트라이트를 크게 과대평가해요. 당신이 어제 곱씹은 그 말실수를 기억하는 사람은, 냉정하게 말해 거의 없습니다. 모두가 각자 자신의 스포트라이트를 걱정하느라 바쁘거든요.', en: 'In Gilovich\'s famous experiment, participants who entered a party in an embarrassing T-shirt guessed half the room would notice — only 23% did. We massively overestimate the spotlight on us. That slip you replayed last night? Frankly, almost nobody remembers it. Everyone is too busy worrying about their own spotlight.', ja: 'ギロヴィッチの有名な実験で、恥ずかしいTシャツでパーティーに入った参加者は「半分は見た」と予想しましたが、実際に気づいたのは23%だけ。私たちは自分へのスポットライトを大きく過大評価します。昨夜反芻したあの失言を覚えている人は、正直ほぼいません。皆それぞれ自分のスポットライトを心配するのに忙しいのです。' },
+        tip: { ko: '"지난주 남이 한 말실수"를 하나라도 떠올려보세요 — 안 떠오른다면, 남들도 마찬가지예요.', en: 'Try recalling one slip someone else made last week — can\'t? Neither can they about yours.', ja: '「先週他人がした失言」を一つ思い出してみて — 出てこないなら、相手も同じです。' },
+      },
+      {
+        h: { ko: '회피의 역설', en: 'The avoidance paradox', ja: '回避の逆説' },
+        key: { ko: '피하면 잠깐 편하고, 불안은 자란다', en: 'Avoiding soothes now and grows the fear', ja: '回避は今楽で、不安を育てる' },
+        p: { ko: '모임을 취소하면 그 순간엔 안도감이 밀려옵니다. 문제는 뇌가 이 안도감을 "봐, 피하니까 살았지?"라는 학습으로 저장한다는 거예요. 다음번엔 같은 상황이 더 위험하게 느껴지고, 회피는 점점 넓어집니다. 발표 → 회식 → 전화 → 카페 주문까지. 사회불안 치료의 핵심이 "노출"인 이유가 여기 있습니다. 불안을 느끼면서도 그 자리에 머물러 "생각보다 괜찮네"를 몸으로 경험하면, 뇌의 위험 예측이 조금씩 수정돼요.', en: 'Cancel the gathering and relief washes in. The problem: the brain stores that relief as a lesson — "see, avoiding saved you." Next time the same situation feels more dangerous, and avoidance spreads: presentations → dinners → phone calls → even ordering coffee. This is why exposure is the core of treatment. Staying put while anxious and bodily experiencing "that was more OK than expected" gradually revises the brain\'s threat forecast.', ja: '集まりをキャンセルすると安堵が押し寄せます。問題は脳がこの安堵を「ほら、避けたから助かった」と学習保存する事。次は同じ状況がより危険に感じ、回避は広がります。発表→会食→電話→カフェの注文まで。社交不安治療の核心が「曝露」である理由です。不安を感じつつその場に留まり「思ったより大丈夫」を体で経験すれば、脳の危険予測が少しずつ修正されます。' },
+        tip: { ko: '이번 주, 살짝 불편한 자리 하나만 "취소하지 않고" 가보세요. 목표는 잘하기가 아니라 머물기.', en: 'This week, attend one mildly uncomfortable event without canceling. The goal is staying, not shining.', ja: '今週、少し気まずい場一つを「キャンセルせず」行ってみて。目標は上手くやる事でなく留まる事。' },
+      },
+      {
+        h: { ko: '몸부터 진정시키기', en: 'Calm the body first', ja: 'まず体を鎮める' },
+        key: { ko: '4초 들숨, 6초 날숨 — 마음은 몸을 따라온다', en: 'In 4s, out 6s — the mind follows the body', ja: '4秒吸い6秒吐く — 心は体に続く' },
+        p: { ko: '긴장하면 심장이 뛰고 손이 떨리는 건 편도체가 울린 가짜 화재경보입니다. 이때 "떨지 말자"고 생각으로 싸우면 대개 집니다 — 생각보다 몸이 빠르거든요. 순서를 바꿔보세요. 날숨을 들숨보다 길게(4초 들이쉬고 6초 내쉬기) 하면 심박을 늦추는 부교감신경이 켜지며 몸이 먼저 가라앉습니다. 발표 직전 화장실에서 1분이면 충분해요. 손이 떨리는 채로도 말할 수 있다는 것 — 그게 몸이 가르쳐주는 자신감입니다.', en: 'A racing heart and shaking hands are a false fire alarm from the amygdala. Fighting it with thoughts ("stop shaking!") usually fails — the body is faster than thought. Reverse the order: exhale longer than you inhale (in 4s, out 6s) and the parasympathetic brake slows your heart; the body settles first. One minute in the restroom before a talk is enough. You can speak even with trembling hands — that is the confidence the body teaches.', ja: '緊張で心臓が跳ね手が震えるのは扁桃体の誤報です。「震えるな」と思考で戦えば大抵負けます — 思考より体が速いから。順序を変えて。吐く息を吸う息より長く(4秒吸い6秒吐く)すれば副交感神経が心拍を落とし、体が先に鎮まります。発表直前、化粧室で1分で十分。手が震えたままでも話せる — それが体が教える自信です。' },
+        tip: { ko: '지금 바로 한 번: 4초 들이쉬고, 6초에 걸쳐 천천히 내쉬어 보세요. 5회면 변화가 느껴져요.', en: 'Try now: in for 4, slowly out for 6. Five rounds and you\'ll feel the shift.', ja: '今すぐ一度: 4秒吸って6秒かけて吐く。5回で変化を感じます。' },
+      },
+      {
+        h: { ko: '도움받는 것은 현명한 선택', en: 'Getting help is the smart move', ja: '助けを求めるのは賢明な選択' },
+        key: { ko: '사회불안은 상담 효과가 가장 좋은 영역 중 하나', en: 'Social anxiety responds especially well to therapy', ja: '社交不安は相談の効果が高い領域' },
+        p: { ko: '혼자 버티는 게 미덕처럼 여겨지지만, 사회불안은 인지행동치료(CBT)의 효과가 가장 잘 입증된 영역 중 하나입니다. 여러 연구에서 치료를 받은 사람의 다수가 뚜렷한 호전을 보였어요. 회피가 일·관계·기회를 좁히고 있다면, 그건 "의지 부족"이 아니라 "도구가 필요한 상태"입니다. 전문가를 찾는 건 약함의 고백이 아니라, 자기 삶을 되찾는 가장 빠른 경로예요. 검사 결과가 높게 나왔다면 그 신호를 무시하지 마세요.', en: 'Toughing it out alone is treated as a virtue, but social anxiety is among the best-proven targets of CBT — across studies, most people who get treatment improve markedly. If avoidance is narrowing your work, relationships, and chances, that\'s not "weak will"; it\'s a state that needs tools. Seeing a professional isn\'t a confession of weakness — it\'s the fastest route back to your life. If your test score came out high, don\'t ignore the signal.', ja: '一人で耐えるのが美徳とされがちですが、社交不安は認知行動療法(CBT)の効果が最も実証された領域の一つ。多くの研究で治療を受けた人の大半が明確に改善しました。回避が仕事・関係・機会を狭めているなら、それは「意志不足」でなく「道具が要る状態」。専門家を訪ねるのは弱さの告白でなく、人生を取り戻す最速の経路です。検査結果が高かったなら、その信号を無視しないで。' },
+        tip: { ko: '불안이 일상을 제한하고 있다면, 이번 주 상담 기관 한 곳만 검색해 보세요. 예약까지 안 해도 됩니다.', en: 'If anxiety limits your days, just search one counseling option this week — no need to book yet.', ja: '不安が日常を制限しているなら、今週相談機関を一つ検索だけしてみて。予約までは不要。' },
+      },
+    ],
+    takeaways: [
+      { ko: '남들은 내 실수를 거의 기억하지 않는다(스포트라이트 착각)', en: 'People barely remember your slips (spotlight illusion)', ja: '他人はミスをほぼ覚えていない(スポットライト錯覚)' },
+      { ko: '회피는 불안을 키운다 — 작게 머무는 연습부터', en: 'Avoidance grows anxiety — practice staying, small', ja: '回避は不安を育てる — 小さく留まる練習を' },
+      { ko: '4-6 호흡으로 몸 먼저 진정 + 필요하면 상담(CBT)', en: 'Calm the body with 4-6 breathing + CBT if needed', ja: '4-6呼吸で体を鎮め＋必要なら相談(CBT)' },
+    ],
+    close: { ko: '용기는 떨리지 않는 게 아니라, 떨리는 채로 그 자리에 있는 것입니다.', en: 'Courage isn\'t the absence of trembling — it\'s staying while you tremble.', ja: '勇気は震えない事でなく、震えたままそこに居る事です。' },
+  },
 ]
 
 export function articleById(id: string): Article | undefined {

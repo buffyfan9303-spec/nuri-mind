@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
-import AdSlot from '../components/AdSlot'
 import { TopBar, Card } from '../components/ui'
 import { testMeta } from '../data/tests'
 import type { TestId } from '../data/types'
@@ -54,11 +53,6 @@ export default function TestIntro() {
             {t(`intro.${id}.basis`)}
           </p>
         </Card>
-
-        {/* 광고 — 본문 중단(고시선 영역) */}
-        <div className="mt-4">
-          <AdSlot variant="banner" />
-        </div>
 
         <Card className="mt-4">
           <h2 className="flex items-center gap-2 text-[16px] font-extrabold tracking-tight">🤙 {t('intro.caution')}</h2>

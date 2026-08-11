@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import AdSlot from '../components/AdSlot'
 import Avatar from '../components/Avatar'
+import Footer from '../components/Footer'
 import ScrollChips from '../components/ScrollChips'
 import IconBadge from '../components/IconBadge'
 import { PointsPill, Card } from '../components/ui'
@@ -398,11 +398,6 @@ export default function Home() {
           </Card>
         </motion.div>
 
-        {/* 광고 — 검사 그리드 직하단 */}
-        <div className="mt-5">
-          <AdSlot variant="banner" />
-        </div>
-
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -451,10 +446,7 @@ export default function Home() {
           {t('home.disclaimer')}
         </p>
 
-        {/* 정사각형 광고 — 페이지 맨 아래 */}
-        <div className="mt-5">
-          <AdSlot variant="rect" />
-        </div>
+        <Footer />
       </main>
     </div>
   )

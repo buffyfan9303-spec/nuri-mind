@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-    <title>누리 마인드 · 내 심리 동물은? 8가지 과학 심리검사</title>
-    <meta name="description" content="ADHD·번아웃·애착·다크트라이어드 등 8종 심리검사로 나의 심리 동물을 찾고 포인트도 적립하세요. 무료." />
+    <title>누리 마인드 · 내 심리 동물은? 12가지 과학 심리검사</title>
+    <meta name="description" content="자존감·ADHD·번아웃·애착·사회불안·완벽주의 등 공개 심리 척도 기반 12종 검사와 심리 매거진. 나의 심리 동물을 찾고 마음을 이해해 보세요. 무료." />
     <link rel="canonical" href="https://www.nurimind.co.kr/" />
     <meta name="theme-color" content="#4FA882" />
     <!-- 다크모드 깜빡임(FOUC) 방지 — React 마운트 전에 .dark 즉시 적용 -->
@@ -18,8 +18,8 @@
     <!-- Open Graph (카카오·페이스북·디스코드 등 링크 미리보기) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="누리 마인드" />
-    <meta property="og:title" content="누리 마인드 · 내 심리 동물은? 8가지 과학 심리검사" />
-    <meta property="og:description" content="ADHD·번아웃·애착·다크트라이어드 등 8종 심리검사로 나의 심리 동물을 찾고 포인트도 적립하세요. 무료." />
+    <meta property="og:title" content="누리 마인드 · 내 심리 동물은? 12가지 과학 심리검사" />
+    <meta property="og:description" content="자존감·ADHD·번아웃·애착·사회불안·완벽주의 등 12종 심리검사와 심리 매거진. 나의 심리 동물을 찾아보세요. 무료." />
     <meta property="og:url" content="https://www.nurimind.co.kr/" />
     <meta property="og:image" content="https://www.nurimind.co.kr/og.jpg" />
     <meta property="og:image:width" content="1200" />
@@ -28,7 +28,7 @@
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="누리 마인드 · 내 심리 동물은?" />
-    <meta name="twitter:description" content="8종 심리검사로 나의 심리 동물을 찾고 포인트도 적립. 무료." />
+    <meta name="twitter:description" content="12종 심리검사로 나의 심리 동물을 찾고 마음을 이해해 보세요. 무료." />
     <meta name="twitter:image" content="https://www.nurimind.co.kr/og.jpg" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
@@ -46,6 +46,27 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- JS 미실행 환경(일부 크롤러·noscript)용 실질 콘텐츠 폴백 -->
+    <noscript>
+      <main style="max-width:640px;margin:0 auto;padding:32px 20px;font-family:sans-serif;line-height:1.7">
+        <h1>누리 마인드 — 나를 이해하는 12가지 심리검사</h1>
+        <p>
+          누리 마인드는 로젠버그 자존감 척도(RSES), 성인 ADHD 자가보고 척도(ASRS), 회복탄력성 척도(CD-RISC),
+          사회불안 척도(SPIN), 프로스트 다차원 완벽주의 척도(Frost MPS), 일반 자기효능감 척도(GSE) 등
+          학술적으로 공개된 심리 척도를 바탕으로 만든 자기이해 검사 12종을 무료로 제공합니다.
+        </p>
+        <p>
+          검사 결과는 백분위와 함께 나만의 심리 동물 페르소나로 풀이되며, 강점·주의할 점·오늘 실천할 수 있는
+          한 걸음을 함께 안내합니다. 집중력·번아웃·도파민 사용 습관·자존감·완벽주의·사회불안 등 마음 상태를
+          다룬 심리 매거진 아티클도 읽을 수 있습니다.
+        </p>
+        <p>
+          모든 결과는 자기 성찰을 돕는 참고 자료이며 의학적 진단을 대신하지 않습니다.
+          이 서비스를 이용하려면 JavaScript를 켜 주세요.
+        </p>
+        <p>엔에이치홀딩스 · 문의 buffyfan9303@gmail.com</p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

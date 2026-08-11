@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
-import AdSlot from '../components/AdSlot'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { makeCogCard, shareCardBlob } from '../lib/shareCard'
@@ -260,9 +259,6 @@ export default function CogProfile() {
           </p>
         )}
 
-        <div className="mt-5">
-          <AdSlot variant="rect" />
-        </div>
       </main>
     </div>
   )

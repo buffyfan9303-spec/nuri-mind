@@ -1,19 +1,32 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import AdSlot from './AdSlot'
 import Button from './Button'
-import { useT } from '../i18n/useT'
+import { useT, useL } from '../i18n/useT'
 import { showInterstitial } from '../lib/ads'
+import type { L } from '../data/types'
 
 const WAIT_SEC = 5
 
 /**
- * 전면 광고 게이트 — 검사 완료 → 결과 공개 사이의 수익화 지점.
- * 카운트다운 동안 통계 연산 연출로 이탈감을 줄이고, APK에서는 AdMob 전면광고로 대체.
+ * 결과 준비 게이트 — 검사 완료 → 결과 공개 사이의 브릿지.
+ * ⚠️ AdSense 정책: 전면(인터스티셜) 화면에 웹 디스플레이 광고 게재 금지
+ *   ("알림·이동·행동 목적 화면") → 광고 대신 '심리 한 스푼' 상식 카드를 보여준다.
+ *   APK 전환 시엔 showInterstitial()이 AdMob 전면광고(앱 정책상 허용)로 대체.
  */
+const TIPS: { emoji: string; text: L }[] = [
+  { emoji: '🧠', text: { ko: '뇌는 멀티태스킹을 못 해요 — 실제론 빠르게 "전환"할 뿐이라 그때마다 집중력이 새어나가요.', en: 'Brains can\'t multitask — they rapidly switch, leaking focus each time.', ja: '脳はマルチタスクができません — 実際は高速で「切替」し、その度に集中が漏れます。' } },
+  { emoji: '😴', text: { ko: '수면이 부족하면 편도체(감정 뇌)가 60% 더 과민해져요. 예민한 날엔 먼저 잠을 점검하세요.', en: 'Sleep loss makes the amygdala ~60% more reactive. On edgy days, check your sleep first.', ja: '睡眠不足で扁桃体は約60%過敏に。イライラの日はまず睡眠を点検。' } },
+  { emoji: '📝', text: { ko: '걱정을 종이에 적기만 해도 뇌의 위협 반응이 줄어들어요 — "이름 붙이면 길들여진다".', en: 'Just writing worries down calms the brain\'s threat response — "name it to tame it".', ja: '心配を紙に書くだけで脳の脅威反応が減少 —「名付ければ手なずく」。' } },
+  { emoji: '🚶', text: { ko: '10분 산책은 저용량 항우울제만큼 기분을 끌어올린다는 연구가 있어요.', en: 'A 10-minute walk can lift mood comparably to a low-dose antidepressant, studies suggest.', ja: '10分の散歩は低用量抗うつ薬並みに気分を上げるという研究も。' } },
+  { emoji: '🫁', text: { ko: '숨을 "4초 들이쉬고 6초 내쉬면" 심박이 느려지며 몸이 먼저 진정돼요. 마음은 그 뒤를 따라와요.', en: 'Breathe in 4s, out 6s — the heart slows, the body calms first, and the mind follows.', ja: '4秒吸って6秒吐くと心拍が落ち、体が先に鎮まり心が続きます。' } },
+  { emoji: '🤝', text: { ko: '자존감은 "잘나서" 생기는 게 아니라, 실수한 나를 친구 대하듯 대할 때 자라요.', en: 'Self-esteem grows not from being great, but from treating your failing self like a friend.', ja: '自尊心は「優秀さ」でなく、失敗した自分を友のように扱う時に育ちます。' } },
+]
+
 export default function AdGate({ onDone }: { onDone: () => void }) {
   const t = useT()
+  const l = useL()
   const [left, setLeft] = useState(WAIT_SEC)
+  const tip = useMemo(() => TIPS[Math.floor(Math.random() * TIPS.length)], [])
 
   useEffect(() => {
     showInterstitial()
@@ -41,9 +54,17 @@ export default function AdGate({ onDone }: { onDone: () => void }) {
           <p className="mt-1 text-sm font-medium tracking-wide text-mind-200">{t('gate.sub')}</p>
         </div>
 
-        <AdSlot variant="rect" />
-
-        <p className="mt-3 text-center text-xs font-bold text-mind-300">{t('gate.adNote')}</p>
+        {/* 심리 한 스푼 — 대기 시간을 콘텐츠로 채움 */}
+        <motion.div
+          initial={{ opacity: 0, y: 14, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 20 }}
+          className="rounded-3xl bg-white/10 p-5 text-center"
+        >
+          <p className="text-[13px] font-extrabold tracking-wide text-mind-300">💡 {l({ ko: '기다리는 동안, 심리 한 스푼', en: 'While you wait — a psych spoonful', ja: '待つ間に、心理ひとさじ' })}</p>
+          <p className="mt-2 text-[30px] leading-none">{tip.emoji}</p>
+          <p className="mt-2.5 break-keep text-[14.5px] font-bold leading-relaxed text-white">{l(tip.text)}</p>
+        </motion.div>
 
         <div className="mt-5">
           {left > 0 ? (

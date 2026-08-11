@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
-import AdSlot from '../components/AdSlot'
 import IconBadge from '../components/IconBadge'
 import { Card, Chip, Modal, Section, TopBar } from '../components/ui'
 import { SHOP_ITEMS } from '../data/seed'
@@ -119,11 +118,6 @@ export default function Shop() {
           })}
         </div>
 
-        {/* 가로 한 줄 광고 — 콘텐츠 중앙 */}
-        <div className="mt-4">
-          <AdSlot variant="banner" />
-        </div>
-
         {redemptions.length > 0 && (
           <Section title={`📦 ${t('shop.history')}`}>
             <Card className="!p-2">
@@ -147,10 +141,6 @@ export default function Shop() {
           </Section>
         )}
 
-        {/* 정사각형 광고 — 페이지 맨 아래 */}
-        <div className="mt-5">
-          <AdSlot variant="rect" />
-        </div>
       </main>
 
       <Modal open={Boolean(confirm)} onClose={() => setConfirm(null)}>

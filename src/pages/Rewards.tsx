@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
-import AdSlot from '../components/AdSlot'
 import { DailyCapMeter, DailyQuiz, DailySpin } from '../components/Daily'
 import DailyExtras from '../components/DailyExtras'
 import Invite from '../components/Invite'
@@ -143,11 +142,6 @@ export default function Rewards() {
           <DailyQuiz />
         </div>
 
-        {/* 광고 — 상단권 노출 (가시성 개선) */}
-        <div className="mt-4">
-          <AdSlot variant="banner" />
-        </div>
-
         {/* 참여 가능한 설문 */}
         <Section
           title={`📋 ${t('rewards.surveys')}`}
@@ -264,10 +258,6 @@ export default function Rewards() {
           </Card>
         </Section>
 
-        {/* 정사각형 광고 — 페이지 맨 아래 */}
-        <div className="mt-5">
-          <AdSlot variant="rect" />
-        </div>
       </main>
 
       {/* 스트릭(연속 출석) 설명 모달 */}

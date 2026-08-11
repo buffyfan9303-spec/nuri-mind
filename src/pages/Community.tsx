@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '../components/Button'
 import Avatar from '../components/Avatar'
-import AdSlot from '../components/AdSlot'
 import { Card, Modal, TopBar } from '../components/ui'
 import { PERSONAS, EMOJI_TEST } from '../i18n/animalTranslations'
 import { TESTS } from '../data/tests'
@@ -564,23 +563,12 @@ export default function Community() {
                     </Card>
                   </motion.div>
 
-                  {i % 4 === 3 && (
-                    <div className="mt-2.5">
-                      <AdSlot variant="banner" />
-                    </div>
-                  )}
                 </div>
               )
             })
           )}
         </div>
 
-        {/* 정사각형 광고 — 페이지 맨 아래 */}
-        {posts.length > 0 && (
-          <div className="mt-4">
-            <AdSlot variant="rect" />
-          </div>
-        )}
       </main>
 
       {/* 새 글 N개 pill */}
