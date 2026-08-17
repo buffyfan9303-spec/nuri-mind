@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from './Button'
 import Avatar from './Avatar'
-import { PERSONAS } from '../i18n/animalTranslations'
+import { PERSONA_VISUAL } from '../i18n/personaVisual'
 import type { Avatar as AvatarT } from '../data/types'
 import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
@@ -124,7 +124,7 @@ export default function Onboarding() {
           <p className="px-1 text-[14px] font-extrabold">{t('onboard.pickLabel')}</p>
           <div className="mt-2.5 grid grid-cols-4 gap-2.5">
             {STARTERS.map((key) => {
-              const p = PERSONAS[key]
+              const p = PERSONA_VISUAL[key]
               const sel = picked === key
               return (
                 <motion.button

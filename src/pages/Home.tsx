@@ -6,9 +6,9 @@ import Avatar from '../components/Avatar'
 import Footer from '../components/Footer'
 import ScrollChips from '../components/ScrollChips'
 import IconBadge from '../components/IconBadge'
+import { SkeletonBlock } from '../components/Skeleton'
 import { PointsPill, Card } from '../components/ui'
 import { TESTS } from '../data/tests'
-import { QUICK_TESTS } from '../data/quick'
 import { SHOP_ITEMS } from '../data/seed'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
@@ -77,6 +77,14 @@ export default function Home() {
   }
   const premium = isPremium(s.premiumUntil)
   const premiumDaysLeft = premium ? Math.max(0, Math.ceil((s.premiumUntil - Date.now()) / 86400000)) : 0
+
+  // 퀵테스트 칩 — 문항·결과 데이터(60KB)는 지연 로드(메인 번들 오염 방지). 칩엔 메타 4필드만 필요
+  const [quickChips, setQuickChips] = useState<{ id: string; emoji: string; title: L; grad0: string }[]>([])
+  useEffect(() => {
+    import('../data/quick').then((m) =>
+      setQuickChips(m.QUICK_TESTS.map((q) => ({ id: q.id, emoji: q.emoji, title: q.title, grad0: q.grad[0] }))),
+    )
+  }, [])
 
   // 매거진 최신 글 롤링 — 본문 데이터는 지연 로드(메인 번들에 매거진 전문 미포함)
   const [magHeads, setMagHeads] = useState<{ id: string; emoji: string; title: L }[]>([])
@@ -211,16 +219,25 @@ export default function Home() {
             </h2>
             <span className="text-[12.5px] font-extrabold text-mind-600">{t('community.all')} ›</span>
           </button>
-          <ScrollChips
-            items={QUICK_TESTS.map((q, i) => ({
-              id: q.id,
-              emoji: q.emoji,
-              label: l(q.title),
-              color: q.grad[0],
-              onClick: () => nav(`/quick/${q.id}`),
-              badge: i === 0 ? ('HOT' as const) : i >= QUICK_TESTS.length - 2 ? ('NEW' as const) : undefined,
-            }))}
-          />
+          {quickChips.length ? (
+            <ScrollChips
+              items={quickChips.map((q, i) => ({
+                id: q.id,
+                emoji: q.emoji,
+                label: l(q.title),
+                color: q.grad0,
+                onClick: () => nav(`/quick/${q.id}`),
+                badge: i === 0 ? ('HOT' as const) : i >= quickChips.length - 2 ? ('NEW' as const) : undefined,
+              }))}
+            />
+          ) : (
+            /* 데이터 로드 전 스켈레톤 칩 — 레이아웃 시프트 방지(실제 칩과 동일 규격) */
+            <div className="no-scrollbar -mx-5 mt-3 flex gap-3 overflow-x-hidden px-5 pb-4 pt-1">
+              {[0, 1, 2, 3].map((i) => (
+                <SkeletonBlock key={i} className="h-[84px] w-[86px] shrink-0 !rounded-3xl" />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── 오늘의 퀘스트 ── */}
