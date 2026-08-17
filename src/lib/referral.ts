@@ -9,7 +9,7 @@ export function referralReady(): boolean {
   return supabase !== null
 }
 
-export type ReferralResult = 'ok' | 'used' | 'no_auth' | 'invalid' | 'unavailable'
+export type ReferralResult = 'ok' | 'used' | 'self' | 'no_auth' | 'invalid' | 'unavailable'
 
 /** 피초대자 코드 1회 등록(서버). RPC 미배포·오류 시 'unavailable'. */
 export async function redeemReferralServer(code: string): Promise<ReferralResult> {

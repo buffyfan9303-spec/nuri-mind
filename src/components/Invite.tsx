@@ -74,11 +74,23 @@ export default function Invite() {
 
   const submit = async () => {
     // 서버 검증(카카오 로그인 + supabase): 계정당 1회 — localStorage 초기화 파밍 차단.
-    // 미배포/비로그인이면 로컬 동작으로 폴백(현행 유지).
+    // 서버가 확정 판정('used'/'self'/'invalid')을 내리면 로컬 폴백 금지 —
+    // 특히 자기 서버 코드('self')가 로컬 검사(로컬 코드와만 비교)를 통과해 자가지급되는 구멍 차단.
+    // 로컬 폴백은 판정 불가('no_auth'/'unavailable')일 때만.
     if (referralReady()) {
       const sv = await redeemReferralServer(input.trim().toUpperCase())
       if (sv === 'used') {
         setMsg({ ok: false, text: t('invite.usedAccount') })
+        sfx.err()
+        return
+      }
+      if (sv === 'self') {
+        setMsg({ ok: false, text: t('invite.mine') })
+        sfx.err()
+        return
+      }
+      if (sv === 'invalid') {
+        setMsg({ ok: false, text: t('invite.invalid') })
         sfx.err()
         return
       }

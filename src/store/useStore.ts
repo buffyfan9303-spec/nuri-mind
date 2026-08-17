@@ -25,6 +25,7 @@ import { setSoundEnabled } from '../lib/sound'
 import { track } from '../lib/analytics'
 import { moderateText } from '../lib/moderation'
 import { claimDiamondGrantsServer } from '../lib/diamonds'
+import { mirrorEarn, mirrorSpend, initEconomySync } from '../lib/economy'
 import { createSettingsSlice } from './slices/settingsSlice'
 
 /** 운영자 PIN — 배포 전 반드시 변경 (실서비스는 Supabase Auth 권장) */
@@ -331,8 +332,8 @@ export const useStore = create<State>()(
         const s = get()
         return s.freeDate === today() ? Math.max(0, DAILY_FREE_CAP - s.freeAmount) : DAILY_FREE_CAP
       }
-      /** 상한 내에서 적립 — 실제 지급액 반환 */
-      const grantFree = (amount: number, memo: string): number => {
+      /** 상한 내에서 적립 — 실제 지급액 반환. reasonKey는 서버 미러 중복 차단 키(일일 보상은 날짜 포함) */
+      const grantFree = (amount: number, memo: string, reasonKey: string | null = null): number => {
         const granted = Math.min(amount, freeLeft())
         if (granted <= 0) return 0
         const s = get()
@@ -343,6 +344,7 @@ export const useStore = create<State>()(
           freeAmount: (s.freeDate === t ? s.freeAmount : 0) + granted,
           ledger: [{ id: uid('lg_'), amount: granted, memo, at: Date.now() }, ...s.ledger],
         })
+        mirrorEarn(granted, memo, reasonKey)
         return granted
       }
 
@@ -425,6 +427,7 @@ export const useStore = create<State>()(
             points: s.points + 20,
             ledger: [{ id: uid('lg_'), amount: 20, memo: '✍️ 커뮤니티 첫 글 보상', at: Date.now() }, ...s.ledger],
           })
+          mirrorEarn(20, '✍️ 커뮤니티 첫 글 보상', 'first_post')
           return 20
         },
         /** 첫 댓글 +10P (1회성) */
@@ -436,6 +439,7 @@ export const useStore = create<State>()(
             points: s.points + 10,
             ledger: [{ id: uid('lg_'), amount: 10, memo: '💬 커뮤니티 첫 댓글 보상', at: Date.now() }, ...s.ledger],
           })
+          mirrorEarn(10, '💬 커뮤니티 첫 댓글 보상', 'first_comment')
           return 10
         },
 
@@ -460,7 +464,7 @@ export const useStore = create<State>()(
             streak,
             streakFreezes: usedFreeze ? s.streakFreezes - 1 : s.streakFreezes,
           })
-          grantFree(bonus, `📅 출석 체크 (${streak}일 연속)${usedFreeze ? ' · ❄️ 복구권 사용' : ''}`)
+          grantFree(bonus, `📅 출석 체크 (${streak}일 연속)${usedFreeze ? ' · ❄️ 복구권 사용' : ''}`, `checkin:${today()}`)
           return true
         },
 
@@ -476,6 +480,7 @@ export const useStore = create<State>()(
               ? [{ id: uid('lg_'), amount: reward, memo: '🧠 검사 완료 보상', at: Date.now() }, ...s.ledger]
               : s.ledger,
           })
+          if (first) mirrorEarn(reward, '🧠 검사 완료 보상', `test_complete:${r.testId}`)
           track('test_complete', { test: r.testId, first })
           return reward
         },
@@ -504,6 +509,7 @@ export const useStore = create<State>()(
             points: s.points + sv.reward,
             ledger: [{ id: uid('lg_'), amount: sv.reward, memo: `${sv.emoji} 설문 참여: ${sv.title}`, at: Date.now() }, ...s.ledger],
           })
+          mirrorEarn(sv.reward, `${sv.emoji} 설문 참여: ${sv.title}`, `survey:${id}`)
           track('survey_complete', { reward: sv.reward })
           return sv.reward
         },
@@ -531,6 +537,7 @@ export const useStore = create<State>()(
             ],
             ledger: [{ id: uid('lg_'), amount: -item.cost, memo: `${item.emoji} 교환 신청: ${name}`, at: Date.now() }, ...s.ledger],
           })
+          mirrorSpend(item.cost, `${item.emoji} 교환 신청: ${name}`)
           return true
         },
 
@@ -547,6 +554,7 @@ export const useStore = create<State>()(
               ? s.ledger
               : [{ id: uid('lg_'), amount: rd.cost, memo: `↩️ 교환 반려 환불: ${rd.itemName}`, at: Date.now() }, ...s.ledger],
           })
+          if (!approve) mirrorEarn(rd.cost, `↩️ 교환 반려 환불: ${rd.itemName}`, `refund:${id}`)
         },
 
         applyExperience: (expId) => {
@@ -574,7 +582,7 @@ export const useStore = create<State>()(
           const r = Math.random()
           const rolled = r < 0.3 ? 3 : r < 0.55 ? 5 : r < 0.75 ? 8 : r < 0.88 ? 12 : r < 0.96 ? 20 : r < 0.99 ? 30 : 50
           set(viaAd ? { lastAdSpinDate: t } : { lastSpinDate: t })
-          const granted = grantFree(rolled, `🎁 랜덤박스 ${viaAd ? '(광고 보너스) ' : ''}+${rolled}P 당첨`)
+          const granted = grantFree(rolled, `🎁 랜덤박스 ${viaAd ? '(광고 보너스) ' : ''}+${rolled}P 당첨`, `${viaAd ? 'spin_ad' : 'spin'}:${t}`)
           return { rolled, granted }
         },
 
@@ -583,7 +591,7 @@ export const useStore = create<State>()(
           const s = get()
           if (s.lastQuizDate === today()) return 0
           set({ lastQuizDate: today() })
-          return correct ? grantFree(5, '🧠 데일리 심리 퀴즈 정답') : 0
+          return correct ? grantFree(5, '🧠 데일리 심리 퀴즈 정답', `quiz:${today()}`) : 0
         },
 
         /** 오늘의 퀘스트 — 출석 + 데일리퀴즈 + 검사 1개 모두 완료 시 보너스 +50P(하루 1회) */
@@ -594,7 +602,7 @@ export const useStore = create<State>()(
           const tested = s.results.some((r) => localDayOf(r.at) === t)
           if (!(s.lastCheckIn === t && s.lastQuizDate === t && tested)) return 0
           set({ questClaimedDate: t })
-          return grantFree(50, '🎯 오늘의 퀘스트 완료 보너스')
+          return grantFree(50, '🎯 오늘의 퀘스트 완료 보너스', `quest:${t}`)
         },
 
         /** 오늘 기분 기록 (보상 없음 — 자기 관찰 도구) */
@@ -618,7 +626,7 @@ export const useStore = create<State>()(
           track('share', { resultId })
           if (s.sharedResults.includes(resultId)) return 0
           set({ sharedResults: [...s.sharedResults, resultId] })
-          return grantFree(5, '📤 결과 카드 공유 보상')
+          return grantFree(5, '📤 결과 카드 공유 보상', `share:${resultId}`)
         },
 
         /** 스트릭 프리즈 구매 — 즉시 지급 디지털 아이템 */
@@ -630,6 +638,7 @@ export const useStore = create<State>()(
             streakFreezes: s.streakFreezes + 1,
             ledger: [{ id: uid('lg_'), amount: -FREEZE_COST, memo: '❄️ 연속출석 복구권 구매', at: Date.now() }, ...s.ledger],
           })
+          mirrorSpend(FREEZE_COST, '❄️ 연속출석 복구권 구매')
           return true
         },
 
@@ -645,6 +654,8 @@ export const useStore = create<State>()(
             points: s.points + 100,
             ledger: [{ id: uid('lg_'), amount: 100, memo: '🤝 친구 초대 코드 입력 보상', at: Date.now() }, ...s.ledger],
           })
+          // referrals.sql의 redeem_referral과 같은 키 — 어느 경로로든 서버 지급은 1회만
+          mirrorEarn(100, '🤝 친구 초대 코드 입력 보상', 'referral_redeem')
           return 'ok'
         },
 
@@ -752,7 +763,7 @@ export const useStore = create<State>()(
           const s = get()
           if (s.readArticles.includes(id)) return 0
           set({ readArticles: [...s.readArticles, id] })
-          return grantFree(8, '📖 매거진 정독 보상')
+          return grantFree(8, '📖 매거진 정독 보상', `read:${id}`)
         },
 
         /** 바이브 테스트 완료 — 첫 완료 +10P (1회성, 일일 상한 제외) */
@@ -767,6 +778,7 @@ export const useStore = create<State>()(
               ? [{ id: uid('lg_'), amount: 10, memo: '🔥 바이브 테스트 첫 완료', at: Date.now() }, ...s.ledger]
               : s.ledger,
           })
+          if (first) mirrorEarn(10, '🔥 바이브 테스트 첫 완료', 'vibe_first')
           return first ? 10 : 0
         },
 
@@ -801,3 +813,36 @@ export const useStore = create<State>()(
     },
   ),
 )
+
+// ── 서버 경제 동기화(로그인 시) — 키 있는 아웃박스 미러 + 복원/이관(economy.ts 참조) ──
+initEconomySync({
+  getWallet: () => ({ points: useStore.getState().points }),
+  restoreTo: (serverPoints, snapshotPoints) => {
+    const s = useStore.getState()
+    const next = serverPoints + (s.points - snapshotPoints) // 동기화 중 적립 드리프트 보존
+    const diff = next - s.points
+    useStore.setState({
+      points: next,
+      ledger:
+        diff === 0
+          ? s.ledger
+          : [
+              {
+                id: uid('lg_'),
+                amount: diff,
+                memo: diff > 0 ? '☁️ 서버 지갑 복원' : '☁️ 서버 지갑 동기화(잔액 맞춤)',
+                at: Date.now(),
+              },
+              ...s.ledger,
+            ],
+    })
+  },
+  resetWallet: (points, memo) => {
+    const s = useStore.getState()
+    const diff = points - s.points
+    useStore.setState({
+      points,
+      ledger: diff === 0 ? s.ledger : [{ id: uid('lg_'), amount: diff, memo, at: Date.now() }, ...s.ledger],
+    })
+  },
+})
