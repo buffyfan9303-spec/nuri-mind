@@ -358,6 +358,48 @@ export const ARTICLES: Article[] = [
     ],
     close: { ko: '좋은 아침은 전날 밤, 휴대폰을 내려놓는 그 순간에 시작됩니다.', en: 'A good morning begins the night before — the moment you put the phone down.', ja: '良い朝は前夜、スマホを置くその瞬間に始まります。' },
   },
+  {
+    id: 'perfect-procrastination',
+    emoji: '⏳',
+    test: 'perfect',
+    tag: { ko: '완벽주의·미루기', en: 'Perfectionism·Procrastination', ja: '完璧主義·先延ばし' },
+    readMin: 4,
+    title: { ko: '완벽주의자가 가장 많이 미루는 이유', en: 'Why perfectionists procrastinate the most', ja: '完璧主義者が最も先延ばしする理由' },
+    summary: { ko: '미루기는 게으름이 아니라 감정 문제 — 완벽주의가 시작을 막는 회로와, 형편없는 초안의 심리학', en: 'Procrastination is emotion, not laziness — how perfectionism blocks starting, and the psychology of the rough first draft', ja: '先延ばしは怠惰でなく感情の問題 — 完璧主義が着手を阻む回路と、雑な初稿の心理学' },
+    intro: { ko: '해야 할 일을 앞에 두고 책상 정리부터 시작해 본 적 있나요? 이상하게도, 잘하고 싶은 마음이 클수록 시작은 더 늦어집니다. 미루기의 반대말은 성실함이 아니라 "시작"이고, 그 시작을 막는 범인은 게으름이 아닐 때가 많아요.', en: 'Ever started cleaning your desk instead of the task in front of you? Strangely, the more you want to do it well, the later you start. The opposite of procrastination isn\'t diligence — it\'s starting. And what blocks starting is usually not laziness.', ja: 'やるべき事を前に机の整理から始めた事は？不思議な事に、上手くやりたい気持ちが大きいほど着手は遅れます。先延ばしの反対は勤勉でなく「開始」。それを阻む犯人は怠惰でない事が多いのです。' },
+    sections: [
+      {
+        h: { ko: '미루기는 시간 문제가 아니라 감정 문제', en: 'It\'s about feelings, not time', ja: '時間でなく感情の問題' },
+        key: { ko: '미루기 = 불편한 감정을 피하는 즉효 진통제', en: 'Procrastination = instant painkiller for bad feelings', ja: '先延ばし＝不快感情の即効鎮痛剤' },
+        p: { ko: '미루기 연구의 결론은 의외로 일관됩니다: 미루기는 시간 관리 실패가 아니라 감정 조절 전략이라는 것. 과제를 떠올릴 때 올라오는 불안·지루함·부담감을 피하려고 뇌가 "일단 다른 걸 하자"를 택하는 거예요. 스크롤 몇 번이면 불편함이 사라지니 즉효약이죠. 문제는 진통제일 뿐 치료제가 아니라서, 과제는 그대로이고 불안엔 죄책감까지 얹힌다는 것. 그래서 "계획을 더 잘 세우자"는 처방이 잘 안 듣는 겁니다 — 달래야 할 것은 일정표가 아니라 감정이에요.', en: 'Procrastination research is surprisingly consistent: it\'s not a time-management failure but an emotion-regulation strategy. To dodge the anxiety, boredom, or pressure a task stirs up, the brain picks "let\'s do something else first." A few scrolls and the discomfort fades — instant relief. But it\'s a painkiller, not a cure: the task remains, now with guilt stacked on top. That\'s why "plan better" rarely works — what needs soothing isn\'t your calendar, it\'s your feelings.', ja: '先延ばし研究の結論は意外に一貫しています：時間管理の失敗でなく感情調節の戦略だという事。課題が呼び起こす不安・退屈・負担を避けるため脳が「まず別の事を」と選ぶのです。数回のスクロールで不快感は消える即効薬。しかし鎮痛剤であって治療薬ではなく、課題は残り不安に罪悪感まで積もる。だから「もっと計画を」という処方が効かないのです — なだめるべきは予定表でなく感情。' },
+        tip: { ko: '미루고 싶어질 때 "지금 내가 피하려는 감정은 뭐지?"라고 한 번만 물어보세요. 이름을 붙이면 절반은 풀려요.', en: 'When the urge hits, ask once: "what feeling am I dodging right now?" Naming it defuses half of it.', ja: '先延ばししたくなったら「今避けている感情は何？」と一度だけ問う。名付ければ半分は解けます。' },
+      },
+      {
+        h: { ko: '완벽주의가 시작을 막는 회로', en: 'How perfectionism blocks the start', ja: '完璧主義が着手を阻む回路' },
+        key: { ko: '"완벽 아니면 실패" → 시작 자체가 위협이 됨', en: '"Perfect or failure" turns starting into a threat', ja: '「完璧か失敗か」で着手自体が脅威に' },
+        p: { ko: '완벽주의자의 머릿속 기준은 처음부터 완성본입니다. 그 기준과 비교하면 어떤 첫 시도도 초라해 보이니, 시작하는 순간 "부족한 나"를 확인하게 될 것 같은 두려움이 생겨요. 게다가 결과를 자기 가치와 동일시하면("이 결과가 곧 나"), 과제는 할 일이 아니라 나에 대한 심판이 됩니다. 심판대에 서고 싶은 사람은 없죠 — 그래서 미룹니다. 역설적이게도 "잘하고 싶은 마음"이 "잘할 기회"를 갉아먹는 구조예요. 당신이 게을러서가 아니라, 기준이 시작을 처벌하고 있는 겁니다.', en: 'A perfectionist\'s mental benchmark is the finished masterpiece from minute one. Against that, any first attempt looks shabby — so starting threatens to expose "the inadequate me." Worse, if outcomes equal self-worth ("this result is me"), the task becomes not work but a verdict. Nobody volunteers for the witness stand — so we stall. Paradoxically, the desire to do well eats the chance to do well. You\'re not lazy; your standard is punishing the act of starting.', ja: '完璧主義者の頭の中の基準は最初から完成品。それと比べればどんな初回の試みも見劣りし、始めた瞬間「足りない自分」を確認しそうな恐れが生まれます。さらに結果を自己価値と同一視すれば(「この結果が自分」)、課題は仕事でなく自分への審判に。審判台に立ちたい人はいない — だから先延ばす。皮肉にも「上手くやりたい気持ち」が「上手くやる機会」を蝕む構造。怠惰でなく、基準が着手を罰しているのです。' },
+        tip: { ko: '시작 전 스스로에게 선언하세요: "지금 만드는 건 완성본이 아니라 재료다."', en: 'Before starting, declare: "I\'m making material now, not the final product."', ja: '始める前に宣言を：「今作るのは完成品でなく材料だ」。' },
+      },
+      {
+        h: { ko: '형편없는 초안의 힘', en: 'The power of the rough first draft', ja: '雑な初稿の力' },
+        key: { ko: '기준 낮춰 시작 → 관성이 완성까지 끌고 감', en: 'Start below the bar — momentum carries you to done', ja: '基準を下げて着手→惰性が完成まで運ぶ' },
+        p: { ko: '작가들의 오랜 격언 "형편없는 초안(shitty first draft)"은 심리학적으로도 정확합니다. 뇌가 시작을 위협으로 느끼지 않으려면 첫 목표가 우스울 만큼 작아야 해요. "보고서 쓰기"가 아니라 "제목 한 줄 쓰기", "운동하기"가 아니라 "운동화 신기". 여기에 실행 의도(implementation intention) — "언제·어디서·무엇을"을 미리 문장으로 박아두면("점심 먹고 자리에 앉으면 제목부터 쓴다") 실행률이 크게 오른다는 게 반복 검증된 결과입니다. 일단 굴러가기 시작한 일은 멈추기가 오히려 어색해져요 — 관성은 완벽주의보다 힘이 셉니다.', en: 'The writers\' adage of the "shitty first draft" is psychologically precise. For the brain not to flag starting as a threat, the first goal must be laughably small: not "write the report" but "write one title line"; not "work out" but "put on the shoes." Add an implementation intention — pre-scripting when, where, what ("after lunch, when I sit down, I write the title first") — and follow-through rises sharply, a repeatedly verified effect. Once a task is rolling, stopping feels awkward — momentum beats perfectionism.', ja: '作家の格言「雑な初稿」は心理学的にも正確。脳が着手を脅威と感じないためには最初の目標が笑えるほど小さい必要があります。「報告書を書く」でなく「タイトル一行」、「運動する」でなく「靴を履く」。さらに実行意図 — いつ・どこで・何をを予め文にしておく(「昼食後席に着いたらまずタイトル」)と実行率が大きく上がるのは繰り返し検証済み。転がり始めた仕事は止める方が不自然 — 惰性は完璧主義より強いのです。' },
+        tip: { ko: '지금 미루는 일 하나를 "5분짜리 우스운 첫 조각"으로 쪼개 문장으로 적어보세요: "___하면, ___에서, ___부터 한다."', en: 'Take one stalled task and script a laughably small 5-minute piece: "When ___, at ___, I start with ___."', ja: '先延ばし中の仕事一つを「5分の笑える一片」に刻み文にする：「___したら、___で、___から」。' },
+      },
+      {
+        h: { ko: '자책은 미루기의 연료다', en: 'Self-blame fuels the next delay', ja: '自責は先延ばしの燃料' },
+        key: { ko: '자기자비가 미루기를 줄인다 — 반복 검증된 결과', en: 'Self-compassion reduces procrastination — replicated finding', ja: 'セルフコンパッションが先延ばしを減らす' },
+        p: { ko: '미룬 뒤의 자책("또 미뤘네, 난 왜 이럴까")은 정신을 차리게 해줄 것 같지만, 연구 결과는 정반대입니다. 자책은 과제에 붙은 불쾌감을 더 키워서 다음번 회피를 더 강하게 만들어요. 반대로 미룬 자신을 이해하고 넘어간 사람들("그럴 만했지, 다음에 다시")이 다음 과제를 덜 미뤘다는 결과가 반복적으로 확인됐습니다. 미루기의 악순환을 끊는 첫 고리는 더 독한 다짐이 아니라, 미뤘던 나를 용서하는 것 — 그래야 과제가 다시 "심판"이 아닌 "그냥 일"로 돌아옵니다.', en: 'Post-delay self-blame ("again?! what\'s wrong with me") feels like it should snap you into shape — research shows the opposite. Blame inflates the bad feelings attached to the task, making the next avoidance stronger. Conversely, people who forgave themselves for procrastinating ("it made sense; next time") procrastinated less on the following task — a repeatedly confirmed result. The first link to cut in the cycle isn\'t a harsher vow but forgiving the you who stalled — that\'s what turns the task back from a verdict into just work.', ja: '先延ばし後の自責(「またか、なぜこうなんだ」)は目を覚まさせてくれそうですが、研究結果は正反対。自責は課題に付いた不快感を膨らませ、次の回避をより強くします。逆に先延ばした自分を許した人々(「無理もない、次は」)が次の課題をより先延ばししなかった事が繰り返し確認されました。悪循環を断つ最初の輪は、より強い誓いでなく、先延ばした自分を許す事 — それで課題が「審判」から「ただの仕事」に戻ります。' },
+        tip: { ko: '미룬 날 밤엔 다짐 대신 이 한 문장: "미룰 만한 이유가 있었다. 내일 첫 조각부터."', en: 'On a stalled day, swap the vow for one line: "There was a reason. Tomorrow, the first piece."', ja: '先延ばした夜は誓いの代わりに一文：「理由があった。明日は最初の一片から」。' },
+      },
+    ],
+    takeaways: [
+      { ko: '미루기 = 시간이 아니라 감정 조절의 문제', en: 'Procrastination is emotion regulation, not time management', ja: '先延ばし＝時間でなく感情調節の問題' },
+      { ko: '완성본 기준이 시작을 처벌한다 — "재료"부터 만들기', en: 'Masterpiece standards punish starting — make "material" first', ja: '完成品基準が着手を罰する —「材料」から作る' },
+      { ko: '우스울 만큼 작은 첫 조각 + 실행 의도 + 자기 용서', en: 'A laughably small first piece + implementation intention + self-forgiveness', ja: '笑えるほど小さな一片＋実行意図＋自己許し' },
+    ],
+    close: { ko: '완벽한 시작을 기다리는 동안, 형편없는 시작은 벌써 절반을 끝냅니다.', en: 'While you wait for the perfect start, the rough start is already halfway done.', ja: '完璧な開始を待つ間に、雑な開始はもう半分終えています。' },
+  },
 ]
 
 export function articleById(id: string): Article | undefined {
