@@ -400,6 +400,48 @@ export const ARTICLES: Article[] = [
     ],
     close: { ko: '완벽한 시작을 기다리는 동안, 형편없는 시작은 벌써 절반을 끝냅니다.', en: 'While you wait for the perfect start, the rough start is already halfway done.', ja: '完璧な開始を待つ間に、雑な開始はもう半分終えています。' },
   },
+  {
+    id: 'emotion-regulation',
+    emoji: '🌊',
+    test: 'efficacy',
+    tag: { ko: '감정 조절', en: 'Emotion regulation', ja: '感情調節' },
+    readMin: 4,
+    title: { ko: '감정은 파도예요 — 싸우지 말고 타는 법', en: 'Emotions are waves — ride them, don\'t fight them', ja: '感情は波 — 戦わず乗る方法' },
+    summary: { ko: '감정을 억누르면 커지는 이유와, 뇌과학이 검증한 감정 조절 4단계(이름 붙이기·재해석·몸부터 진정)', en: 'Why suppressing emotions backfires, and four brain-verified regulation moves (labeling, reappraisal, body-first calm)', ja: '感情を抑えると大きくなる理由と、脳科学が検証した感情調節4段階' },
+    intro: { ko: '"화내지 말자, 불안해하지 말자"라고 다짐할수록 감정이 더 커진 적 있나요? 감정 조절은 감정을 없애는 기술이 아니라, 파도를 타는 기술에 가깝습니다. 그리고 이건 타고나는 게 아니라 배울 수 있는 능력이에요.', en: 'Ever notice that vowing "don\'t be angry, don\'t be anxious" makes the feeling bigger? Emotion regulation isn\'t the art of deleting feelings — it\'s the art of riding waves. And it\'s a learnable skill, not a born trait.', ja: '「怒らない、不安にならない」と誓うほど感情が大きくなった事は？感情調節は感情を消す技術でなく、波に乗る技術。そして生まれつきでなく学べる能力です。' },
+    sections: [
+      {
+        h: { ko: '억누르면 커진다', en: 'Suppression backfires', ja: '抑えると大きくなる' },
+        key: { ko: '감정 억제는 반동을 부른다 — 몸의 각성은 오히려 상승', en: 'Pushing feelings down raises the body\'s arousal', ja: '感情抑制は反動を呼ぶ' },
+        p: { ko: '감정 조절 연구의 고전적 발견: 겉으로 감정을 억누르는 전략(표정 관리·"괜찮은 척")은 감정 경험을 줄이지 못하면서 심박 등 신체 각성은 오히려 높입니다. 기억력까지 떨어뜨리고, 놀랍게도 대화 상대의 혈압까지 올린다는 결과도 있어요. 흰곰을 생각하지 말라면 흰곰만 떠오르는 것처럼, 감정도 밀어낼수록 되돌아옵니다. 조절의 출발점은 "느끼면 안 돼"가 아니라 "느끼고 있구나"를 인정하는 것이에요.', en: 'A classic finding in emotion research: outward suppression (poker face, "I\'m fine") fails to reduce the felt emotion while raising bodily arousal like heart rate. It even impairs memory — and remarkably, can raise the blood pressure of the person you\'re talking to. Like the white bear you\'re told not to think of, feelings pushed away bounce back. Regulation starts not with "I shouldn\'t feel this" but with "I\'m feeling this."', ja: '感情研究の古典的発見：表向きの抑制(表情管理・「平気なふり」)は感情体験を減らせないまま心拍など身体覚醒をむしろ高めます。記憶力も落とし、驚くことに会話相手の血圧まで上げるという結果も。考えるなと言われた白熊ほど浮かぶように、感情も押しのけるほど戻ってきます。調節の出発点は「感じてはダメ」でなく「感じているな」と認める事。' },
+        tip: { ko: '감정이 올라올 때 첫 문장을 바꿔보세요: "불안하면 안 돼" → "지금 불안이 왔구나."', en: 'Swap the first sentence: "I can\'t be anxious" → "anxiety just arrived."', ja: '最初の一文を変える：「不安はダメ」→「今、不安が来たな」。' },
+      },
+      {
+        h: { ko: '이름을 붙이면 길들여진다', en: 'Name it to tame it', ja: '名付ければ手なずく' },
+        key: { ko: '감정 라벨링 = 편도체 반응을 낮추는 검증된 스위치', en: 'Affect labeling measurably calms the amygdala', ja: '感情ラベリングは扁桃体反応を下げる' },
+        p: { ko: '뇌영상 연구에서, 지금 느끼는 감정에 단어를 붙이는 것만으로(정서 라벨링) 위협 반응을 담당하는 편도체 활성이 줄고 전전두엽(조절 담당)이 켜지는 게 관찰됐습니다. 핵심은 구체성이에요. "기분이 별로"보다 "발표를 망칠까 봐 불안하고, 준비 시간을 뺏겨서 짜증나"처럼 쪼개서 부를수록 효과가 큽니다. 감정 어휘가 풍부한 사람일수록 감정에 덜 휩쓸린다는 연구도 같은 맥락이에요. 말로 잡히는 감정은 더 이상 안개가 아닙니다.', en: 'Brain-imaging studies show that merely putting words to a feeling (affect labeling) reduces amygdala activity — the threat alarm — while engaging the prefrontal regulator. Specificity is the key: "I feel off" does less than "I\'m anxious about botching the talk, and irritated my prep time got taken." People with richer emotion vocabularies are swept away less — same principle. A feeling captured in words is no longer a fog.', ja: '脳画像研究では、感じている感情に言葉を付けるだけで(感情ラベリング)脅威反応を担う扁桃体の活動が減り、調節を担う前頭前野が働く事が観察されました。核心は具体性。「気分が悪い」より「発表を台無しにしそうで不安、準備時間を奪われて苛立つ」と刻むほど効果大。感情語彙が豊かな人ほど感情に流されにくいという研究も同じ文脈。言葉で捉えた感情はもう霧ではありません。' },
+        tip: { ko: '오늘 감정을 한 단어 말고 두세 단어로 쪼개 적어보세요(예: 서운함+피곤+기대).', en: 'Log today\'s feeling in two or three words, not one (e.g., hurt + tired + hopeful).', ja: '今日の感情を一語でなく2〜3語に刻んで書く(例：寂しさ＋疲れ＋期待)。' },
+      },
+      {
+        h: { ko: '이야기를 바꾸면 감정이 바뀐다', en: 'Change the story, change the feeling', ja: '物語を変えれば感情が変わる' },
+        key: { ko: '재해석(reappraisal) — 가장 검증된 감정 조절 전략', en: 'Reappraisal — the best-validated strategy', ja: '再解釈 — 最も検証された戦略' },
+        p: { ko: '같은 사건도 어떤 이야기로 읽느냐에 따라 감정 반응 자체가 달라집니다. 심장이 뛰는 발표 전 상태를 "망할 징조"로 읽으면 불안이지만 "몸이 에너지를 올려주는 중"으로 읽으면 설렘에 가까워져요 — 실제로 "긴장돼"를 "신난다"로 바꿔 말한 그룹이 수행까지 좋아졌다는 실험이 있습니다. 이것이 재해석(인지 재평가)이고, 수백 편의 연구에서 억제보다 일관되게 우수했습니다. 거짓 긍정이 아니라, 사실에 맞는 다른 해석을 고르는 연습이에요.', en: 'The same event lands differently depending on the story you read it through. A pounding heart before a talk read as "doom" is anxiety; read as "my body ramping up energy" it edges toward excitement — in one experiment, people who said "I\'m excited" instead of "I\'m nervous" actually performed better. This is reappraisal, consistently superior to suppression across hundreds of studies. It isn\'t fake positivity — it\'s choosing another interpretation that also fits the facts.', ja: '同じ出来事も、どんな物語で読むかで感情反応自体が変わります。発表前の動悸を「失敗の前兆」と読めば不安、「体がエネルギーを上げている」と読めばワクワクに近づく — 実際「緊張する」を「ワクワクする」と言い換えた群は成績まで向上した実験があります。これが再解釈(認知的再評価)で、数百の研究で抑制より一貫して優れていました。偽りの前向きでなく、事実に合う別の解釈を選ぶ練習です。' },
+        tip: { ko: '긴장되는 순간, 소리 내어 바꿔 말해보세요: "떨린다" 대신 "몸이 준비 중이다."', en: 'In a tense moment, say it out loud differently: not "I\'m shaking" but "my body is gearing up."', ja: '緊張の瞬間、声に出して言い換える：「震える」でなく「体が準備中だ」。' },
+      },
+      {
+        h: { ko: '생각이 안 통할 땐 몸부터', en: 'When thinking fails, start with the body', ja: '思考が効かない時は体から' },
+        key: { ko: '강한 감정엔 하향식보다 상향식 — 호흡·온도·움직임', en: 'For intense feelings go bottom-up: breath, cold, movement', ja: '強い感情には身体からのボトムアップ' },
+        p: { ko: '감정이 아주 강할 땐 재해석 같은 "생각 도구"가 잘 안 잡힙니다. 뇌의 이성 회로가 잠시 오프라인이 되기 때문이죠. 이럴 땐 몸에서 시작하세요: 날숨을 길게(4초 들이쉬고 6초 내쉬기), 차가운 물로 세수하거나 손목 식히기, 10분 걷기. 신체 각성이 내려가면 그제야 생각 도구가 다시 손에 잡힙니다. 순서가 핵심이에요 — 몸 먼저, 생각은 그다음. 그리고 기억하세요: 감정 조절은 성격이 아니라 기술이라, 오늘 한 번의 연습이 다음 파도를 더 잘 타게 만듭니다.', en: 'When a feeling is very intense, thinking tools like reappraisal slip out of reach — the brain\'s rational circuits go briefly offline. Start with the body instead: lengthen the exhale (in 4s, out 6s), splash cold water on your face or wrists, walk for ten minutes. Once bodily arousal drops, the thinking tools become usable again. Order matters — body first, mind second. And remember: regulation is a skill, not a personality; today\'s one rep makes the next wave easier to ride.', ja: '感情が非常に強い時、再解釈のような「思考の道具」は掴めません。脳の理性回路が一時オフラインになるから。そんな時は体から：吐く息を長く(4秒吸い6秒吐く)、冷水で顔や手首を冷やす、10分歩く。身体覚醒が下がって初めて思考の道具が再び手に馴染みます。順序が核心 — 体が先、思考は後。そして忘れずに：感情調節は性格でなく技術。今日の一回の練習が次の波を乗りやすくします。' },
+        tip: { ko: '감정이 10점 만점에 7점을 넘으면 생각을 멈추고, 6초 날숨 5회부터 시작하세요.', en: 'If the feeling passes 7/10, stop thinking — start with five 6-second exhales.', ja: '感情が10点中7点を超えたら思考を止め、6秒の呼気5回から。' },
+      },
+    ],
+    takeaways: [
+      { ko: '억누르기는 역효과 — 인정이 조절의 출발점', en: 'Suppression backfires — acknowledgment starts regulation', ja: '抑制は逆効果 — 認める事が出発点' },
+      { ko: '구체적으로 이름 붙이기 + 사실에 맞는 재해석', en: 'Label specifically + reappraise within the facts', ja: '具体的に名付け＋事実に合う再解釈' },
+      { ko: '강한 감정엔 몸 먼저(긴 날숨·차가움·걷기), 생각은 그다음', en: 'Intense feelings: body first (long exhale, cold, walking), mind second', ja: '強い感情は体から、思考は後' },
+    ],
+    close: { ko: '파도는 막을 수 없지만, 파도 타는 법은 배울 수 있습니다.', en: 'You can\'t stop the waves — but you can learn to surf.', ja: '波は止められない。でも波の乗り方は学べます。' },
+  },
 ]
 
 export function articleById(id: string): Article | undefined {

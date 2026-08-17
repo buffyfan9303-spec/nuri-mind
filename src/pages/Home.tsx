@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import type { L } from '../data/types'
 import { useNavigate } from 'react-router-dom'
 import Avatar from '../components/Avatar'
 import Footer from '../components/Footer'
@@ -74,6 +75,21 @@ export default function Home() {
   }
   const premium = isPremium(s.premiumUntil)
   const premiumDaysLeft = premium ? Math.max(0, Math.ceil((s.premiumUntil - Date.now()) / 86400000)) : 0
+
+  // 매거진 최신 글 롤링 — 본문 데이터는 지연 로드(메인 번들에 매거진 전문 미포함)
+  const [magHeads, setMagHeads] = useState<{ id: string; emoji: string; title: L }[]>([])
+  const [magIdx, setMagIdx] = useState(0)
+  useEffect(() => {
+    import('../data/magazine').then((m) =>
+      setMagHeads(m.ARTICLES.slice(-4).reverse().map((a) => ({ id: a.id, emoji: a.emoji, title: a.title }))),
+    )
+  }, [])
+  useEffect(() => {
+    if (magHeads.length < 2) return
+    const iv = setInterval(() => setMagIdx((i) => (i + 1) % magHeads.length), 3600)
+    return () => clearInterval(iv)
+  }, [magHeads.length])
+  const magHead = magHeads[magIdx]
   const trioDone = (['selfesteem', 'perfect', 'efficacy'] as const).every((id) => s.results.some((r) => r.testId === id))
 
   return (
@@ -430,13 +446,31 @@ export default function Home() {
           </button>
         </motion.div>
 
-        {/* 심리 매거진 */}
+        {/* 심리 매거진 — 최신 글 제목 롤링(누르면 해당 글로) */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
-          <Card onClick={() => nav('/magazine')} className="flex items-center gap-3.5 !p-4">
+          <Card onClick={() => nav(magHead ? `/magazine/${magHead.id}` : '/magazine')} className="flex items-center gap-3.5 !p-4">
             <IconBadge emoji="📖" color="#8B95F6" size={46} radius={15} wiggle />
             <div className="min-w-0 flex-1">
               <h3 className="text-[16px] font-extrabold tracking-tight">{t('mag.title')}</h3>
-              <p className="mt-0.5 truncate text-[13px] font-bold text-ink-faint">{t('mag.banner')}</p>
+              {magHead ? (
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.p
+                    key={magHead.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.28 }}
+                    className="mt-0.5 flex items-center gap-1 truncate text-[13px] font-bold text-ink-faint"
+                  >
+                    {magIdx === 0 && (
+                      <span className="shrink-0 rounded-full bg-[#3B9EFF] px-1.5 py-px text-[8.5px] font-extrabold leading-[1.4] tracking-wide text-white">NEW</span>
+                    )}
+                    <span className="truncate">{magHead.emoji} {l(magHead.title)}</span>
+                  </motion.p>
+                </AnimatePresence>
+              ) : (
+                <p className="mt-0.5 truncate text-[13px] font-bold text-ink-faint">{t('mag.banner')}</p>
+              )}
             </div>
             <span className="text-xl text-ink-faint">›</span>
           </Card>
