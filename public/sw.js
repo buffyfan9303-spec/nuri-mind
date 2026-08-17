@@ -32,8 +32,11 @@ self.addEventListener('fetch', (e) => {
       (async () => {
         try {
           const fresh = await fetch(req)
-          const cache = await caches.open(CACHE)
-          cache.put('/', fresh.clone()).catch(() => {})
+          // 5xx/404 HTML이 정상 셸('/')을 덮어쓰지 않게 — 성공 응답만 캐시
+          if (fresh.ok) {
+            const cache = await caches.open(CACHE)
+            cache.put('/', fresh.clone()).catch(() => {})
+          }
           return fresh
         } catch {
           const cache = await caches.open(CACHE)

@@ -4,7 +4,7 @@ import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
-import { authReady, getAuthUser, signInWithKakao } from '../lib/auth'
+import { authReady, getAuthUser, onAuthChange, signInWithKakao } from '../lib/auth'
 import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem } from '../lib/mailbox'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
@@ -43,6 +43,8 @@ export default function Mailbox() {
   }
   useEffect(() => {
     load()
+    // 타 탭 로그인/로그아웃(BroadcastChannel 전파)도 반영 — 세션 상태와 화면 동기화
+    return onAuthChange(() => load())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -68,8 +70,17 @@ export default function Mailbox() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const claimFailMsg = () =>
+    flash(l({ ko: '받기에 실패했어요. 네트워크 확인 후 다시 시도해 주세요.', en: 'Claim failed. Check your connection and retry.', ja: '受取に失敗。接続を確認して再試行してください。' }))
+
   const onClaim = async (it: MailItem) => {
     const got = await claimMail(it.id)
+    // 실패(null)는 수령 처리하지 않음 — 가짜 '수령 완료·환불 불가' 표시 방지
+    if (got === null) {
+      sfx.err()
+      claimFailMsg()
+      return
+    }
     if (got > 0) addDiamonds(got)
     setMail((m) => m.map((x) => (x.id === it.id ? { ...x, claimed: true } : x)))
     burst()
@@ -79,6 +90,11 @@ export default function Mailbox() {
 
   const onClaimAll = async () => {
     const got = await claimAllMail()
+    if (got === null) {
+      sfx.err()
+      claimFailMsg()
+      return
+    }
     if (got > 0) addDiamonds(got)
     setMail((m) => m.map((x) => ({ ...x, claimed: true })))
     if (got > 0) {

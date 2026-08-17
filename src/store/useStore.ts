@@ -81,7 +81,9 @@ export interface TickerMsg {
   at: number
 }
 
-const dayStr = (offset = 0) => new Date(Date.now() - offset * 86400000).toISOString().slice(0, 10)
+// ⚠️ 날짜 키는 로컬 기준 — toISOString()은 UTC라 KST 하루 경계가 오전 9시로 밀림(리셋·과금 버그)
+import { localDay, localDayOf, localMonth } from '../lib/date'
+const dayStr = (offset = 0) => localDay(offset)
 const today = () => dayStr(0)
 const yesterday = () => dayStr(1)
 
@@ -589,7 +591,7 @@ export const useStore = create<State>()(
           const s = get()
           const t = today()
           if (s.questClaimedDate === t) return 0
-          const tested = s.results.some((r) => new Date(r.at).toISOString().slice(0, 10) === t)
+          const tested = s.results.some((r) => localDayOf(r.at) === t)
           if (!(s.lastCheckIn === t && s.lastQuizDate === t && tested)) return 0
           set({ questClaimedDate: t })
           return grantFree(50, '🎯 오늘의 퀘스트 완료 보너스')
@@ -693,7 +695,7 @@ export const useStore = create<State>()(
         viewFortuneFull: () => {
           const s = get()
           if (isPremium(s.premiumUntil)) return 'free' // 프리미엄 = 무제한 무료
-          const m = new Date().toISOString().slice(0, 7)
+          const m = localMonth()
           const used = s.fortuneMonth === m ? s.fortuneFreeUses : 0
           if (used < FORTUNE_FREE_PER_MONTH) {
             set({ fortuneMonth: m, fortuneFreeUses: used + 1 })
@@ -705,7 +707,7 @@ export const useStore = create<State>()(
           }
           return 'need'
         },
-        markFortuneDetail: () => set({ fortuneDetailDate: new Date().toISOString().slice(0, 10) }),
+        markFortuneDetail: () => set({ fortuneDetailDate: today() }),
         setFortuneAi: (date, data) => set({ fortuneAiDate: date, fortuneAiData: data }),
         /** IQ 정밀검사 전체 해제 — 1회 10다이아(영구) */
         unlockIq: () => {

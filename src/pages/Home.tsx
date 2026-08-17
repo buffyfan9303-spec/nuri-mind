@@ -19,7 +19,9 @@ import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { TERMS, TEST_SHORT_KEY } from '../data/terms'
 import { unreadMailCount } from '../lib/mailbox'
 
-const todayStr = () => new Date().toISOString().slice(0, 10)
+import { localDay, localDayOf } from '../lib/date'
+
+const todayStr = () => localDay()
 
 export default function Home() {
   const t = useT()
@@ -62,7 +64,7 @@ export default function Home() {
 
   // 오늘의 퀘스트 (출석 + 데일리퀴즈 + 검사 1개 → +50P)
   const quizDoneToday = s.lastQuizDate === todayStr()
-  const testedToday = s.results.some((r) => new Date(r.at).toISOString().slice(0, 10) === todayStr())
+  const testedToday = s.results.some((r) => localDayOf(r.at) === todayStr())
   const questClaimed = s.questClaimedDate === todayStr()
   const quests = [
     { key: 'checkin', emoji: '📅', label: l({ ko: '출석 체크', en: 'Check in', ja: '出席チェック' }), done: checkedToday, go: onCheckIn },

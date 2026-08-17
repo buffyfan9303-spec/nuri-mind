@@ -26,8 +26,19 @@ export async function signInWithKakao(): Promise<{ ok: boolean; error?: string }
   return error ? { ok: false, error: error.message } : { ok: true }
 }
 
-export async function signOut(): Promise<void> {
-  await supabase?.auth.signOut()
+/** 로그아웃 — 서버 로그아웃 실패(오프라인·5xx) 시에도 로컬 세션은 반드시 제거(공유 기기 보안). */
+export async function signOut(): Promise<{ ok: boolean }> {
+  if (!supabase) return { ok: true }
+  const { error } = await supabase.auth.signOut()
+  if (error) {
+    // 네트워크 실패 등으로 서버 로그아웃이 안 되면 로컬 세션만이라도 제거 → UI와 실제 상태 일치
+    try {
+      await supabase.auth.signOut({ scope: 'local' })
+    } catch {
+      /* ignore */
+    }
+  }
+  return { ok: !error }
 }
 
 export interface AuthUser {

@@ -30,27 +30,27 @@ export async function fetchMail(): Promise<MailItem[]> {
   }
 }
 
-/** 우편 1건 받기 → 첨부 다이아 수. */
-export async function claimMail(id: number): Promise<number> {
-  if (!supabase) return 0
+/** 우편 1건 받기 → 첨부 다이아 수. 실패(RPC 에러·오프라인·세션 만료)는 null — 0다이아 정상 수령과 구분. */
+export async function claimMail(id: number): Promise<number | null> {
+  if (!supabase) return null
   try {
     const { data, error } = await supabase.rpc('claim_mail', { p_id: id })
-    if (error || typeof data !== 'number') return 0
+    if (error || typeof data !== 'number') return null
     return data
   } catch {
-    return 0
+    return null
   }
 }
 
-/** 미수령 일괄 받기 → 받은 다이아 합계. */
-export async function claimAllMail(): Promise<number> {
-  if (!supabase) return 0
+/** 미수령 일괄 받기 → 받은 다이아 합계. 실패는 null. */
+export async function claimAllMail(): Promise<number | null> {
+  if (!supabase) return null
   try {
     const { data, error } = await supabase.rpc('claim_all_mail')
-    if (error || typeof data !== 'number') return 0
+    if (error || typeof data !== 'number') return null
     return data
   } catch {
-    return 0
+    return null
   }
 }
 

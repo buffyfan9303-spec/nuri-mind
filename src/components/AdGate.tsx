@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import Button from './Button'
 import { useT, useL } from '../i18n/useT'
@@ -27,19 +27,26 @@ export default function AdGate({ onDone }: { onDone: () => void }) {
   const l = useL()
   const [left, setLeft] = useState(WAIT_SEC)
   const tip = useMemo(() => TIPS[Math.floor(Math.random() * TIPS.length)], [])
+  const boxRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     showInterstitial()
+    boxRef.current?.focus() // 게이트로 초점 이동 — 키보드로 뒤 화면 조작해 우회하는 것 방지(+스크린리더 인지)
     const iv = setInterval(() => setLeft((v) => Math.max(0, v - 1)), 1000)
     return () => clearInterval(iv)
   }, [])
 
   return (
     <motion.div
+      ref={boxRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('gate.title')}
+      tabIndex={-1}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#1F3F30]/95 px-5 backdrop-blur"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#1F3F30]/95 px-5 outline-none backdrop-blur"
     >
       <div className="w-full max-w-md">
         <div className="mb-5 text-center">

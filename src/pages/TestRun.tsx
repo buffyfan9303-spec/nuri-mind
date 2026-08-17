@@ -195,11 +195,18 @@ export default function TestRun() {
     flash(t('run.timeover'))
     setTimeout(() => advance(map), 350)
   }
+  const idxRef = useRef(idx)
+  idxRef.current = idx
   useEffect(() => {
     if (!isIq) return
     setTimeLeft(iqItems[idx] ? iqTimeFor(iqItems[idx].difficulty) : 45)
+    const myIdx = idx // 이 인터벌이 담당하는 문항 — cleanup 직전 마지막 틱이 다음 문항을 오폭하는 레이스 방지
     const iv = setInterval(() => {
       setTimeLeft((prev) => {
+        if (idxRef.current !== myIdx) {
+          clearInterval(iv)
+          return prev
+        }
         if (prev <= 1) {
           clearInterval(iv)
           timeoutRef.current()

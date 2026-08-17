@@ -22,6 +22,8 @@ export function registerSW(): void {
     let reloaded = false
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (reloaded) return
+      // 검사 진행 중 강제 새로고침 금지 — 응답이 날아가는 최악의 순간. 다음 자연 내비게이션에서 적용됨.
+      if (/\/run$/.test(window.location.pathname)) return
       reloaded = true
       window.location.reload()
     })

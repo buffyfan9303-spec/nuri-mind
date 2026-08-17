@@ -13,6 +13,7 @@ import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { ELEMENT_SVG } from '../lib/characters'
 import { WEEK_LINES } from '../data/fortune'
 import { track } from '../lib/analytics'
+import { localDay } from '../lib/date'
 import { burst } from '../lib/confetti'
 
 export default function Fortune() {
@@ -65,8 +66,9 @@ export default function Fortune() {
 
   // 상세 운세 해제 상태면 AI 개인화본을 하루 1회 생성·캐싱 (미배포/실패 시 결정론 템플릿 폴백)
   useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10)
-    if (!data || fortuneDetailDate !== today) return // 잠금 상태면 호출 안 함(과금 절약)
+    const today = localDay()
+    // 잠금 상태면 호출 안 함(과금 절약). 프리미엄은 날짜 마킹 없이 상시 해제라 별도 허용(#19)
+    if (!data || (fortuneDetailDate !== today && !premium)) return
     if (fortuneAiDate === today && fortuneAiData) return // 오늘 캐시 있음
     if (!FUNCTIONS_URL) return // 엣지 함수 미배포 → 결정론 폴백
     let cancelled = false
@@ -85,7 +87,7 @@ export default function Fortune() {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, fortuneDetailDate, lang])
+  }, [data, fortuneDetailDate, premium, lang])
 
   const shareFortune = async () => {
     if (!data) return
@@ -119,7 +121,7 @@ export default function Fortune() {
   const shareDetail = async () => {
     if (!data) return
     const { saju, fortune, detail } = data
-    const aiT = fortuneAiDate === new Date().toISOString().slice(0, 10) ? fortuneAiData : null
+    const aiT = fortuneAiDate === localDay() ? fortuneAiData : null
     track('share', { channel: 'fortune_detail' })
     try {
       const blob = await makeResultCard({
@@ -198,7 +200,7 @@ export default function Fortune() {
     setUnlocked(true)
     burst()
   }
-  const todayStr = new Date().toISOString().slice(0, 10)
+  const todayStr = localDay()
   const detailUnlocked = fortuneDetailDate === todayStr || premium
   const aiDetail = fortuneAiDate === todayStr ? fortuneAiData : null
   const usingAi = !!aiDetail

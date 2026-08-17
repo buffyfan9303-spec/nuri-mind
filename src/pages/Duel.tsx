@@ -81,6 +81,7 @@ export default function Duel() {
   const fPersona = PERSONAS[friend.a]
   const fTop = topOf(friend.p)
   const tm = testMeta(friend.t as Parameters<typeof testMeta>[0])
+  if (!tm) return invalidView // 유효 페르소나 + 존재하지 않는 testId 조합 방어
   const testName = t(`test.${friend.t}.name`)
   const mine = results.filter((r) => r.testId === friend.t).sort((a, b) => b.at - a.at)[0]
   const myPersona = mine ? PERSONAS[mine.persona] : null
@@ -113,8 +114,10 @@ export default function Duel() {
     </div>
   )
 
-  const iWin = !!mine && HIGHER_BETTER.has(friend.t) && mine.percentile > friend.p
-  const friendWin = !!mine && HIGHER_BETTER.has(friend.t) && friend.p > mine.percentile
+  // 같은 페르소나(쌍둥이 판정)면 승리 링 미표시 — "쌍둥이"와 "승패"가 동시에 뜨는 모순 방지
+  const twins = !!mine && mine.persona === friend.a
+  const iWin = !!mine && !twins && HIGHER_BETTER.has(friend.t) && mine.percentile > friend.p
+  const friendWin = !!mine && !twins && HIGHER_BETTER.has(friend.t) && friend.p > mine.percentile
 
   return (
     <div className="min-h-dvh pb-24">

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { ADSENSE_CLIENT, ADSENSE_SLOT_BANNER, ADSENSE_SLOT_RECT, adsEnabled, pushAd } from '../lib/ads'
 import { useStore, isPremium } from '../store/useStore'
 import { useNavigate } from 'react-router-dom'
@@ -19,9 +19,15 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
   const nav = useNavigate()
   const premiumUntil = useStore((s) => s.premiumUntil)
   const isRect = variant === 'rect'
+  const insRef = useRef<HTMLModElement>(null)
 
   useEffect(() => {
-    if (!isPremium(premiumUntil)) pushAd()
+    if (isPremium(premiumUntil)) return
+    // 같은 <ins>에 중복 push 방지 — AdSense가 채운 요소엔 data-adsbygoogle-status가 붙는다.
+    // (StrictMode 이중 실행·리렌더 시 "already have ads in them" TagError 발생 원인)
+    const el = insRef.current
+    if (el && el.getAttribute('data-adsbygoogle-status')) return
+    pushAd()
   }, [premiumUntil])
 
   if (isPremium(premiumUntil)) return null // 프리미엄 = 광고 제거
@@ -29,6 +35,7 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
   const adEl = adsEnabled() ? (
     <ins
       key={variant}
+      ref={insRef}
       className="adsbygoogle mx-auto block w-full overflow-hidden rounded-2xl"
       style={{ display: 'block', minHeight: isRect ? 250 : 60, maxHeight: isRect ? 280 : 110 }}
       data-ad-client={ADSENSE_CLIENT}

@@ -9,6 +9,7 @@ import { Card, Chip, Modal, Section, TopBar } from '../components/ui'
 import { OFFERS } from '../data/seed'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
+import { localDay } from '../lib/date'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
@@ -38,7 +39,7 @@ export default function Rewards() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const checkedToday = lastCheckIn === new Date().toISOString().slice(0, 10)
+  const checkedToday = lastCheckIn === localDay()
   const open = surveys.filter((s) => s.status === 'approved' && !s.mine)
   const mine = surveys.filter((s) => s.mine)
   const lifetime = lifetimeOf(ledger)

@@ -19,8 +19,6 @@ export default function InstallPrompt() {
 
   useEffect(() => onInstallable(setInstallable), [])
 
-  if (!installable || dismissed) return null
-
   const close = () => {
     setDismissed(true)
     try {
@@ -35,8 +33,10 @@ export default function InstallPrompt() {
     else setDismissed(true)
   }
 
+  // 조기 return 대신 AnimatePresence 내부 조건부 — exit(슬라이드아웃) 애니메이션이 실제로 재생되도록
   return (
     <AnimatePresence>
+      {installable && !dismissed && (
       <motion.div
         initial={{ y: 90, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -56,6 +56,7 @@ export default function InstallPrompt() {
           ✕
         </button>
       </motion.div>
+      )}
     </AnimatePresence>
   )
 }

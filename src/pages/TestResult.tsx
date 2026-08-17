@@ -818,7 +818,16 @@ export default function TestResult() {
         </div>
 
         <div className="mt-3 space-y-2.5">
-          <Button color={tm.btn} onClick={() => nav(`/test/${result.testId}/run`, { replace: true })}>
+          <Button
+            color={tm.btn}
+            onClick={() =>
+              nav(
+                // IQ 정밀(pro) 결과의 재검사는 같은 모드로 — mode 누락 시 빠른(fast) 10문항으로 떨어지는 버그 방지
+                `/test/${result.testId}/run${result.testId === 'iq' && result.iqMode === 'pro' ? '?mode=pro' : ''}`,
+                { replace: true },
+              )
+            }
+          >
             🔄 {t('result.retake')}
           </Button>
           <Button color="mind" onClick={() => nav('/')}>

@@ -38,6 +38,20 @@ export default function Onboarding() {
     return onAuthChange(apply)
   }, [])
 
+  const [oauthErr, setOauthErr] = useState('')
+
+  // OAuth 콜백 에러(동의 취소·프로바이더 설정 오류) 표시 — 무음 복귀 방지 + URL 잔존 파라미터 정리
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search.slice(1))
+    const h = new URLSearchParams(window.location.hash.slice(1))
+    const err = q.get('error_description') || h.get('error_description') || q.get('error') || h.get('error')
+    if (err) {
+      setOauthErr(decodeURIComponent(err).slice(0, 90))
+      window.history.replaceState({}, '', window.location.pathname)
+      setTimeout(() => setOauthErr(''), 6000)
+    }
+  }, [])
+
   const doKakao = async () => {
     sfx.tap()
     const r = await signInWithKakao()
@@ -61,6 +75,12 @@ export default function Onboarding() {
           <h1 className="mt-5 break-keep text-[24px] font-extrabold leading-tight tracking-tight">{t('onboard.welcome')}</h1>
           <p className="mt-2.5 break-keep text-[14.5px] font-medium leading-relaxed text-ink-sub">{t('onboard.sub')}</p>
         </motion.div>
+
+        {oauthErr && (
+          <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12.5px] font-bold text-red-500">
+            {t('onboard.kakao')} 실패: {oauthErr}
+          </motion.p>
+        )}
 
         {/* 카카오 간편가입 (주 경로) */}
         {authReady() && (

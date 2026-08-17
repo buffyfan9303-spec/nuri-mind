@@ -32,7 +32,15 @@ export default function Profile() {
   const [editing, setEditing] = useState(false)
   const [nick, setNick] = useState(s.nickname)
   const [avatarOpen, setAvatarOpen] = useState(false)
-  const [pushOn, setPushOn] = useState(() => pushPermission() === 'granted')
+  // 푸시 토글 — 권한(granted)만으론 부정확(disablePush는 구독만 해제) → 실제 구독 여부로 판정
+  const [pushOn, setPushOn] = useState(false)
+  useEffect(() => {
+    if (!pushSupported() || !pushConfigured() || pushPermission() !== 'granted') return
+    navigator.serviceWorker.ready
+      .then((r) => r.pushManager.getSubscription())
+      .then((sub) => setPushOn(!!sub))
+      .catch(() => {})
+  }, [])
   const [authUser, setAuthUser] = useState<AuthUser | null>(null)
   useEffect(() => {
     if (!authReady()) return
@@ -42,7 +50,7 @@ export default function Profile() {
   const fileRef = useRef<HTMLInputElement>(null)
 
   // 검사로 얻은 동물(중복 제거) — 아바타 후보
-  const earnedAnimals = Array.from(new Set(s.results.map((r) => r.persona)))
+  const earnedAnimals = Array.from(new Set(s.results.map((r) => r.persona))).filter((k) => PERSONAS[k])
 
   const onPickPhoto = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -179,6 +187,7 @@ export default function Profile() {
             <div className="space-y-2.5">
               {s.results.slice(0, 15).map((r) => {
                 const p = PERSONAS[r.persona]
+                if (!p) return null // 알 수 없는 페르소나(데이터 이월 등) — 크래시 대신 행 스킵
                 return (
                   <Card key={r.id} onClick={() => nav(`/result/${r.id}`)} className="flex items-center gap-3 !p-3.5">
                     <div

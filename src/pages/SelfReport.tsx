@@ -113,7 +113,7 @@ export default function SelfReport() {
                 <button
                   key={id}
                   onClick={() => !done && nav(`/test/${id}`)}
-                  className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3.5 ${done ? 'border-mind-200 bg-mind-50' : 'border-line bg-surface'}`}
+                  className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3.5 ${done ? 'border-mind-200 bg-mind-50 dark:border-mind-600/50 dark:bg-mind-500/10' : 'border-line bg-surface'}`}
                 >
                   <span className="text-[20px]">{done ? '✅' : '⬜'}</span>
                   <span className="flex-1 break-keep text-[14px] font-extrabold">{t(`test.${id}.name`)}</span>
