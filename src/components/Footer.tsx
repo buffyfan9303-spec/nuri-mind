@@ -27,6 +27,8 @@ export default function Footer() {
       <p className="mt-4 px-4 text-[11px] font-medium leading-relaxed text-ink-faint">
         엔에이치홀딩스 · 대표 김윤혜 · 사업자등록번호 525-20-02937
         <br />
+        경기도 남양주시 진건읍 사릉로372번길 25, 201동 1403호
+        <br />
         문의 buffyfan9303@gmail.com · © {new Date().getFullYear()} NURI MIND
       </p>
     </footer>

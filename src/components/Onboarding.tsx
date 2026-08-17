@@ -165,6 +165,17 @@ export default function Onboarding() {
           <p className="mt-2.5 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
             {t('onboard.effective', { date: LEGAL_EFFECTIVE })} · {t('onboard.note')}
           </p>
+
+          {/* 사업자 정보 — 가입 전 첫 화면에서 확인 가능해야 함(카카오 비즈 심사·전자상거래 표시 의무) */}
+          <div className="mt-5 border-t border-line pt-4 text-center">
+            <p className="text-[10.5px] font-medium leading-relaxed text-ink-faint">
+              엔에이치홀딩스 · 대표 김윤혜 · 사업자등록번호 525-20-02937
+              <br />
+              경기도 남양주시 진건읍 사릉로372번길 25, 201동 1403호
+              <br />
+              문의 buffyfan9303@gmail.com · © {new Date().getFullYear()} NURI MIND
+            </p>
+          </div>
         </div>
       </main>
 
