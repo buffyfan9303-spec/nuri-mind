@@ -13,7 +13,7 @@ import { fileToAvatarDataUrl } from '../lib/image'
 import { scheduleStreakReminder } from '../lib/notify'
 import { enablePush, disablePush, pushSupported, pushConfigured, pushPermission } from '../lib/push'
 import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
-import { useStore, OPERATOR_NICKS, isPremium } from '../store/useStore'
+import { useStore, OPERATOR_NICKS, isPremium, PREMIUM_KRW } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 
 const LANGS: { key: Lang; label: string }[] = [
@@ -171,7 +171,11 @@ export default function Profile() {
             <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">
               {isPremium(s.premiumUntil)
                 ? l({ ko: '눌러서 구독 관리', en: 'Manage subscription', ja: '購読を管理' })
-                : l({ ko: '운세·정밀검사 무제한 · 월 ₩9,900', en: 'Unlimited · ₩9,900/mo', ja: '無制限・月₩9,900' })}
+                : l({
+                    ko: `운세·정밀검사 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
+                    en: `Unlimited · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
+                    ja: `無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
+                  })}
             </p>
           </div>
           <span className="text-lg text-white/80">›</span>

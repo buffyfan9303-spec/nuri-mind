@@ -6,7 +6,7 @@ import IconBadge from '../components/IconBadge'
 import { Card, Chip, Modal, Section, TopBar } from '../components/ui'
 import { SHOP_ITEMS } from '../data/seed'
 import type { ShopItem } from '../data/types'
-import { FREEZE_MAX, isPremium, useStore } from '../store/useStore'
+import { FREEZE_MAX, isPremium, PREMIUM_KRW, useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { sfx } from '../lib/sound'
@@ -62,7 +62,11 @@ export default function Shop() {
             <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
               {premium
                 ? l({ ko: '혜택 이용 중 · 눌러서 관리', en: 'Active · tap to manage', ja: '利用中・管理する' })
-                : l({ ko: '운세·검사 무제한 · 월 ₩9,900', en: 'Unlimited · ₩9,900/mo', ja: '無制限・月₩9,900' })}
+                : l({
+                    ko: `운세·검사 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
+                    en: `Unlimited · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
+                    ja: `無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
+                  })}
             </p>
           </div>
           <span className="text-xl text-white/80">›</span>

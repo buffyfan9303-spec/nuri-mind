@@ -53,8 +53,8 @@ export const IQ_DIA_COST = 10
 export const OPERATOR_NICKS = ['누리', 'WTA']
 /** 정밀검사(기억/집중/처리속도/공간) 상세분석 전체 해제 비용 */
 export const PRECISION_DIA_COST = 10
-/** 프리미엄 구독 — 월 9,900원(광고 제거·상세운세 무제한·전 정밀검사 해제) */
-export const PREMIUM_KRW = 9900
+/** 프리미엄 구독 — 월 5,900원(광고 제거·상세운세 무제한·전 정밀검사 해제) */
+export const PREMIUM_KRW = 5900
 export const PREMIUM_DAYS = 30
 /** 프리미엄 활성 여부 — premiumUntil(만료 ms 타임스탬프)이 현재보다 미래면 true */
 export const isPremium = (premiumUntil: number): boolean => premiumUntil > Date.now()

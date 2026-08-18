@@ -12,7 +12,7 @@ import { TESTS } from '../data/tests'
 import { SHOP_ITEMS } from '../data/seed'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
-import { useStore, isPremium } from '../store/useStore'
+import { useStore, isPremium, PREMIUM_KRW } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
@@ -426,7 +426,11 @@ export default function Home() {
               <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
                 {premium
                   ? l({ ko: `남은 기간 D-${premiumDaysLeft}`, en: `D-${premiumDaysLeft} left`, ja: `残りD-${premiumDaysLeft}` })
-                  : l({ ko: '운세·정밀검사 무제한 · 월 ₩9,900', en: 'Unlimited fortune & tests · ₩9,900/mo', ja: '運勢・検査無制限・月₩9,900' })}
+                  : l({
+                      ko: `운세·정밀검사 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
+                      en: `Unlimited fortune & tests · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
+                      ja: `運勢・検査無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
+                    })}
               </p>
             </div>
             <span className="text-xl text-white/80">›</span>
