@@ -58,8 +58,15 @@ export default function App() {
   }, [fontScale])
 
   // 다크모드: 루트에 .dark 클래스 토글 (CSS 변수로 전체 색 전환)
+  // View Transitions API 지원 시 전체 화면이 부드럽게 크로스페이드 (미지원 시 즉시 전환)
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    const apply = () => document.documentElement.classList.toggle('dark', theme === 'dark')
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => void }
+    if (doc.startViewTransition && document.documentElement.classList.contains('dark') !== (theme === 'dark')) {
+      doc.startViewTransition(apply)
+    } else {
+      apply()
+    }
   }, [theme])
 
   const hideNav =
