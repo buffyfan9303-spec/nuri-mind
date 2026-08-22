@@ -1,7 +1,7 @@
 import { localDay } from './date'
 
 /**
- * 운세 관련 경량 로컬 상태 — 퀘스트 판정·홈 띄 맛보기 기억용.
+ * 운세 관련 경량 로컬 상태 — 퀘스트 판정·홈 띠 맛보기 기억용.
  * 포인트 경제와 무관한 UI 편의 값이라 zustand persist 대신 localStorage 직접 사용
  * (스토어 스키마·서버 경제 미러에 영향 없음).
  */
@@ -26,7 +26,7 @@ export function fortuneSeenToday(): boolean {
   }
 }
 
-/** 홈 띄 맛보기에서 고른 띄(쥐·소·… 한글). 미선택 시 '' */
+/** 홈 띠 맛보기에서 고른 띠(쥐·소·… 한글). 미선택 시 '' */
 export function getZodiacPick(): string {
   try {
     return localStorage.getItem(ZODIAC_KEY) || ''

@@ -18,7 +18,7 @@ export default function handler(req: Request) {
   const { searchParams } = new URL(req.url)
   const tid = searchParams.get('t') || ''
   const eParam = searchParams.get('e') // 퀵 대결: 이모지 직접 전달(한글 결과명은 메타에만)
-  const unse = searchParams.get('k') === 'unse' // 띄별 오늘의 운세 랜딩용
+  const unse = searchParams.get('k') === 'unse' // 띠별 오늘의 운세 랜딩용
   const name = eParam ? 'QUIZ' : NAME[tid] || 'Psych'
   const emoji = eParam || EMOJI[tid] || '🧠'
   const title = unse ? "TODAY'S FORTUNE 🔮" : `${name} DUEL 🆚`
