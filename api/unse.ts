@@ -1,8 +1,8 @@
 export const config = { runtime: 'edge' }
 
 /**
- * 띄별 '오늘의 운세' SEO 랜딩 — 엣지에서 완전한 HTML을 서빙(크롤러·사람 동일).
- * "오늘의 운세", "씌띄 운세" 등 검색 유입용. 리다이렉트가 아닌 실콘텐츠라 색인 대상.
+ * 띠별 '오늘의 운세' SEO 랜딩 — 엣지에서 완전한 HTML을 서빙(크롤러·사람 동일).
+ * "오늘의 운세", "쥐띠 운세" 등 검색 유입용. 리다이렉트가 아닌 실콘텐츠라 색인 대상.
  * saju.ts와 동일한 60갑자 일주 공식(자체 포함 — 엣지 번들에 앱 데이터 미포함).
  * 라우팅: vercel.json rewrite  /unse → /api/unse,  /unse/:zodiac → /api/unse?z=:zodiac
  */
@@ -33,7 +33,7 @@ const BASE: Record<string, number> = { 생받음: 85, 극해줌: 78, 비화: 70,
 const LINES: Record<string, { head: string; body: string; tip: string }> = {
   생받음: {
     head: '기운이 나를 밀어주는 날',
-    body: '오늘의 기운이 든든한 후원자처럼 등을 받쳌줍니다. 미뤄둔 부탁이나 제안을 꺼내기 좋고, 우연한 도움이 들어오기 쉬운 흐름이에요.',
+    body: '오늘의 기운이 든든한 후원자처럼 등을 받쳐줍니다. 미뤄둔 부탁이나 제안을 꺼내기 좋고, 우연한 도움이 들어오기 쉬운 흐름이에요.',
     tip: '받은 호의는 가볍게라도 바로 갚아두면 흐름이 두 배로 오래갑니다.',
   },
   극해줌: {
@@ -89,7 +89,7 @@ const WD = ['일', '월', '화', '수', '목', '금', '토']
 export default function handler(req: Request) {
   const url = new URL(req.url)
   const origin = url.origin
-  const zParam = decodeURIComponent(url.searchParams.get('z') || '').replace(/띄$/, '')
+  const zParam = decodeURIComponent(url.searchParams.get('z') || '').replace(/띠$/, '')
   const zi = BRANCHES.findIndex((b) => b.zo === zParam)
   const now = kstToday()
   const dateKo = `${now.y}년 ${now.m}월 ${now.d}일 (${WD[now.wd]})`
@@ -106,11 +106,11 @@ export default function handler(req: Request) {
     const love = clamp(BASE[rel] + ((((todayIdx * 3 + i * 2) % 15) + 15) % 15 - 7), 1, 99)
     const money = clamp(BASE[rel] + ((((todayIdx * 5 + i * 4) % 15) + 15) % 15 - 7), 1, 99)
     if (!full)
-      return `<li><a href="/unse/${encodeURIComponent(b.zo + '띄')}"><span class="e">${b.emoji}</span> <b>${b.zo}띄</b> <span class="s">${overall}점 · ${esc(line.head)}</span></a></li>`
+      return `<li><a href="/unse/${encodeURIComponent(b.zo + '띠')}"><span class="e">${b.emoji}</span> <b>${b.zo}띠</b> <span class="s">${overall}점 · ${esc(line.head)}</span></a></li>`
     return `
     <section class="hero">
       <p class="date">${esc(dateKo)} · 오늘의 일진 <b>${esc(todayIlju)}일</b></p>
-      <h1>${b.emoji} ${b.zo}띄 오늘의 운세</h1>
+      <h1>${b.emoji} ${b.zo}띠 오늘의 운세</h1>
       <p class="score"><b>${overall}</b><span>점</span></p>
       <p class="head">“${esc(line.head)}”</p>
     </section>
@@ -128,21 +128,21 @@ export default function handler(req: Request) {
 
   const isOne = zi >= 0
   const title = isOne
-    ? `${BRANCHES[zi].zo}띄 오늘의 운세 (${now.m}월 ${now.d}일) | 누리 마인드`
-    : `오늘의 운세 — 띄별 무료 운세 (${now.m}월 ${now.d}일) | 누리 마인드`
+    ? `${BRANCHES[zi].zo}띠 오늘의 운세 (${now.m}월 ${now.d}일) | 누리 마인드`
+    : `오늘의 운세 — 띠별 무료 운세 (${now.m}월 ${now.d}일) | 누리 마인드`
   const desc = isOne
-    ? `${dateKo} ${BRANCHES[zi].zo}띄 오늘의 운세. 총운·애정운·금전운과 행운의 색까지 — 매일 아침 무료로 확인하세요.`
-    : `${dateKo} 12띄 오늘의 운세 무료 보기. 쥐띄부터 돼지띄까지 총운 점수와 행운의 색을 한눈에.`
-  const canonical = isOne ? `${origin}/unse/${encodeURIComponent(BRANCHES[zi].zo + '띄')}` : `${origin}/unse`
+    ? `${dateKo} ${BRANCHES[zi].zo}띠 오늘의 운세. 총운·애정운·금전운과 행운의 색까지 — 매일 아침 무료로 확인하세요.`
+    : `${dateKo} 12띠 오늘의 운세 무료 보기. 쥐띠부터 돼지띠까지 총운 점수와 행운의 색을 한눈에.`
+  const canonical = isOne ? `${origin}/unse/${encodeURIComponent(BRANCHES[zi].zo + '띠')}` : `${origin}/unse`
   const ogImg = `${origin}/api/og?k=unse&e=${encodeURIComponent(isOne ? BRANCHES[zi].emoji : '🔮')}`
 
   const main = isOne
     ? zodiacBlock(zi, true) +
-      `<section class="card"><h2>다른 띄 운세</h2><ul class="list">${BRANCHES.map((_, i) => i)
+      `<section class="card"><h2>다른 띠 운세</h2><ul class="list">${BRANCHES.map((_, i) => i)
         .filter((i) => i !== zi)
         .map((i) => zodiacBlock(i, false))
         .join('')}</ul></section>`
-    : `<section class="hero"><p class="date">${esc(dateKo)} · 오늘의 일진 <b>${esc(todayIlju)}일</b></p><h1>🔮 오늘의 운세 — 띄별 보기</h1><p class="head">내 띄를 골라 오늘의 총운을 확인하세요</p></section>
+    : `<section class="hero"><p class="date">${esc(dateKo)} · 오늘의 일진 <b>${esc(todayIlju)}일</b></p><h1>🔮 오늘의 운세 — 띠별 보기</h1><p class="head">내 띠를 골라 오늘의 총운을 확인하세요</p></section>
        <section class="card"><ul class="list">${BRANCHES.map((_, i) => zodiacBlock(i, false)).join('')}</ul></section>`
 
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
