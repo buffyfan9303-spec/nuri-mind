@@ -27,8 +27,8 @@ export default function Premium() {
     : ''
 
   const BENEFITS = [
-    { e: '🚫', t: l({ ko: '광고 완전 제거', en: 'No ads', ja: '広告完全除去' }), d: l({ ko: '앱 전체 배너·하단 광고 제거', en: 'Removes all banners', ja: '全広告を除去' }) },
     { e: '🔮', t: l({ ko: '운세 무제한', en: 'Unlimited fortune', ja: '運勢無制限' }), d: l({ ko: '종합·상세 운세 매일 무제한 열람', en: 'Full & detail fortune daily', ja: '総合・詳細運勢を無制限' }) },
+    { e: '🚫', t: l({ ko: '광고 완전 제거', en: 'No ads', ja: '広告完全除去' }), d: l({ ko: '앱 전체 배너·하단 광고 제거', en: 'Removes all banners', ja: '全広告を除去' }) },
     { e: '🧠', t: l({ ko: '전 정밀검사 해제', en: 'All precision tests', ja: '全精密検査解除' }), d: l({ ko: 'IQ·기억·집중·처리속도·공간 상세 전부', en: 'IQ·memory·focus·speed·spatial', ja: 'IQ・記憶・集中・速度・空間' }) },
     { e: '💎', t: l({ ko: '다이아 절약', en: 'Save diamonds', ja: 'ダイヤ節約' }), d: l({ ko: '다이아 없이도 프리미엄 기능 이용', en: 'No diamonds needed', ja: 'ダイヤ不要' }) },
   ]
@@ -63,7 +63,7 @@ export default function Premium() {
             </>
           ) : (
             <>
-              <h2 className="mt-2 text-[21px] font-extrabold">{l({ ko: '누리 마인드 프리미엄', en: 'NURI MIND Premium', ja: 'ヌリマインド プレミアム' })}</h2>
+              <h2 className="mt-2 text-[21px] font-extrabold">{l({ ko: '🔮 운세 무제한 프리미엄', en: '🔮 Unlimited Fortune Premium', ja: '🔮 運勢無制限プレミアム' })}</h2>
               <p className="mt-2 text-[34px] font-extrabold leading-none">
                 ₩{PREMIUM_KRW.toLocaleString()}
                 <span className="text-[14px] font-bold text-white/80"> / {l({ ko: '월', en: 'mo', ja: '月' })}</span>

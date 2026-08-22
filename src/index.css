@@ -40,6 +40,10 @@
 .dark .text-reso-deep { color: #34D399; }
 .dark .text-dk-deep { color: #D98AAA; }
 .dark .text-dopa-deep { color: #5BC8DC; }
+/* 밝은 텍스트 보정과 짝 — 라이트 틴트 배경(bg-mind-100 #E4F1EA)이 다크에서 그대로면
+   #79C2A0 글자와 대비 1.8:1로 판독 불가 → 어두운 반투명 민트로 교체(대비 4.5:1+ 확보) */
+.dark .bg-mind-100 { background-color: rgb(79 168 130 / 0.16); }
+.dark .bg-mind-50 { background-color: rgb(79 168 130 / 0.1); }
 
 html {
   -webkit-tap-highlight-color: transparent;
@@ -173,6 +177,44 @@ h1, h2, h3, h4 {
 /* 광고가 안 채워지면(unfilled) 빈 박스(흰 공란)로 남지 않게 접어버림 — 스크롤 시 깨진 공란 방지 */
 ins.adsbygoogle[data-ad-status='unfilled'] {
   display: none !important;
+}
+
+/* ── View Transitions API — 다크모드 전환을 iOS식 부드러운 크로스페이드로 ──
+   document.startViewTransition() 지원 브라우저(Chrome 111+/Safari 18+)에서만 발동.
+   미지원 브라우저는 기존 즉시 전환(변화 없음). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── 스크롤 연동 등장(CSS Scroll-driven Animations, Chrome 115+/Safari 26+) ──
+   뷰포트에 들어오며 떠오르는 애플 웹사이트식 리빌. 미지원 브라우저·동작줄이기에선
+   그냥 보임(퇴화 안전). JS 옵저버 없이 컴포지터에서 돌아 60fps 보장. */
+@supports (animation-timeline: view()) {
+  @media not (prefers-reduced-motion: reduce) {
+    .scroll-reveal {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 72%;
+    }
+    @keyframes reveal-rise {
+      from {
+        opacity: 0;
+        transform: translateY(22px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+}
+
+/* ── iOS 글래스(반투명+채도 부스트) — 하단 내비·스티키 헤더용 ── */
+.glass {
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  backdrop-filter: blur(16px) saturate(1.6);
 }
 
 /* 접근성·절제 — OS '동작 줄이기' 시 멀미 유발 큰 모션·무한 루프만 비활성.

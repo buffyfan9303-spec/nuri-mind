@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import './index.css'
+import './i18n/mbtiDict' // 성향 나침반(MBTI) UI 키 증강 — translations.ts 무수정 등록
 import { loadAdSenseScript } from './lib/ads'
 import { loadAnalytics } from './lib/analytics'
 import { loadKakao } from './lib/kakao'

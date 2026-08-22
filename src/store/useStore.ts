@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import { LEGAL_VERSION } from '../data/legal'
 import type { FortuneDetailText } from '../lib/fortuneAi'
 import type {
@@ -90,6 +90,42 @@ const yesterday = () => dayStr(1)
 
 const genCode = () => 'NURI-' + Math.random().toString(36).slice(2, 6).toUpperCase()
 
+/** 원장 보관 상한 — 초과분 적립은 꼬리 합계 엔트리로 이월(누적 적립·등급 계산 보존, localStorage 무한 증식 방지) */
+const LEDGER_CAP = 500
+const withLedger = (ledger: LedgerEntry[], entry: LedgerEntry): LedgerEntry[] => {
+  const list = [entry, ...ledger]
+  if (list.length <= LEDGER_CAP) return list
+  const cut = list.slice(LEDGER_CAP - 1)
+  const earn = cut.reduce((a, e) => a + Math.max(0, e.amount), 0)
+  const oldest = cut.reduce((a, e) => Math.min(a, e.at), Date.now())
+  return [...list.slice(0, LEDGER_CAP - 1), { id: 'lg_carry', amount: earn, memo: '📦 이전 적립 합계(원장 자동 정리)', at: oldest }]
+}
+
+/** localStorage 예외(용량 초과·프라이빗 모드) 시 상태 변경 액션까지 죽지 않게 감싼 저장소 */
+const safeLocal = {
+  getItem: (k: string) => {
+    try {
+      return localStorage.getItem(k)
+    } catch {
+      return null
+    }
+  },
+  setItem: (k: string, v: string) => {
+    try {
+      localStorage.setItem(k, v)
+    } catch {
+      /* QuotaExceeded 등 — 메모리 상태는 유지 */
+    }
+  },
+  removeItem: (k: string) => {
+    try {
+      localStorage.removeItem(k)
+    } catch {
+      /* ignore */
+    }
+  },
+}
+
 interface State {
   lang: Lang
   sound: boolean
@@ -112,6 +148,8 @@ interface State {
   /** AI 개인화 상세 운세 캐시(해당 날짜 1회 생성) */
   fortuneAiDate: string
   fortuneAiData: FortuneDetailText | null
+  /** AI 상세 운세 캐시의 언어 — 불일치 시 캐시 미스로 간주(언어 전환 고착 방지) */
+  fortuneAiLang: string
   /** IQ 정밀검사 전체 해제 여부(영구) */
   iqUnlocked: boolean
   /** 정밀검사 상세분석 💎 게이팅 on/off (운영자 토글) */
@@ -233,8 +271,8 @@ interface State {
   viewFortuneFull: () => 'free' | 'dia' | 'need'
   /** 오늘의 상세 운세 해제 표시(오늘 날짜로) — 광고 시청 또는 다이아 차감 후 호출 */
   markFortuneDetail: () => void
-  /** AI 개인화 상세 운세 캐시 저장(날짜+데이터) */
-  setFortuneAi: (date: string, data: FortuneDetailText) => void
+  /** AI 개인화 상세 운세 캐시 저장(날짜+데이터+언어) */
+  setFortuneAi: (date: string, data: FortuneDetailText, lang: string) => void
   /** IQ 정밀검사 전체 해제(10다이아) — 부족 시 false */
   unlockIq: () => boolean
   /** 정밀검사 상세 게이팅 on/off (운영자) */
@@ -271,6 +309,7 @@ const initial = () => ({
   fortuneDetailDate: '',
   fortuneAiDate: '',
   fortuneAiData: null,
+  fortuneAiLang: '',
   iqUnlocked: false,
   precisionGate: false,
   precisionUnlocked: false,
@@ -342,7 +381,7 @@ export const useStore = create<State>()(
           points: s.points + granted,
           freeDate: t,
           freeAmount: (s.freeDate === t ? s.freeAmount : 0) + granted,
-          ledger: [{ id: uid('lg_'), amount: granted, memo, at: Date.now() }, ...s.ledger],
+          ledger: withLedger(s.ledger, { id: uid('lg_'), amount: granted, memo, at: Date.now() }),
         })
         mirrorEarn(granted, memo, reasonKey)
         return granted
@@ -425,7 +464,7 @@ export const useStore = create<State>()(
           set({
             firstPostDone: true,
             points: s.points + 20,
-            ledger: [{ id: uid('lg_'), amount: 20, memo: '✍️ 커뮤니티 첫 글 보상', at: Date.now() }, ...s.ledger],
+            ledger: withLedger(s.ledger, { id: uid('lg_'), amount: 20, memo: '✍️ 커뮤니티 첫 글 보상', at: Date.now() }),
           })
           mirrorEarn(20, '✍️ 커뮤니티 첫 글 보상', 'first_post')
           return 20
@@ -437,7 +476,7 @@ export const useStore = create<State>()(
           set({
             firstCommentDone: true,
             points: s.points + 10,
-            ledger: [{ id: uid('lg_'), amount: 10, memo: '💬 커뮤니티 첫 댓글 보상', at: Date.now() }, ...s.ledger],
+            ledger: withLedger(s.ledger, { id: uid('lg_'), amount: 10, memo: '💬 커뮤니티 첫 댓글 보상', at: Date.now() }),
           })
           mirrorEarn(10, '💬 커뮤니티 첫 댓글 보상', 'first_comment')
           return 10
@@ -477,7 +516,7 @@ export const useStore = create<State>()(
             rewardedTests: first ? [...s.rewardedTests, r.testId] : s.rewardedTests,
             points: s.points + reward,
             ledger: first
-              ? [{ id: uid('lg_'), amount: reward, memo: '🧠 검사 완료 보상', at: Date.now() }, ...s.ledger]
+              ? withLedger(s.ledger, { id: uid('lg_'), amount: reward, memo: '🧠 검사 완료 보상', at: Date.now() })
               : s.ledger,
           })
           if (first) mirrorEarn(reward, '🧠 검사 완료 보상', `test_complete:${r.testId}`)
@@ -507,7 +546,7 @@ export const useStore = create<State>()(
             takenSurveys: [...s.takenSurveys, id],
             surveys: s.surveys.map((x) => (x.id === id ? { ...x, responses: x.responses + 1 } : x)),
             points: s.points + sv.reward,
-            ledger: [{ id: uid('lg_'), amount: sv.reward, memo: `${sv.emoji} 설문 참여: ${sv.title}`, at: Date.now() }, ...s.ledger],
+            ledger: withLedger(s.ledger, { id: uid('lg_'), amount: sv.reward, memo: `${sv.emoji} 설문 참여: ${sv.title}`, at: Date.now() }),
           })
           mirrorEarn(sv.reward, `${sv.emoji} 설문 참여: ${sv.title}`, `survey:${id}`)
           track('survey_complete', { reward: sv.reward })
@@ -535,7 +574,7 @@ export const useStore = create<State>()(
               { id: uid('rd_'), itemName: name, emoji: item.emoji, cost: item.cost, status: 'pending', at: Date.now() },
               ...s.redemptions,
             ],
-            ledger: [{ id: uid('lg_'), amount: -item.cost, memo: `${item.emoji} 교환 신청: ${name}`, at: Date.now() }, ...s.ledger],
+            ledger: withLedger(s.ledger, { id: uid('lg_'), amount: -item.cost, memo: `${item.emoji} 교환 신청: ${name}`, at: Date.now() }),
           })
           mirrorSpend(item.cost, `${item.emoji} 교환 신청: ${name}`)
           return true
@@ -552,7 +591,7 @@ export const useStore = create<State>()(
             points: approve ? s.points : s.points + rd.cost,
             ledger: approve
               ? s.ledger
-              : [{ id: uid('lg_'), amount: rd.cost, memo: `↩️ 교환 반려 환불: ${rd.itemName}`, at: Date.now() }, ...s.ledger],
+              : withLedger(s.ledger, { id: uid('lg_'), amount: rd.cost, memo: `↩️ 교환 반려 환불: ${rd.itemName}`, at: Date.now() }),
           })
           if (!approve) mirrorEarn(rd.cost, `↩️ 교환 반려 환불: ${rd.itemName}`, `refund:${id}`)
         },
@@ -636,7 +675,7 @@ export const useStore = create<State>()(
           set({
             points: s.points - FREEZE_COST,
             streakFreezes: s.streakFreezes + 1,
-            ledger: [{ id: uid('lg_'), amount: -FREEZE_COST, memo: '❄️ 연속출석 복구권 구매', at: Date.now() }, ...s.ledger],
+            ledger: withLedger(s.ledger, { id: uid('lg_'), amount: -FREEZE_COST, memo: '❄️ 연속출석 복구권 구매', at: Date.now() }),
           })
           mirrorSpend(FREEZE_COST, '❄️ 연속출석 복구권 구매')
           return true
@@ -652,7 +691,7 @@ export const useStore = create<State>()(
           set({
             referredBy: up,
             points: s.points + 100,
-            ledger: [{ id: uid('lg_'), amount: 100, memo: '🤝 친구 초대 코드 입력 보상', at: Date.now() }, ...s.ledger],
+            ledger: withLedger(s.ledger, { id: uid('lg_'), amount: 100, memo: '🤝 친구 초대 코드 입력 보상', at: Date.now() }),
           })
           // referrals.sql의 redeem_referral과 같은 키 — 어느 경로로든 서버 지급은 1회만
           mirrorEarn(100, '🤝 친구 초대 코드 입력 보상', 'referral_redeem')
@@ -719,7 +758,7 @@ export const useStore = create<State>()(
           return 'need'
         },
         markFortuneDetail: () => set({ fortuneDetailDate: today() }),
-        setFortuneAi: (date, data) => set({ fortuneAiDate: date, fortuneAiData: data }),
+        setFortuneAi: (date, data, lang) => set({ fortuneAiDate: date, fortuneAiData: data, fortuneAiLang: lang }),
         /** IQ 정밀검사 전체 해제 — 1회 10다이아(영구) */
         unlockIq: () => {
           const s = get()
@@ -737,11 +776,15 @@ export const useStore = create<State>()(
           set({ diamonds: s.diamonds - PRECISION_DIA_COST, precisionUnlocked: true })
           return true
         },
-        /** 프리미엄 구독(베타: PG 연동 전 즉시지급) — 30일 연장 + 정밀/IQ 즉시 해제 */
+        /**
+         * 프리미엄 구독(베타: PG 연동 전 즉시지급) — 30일 연장.
+         * ⚠️ iqUnlocked/precisionUnlocked 영구 플래그는 건드리지 않는다 — 구독 유래 해제는
+         * 사용처에서 `|| isPremium(premiumUntil)`로 판정해야 해지/환불/만료 시 자동 회수된다.
+         */
         subscribePremiumBeta: () => {
           const s = get()
           const base = Math.max(Date.now(), s.premiumUntil)
-          set({ premiumUntil: base + PREMIUM_DAYS * 86400000, iqUnlocked: true, precisionUnlocked: true })
+          set({ premiumUntil: base + PREMIUM_DAYS * 86400000 })
         },
         cancelPremium: () => set({ premiumUntil: 0 }),
         /** 전광판 게시 — AI 필터 통과 + 1다이아 차감 후 노출 */
@@ -775,7 +818,7 @@ export const useStore = create<State>()(
             vibePct: pct,
             points: first ? s.points + 10 : s.points,
             ledger: first
-              ? [{ id: uid('lg_'), amount: 10, memo: '🔥 바이브 테스트 첫 완료', at: Date.now() }, ...s.ledger]
+              ? withLedger(s.ledger, { id: uid('lg_'), amount: 10, memo: '🔥 바이브 테스트 첫 완료', at: Date.now() })
               : s.ledger,
           })
           if (first) mirrorEarn(10, '🔥 바이브 테스트 첫 완료', 'vibe_first')
@@ -791,7 +834,25 @@ export const useStore = create<State>()(
         },
         lockAdmin: () => set({ adminUnlocked: false }),
 
-        resetAll: () => set({ ...initial() }),
+        /**
+         * 전체 초기화 — 단, 유료 재화·영구 구매권·기기 신원은 보존한다.
+         * 다이아 잔액은 로컬이 원본(서버 지급분은 이미 claimed 처리)이라 지우면 복구 불가이고,
+         * deviceId/추천 관계를 재생성하면 서버 게시글 소유권·추천인 1회 제한이 깨진다.
+         */
+        resetAll: () => {
+          const s = get()
+          set({
+            ...initial(),
+            diamonds: s.diamonds,
+            premiumUntil: s.premiumUntil,
+            iqUnlocked: s.iqUnlocked,
+            precisionUnlocked: s.precisionUnlocked,
+            deviceId: s.deviceId,
+            referralCode: s.referralCode,
+            referredBy: s.referredBy,
+            invitedCount: s.invitedCount,
+          })
+        },
       }
     },
     {
@@ -807,7 +868,17 @@ export const useStore = create<State>()(
         }
         return s as State
       },
-      onRehydrateStorage: () => (state) => {
+      storage: createJSONStorage(() => safeLocal),
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          // 스냅샷 파싱 실패 — 기본값으로 덮어쓰기 전에 원본을 백업 키로 보존(복구 문의 대응)
+          try {
+            const raw = localStorage.getItem('nuri-mind-v1')
+            if (raw) localStorage.setItem('nuri-mind-v1-corrupt', raw)
+          } catch {
+            /* ignore */
+          }
+        }
         if (state) setSoundEnabled(state.sound)
       },
     },
@@ -826,15 +897,12 @@ initEconomySync({
       ledger:
         diff === 0
           ? s.ledger
-          : [
-              {
-                id: uid('lg_'),
-                amount: diff,
-                memo: diff > 0 ? '☁️ 서버 지갑 복원' : '☁️ 서버 지갑 동기화(잔액 맞춤)',
-                at: Date.now(),
-              },
-              ...s.ledger,
-            ],
+          : withLedger(s.ledger, {
+              id: uid('lg_'),
+              amount: diff,
+              memo: diff > 0 ? '☁️ 서버 지갑 복원' : '☁️ 서버 지갑 동기화(잔액 맞춤)',
+              at: Date.now(),
+            }),
     })
   },
   resetWallet: (points, memo) => {
@@ -842,7 +910,7 @@ initEconomySync({
     const diff = points - s.points
     useStore.setState({
       points,
-      ledger: diff === 0 ? s.ledger : [{ id: uid('lg_'), amount: diff, memo, at: Date.now() }, ...s.ledger],
+      ledger: diff === 0 ? s.ledger : withLedger(s.ledger, { id: uid('lg_'), amount: diff, memo, at: Date.now() }),
     })
   },
 })

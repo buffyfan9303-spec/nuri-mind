@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { L } from '../data/types'
 import { useNavigate } from 'react-router-dom'
+import AnimatedNumber from '../components/AnimatedNumber'
 import Avatar from '../components/Avatar'
 import Footer from '../components/Footer'
 import ScrollChips from '../components/ScrollChips'
@@ -18,6 +19,7 @@ import { useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { TERMS, TEST_SHORT_KEY } from '../data/terms'
 import { unreadMailCount } from '../lib/mailbox'
+import { fortuneSeenToday, getZodiacPick, setZodiacPick } from '../lib/fortunePrefs'
 
 import { localDay, localDayOf } from '../lib/date'
 
@@ -29,6 +31,12 @@ export default function Home() {
   const nav = useNavigate()
   const s = useStore()
   const { fire } = useRewardAnimation()
+  // 시스템 '동작 줄이기' 설정 시 무한 반복(흔들림) 애니메이션 정지 — WCAG 2.3.3
+  const reduceMotion = useReducedMotion()
+  const wiggle = (dur: number) =>
+    reduceMotion
+      ? {}
+      : { animate: { rotate: [0, -8, 8, 0] }, transition: { repeat: Infinity, duration: dur } }
 
   const [unreadMail, setUnreadMail] = useState(0)
   useEffect(() => {
@@ -59,15 +67,21 @@ export default function Home() {
     .sort((a, b) => b.reward - a.reward)[0]
 
   const onCheckIn = () => {
-    if (s.checkIn()) fire('coin')
+    if (s.checkIn()) {
+      fire('coin')
+      // 출석 직후 운세 티저 — 보상 연출이 끝날 즈음 자연스럽게
+      setTimeout(() => setFortuneTeaser(true), 900)
+    }
   }
 
   // 오늘의 퀘스트 (출석 + 데일리퀴즈 + 검사 1개 → +50P)
   const quizDoneToday = s.lastQuizDate === todayStr()
   const testedToday = s.results.some((r) => localDayOf(r.at) === todayStr())
   const questClaimed = s.questClaimedDate === todayStr()
+  const fortuneSeen = fortuneSeenToday()
   const quests = [
     { key: 'checkin', emoji: '📅', label: l({ ko: '출석 체크', en: 'Check in', ja: '出席チェック' }), done: checkedToday, go: onCheckIn },
+    { key: 'fortune', emoji: '🔮', label: l({ ko: '오늘의 운세 보기', en: "Today's fortune", ja: '今日の運勢を見る' }), done: fortuneSeen, go: () => nav('/fortune') },
     { key: 'quiz', emoji: '🧠', label: l({ ko: '데일리 퀴즈 풀기', en: 'Daily quiz', ja: 'デイリークイズ' }), done: quizDoneToday, go: () => nav('/rewards') },
     { key: 'test', emoji: '🔬', label: l({ ko: '심리검사 1개 완료', en: 'Finish 1 test', ja: '検査を1つ' }), done: testedToday, go: () => document.getElementById('deep-tests')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
   ]
@@ -101,6 +115,33 @@ export default function Home() {
   }, [magHeads.length])
   const magHead = magHeads[magIdx]
   const trioDone = (['selfesteem', 'perfect', 'efficacy'] as const).every((id) => s.results.some((r) => r.testId === id))
+
+  // 운세 히어로 — saju 엔진·템플릿(운세 데이터)은 지연 로드(메인 번들 오염 방지)
+  const [sajuMod, setSajuMod] = useState<typeof import('../lib/saju') | null>(null)
+  useEffect(() => {
+    import('../lib/saju').then(setSajuMod)
+  }, [])
+  const fortune = useMemo(() => {
+    if (!sajuMod || !s.birthDate) return null
+    const [y, m, d] = s.birthDate.split('-').map(Number)
+    if (!y || !m || !d) return null
+    const n = new Date()
+    return sajuMod.fortuneOf({ y, m, d }, { y: n.getFullYear(), m: n.getMonth() + 1, d: n.getDate() })
+  }, [sajuMod, s.birthDate])
+  const zodiacLines = useMemo(() => {
+    if (!sajuMod || fortune) return null
+    const n = new Date()
+    return sajuMod.zodiacTodayLines({ y: n.getFullYear(), m: n.getMonth() + 1, d: n.getDate() })
+  }, [sajuMod, fortune])
+  const [zodiacPick, setZodiacPickState] = useState(getZodiacPick())
+  const pickZodiac = (z: string) => {
+    setZodiacPick(z)
+    setZodiacPickState(z)
+  }
+  const pickedZodiac = zodiacLines?.find((z) => z.zodiacKo === zodiacPick) ?? null
+
+  // 출석 직후 운세 티저(하루 1회 순간) — 출석 성공 시에만 열림
+  const [fortuneTeaser, setFortuneTeaser] = useState(false)
 
   return (
     <div className="bg-dots min-h-dvh pb-36">
@@ -156,7 +197,7 @@ export default function Home() {
             <div>
               <div className="flex items-end gap-1.5">
                 <span className="text-[34px] font-extrabold leading-none tracking-tight text-white">
-                  🪙 {s.points.toLocaleString()}
+                  🪙 <AnimatedNumber value={s.points} />
                 </span>
                 <span className="pb-1 text-[15px] font-extrabold text-white/80">P</span>
               </div>
@@ -214,7 +255,7 @@ export default function Home() {
         <div className="mt-5">
           <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
             <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
-              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
+              <motion.span {...wiggle(2.2)}>🔥</motion.span>
               {t('quick.banner')}
             </h2>
             <span className="text-[12.5px] font-extrabold text-mind-600">{t('community.all')} ›</span>
@@ -245,7 +286,7 @@ export default function Home() {
           <Card className="mt-3.5 !p-4">
             <div className="flex items-center justify-between">
               <h3 className="flex items-center gap-1.5 text-[15px] font-extrabold">🎯 {l({ ko: '오늘의 퀘스트', en: 'Daily quest', ja: '今日のクエスト' })}</h3>
-              <span className="text-[12.5px] font-extrabold text-mind-600">{questDone}/3</span>
+              <span className="text-[12.5px] font-extrabold text-mind-600">{questDone}/{quests.length}</span>
             </div>
             <div className="mt-3 space-y-2">
               {quests.map((q) => (
@@ -258,7 +299,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            {questDone === 3 && !questClaimed && (
+            {questDone === quests.length && !questClaimed && (
               <button onClick={onClaimQuest} className="mt-3 w-full rounded-2xl bg-mind-500 py-3 text-[14.5px] font-extrabold text-white shadow-[0_3px_0_#2F6B52] transition-transform active:translate-y-[3px]">
                 🎁 {l({ ko: '보너스 +50P 받기', en: 'Claim +50P', ja: 'ボーナス+50P受取' })}
               </button>
@@ -279,7 +320,11 @@ export default function Home() {
             onClick={() => nav(bestSurvey ? `/rewards/survey/${bestSurvey.id}` : '/rewards')}
             className="mt-3.5 flex items-center gap-3 !bg-gradient-to-r from-mind-600 to-mind-400 !p-4"
           >
-            <motion.span animate={{ rotate: [0, -6, 6, 0] }} transition={{ repeat: Infinity, duration: 2.4 }} className="shrink-0 text-[26px]">
+            <motion.span
+              animate={reduceMotion ? undefined : { rotate: [0, -6, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 2.4 }}
+              className="shrink-0 text-[26px]"
+            >
               💰
             </motion.span>
             <div className="min-w-0 flex-1">
@@ -296,30 +341,93 @@ export default function Home() {
           </Card>
         </motion.div>
 
-        {/* ── 오늘의 운세 (신규: 사주·음양오행) ── */}
+        {/* ── 오늘의 운세 히어로 — 점수·행운색 프리뷰(생일 있음) / 띠 선택 맛보기(생일 없음) ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 22 }}
         >
-          <div className="mt-3.5 grid grid-cols-2 gap-2.5">
-            <Card onClick={() => nav('/fortune')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-3.5">
-              <IconBadge emoji="🔮" tone="frost" size={40} radius={13} wiggle />
-              <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</h3>
-              <span className="shrink-0 text-[15px] text-white/70">›</span>
-            </Card>
-            <Card onClick={() => nav('/compat')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#F25C8E] to-[#FF9EC0] !p-3.5">
-              <IconBadge emoji="💞" tone="frost" size={40} radius={13} wiggle />
-              <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('compat.title')}</h3>
-              <span className="shrink-0 text-[15px] text-white/70">›</span>
-            </Card>
-          </div>
+          {fortune ? (
+            <div
+              className="mt-3.5 overflow-hidden rounded-3xl p-4 shadow-pop"
+              style={{ background: `linear-gradient(135deg, ${fortune.grad[0]}, ${fortune.grad[1]})` }}
+            >
+              <button onClick={() => nav('/fortune')} className="flex w-full items-center justify-between text-left">
+                <h3 className="flex items-center gap-1.5 text-[15px] font-extrabold text-white">
+                  🔮 {l({ ko: '오늘의 운세', en: "Today's fortune", ja: '今日の運勢' })}
+                </h3>
+                <span className="rounded-full bg-white/25 px-2.5 py-1 text-[11px] font-extrabold text-white">
+                  {new Date().getMonth() + 1}/{new Date().getDate()} · {fortune.todayIljuKo}
+                  {l({ ko: '일', en: '', ja: '日' })}
+                </span>
+              </button>
+              <button onClick={() => nav('/fortune')} className="mt-2.5 flex w-full items-end justify-between text-left">
+                <div>
+                  <p className="text-[34px] font-extrabold leading-none text-white">
+                    <AnimatedNumber value={fortune.overall} />
+                    <span className="ml-0.5 text-[16px] font-extrabold text-white/85">{l({ ko: '점', en: 'pts', ja: '点' })}</span>
+                  </p>
+                  <p className="mt-1.5 line-clamp-2 break-keep text-[12.5px] font-bold leading-snug text-white/90">{l(fortune.template.overall)}</p>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1.5 pb-0.5">
+                  <span className="flex items-center gap-1.5 rounded-full bg-white/25 px-2.5 py-1 text-[11.5px] font-extrabold text-white">
+                    {l({ ko: '행운색', en: 'Lucky', ja: 'ラッキー' })}
+                    <i className="inline-block h-3.5 w-3.5 rounded-full border border-white/60" style={{ background: fortune.luckyColorHex }} />
+                    {fortune.luckyColorKo}
+                  </span>
+                  <span className="rounded-full bg-white/25 px-2.5 py-1 text-[11.5px] font-extrabold text-white">
+                    {l({ ko: '숫자', en: 'No.', ja: '数字' })} {fortune.luckyNumber} · {fortune.luckyDir}
+                  </span>
+                </div>
+              </button>
+              <div className="mt-3 flex gap-2">
+                <button onClick={() => nav('/fortune')} className="flex-1 rounded-2xl bg-white/90 py-2 text-center text-[13px] font-extrabold text-[#33413A] transition-transform active:scale-[0.98]">
+                  {l({ ko: '자세히 보기', en: 'See detail', ja: '詳しく見る' })} ›
+                </button>
+                <button onClick={() => nav('/compat')} className="flex-1 rounded-2xl bg-white/25 py-2 text-center text-[13px] font-extrabold text-white transition-transform active:scale-[0.98]">
+                  💞 {t('compat.title')}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-3.5 overflow-hidden rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] p-4 shadow-pop">
+              <div className="flex items-center justify-between">
+                <h3 className="flex items-center gap-1.5 text-[15px] font-extrabold text-white">
+                  🔮 {l({ ko: '오늘의 운세 · 내 띠 고르기', en: "Today's fortune · pick your zodiac", ja: '今日の運勢・干支を選ぶ' })}
+                </h3>
+              </div>
+              {zodiacLines && (
+                <div className="no-scrollbar -mx-4 mt-2.5 flex gap-1.5 overflow-x-auto px-4 pb-1">
+                  {zodiacLines.map((z) => (
+                    <button
+                      key={z.zodiacKo}
+                      onClick={() => pickZodiac(z.zodiacKo)}
+                      className={`flex shrink-0 flex-col items-center rounded-2xl px-2.5 py-1.5 transition-transform active:scale-95 ${
+                        zodiacPick === z.zodiacKo ? 'bg-white text-[#6B4FB8]' : 'bg-white/20 text-white'
+                      }`}
+                    >
+                      <span className="text-[20px] leading-none">{z.zodiacEmoji}</span>
+                      <span className="mt-0.5 text-[10.5px] font-extrabold">{z.zodiacKo}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {pickedZodiac && (
+                <p className="mt-2 break-keep rounded-2xl bg-white/15 px-3 py-2.5 text-[13px] font-bold leading-relaxed text-white">
+                  {pickedZodiac.zodiacEmoji} {l(pickedZodiac.line)}
+                </p>
+              )}
+              <button onClick={() => nav('/fortune')} className="mt-2.5 w-full rounded-2xl bg-white/90 py-2 text-center text-[13px] font-extrabold text-[#6B4FB8] transition-transform active:scale-[0.98]">
+                {l({ ko: '생년월일 입력하고 내 사주 운세 보기', en: 'Enter birthday for my full fortune', ja: '生年月日を入れて私の運勢を見る' })} ›
+              </button>
+            </div>
+          )}
         </motion.div>
 
         {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}
         <div id="deep-tests" className="mt-6 flex items-center justify-between px-1">
           <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
-            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.4 }}>🧠</motion.span>
+            <motion.span {...wiggle(2.4)}>🧠</motion.span>
             {t('home.testsHeader')}
           </h2>
           <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">
@@ -331,7 +439,7 @@ export default function Home() {
         {(
           [
             { key: 'temper', emoji: '🧘', label: { ko: '기질 · 마음 컨디션', en: 'Mind & temperament', ja: '気質・心のコンディション' }, ids: ['adhd', 'burnout', 'dopamine', 'resilience', 'socialanx'], newIds: ['socialanx'] },
-            { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['selfesteem', 'perfect', 'efficacy'], newIds: ['efficacy'] },
+            { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['mbti', 'selfesteem', 'perfect', 'efficacy'], newIds: ['mbti'] },
             { key: 'relation', emoji: '💞', label: { ko: '관계 속 나', en: 'Me in relationships', ja: '関係の中の私' }, ids: ['love', 'ego', 'dark'], newIds: [] },
           ] as const
         ).map((cat) => (
@@ -359,7 +467,7 @@ export default function Home() {
         {/* ── 정밀검사 (실측 인지과제) — 1분 테스트식 헤더(앞 아이콘+뒤 배지) + 젤리 칩 ── */}
         <div className="mt-6 flex items-center justify-between px-1">
           <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
-            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.6 }}>🔬</motion.span>
+            <motion.span {...wiggle(2.6)}>🔬</motion.span>
             {l(TERMS.sectionPrecision)}
           </h2>
           <span className="rounded-full bg-iq-light px-2 py-0.5 text-[11px] font-extrabold text-iq-deep">{l(TERMS.badgeMeasured)}</span>
@@ -376,12 +484,12 @@ export default function Home() {
         />
 
         {/* 종합 인지 프로필 (정밀검사 레이더) */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, type: 'spring', stiffness: 240, damping: 24 }}>
+        <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '0px 0px -48px 0px' }} transition={{ type: 'spring', stiffness: 240, damping: 24 }}>
           <Card onClick={() => nav('/cog')} className="mt-2.5 flex items-center gap-3 !bg-gradient-to-r from-[#5B6CF0] to-[#3B82F6] !p-3.5">
             <IconBadge emoji="🧩" tone="frost" size={40} radius={13} wiggle />
             <div className="min-w-0 flex-1">
               <h3 className="text-[14.5px] font-extrabold leading-tight text-white">{l({ ko: '종합 인지 프로필 보기', en: 'View cognitive profile', ja: '総合認知プロフィール' })}</h3>
-              <p className="mt-0.5 truncate text-[11.5px] font-bold text-white/85">{l({ ko: 'IQ·기억·집중·처리속도·공간 레이더', en: 'IQ·memory·focus·speed·spatial radar', ja: 'IQ·記憶·集中·速度·空間レーダー' })}</p>
+              <p className="mt-0.5 truncate text-[11.5px] font-bold text-white/85">{l({ ko: 'IQ·기억·집중·처리속도·공간 레이더', en: 'IQ·memory·focus·speed·spatial radar', ja: 'IQ・記憶・集中・速度・空間レーダー' })}</p>
             </div>
             <span className="text-white/80">›</span>
           </Card>
@@ -421,15 +529,19 @@ export default function Home() {
               <h3 className="text-[15px] font-extrabold tracking-tight text-white">
                 {premium
                   ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
-                  : l({ ko: '프리미엄 · 광고 제거 + 무제한', en: 'Premium · no ads + unlimited', ja: 'プレミアム・広告除去+無制限' })}
+                  : l({
+                      ko: `🔮 운세 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
+                      en: `🔮 Unlimited fortune · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
+                      ja: `🔮 運勢無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
+                    })}
               </h3>
               <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
                 {premium
                   ? l({ ko: `남은 기간 D-${premiumDaysLeft}`, en: `D-${premiumDaysLeft} left`, ja: `残りD-${premiumDaysLeft}` })
                   : l({
-                      ko: `운세·정밀검사 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
-                      en: `Unlimited fortune & tests · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
-                      ja: `運勢・検査無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
+                      ko: '상세운세 매일 + 광고 제거 + 정밀검사 무제한',
+                      en: 'Daily detail fortune + no ads + all precision tests',
+                      ja: '詳細運勢毎日+広告除去+精密検査無制限',
                     })}
               </p>
             </div>
@@ -439,8 +551,9 @@ export default function Home() {
 
         <motion.div
           initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, type: 'spring', stiffness: 220, damping: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '0px 0px -48px 0px' }}
+          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
           className="mt-4"
         >
           <Card onClick={() => nav('/rewards')} className="flex items-center gap-3.5 !p-4">
@@ -454,7 +567,7 @@ export default function Home() {
         </motion.div>
 
         {/* 친구 초대 CTA — 바이럴 후크 (둘 다 +100P) */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '0px 0px -48px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
           <button
             onClick={() => nav('/rewards')}
             className="flex w-full items-center gap-3.5 rounded-3xl p-4 text-left shadow-pop"
@@ -470,7 +583,7 @@ export default function Home() {
         </motion.div>
 
         {/* 심리 매거진 — 최신 글 제목 롤링(누르면 해당 글로) */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '0px 0px -48px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
           <Card onClick={() => nav(magHead ? `/magazine/${magHead.id}` : '/magazine')} className="flex items-center gap-3.5 !p-4">
             <IconBadge emoji="📖" color="#8B95F6" size={46} radius={15} wiggle />
             <div className="min-w-0 flex-1">
@@ -499,12 +612,76 @@ export default function Home() {
           </Card>
         </motion.div>
 
-        <p className="mt-6 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">
+        <p className="scroll-reveal mt-6 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">
           {t('home.disclaimer')}
         </p>
 
         <Footer />
       </main>
+
+      {/* ── 출석 직후 운세 티저 — 보상 연출 뒤 오늘의 기운 한 스푼(운세 유입 후크) ── */}
+      <AnimatePresence>
+        {fortuneTeaser && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setFortuneTeaser(false)}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 backdrop-blur-[2px]"
+          >
+            <motion.div
+              initial={{ y: 80, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 80, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              onClick={(e) => e.stopPropagation()}
+              className="safe-bottom mx-4 mb-4 w-full max-w-md overflow-hidden rounded-3xl p-5 text-white shadow-pop"
+              style={{
+                background: fortune
+                  ? `linear-gradient(135deg, ${fortune.grad[0]}, ${fortune.grad[1]})`
+                  : 'linear-gradient(135deg,#6B4FB8,#A88BF2)',
+              }}
+            >
+              <p className="text-[13px] font-extrabold text-white/85">✅ {l({ ko: '출석 완료!', en: 'Checked in!', ja: '出席完了！' })}</p>
+              {fortune ? (
+                <>
+                  <h3 className="mt-1 text-[18px] font-extrabold">
+                    🔮 {l({ ko: '오늘의 운세 미리보기', en: "Today's fortune preview", ja: '今日の運勢プレビュー' })}
+                  </h3>
+                  <div className="mt-2.5 flex items-center gap-3">
+                    <p className="text-[38px] font-extrabold leading-none">
+                      {fortune.overall}
+                      <span className="text-[16px] text-white/85">{l({ ko: '점', en: 'pts', ja: '点' })}</span>
+                    </p>
+                    <span className="flex items-center gap-1.5 rounded-full bg-white/25 px-2.5 py-1 text-[12px] font-extrabold">
+                      {l({ ko: '행운색', en: 'Lucky', ja: 'ラッキー' })}
+                      <i className="inline-block h-3.5 w-3.5 rounded-full border border-white/60" style={{ background: fortune.luckyColorHex }} />
+                      {fortune.luckyColorKo}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <h3 className="mt-1 break-keep text-[17px] font-extrabold leading-snug">
+                  🔮 {l({ ko: '생년월일만 넣으면 매일 아침 내 운세가 열려요', en: 'Add your birthday to unlock a daily fortune', ja: '生年月日を入れると毎日の運勢が届きます' })}
+                </h3>
+              )}
+              <div className="mt-3.5 flex gap-2">
+                <button
+                  onClick={() => { setFortuneTeaser(false); nav('/fortune') }}
+                  className="flex-1 rounded-2xl bg-white/95 py-2.5 text-[14px] font-extrabold text-[#33413A] transition-transform active:scale-[0.98]"
+                >
+                  {fortune
+                    ? l({ ko: '전체 운세 보기', en: 'See full fortune', ja: '全部見る' })
+                    : l({ ko: '운세 설정하기', en: 'Set up fortune', ja: '設定する' })} ›
+                </button>
+                <button onClick={() => setFortuneTeaser(false)} className="rounded-2xl bg-white/20 px-4 py-2.5 text-[14px] font-extrabold text-white transition-transform active:scale-[0.98]">
+                  {l({ ko: '닫기', en: 'Close', ja: '閉じる' })}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

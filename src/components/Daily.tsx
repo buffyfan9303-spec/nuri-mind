@@ -7,8 +7,10 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import { localDay } from '../lib/date'
 
-const todayStr = () => new Date().toISOString().slice(0, 10)
+// 스토어의 lastSpinDate/lastQuizDate와 같은 로컬 기준 키 — UTC(toISOString)면 KST 00~09시에 하루 어긋남
+const todayStr = () => localDay()
 
 /** 오늘 무료 적립 — 제한 없음(무제한). 오늘 적립량만 가볍게 표시. */
 export function DailyCapMeter() {

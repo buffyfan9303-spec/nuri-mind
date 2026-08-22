@@ -9,6 +9,7 @@ import InstallPrompt from './components/InstallPrompt'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
 import { pageView } from './lib/analytics'
+import { markFortuneSeen } from './lib/fortunePrefs'
 
 /** 라우트별 코드 스플리팅 — 첫 로딩엔 홈만 받고 나머지는 진입 시 로드 */
 const TestIntro = lazy(() => import('./pages/TestIntro'))
@@ -58,8 +59,15 @@ export default function App() {
   }, [fontScale])
 
   // 다크모드: 루트에 .dark 클래스 토글 (CSS 변수로 전체 색 전환)
+  // View Transitions API 지원 시 전체 화면이 부드럽게 크로스페이드 (미지원 시 즉시 전환)
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    const apply = () => document.documentElement.classList.toggle('dark', theme === 'dark')
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => void }
+    if (doc.startViewTransition && document.documentElement.classList.contains('dark') !== (theme === 'dark')) {
+      doc.startViewTransition(apply)
+    } else {
+      apply()
+    }
   }, [theme])
 
   const hideNav =
@@ -72,6 +80,8 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
     pageView(location.pathname)
+    // 오늘의 퀘스트 '운세 보기' 판정 — 운세 화면 진입 자체를 열람으로 기록
+    if (location.pathname === '/fortune') markFortuneSeen()
   }, [location.pathname])
 
 

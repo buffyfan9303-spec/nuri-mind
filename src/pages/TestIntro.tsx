@@ -1,19 +1,24 @@
-import { useNavigate, useParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { motion, useReducedMotion } from 'framer-motion'
 import Button from '../components/Button'
 import { TopBar, Card } from '../components/ui'
-import { testMeta } from '../data/tests'
+import { TESTS } from '../data/tests'
 import type { TestId } from '../data/types'
 import { useT, useL } from '../i18n/useT'
-import { useStore, IQ_DIA_COST } from '../store/useStore'
+import { useStore, IQ_DIA_COST, isPremium } from '../store/useStore'
 
 export default function TestIntro() {
   const { id } = useParams<{ id: TestId }>()
   const t = useT()
   const l = useL()
   const nav = useNavigate()
-  const tm = testMeta(id as TestId)
-  const iqUnlocked = useStore((s) => s.iqUnlocked)
+  // testMeta의 비-널 단언 대신 직접 탐색 — 오타 링크·구버전 공유 URL로 온 미지의 id가 앱 전체를 크래시시키지 않게
+  const tm = TESTS.find((x) => x.id === id)
+  const iqUnlockedFlag = useStore((s) => s.iqUnlocked)
+  const premiumUntil = useStore((s) => s.premiumUntil)
+  const reduceMotion = useReducedMotion()
+  const iqUnlocked = iqUnlockedFlag || isPremium(premiumUntil)
+  if (!tm) return <Navigate to="/" replace />
 
   return (
     <div className="min-h-dvh pb-36">
@@ -27,7 +32,7 @@ export default function TestIntro() {
           style={{ background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
         >
           <motion.div
-            animate={{ y: [0, -8, 0] }}
+            animate={reduceMotion ? undefined : { y: [0, -8, 0] }}
             transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
             className="text-6xl"
           >

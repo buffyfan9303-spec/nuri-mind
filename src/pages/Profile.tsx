@@ -471,6 +471,13 @@ export default function Profile() {
         <div className="text-center">
           <div className="text-4xl">🗑</div>
           <p className="mt-3 text-sm font-bold leading-relaxed text-ink-sub">{t('profile.resetConfirm')}</p>
+          <p className="mt-1.5 text-[12px] font-medium leading-relaxed text-ink-faint">
+            {l({
+              ko: '💎 다이아·프리미엄·영구 해제권은 삭제되지 않고 보존돼요.',
+              en: '💎 Diamonds, premium, and permanent unlocks are kept safe.',
+              ja: '💎 ダイヤ・プレミアム・永久解除は削除されず保持されます。',
+            })}
+          </p>
           <div className="mt-5 space-y-2.5">
             <Button
               color="danger"

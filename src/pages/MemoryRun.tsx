@@ -46,6 +46,14 @@ export default function MemoryRun() {
   const bwdRef = useRef<SpanTrial[]>([])
   const startRef = useRef(Date.now())
   const finishedRef = useRef(false)
+  /** 피드백 뒤 다음 시행 타이머 — 중단으로 언마운트돼도 finish()가 유령 실행되지 않게 정리 */
+  const fbTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(
+    () => () => {
+      if (fbTimerRef.current) clearTimeout(fbTimerRef.current)
+    },
+    [],
+  )
 
   const lensFor = (b: number) => (b === 0 ? FWD_LENS : BWD_LENS)
   const done = fwdRef.current.length + bwdRef.current.length
@@ -70,16 +78,17 @@ export default function MemoryRun() {
   }, [])
 
   // 준비(ready) → 제시(show). 역방향 첫 시행은 안내가 길도록 더 천천히.
+  // 중단 확인 모달이 열려 있는 동안은 자동 진행 정지(고민하는 사이 시행이 흘러가는 것 방지)
   useEffect(() => {
-    if (phase !== 'ready' || seq.length === 0) return
+    if (phase !== 'ready' || seq.length === 0 || quitOpen) return
     const lead = block === 1 && trialIdx === 0 ? 1900 : 1100
     const t = setTimeout(() => setPhase('show'), lead)
     return () => clearTimeout(t)
-  }, [phase, seq, block, trialIdx])
+  }, [phase, seq, block, trialIdx, quitOpen])
 
   // 제시(show) — 숫자를 하나씩 0.8s 간격으로 점멸, 끝나면 회상(recall)
   useEffect(() => {
-    if (phase !== 'show' || seq.length === 0) return
+    if (phase !== 'show' || seq.length === 0 || quitOpen) return
     let i = 0
     setShown(seq[0])
     const blank0 = setTimeout(() => setShown(null), 600)
@@ -98,7 +107,7 @@ export default function MemoryRun() {
       clearInterval(iv)
       clearTimeout(blank0)
     }
-  }, [phase, seq])
+  }, [phase, seq, quitOpen])
 
   const tapKey = (d: number) => {
     if (phase !== 'recall' || entered.length >= seq.length) return
@@ -121,12 +130,18 @@ export default function MemoryRun() {
     if (correct) sfx.coin()
     else sfx.err()
     setPhase('feedback')
-    setTimeout(() => {
+    fbTimerRef.current = setTimeout(() => {
       const lens = lensFor(block)
       if (trialIdx < lens.length - 1) beginTrial(block, trialIdx + 1)
       else if (block === 0) beginTrial(1, 0)
       else finish()
     }, 1050)
+  }
+
+  const closeQuit = () => {
+    setQuitOpen(false)
+    // 숫자 제시 중에 멈췄다면 새 수열로 현재 시행 재시작 — 같은 수열 두 번 보기 방지
+    if (phase === 'show') beginTrial(block, trialIdx)
   }
 
   const finish = () => {
@@ -331,7 +346,7 @@ export default function MemoryRun() {
       </main>
 
       {/* 중단 확인 */}
-      <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
+      <Modal open={quitOpen} onClose={closeQuit}>
         <div className="text-center">
           <div className="text-4xl">🥺</div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 그만둘까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
@@ -339,7 +354,7 @@ export default function MemoryRun() {
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">
-            <Button color="iq" onClick={() => setQuitOpen(false)}>
+            <Button color="iq" onClick={closeQuit}>
               {l({ ko: '계속할게요', en: 'Keep going', ja: '続ける' })}
             </Button>
             <Button color="white" onClick={() => nav('/test/memory', { replace: true })}>

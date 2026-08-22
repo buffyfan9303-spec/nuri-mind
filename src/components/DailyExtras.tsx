@@ -5,8 +5,10 @@ import { DAILY_CHALLENGES, DAILY_LINES, dayIndex } from '../data/daily'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import { localDay } from '../lib/date'
 
-const todayStr = () => new Date().toISOString().slice(0, 10)
+// 스토어의 challengeDate와 같은 로컬 기준 키 — UTC(toISOString)면 KST 00~09시에 하루 어긋남
+const todayStr = () => localDay()
 
 /** 데일리 콘텐츠 묶음 — 오늘의 한 줄 + 오늘의 챌린지 + 운세 바로가기 */
 export default function DailyExtras() {
