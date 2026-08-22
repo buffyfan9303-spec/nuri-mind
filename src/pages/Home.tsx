@@ -63,7 +63,7 @@ export default function Home() {
   const onCheckIn = () => {
     if (s.checkIn()) {
       fire('coin')
-      // 출석 직후 운세 티저 — 보상 연출이 끝날 즐음 자연스럽게
+      // 출석 직후 운세 티저 — 보상 연출이 끝날 즈음 자연스럽게
       setTimeout(() => setFortuneTeaser(true), 900)
     }
   }
@@ -331,7 +331,7 @@ export default function Home() {
           </Card>
         </motion.div>
 
-        {/* ── 오늘의 운세 히어로 — 점수·행운색 프리뷰(생일 있음) / 띄 선택 맛보기(생일 없음) ── */}
+        {/* ── 오늘의 운세 히어로 — 점수·행운색 프리뷰(생일 있음) / 띠 선택 맛보기(생일 없음) ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -383,7 +383,7 @@ export default function Home() {
             <div className="mt-3.5 overflow-hidden rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] p-4 shadow-pop">
               <div className="flex items-center justify-between">
                 <h3 className="flex items-center gap-1.5 text-[15px] font-extrabold text-white">
-                  🔮 {l({ ko: '오늘의 운세 · 내 띄 고르기', en: "Today's fortune · pick your zodiac", ja: '今日の運勢・干支を選ぶ' })}
+                  🔮 {l({ ko: '오늘의 운세 · 내 띠 고르기', en: "Today's fortune · pick your zodiac", ja: '今日の運勢・干支を選ぶ' })}
                 </h3>
               </div>
               {zodiacLines && (
