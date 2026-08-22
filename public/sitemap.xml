@@ -17,6 +17,7 @@
   <url><loc>https://www.nurimind.co.kr/community</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.nurimind.co.kr/rewards</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.nurimind.co.kr/shop</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/mbti</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.nurimind.co.kr/test/adhd</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.nurimind.co.kr/test/ego</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.nurimind.co.kr/test/iq</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>

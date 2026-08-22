@@ -7,11 +7,11 @@ const NAME: Record<string, string> = {
   iq: 'IQ', adhd: 'Focus', ego: 'Altruism', love: 'Attachment',
   burnout: 'Burnout', dopamine: 'Dopamine', resilience: 'Resilience', dark: 'Dark Triad',
   selfesteem: 'Self-Esteem', perfect: 'Perfectionism', efficacy: 'Self-Efficacy', socialanx: 'Social Anxiety',
-  memory: 'Memory', focus: 'Focus', speed: 'Speed', spatial: 'Spatial',
+  memory: 'Memory', focus: 'Focus', speed: 'Speed', spatial: 'Spatial', mbti: 'MBTI',
 }
 const EMOJI: Record<string, string> = {
   iq: '🧠', adhd: '🎯', ego: '😇', love: '💘', burnout: '🔥', dopamine: '🍫',
-  resilience: '🌱', dark: '🦊', selfesteem: '🪞', perfect: '💯', efficacy: '💪', socialanx: '😰', memory: '🧩', focus: '🎯', speed: '⚡', spatial: '🧭',
+  resilience: '🌱', dark: '🦊', selfesteem: '🪞', perfect: '💯', efficacy: '💪', socialanx: '😰', memory: '🧩', focus: '🎯', speed: '⚡', spatial: '🧭', mbti: '🌗',
 }
 
 export default function handler(req: Request) {
