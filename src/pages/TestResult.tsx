@@ -13,7 +13,7 @@ import { PERSONAS } from '../i18n/animalTranslations'
 import { MBTI_AXES, MBTI_DISCLAIMER, MBTI_PERSONAS, MBTI_TYPES } from '../data/mbti'
 import { testMeta } from '../data/tests'
 import { LOVE_CHEMI } from '../data/love'
-import { useStore, IQ_DIA_COST } from '../store/useStore'
+import { useStore, IQ_DIA_COST, isPremium } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { celebrate, burst } from '../lib/confetti'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
@@ -33,7 +33,10 @@ export default function TestResult() {
   const result = results.find((r) => r.id === rid)
 
   const state = (location.state ?? {}) as { fresh?: boolean; reward?: number }
-  const [gate, setGate] = useState(Boolean(state.fresh))
+  // fresh/reward는 첫 렌더에서 캡처 — 게이트 종료 시 히스토리 state를 비워 새로고침마다 5초 광고 게이트가 재발하는 것 방지
+  const [fresh] = useState(Boolean(state.fresh))
+  const [reward] = useState(state.reward ?? 0)
+  const [gate, setGate] = useState(fresh)
   const [copied, setCopied] = useState(false)
   const [shareMsg, setShareMsg] = useState('')
   const [avatarSet, setAvatarSet] = useState(false)
@@ -46,17 +49,18 @@ export default function TestResult() {
   const precisionGate = useStore((s) => s.precisionGate)
   const precisionUnlocked = useStore((s) => s.precisionUnlocked)
   const unlockPrecision = useStore((s) => s.unlockPrecision)
+  const premiumUntil = useStore((s) => s.premiumUntil)
   const diamonds = useStore((s) => s.diamonds)
   const nickname = useStore((s) => s.nickname)
   const { fire } = useRewardAnimation()
   const celebrated = useRef(false)
 
   useEffect(() => {
-    if (!gate && state.fresh && !celebrated.current) {
+    if (!gate && fresh && !celebrated.current) {
       celebrated.current = true
       fire('win')
     }
-  }, [gate, state.fresh])
+  }, [gate, fresh])
 
   if (!result) return <Navigate to="/" replace />
   const persona = PERSONAS[result.persona] ?? MBTI_PERSONAS[result.persona]
@@ -71,13 +75,15 @@ export default function TestResult() {
     { label: '파스텔', grad: ['#FBD3E9', '#A9C9EE'], swatch: ['#FBD3E9', '#A9C9EE'] },
   ]
   const topPercent = Math.max(0.5, Math.round((100 - result.percentile) * 10) / 10)
-  const reward = state.reward ?? 0
 
   /* 정밀검사 결과지 게이팅 — 앞(히어로·점수·게이지)은 무료, 상세 분석은 블러 → 10다이아 영구해제.
-     · IQ 정밀(pro): iqUnlocked  · 기억/집중/처리속도/공간: precisionGate(운영자 토글) ON일 때 precisionUnlocked */
+     · IQ 정밀(pro): iqUnlocked  · 기억/집중/처리속도/공간: precisionGate(운영자 토글) ON일 때 precisionUnlocked
+     · 프리미엄 구독 활성 기간에도 해제 — 해지/만료 시 자동 회수(영구 플래그는 다이아 구매 전용) */
   const PRECISION_GATED = ['memory', 'focus', 'speed', 'spatial', 'switch']
-  const lockedIq = result.testId === 'iq' && result.iqMode === 'pro' && !iqUnlocked
-  const lockedPrecision = precisionGate && PRECISION_GATED.includes(result.testId) && !precisionUnlocked
+  const premiumActive = isPremium(premiumUntil)
+  const lockedIq = result.testId === 'iq' && result.iqMode === 'pro' && !(iqUnlocked || premiumActive)
+  const lockedPrecision =
+    precisionGate && PRECISION_GATED.includes(result.testId) && !(precisionUnlocked || premiumActive)
   const locked = lockedIq || lockedPrecision
   const tryUnlockIqResult = () => {
     const ok = lockedIq ? unlockIq() : unlockPrecision()
@@ -236,7 +242,17 @@ export default function TestResult() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <AnimatePresence>{gate && <AdGate onDone={() => setGate(false)} />}</AnimatePresence>
+      <AnimatePresence>
+        {gate && (
+          <AdGate
+            onDone={() => {
+              setGate(false)
+              // 히스토리 state 소거 — 새로고침/뒤로가기 시 게이트·축하 연출 재발 방지
+              nav(location.pathname, { replace: true, state: {} })
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       <TopBar back="/" title={t('result.title')} />
 
@@ -623,7 +639,7 @@ export default function TestResult() {
           </div>
         </Card>
 
-        {/* 므 때리는 한마디 */}
+        {/* 뼈 때리는 한마디 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -884,8 +900,11 @@ export default function TestResult() {
             color={tm.btn}
             onClick={() =>
               nav(
+                // 정밀검사 5종은 전용 런 라우트(/memory/run 등) — /test/:id/run은 문항 은행이 없어 빈 화면
                 // IQ 정밀(pro) 결과의 재검사는 같은 모드로 — mode 누락 시 빠른(fast) 10문항으로 떨어지는 버그 방지
-                `/test/${result.testId}/run${result.testId === 'iq' && result.iqMode === 'pro' ? '?mode=pro' : ''}`,
+                PRECISION_GATED.includes(result.testId)
+                  ? `/${result.testId}/run`
+                  : `/test/${result.testId}/run${result.testId === 'iq' && result.iqMode === 'pro' ? '?mode=pro' : ''}`,
                 { replace: true },
               )
             }
