@@ -71,7 +71,9 @@ export default function FocusRun() {
   }
 
   // 시행 흐름: 응시점 → 자극 → 피드백 → 다음
+  // 중단 확인 모달이 열려 있는 동안은 체인 전체 정지 — 고민하는 사이 남은 시행이 전부 miss로 저장되는 것 방지
   useEffect(() => {
+    if (quitOpen) return
     if (phase === 'fixation') {
       lockRef.current = false
       setVerdict(null)
@@ -96,11 +98,17 @@ export default function FocusRun() {
       return () => clearTimeout(t)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, idx])
+  }, [phase, idx, quitOpen])
 
   const tap = () => {
-    if (phase !== 'stim') return
+    if (phase !== 'stim' || quitOpen) return
     resolve(true, Date.now() - onsetRef.current)
+  }
+
+  const closeQuit = () => {
+    setQuitOpen(false)
+    // 자극 표시 중에 멈췄다면 응시점부터 다시 — 오염된 반응시간 기록 방지
+    if (phase === 'stim') setPhase('fixation')
   }
 
   const done = resultsRef.current.length
@@ -181,7 +189,7 @@ export default function FocusRun() {
       </main>
 
       {/* 중단 확인 */}
-      <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
+      <Modal open={quitOpen} onClose={closeQuit}>
         <div className="text-center">
           <div className="text-4xl">🥺</div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 그만둘까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
@@ -189,7 +197,7 @@ export default function FocusRun() {
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">
-            <Button color="reso" onClick={() => setQuitOpen(false)}>
+            <Button color="reso" onClick={closeQuit}>
               {l({ ko: '계속할게요', en: 'Keep going', ja: '続ける' })}
             </Button>
             <Button color="white" onClick={() => nav('/test/focus', { replace: true })}>

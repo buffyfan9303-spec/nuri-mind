@@ -38,25 +38,34 @@ export default function SpeedRun() {
   const correctRef = useRef(0)
   const startRef = useRef(0)
   const finishedRef = useRef(false)
+  /** 실제 반응시간 누적 — 벽시계 전체 경과 대신 탭 간 간격 합(간격당 5초 상한).
+   *  중단 모달·전화·앱 전환 등 비활동 구간이 처리속도 점수를 무너뜨리지 않게. */
+  const activeMsRef = useRef(0)
+  const lastTapRef = useRef(0)
+  const GAP_CAP_MS = 5000
 
   const start = () => {
     startRef.current = Date.now()
+    lastTapRef.current = startRef.current
     setPhase('run')
   }
 
   const finish = () => {
     if (finishedRef.current) return
     finishedRef.current = true
-    const result = scoreSpeed(correctRef.current, TOTAL, Date.now() - startRef.current)
+    const result = scoreSpeed(correctRef.current, TOTAL, activeMsRef.current)
     result.durationMs = Date.now() - startRef.current
     const reward = addResult(result)
     nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
   const tap = (d: number) => {
-    if (phase !== 'run' || finishedRef.current) return
+    if (phase !== 'run' || finishedRef.current || quitOpen) return
     const i = idxRef.current
     if (i >= TOTAL) return
+    const now = Date.now()
+    activeMsRef.current += Math.min(now - lastTapRef.current, GAP_CAP_MS)
+    lastTapRef.current = now
     const correct = d === items[i] + 1
     if (correct) {
       correctRef.current++
@@ -178,7 +187,13 @@ export default function SpeedRun() {
       </main>
 
       {/* 중단 확인 */}
-      <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
+      <Modal
+        open={quitOpen}
+        onClose={() => {
+          setQuitOpen(false)
+          lastTapRef.current = Date.now() // 모달 고민 시간은 반응시간에서 제외
+        }}
+      >
         <div className="text-center">
           <div className="text-4xl">🥺</div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 그만둘까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
@@ -186,7 +201,13 @@ export default function SpeedRun() {
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">
-            <Button color="iq" onClick={() => setQuitOpen(false)}>
+            <Button
+              color="iq"
+              onClick={() => {
+                setQuitOpen(false)
+                lastTapRef.current = Date.now()
+              }}
+            >
               {l({ ko: '계속할게요', en: 'Keep going', ja: '続ける' })}
             </Button>
             <Button color="white" onClick={() => nav('/test/speed', { replace: true })}>
