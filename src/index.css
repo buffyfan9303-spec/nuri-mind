@@ -40,6 +40,10 @@
 .dark .text-reso-deep { color: #34D399; }
 .dark .text-dk-deep { color: #D98AAA; }
 .dark .text-dopa-deep { color: #5BC8DC; }
+/* 밝은 텍스트 보정과 짝 — 라이트 틴트 배경(bg-mind-100 #E4F1EA)이 다크에서 그대로면
+   #79C2A0 글자와 대비 1.8:1로 판독 불가 → 어두운 반투명 민트로 교체(대비 4.5:1+ 확보) */
+.dark .bg-mind-100 { background-color: rgb(79 168 130 / 0.16); }
+.dark .bg-mind-50 { background-color: rgb(79 168 130 / 0.1); }
 
 html {
   -webkit-tap-highlight-color: transparent;
