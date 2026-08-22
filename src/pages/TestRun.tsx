@@ -16,10 +16,12 @@ import { PERFECTION_ITEMS } from '../data/perfection'
 import { EFFICACY_ITEMS } from '../data/efficacy'
 import { SOCIALANX_ITEMS } from '../data/socialanx'
 import { IQ_ITEMS, IQ_PROMPTS } from '../data/iq'
+import { MBTI_ITEMS, type MbtiItem } from '../data/mbti'
 import { testMeta } from '../data/tests'
 import type { IqItem, LikertItem, TestId } from '../data/types'
 import { mulberry32, shuffle } from '../lib/random'
 import { scoreAdhd, scoreBurnout, scoreDark, scoreDopamine, scoreEgo, scoreIq, scoreLove, scoreResilience, scoreSelfEsteem, scorePerfection, scoreEfficacy, scoreSocialAnx } from '../lib/scoring'
+import { scoreMbti } from '../lib/mbtiScoring'
 import { LIKERT_AGREE, LIKERT_FREQ } from '../i18n/translations'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
@@ -58,6 +60,7 @@ export default function TestRun() {
   const { id } = useParams<{ id: TestId }>()
   const testId = id as TestId
   const isIq = testId === 'iq'
+  const isMbti = testId === 'mbti'
   const [searchParams] = useSearchParams()
   // IQ 모드: 'fast'(빠른 10문항·전체 무료) / 'pro'(정밀 20문항·상세결과 유료). 기본 빠른.
   const iqMode: 'fast' | 'pro' = searchParams.get('mode') === 'pro' ? 'pro' : 'fast'
@@ -77,10 +80,12 @@ export default function TestRun() {
 
   /** 세션 셔플 — 문항 순서 + (IQ) 보기 순서 무작위화 (백서: 회차 간 정답 암기 차단) */
   const [likertItems] = useState<LikertItem[]>(() => {
-    if (isIq) return []
+    if (isIq || isMbti) return []
     const rnd = mulberry32(Date.now() & 0xffffffff)
     return shuffle(BANKS[testId] ?? [], rnd)
   })
+  /** MBTI 양극 문항 — 축 순환 배열(응답 세트 편향 완화)이 설계라 셔플하지 않음 */
+  const [mbtiItems] = useState<MbtiItem[]>(() => (isMbti ? MBTI_ITEMS : []))
   const [iqItems] = useState<IqItem[]>(() => {
     if (!isIq) return []
     const rnd = mulberry32(Date.now() & 0xffffffff)
@@ -88,7 +93,7 @@ export default function TestRun() {
     return iqMode === 'fast' ? shuffled.slice(0, 10) : shuffled
   })
 
-  const total = isIq ? iqItems.length : likertItems.length
+  const total = isIq ? iqItems.length : isMbti ? mbtiItems.length : likertItems.length
   const [idx, setIdx] = useState(0)
   const [sel, setSel] = useState<number | string | null>(null)
   const [answers, setAnswers] = useState<Record<string, number | string | null>>({})
@@ -109,6 +114,8 @@ export default function TestRun() {
     const likertMap = map as Record<string, number>
     const result = isIq
       ? scoreIq(iqItems, map as Record<string, string | null>)
+      : isMbti
+      ? scoreMbti(MBTI_ITEMS, likertMap)
       : testId === 'adhd'
         ? scoreAdhd(ADHD_ITEMS, likertMap)
         : testId === 'ego'
@@ -168,6 +175,19 @@ export default function TestRun() {
     setTimeout(() => advance(map), 280)
   }
 
+  /* MBTI: 양극 5점 선택 → 자동 진행 (리커트와 동일 플로우) */
+  const pickMbti = (v: number) => {
+    if (advancingRef.current || finishedRef.current) return
+    advancingRef.current = true
+    setSel(v)
+    sfx.tap()
+    haptic(7)
+    const it = mbtiItems[idx]
+    const map = { ...answers, [it.id]: v }
+    setAnswers(map)
+    setTimeout(() => advance(map), 280)
+  }
+
   /* IQ: 선택 → 확인 버튼으로 확정 (오답 방지) */
   const pickIq = (optId: string) => {
     if (finishedRef.current) return
@@ -219,7 +239,7 @@ export default function TestRun() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, isIq])
 
-  const item: LikertItem | IqItem | undefined = isIq ? iqItems[idx] : likertItems[idx]
+  const item: LikertItem | IqItem | MbtiItem | undefined = isIq ? iqItems[idx] : isMbti ? mbtiItems[idx] : likertItems[idx]
   const ratio = useMemo(() => idx / total, [idx, total])
   if (!item) return null
 
@@ -294,7 +314,9 @@ export default function TestRun() {
             exit={{ x: -70, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
           >
-            {!isIq ? (
+            {isMbti ? (
+              <MbtiQuestion item={item as MbtiItem} idx={idx} sel={sel as number | null} onPick={pickMbti} accent={tm.gradFrom} />
+            ) : !isIq ? (
               <>
                 <p className="mt-8 text-[13px] font-extrabold tracking-widest" style={{ color: tm.gradFrom }}>
                   Q{idx + 1}
@@ -370,6 +392,78 @@ export default function TestRun() {
         </div>
       </Modal>
     </div>
+  )
+}
+
+/** MBTI 양극 문항 — A/B 서술문 카드 + 5단계 선택(1=A에 매우 가까움, 5=B에 매우 가까움) */
+function MbtiQuestion({
+  item,
+  idx,
+  sel,
+  onPick,
+  accent,
+}: {
+  item: MbtiItem
+  idx: number
+  sel: number | null
+  onPick: (v: number) => void
+  accent: string
+}) {
+  const l = useL()
+  const SCALE: { v: number; label: { ko: string; en: string; ja: string } }[] = [
+    { v: 1, label: { ko: 'A에 매우 가까워요', en: 'Much closer to A', ja: 'Aにとても近い' } },
+    { v: 2, label: { ko: 'A에 가까워요', en: 'Closer to A', ja: 'Aに近い' } },
+    { v: 3, label: { ko: '반반이에요', en: 'Right in between', ja: '半々くらい' } },
+    { v: 4, label: { ko: 'B에 가까워요', en: 'Closer to B', ja: 'Bに近い' } },
+    { v: 5, label: { ko: 'B에 매우 가까워요', en: 'Much closer to B', ja: 'Bにとても近い' } },
+  ]
+  return (
+    <>
+      <p className="mt-6 text-[13px] font-extrabold tracking-widest" style={{ color: accent }}>
+        Q{idx + 1}
+      </p>
+      <p className="mt-1.5 text-[13.5px] font-bold text-ink-sub">
+        {l({ ko: '나는 어느 쪽에 더 가까울까요?', en: 'Which side is closer to you?', ja: '自分はどちらに近い？' })}
+      </p>
+      <div className="mt-4 space-y-2.5">
+        <div className="rounded-2xl border-2 border-line bg-surface px-4 py-3.5">
+          <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-[12.5px] font-extrabold text-white" style={{ background: accent }}>A</span>
+          <span className="break-keep text-[15.5px] font-bold leading-relaxed">{l(item.left)}</span>
+        </div>
+        <div className="rounded-2xl border-2 border-line bg-surface px-4 py-3.5">
+          <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-sky2-500 text-[12.5px] font-extrabold text-white">B</span>
+          <span className="break-keep text-[15.5px] font-bold leading-relaxed">{l(item.right)}</span>
+        </div>
+      </div>
+      <div className="mt-5 space-y-2.5">
+        {SCALE.map((s, i) => {
+          const active = sel === s.v
+          return (
+            <motion.button
+              key={s.v}
+              onClick={() => onPick(s.v)}
+              whileTap={{ scale: 0.96 }}
+              animate={active ? { scale: [1, 1.06, 0.98, 1] } : { scale: 1 }}
+              transition={active ? { duration: 0.34, ease: [0.34, 1.4, 0.5, 1] } : { type: 'spring', stiffness: 600, damping: 30 }}
+              className="flex w-full items-center justify-between rounded-2xl border-2 bg-surface px-5 py-3.5 text-left text-[15.5px] font-bold"
+              style={{
+                borderColor: active ? accent : '#E3EAE5',
+                background: active ? `${accent}1A` : 'rgb(var(--surface))',
+                boxShadow: active ? 'none' : '0 2px 0 #EDF1EE',
+              }}
+            >
+              {l(s.label)}
+              <span className="ml-3 flex shrink-0 gap-1">
+                {/* A↔B 스펙트럼 위 위치 점 */}
+                {SCALE.map((_, d) => (
+                  <span key={d} className="h-1.5 w-1.5 rounded-full" style={{ background: d === i ? accent : '#E3EAE5' }} />
+                ))}
+              </span>
+            </motion.button>
+          )
+        })}
+      </div>
+    </>
   )
 }
 
