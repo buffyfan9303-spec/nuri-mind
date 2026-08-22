@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Button from '../components/Button'
 import { Modal, ProgressBar } from '../components/ui'
 import { FigCell, FoldStrip, MatrixGrid } from '../components/Fig'
@@ -217,9 +217,15 @@ export default function TestRun() {
   }
   const idxRef = useRef(idx)
   idxRef.current = idx
+  /* 잔여시간 리셋은 문항 변경 시에만 — 중단 모달 개폐로 시간이 초기화되지 않게 인터벌 효과와 분리 */
   useEffect(() => {
     if (!isIq) return
     setTimeLeft(iqItems[idx] ? iqTimeFor(iqItems[idx].difficulty) : 45)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx, isIq])
+  useEffect(() => {
+    // 중단 확인 모달이 열려 있는 동안 타이머 정지 — 고민하는 사이 무응답 자동 처리되는 것 방지
+    if (!isIq || quitOpen) return
     const myIdx = idx // 이 인터벌이 담당하는 문항 — cleanup 직전 마지막 틱이 다음 문항을 오폭하는 레이스 방지
     const iv = setInterval(() => {
       setTimeLeft((prev) => {
@@ -237,11 +243,12 @@ export default function TestRun() {
     }, 1000)
     return () => clearInterval(iv)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idx, isIq])
+  }, [idx, isIq, quitOpen])
 
   const item: LikertItem | IqItem | MbtiItem | undefined = isIq ? iqItems[idx] : isMbti ? mbtiItems[idx] : likertItems[idx]
   const ratio = useMemo(() => idx / total, [idx, total])
-  if (!item) return null
+  // 알 수 없는 id(/test/foo/run 직접 진입)나 문항 소진 — 빈 화면 대신 홈으로
+  if (!item) return <Navigate to="/" replace />
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -304,8 +311,11 @@ export default function TestRun() {
         )}
       </AnimatePresence>
 
-      {/* 문항 카드 */}
-      <main className="mx-auto w-full max-w-md flex-1 px-5 pb-6">
+      {/* 문항 카드 — IQ는 중단 모달 동안 타이머가 멈추므로 문항을 가려 '일시정지 후 풀기' 악용 차단 */}
+      <main
+        className="mx-auto w-full max-w-md flex-1 px-5 pb-6"
+        style={isIq && quitOpen ? { filter: 'blur(10px)' } : undefined}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={idx}
