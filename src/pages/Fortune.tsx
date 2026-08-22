@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { TopBar, Card, ProgressBar, Modal } from '../components/ui'
 import Button from '../components/Button'
@@ -31,10 +31,12 @@ export default function Fortune() {
   const spendDiamonds = useStore((s) => s.spendDiamonds)
   const fortuneAiDate = useStore((s) => s.fortuneAiDate)
   const fortuneAiData = useStore((s) => s.fortuneAiData)
+  const fortuneAiLang = useStore((s) => s.fortuneAiLang)
   const setFortuneAi = useStore((s) => s.setFortuneAi)
   const lang = useStore((s) => s.lang)
   const premiumUntil = useStore((s) => s.premiumUntil)
   const premium = isPremium(premiumUntil)
+  const reduceMotion = useReducedMotion()
   const [draft, setDraft] = useState(birthDate)
   const [editing, setEditing] = useState(!birthDate)
   const [saved, setSaved] = useState(false)
@@ -69,7 +71,7 @@ export default function Fortune() {
     const today = localDay()
     // 잠금 상태면 호출 안 함(과금 절약). 프리미엄은 날짜 마킹 없이 상시 해제라 별도 허용(#19)
     if (!data || (fortuneDetailDate !== today && !premium)) return
-    if (fortuneAiDate === today && fortuneAiData) return // 오늘 캐시 있음
+    if (fortuneAiDate === today && fortuneAiData && fortuneAiLang === lang) return // 오늘·현재 언어 캐시 있음
     if (!FUNCTIONS_URL) return // 엣지 함수 미배포 → 결정론 폴백
     let cancelled = false
     fetchFortuneDetailAi({
@@ -81,7 +83,7 @@ export default function Fortune() {
       lang,
       date: today,
     }).then((res) => {
-      if (res && !cancelled) setFortuneAi(today, res)
+      if (res && !cancelled) setFortuneAi(today, res, lang)
     })
     return () => {
       cancelled = true
@@ -104,10 +106,14 @@ export default function Fortune() {
         grad: fortune.grad,
         appName: t('app.name'),
         heroLabel: t('fortune.title'),
-        ctaTop: '내 오늘의 운세는? 🔮',
-        ctaSub: '지금 누리 마인드에서 무료로 →',
+        ctaTop: l({ ko: '내 오늘의 운세는? 🔮', en: "What's my fortune today? 🔮", ja: '私の今日の運勢は？🔮' }),
+        ctaSub: l({ ko: '지금 누리 마인드에서 무료로 →', en: 'Free now on NURI MIND →', ja: '今すぐ NURI MIND で無料 →' }),
       })
-      const how = await shareCardBlob(blob, `[누리 마인드] 오늘의 운세 · ${saju.zodiacKo}띠 ${saju.iljuKo}`, 'nurimind-fortune.png')
+      const how = await shareCardBlob(
+        blob,
+        `${l({ ko: '[누리 마인드] 오늘의 운세', en: '[NURI MIND] Daily Fortune', ja: '[NURI MIND] 今日の運勢' })} · ${saju.zodiacKo}${t('fortune.zodiacSuffix')} ${saju.iljuKo}`,
+        'nurimind-fortune.png',
+      )
       if (how === 'downloaded') {
         setSaved(true)
         setTimeout(() => setSaved(false), 2200)
@@ -121,7 +127,7 @@ export default function Fortune() {
   const shareDetail = async () => {
     if (!data) return
     const { saju, fortune, detail } = data
-    const aiT = fortuneAiDate === localDay() ? fortuneAiData : null
+    const aiT = fortuneAiDate === localDay() && fortuneAiLang === lang ? fortuneAiData : null
     track('share', { channel: 'fortune_detail' })
     try {
       const blob = await makeResultCard({
@@ -138,7 +144,11 @@ export default function Fortune() {
         ctaTop: l({ ko: '내 오늘의 상세 운세는? 🔮', en: "What's my detailed fortune? 🔮", ja: '私の詳細運勢は？🔮' }),
         ctaSub: l({ ko: '지금 누리 마인드에서 →', en: 'Now on NURI MIND →', ja: '今すぐ NURI MIND で →' }),
       })
-      const how = await shareCardBlob(blob, `[누리 마인드] 오늘의 상세 운세 · ${saju.zodiacKo}${t('fortune.zodiacSuffix')}`, 'nurimind-fortune-detail.png')
+      const how = await shareCardBlob(
+        blob,
+        `${l({ ko: '[누리 마인드] 오늘의 상세 운세', en: '[NURI MIND] Detailed Fortune', ja: '[NURI MIND] 今日の詳細運勢' })} · ${saju.zodiacKo}${t('fortune.zodiacSuffix')}`,
+        'nurimind-fortune-detail.png',
+      )
       if (how === 'downloaded') {
         setSaved(true)
         setTimeout(() => setSaved(false), 2200)
@@ -155,15 +165,20 @@ export default function Fortune() {
         <TopBar back="/" title={t('fortune.title')} />
         <main className="mx-auto max-w-md px-5">
           <div className="mt-7 text-center">
-            <motion.div animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 3 }} className="text-[58px] leading-none">
+            <motion.div
+              animate={reduceMotion ? undefined : { rotate: [0, -8, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 3 }}
+              className="text-[58px] leading-none"
+            >
               🔮
             </motion.div>
             <h1 className="mt-3 break-keep text-[22px] font-extrabold leading-tight">{t('fortune.askTitle')}</h1>
             <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">{t('fortune.askSub')}</p>
           </div>
           <Card className="mt-6">
-            <label className="px-1 text-[13px] font-extrabold">{t('fortune.birthLabel')}</label>
+            <label htmlFor="fortune-birth" className="px-1 text-[13px] font-extrabold">{t('fortune.birthLabel')}</label>
             <input
+              id="fortune-birth"
               type="date"
               value={draft}
               max="2025-12-31"
@@ -202,7 +217,7 @@ export default function Fortune() {
   }
   const todayStr = localDay()
   const detailUnlocked = fortuneDetailDate === todayStr || premium
-  const aiDetail = fortuneAiDate === todayStr ? fortuneAiData : null
+  const aiDetail = fortuneAiDate === todayStr && fortuneAiLang === lang ? fortuneAiData : null
   const usingAi = !!aiDetail
   const v: FortuneDetailText = aiDetail ?? {
     morning: l(detail.morning), noon: l(detail.noon), evening: l(detail.evening),
@@ -427,17 +442,18 @@ export default function Fortune() {
               <div className="flex items-end justify-between gap-1.5">
                 {week.map((w, i) => (
                   <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-                    <span className="text-[10.5px] font-extrabold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.overall}</span>
+                    {/* 비오늘 막대·레이블은 토큰 클래스 — 라이트 전용 하드코딩 색은 다크모드에서 이질적 */}
+                    <span className={`text-[10.5px] font-extrabold ${w.isToday ? '' : 'text-ink-faint'}`} style={w.isToday ? { color: fortune.grad[0] } : undefined}>{w.overall}</span>
                     <div className="flex h-[72px] w-full items-end justify-center">
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${w.overall}%` }}
                         transition={{ delay: 0.04 * i, type: 'spring', stiffness: 200, damping: 22 }}
-                        className="w-[58%] rounded-full"
-                        style={{ background: w.isToday ? `linear-gradient(${fortune.grad[0]}, ${fortune.grad[1]})` : '#DCE4DF' }}
+                        className={`w-[58%] rounded-full ${w.isToday ? '' : 'bg-surface2'}`}
+                        style={w.isToday ? { background: `linear-gradient(${fortune.grad[0]}, ${fortune.grad[1]})` } : undefined}
                       />
                     </div>
-                    <span className="text-[10.5px] font-bold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.isToday ? t('fortune.today') : w.weekdayKo}</span>
+                    <span className={`text-[10.5px] font-bold ${w.isToday ? '' : 'text-ink-faint'}`} style={w.isToday ? { color: fortune.grad[0] } : undefined}>{w.isToday ? t('fortune.today') : w.weekdayKo}</span>
                   </div>
                 ))}
               </div>
