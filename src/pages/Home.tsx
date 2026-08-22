@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { L } from '../data/types'
 import { useNavigate } from 'react-router-dom'
 import AnimatedNumber from '../components/AnimatedNumber'
@@ -31,6 +31,12 @@ export default function Home() {
   const nav = useNavigate()
   const s = useStore()
   const { fire } = useRewardAnimation()
+  // 시스템 '동작 줄이기' 설정 시 무한 반복(흔들림) 애니메이션 정지 — WCAG 2.3.3
+  const reduceMotion = useReducedMotion()
+  const wiggle = (dur: number) =>
+    reduceMotion
+      ? {}
+      : { animate: { rotate: [0, -8, 8, 0] }, transition: { repeat: Infinity, duration: dur } }
 
   const [unreadMail, setUnreadMail] = useState(0)
   useEffect(() => {
@@ -249,7 +255,7 @@ export default function Home() {
         <div className="mt-5">
           <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
             <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
-              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
+              <motion.span {...wiggle(2.2)}>🔥</motion.span>
               {t('quick.banner')}
             </h2>
             <span className="text-[12.5px] font-extrabold text-mind-600">{t('community.all')} ›</span>
@@ -314,7 +320,11 @@ export default function Home() {
             onClick={() => nav(bestSurvey ? `/rewards/survey/${bestSurvey.id}` : '/rewards')}
             className="mt-3.5 flex items-center gap-3 !bg-gradient-to-r from-mind-600 to-mind-400 !p-4"
           >
-            <motion.span animate={{ rotate: [0, -6, 6, 0] }} transition={{ repeat: Infinity, duration: 2.4 }} className="shrink-0 text-[26px]">
+            <motion.span
+              animate={reduceMotion ? undefined : { rotate: [0, -6, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 2.4 }}
+              className="shrink-0 text-[26px]"
+            >
               💰
             </motion.span>
             <div className="min-w-0 flex-1">
@@ -417,7 +427,7 @@ export default function Home() {
         {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}
         <div id="deep-tests" className="mt-6 flex items-center justify-between px-1">
           <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
-            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.4 }}>🧠</motion.span>
+            <motion.span {...wiggle(2.4)}>🧠</motion.span>
             {t('home.testsHeader')}
           </h2>
           <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">
@@ -457,7 +467,7 @@ export default function Home() {
         {/* ── 정밀검사 (실측 인지과제) — 1분 테스트식 헤더(앞 아이콘+뒤 배지) + 젤리 칩 ── */}
         <div className="mt-6 flex items-center justify-between px-1">
           <h2 className="flex items-center gap-1.5 text-[17px] font-extrabold tracking-tight">
-            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.6 }}>🔬</motion.span>
+            <motion.span {...wiggle(2.6)}>🔬</motion.span>
             {l(TERMS.sectionPrecision)}
           </h2>
           <span className="rounded-full bg-iq-light px-2 py-0.5 text-[11px] font-extrabold text-iq-deep">{l(TERMS.badgeMeasured)}</span>
