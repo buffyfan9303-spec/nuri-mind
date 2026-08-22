@@ -9,6 +9,7 @@ import InstallPrompt from './components/InstallPrompt'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
 import { pageView } from './lib/analytics'
+import { markFortuneSeen } from './lib/fortunePrefs'
 
 /** 라우트별 코드 스플리팅 — 첫 로딩엔 홈만 받고 나머지는 진입 시 로드 */
 const TestIntro = lazy(() => import('./pages/TestIntro'))
@@ -79,6 +80,8 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
     pageView(location.pathname)
+    // 오늘의 퀘스트 '운세 보기' 판정 — 운세 화면 진입 자체를 열람으로 기록
+    if (location.pathname === '/fortune') markFortuneSeen()
   }, [location.pathname])
 
 
