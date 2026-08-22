@@ -10,6 +10,7 @@ import Trend from '../components/Trend'
 import { ROUTINES } from '../data/routines'
 import { Card, Chip, TopBar, Modal } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
+import { MBTI_AXES, MBTI_DISCLAIMER, MBTI_PERSONAS, MBTI_TYPES } from '../data/mbti'
 import { testMeta } from '../data/tests'
 import { LOVE_CHEMI } from '../data/love'
 import { useStore, IQ_DIA_COST } from '../store/useStore'
@@ -58,7 +59,9 @@ export default function TestResult() {
   }, [gate, state.fresh])
 
   if (!result) return <Navigate to="/" replace />
-  const persona = PERSONAS[result.persona]
+  const persona = PERSONAS[result.persona] ?? MBTI_PERSONAS[result.persona]
+  const isMbti = result.testId === 'mbti'
+  const mbtiType = isMbti ? MBTI_TYPES[result.band] : undefined
   const tm = testMeta(result.testId)
 
   /* 카드 배경 테마 — 기본(페르소나)/다크/파스텔 */
@@ -142,12 +145,22 @@ export default function TestResult() {
     }
   }
 
+  /* MBTI는 백분위 개념이 없어 공유 문구에 유형 코드를 사용 */
+  const shareText = () =>
+    isMbti
+      ? l({
+          ko: `내 성향 나침반 결과는 ${result.band} · ${l(mbtiType?.name)}! 너는 어떤 유형이야? 🌗`,
+          en: `My Type Compass says ${result.band} · ${l(mbtiType?.name)}! What's yours? 🌗`,
+          ja: `私の性向コンパスは ${result.band}・${l(mbtiType?.name)}！あなたは？🌗`,
+        })
+      : t('result.shareText', {
+          test: t(`test.${result.testId}.name`),
+          persona: l(persona.name),
+          p: topPercent,
+        })
+
   const share = async () => {
-    const text = t('result.shareText', {
-      test: t(`test.${result.testId}.name`),
-      persona: l(persona.name),
-      p: topPercent,
-    })
+    const text = shareText()
     try {
       if (navigator.share) await navigator.share({ text, url: window.location.origin })
       else throw new Error()
@@ -172,8 +185,8 @@ export default function TestResult() {
         name: l(persona.name),
         title: l(persona.title),
         subtitle: l(persona.tagline),
-        bandLabel: t(`band.${result.testId}.${result.band}`),
-        topPercent,
+        bandLabel: isMbti ? `${result.band} · ${l(mbtiType?.name)}` : t(`band.${result.testId}.${result.band}`),
+        topPercent: isMbti ? 0 : topPercent,
         testName: t(`test.${result.testId}.name`),
         grad,
         iq: result.iq,
@@ -189,10 +202,7 @@ export default function TestResult() {
                   : undefined,
         appName: t('app.name'),
       })
-      const how = await shareCardBlob(
-        blob,
-        t('result.shareText', { test: t(`test.${result.testId}.name`), persona: l(persona.name), p: topPercent }),
-      )
+      const how = await shareCardBlob(blob, shareText())
       if (how === 'downloaded') {
         setShareMsg(t('share.saved'))
         setTimeout(() => setShareMsg(''), 2200)
@@ -295,11 +305,13 @@ export default function TestResult() {
           </motion.p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
-              {t(`band.${result.testId}.${result.band}`)}
+              {isMbti ? `${mbtiType?.emoji ?? ''} ${result.band} · ${l(mbtiType?.name)}` : t(`band.${result.testId}.${result.band}`)}
             </span>
-            <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
-              {t('result.topPercent', { p: topPercent })}
-            </span>
+            {!isMbti && (
+              <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
+                {t('result.topPercent', { p: topPercent })}
+              </span>
+            )}
             {result.testId === 'adhd' && result.screener !== undefined && (
               <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13.5px] font-extrabold text-white">
                 {t('result.screener', { n: result.screener })}
@@ -446,6 +458,49 @@ export default function TestResult() {
                   <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
                 </div>
               </>
+            ) : isMbti && result.axes ? (
+              <div className="space-y-4 text-left">
+                {/* 4축 연속 선호 바 — 연속 점수가 주 결과(유형 코드는 요약). 45~55%는 경계 표시 */}
+                {MBTI_AXES.map((ax) => {
+                  const p = result.axes?.[ax.key] ?? 50
+                  const border = p >= 45 && p <= 55
+                  const aWins = p >= 50
+                  return (
+                    <div key={ax.key}>
+                      <div className="flex items-center justify-between gap-2 text-[12.5px] font-extrabold">
+                        <span className={aWins ? '' : 'text-ink-faint'} style={aWins ? { color: ax.color } : undefined}>
+                          {ax.a} · {l(ax.aLabel)} {p}%
+                        </span>
+                        {border && (
+                          <span className="shrink-0 rounded-full bg-surface2 px-2 py-0.5 text-[10.5px] font-extrabold text-ink-faint">
+                            ⚖️ {t('result.mbtiBorder')}
+                          </span>
+                        )}
+                        <span className={aWins ? 'text-ink-faint' : ''} style={aWins ? undefined : { color: ax.color }}>
+                          {100 - p}% {l(ax.bLabel)} · {ax.b}
+                        </span>
+                      </div>
+                      <div className="relative mt-1.5 h-3 overflow-hidden rounded-full bg-surface2">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${p}%` }}
+                          transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.15 }}
+                          className="h-full rounded-full"
+                          style={{ background: ax.color }}
+                        />
+                        <span className="absolute left-1/2 top-0 h-full w-px bg-ink-faint/40" aria-hidden="true" />
+                      </div>
+                    </div>
+                  )
+                })}
+                <div className="pt-1 text-center">
+                  <Gauge value={result.percentile} color={tm.gradFrom} label="%" />
+                  <p className="mt-1 break-keep text-[12px] font-bold text-ink-faint">{t('result.mbtiClarity')}</p>
+                </div>
+                <p className="break-keep rounded-2xl bg-surface2 p-3 text-[11.5px] font-medium leading-relaxed text-ink-sub">
+                  ⚖️ {l(MBTI_DISCLAIMER)}
+                </p>
+              </div>
             ) : (
               <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
             )}
@@ -568,7 +623,7 @@ export default function TestResult() {
           </div>
         </Card>
 
-        {/* 뼈 때리는 한마디 */}
+        {/* 므 때리는 한마디 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -646,6 +701,7 @@ export default function TestResult() {
               <p className="mt-1 break-keep text-[13.5px] font-medium leading-[1.8] text-ink-sub">{t(`intro.${result.testId}.basis`)}</p>
             </div>
           )}
+          {!isMbti && (
           <div className="mt-3">
             <p className="text-[12.5px] font-extrabold text-mind-600">📊 {l({ ko: '상위 %는 어떻게 읽나요?', en: 'How to read the top %', ja: '上位%の読み方' })}</p>
             <p className="mt-1 break-keep text-[13.5px] font-medium leading-[1.8] text-ink-sub">
@@ -656,6 +712,7 @@ export default function TestResult() {
               })}
             </p>
           </div>
+          )}
           <div className="mt-3">
             <p className="text-[12.5px] font-extrabold text-mind-600">🌱 {l({ ko: '결과, 이렇게 쓰세요', en: 'How to use your result', ja: '結果の活かし方' })}</p>
             <p className="mt-1 break-keep text-[13.5px] font-medium leading-[1.8] text-ink-sub">
@@ -779,13 +836,16 @@ export default function TestResult() {
               {copied ? t('common.copied') : t('share.text')}
             </Button>
           </div>
-          <button
-            onClick={shareDuel}
-            className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-extrabold text-white"
-            style={{ background: `linear-gradient(135deg, ${persona.grad[0]}, ${persona.grad[1]})` }}
-          >
-            🆚 {l({ ko: '친구와 결과 대결', en: 'Challenge a friend', ja: '友達と結果バトル' })}
-          </button>
+          {/* MBTI는 백분위 대결 개념이 없어 대결 공유 제외 */}
+          {!isMbti && (
+            <button
+              onClick={shareDuel}
+              className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-extrabold text-white"
+              style={{ background: `linear-gradient(135deg, ${persona.grad[0]}, ${persona.grad[1]})` }}
+            >
+              🆚 {l({ ko: '친구와 결과 대결', en: 'Challenge a friend', ja: '友達と結果バトル' })}
+            </button>
+          )}
         </Card>
 
         {/* 친구 초대 CTA — 결과 공유 직후 바이럴 (둘 다 +100P) */}
@@ -802,20 +862,22 @@ export default function TestResult() {
           <span className="text-lg text-white/80">›</span>
         </button>
 
-        {/* 이 동물을 프로필 아바타로 */}
-        <div className="mt-4">
-          <Button
-            color="white"
-            onClick={() => {
-              setAvatar({ kind: 'animal', persona: result.persona })
-              setAvatarSet(true)
-              sfx.coin()
-              setTimeout(() => setAvatarSet(false), 2200)
-            }}
-          >
-            {avatarSet ? `✅ ${t('result.avatarSet')}` : t('result.setAvatar')}
-          </Button>
-        </div>
+        {/* 이 동물을 프로필 아바타로 — MBTI 기질 페르소나는 동물 아바타 시스템 밖이라 제외 */}
+        {!isMbti && (
+          <div className="mt-4">
+            <Button
+              color="white"
+              onClick={() => {
+                setAvatar({ kind: 'animal', persona: result.persona })
+                setAvatarSet(true)
+                sfx.coin()
+                setTimeout(() => setAvatarSet(false), 2200)
+              }}
+            >
+              {avatarSet ? `✅ ${t('result.avatarSet')}` : t('result.setAvatar')}
+            </Button>
+          </div>
+        )}
 
         <div className="mt-3 space-y-2.5">
           <Button
