@@ -89,7 +89,15 @@ const WD = ['일', '월', '화', '수', '목', '금', '토']
 export default function handler(req: Request) {
   const url = new URL(req.url)
   const origin = url.origin
-  const zParam = decodeURIComponent(url.searchParams.get('z') || '').replace(/띠$/, '')
+  // searchParams.get()이 이미 1차 디코딩한 값 — 이중 인코딩만 추가 해제하고, 잘못된 %시퀀스는 원문 사용(URIError 500 방지)
+  const zRaw = url.searchParams.get('z') || ''
+  let zDecoded = zRaw
+  try {
+    zDecoded = decodeURIComponent(zRaw)
+  } catch {
+    /* 오타·크롤러 URL — 목록 페이지로 폴백 */
+  }
+  const zParam = zDecoded.replace(/띠$/, '')
   const zi = BRANCHES.findIndex((b) => b.zo === zParam)
   const now = kstToday()
   const dateKo = `${now.y}년 ${now.m}월 ${now.d}일 (${WD[now.wd]})`
