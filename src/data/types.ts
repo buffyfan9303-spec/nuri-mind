@@ -1,7 +1,7 @@
 export type Lang = 'ko' | 'en' | 'ja'
 export type L = Record<Lang, string>
 
-export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark' | 'selfesteem' | 'perfect' | 'efficacy' | 'socialanx' | 'memory' | 'focus' | 'speed' | 'spatial' | 'switch'
+export type TestId = 'adhd' | 'ego' | 'iq' | 'love' | 'burnout' | 'dopamine' | 'resilience' | 'dark' | 'selfesteem' | 'perfect' | 'efficacy' | 'socialanx' | 'memory' | 'focus' | 'speed' | 'spatial' | 'switch' | 'mbti'
 
 /** 프로필 아바타 — 업로드 사진 또는 동물 페르소나 */
 export type Avatar =
@@ -49,7 +49,7 @@ export interface Report {
 export interface LikertItem {
   id: string
   text: L
-  /** 하위 척도 키 — ADHD: IN/OR/TM/IM, EGO: SELF/STR/EMP/AVD/VAL */
+  /** 하위 첩도 키 — ADHD: IN/OR/TM/IM, EGO: SELF/STR/EMP/AVD/VAL */
   sub: string
   /** 역채점 문항 여부 */
   reverse?: boolean
@@ -110,15 +110,15 @@ export interface TestResult {
   iq?: number
   /** IQ 검사 모드 — 'fast'(빠른·전체무료) / 'pro'(정밀·상세결과 유료) */
   iqMode?: 'fast' | 'pro'
-  /** 기억력 지수 (정밀 기억력 검사 — 작업기억 100±15 척도) */
+  /** 기억력 지수 (정밀 기억력 검사 — 작업기억 100±15 첩도) */
   mq?: number
-  /** 집중 지수 (정밀 집중력 검사 — 처리속도·집중지속 100±15 척도) */
+  /** 집중 지수 (정밀 집중력 검사 — 처리속도·집중지속 100±15 첩도) */
   fq?: number
-  /** 처리속도 지수 (정밀 처리속도 검사 — 기호-숫자 매칭 100±15 척도) */
+  /** 처리속도 지수 (정밀 처리속도 검사 — 기호-숫자 매칭 100±15 첩도) */
   sq?: number
-  /** 공간 지수 (정밀 공간지각 검사 — 심적 회전 100±15 척도) */
+  /** 공간 지수 (정밀 공간지각 검사 — 심적 회전 100±15 첩도) */
   xq?: number
-  /** 전환 지수 (정밀 주의전환 검사 — 과제 전환·인지 유연성 100±15 척도) */
+  /** 전환 지수 (정밀 주의전환 검사 — 과제 전환·인지 유연성 100±15 첩도) */
   wq?: number
   screener?: number
   maskFlag?: boolean
