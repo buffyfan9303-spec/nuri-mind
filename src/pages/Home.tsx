@@ -429,7 +429,7 @@ export default function Home() {
         {(
           [
             { key: 'temper', emoji: '🧘', label: { ko: '기질 · 마음 컨디션', en: 'Mind & temperament', ja: '気質・心のコンディション' }, ids: ['adhd', 'burnout', 'dopamine', 'resilience', 'socialanx'], newIds: ['socialanx'] },
-            { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['selfesteem', 'perfect', 'efficacy'], newIds: ['efficacy'] },
+            { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['mbti', 'selfesteem', 'perfect', 'efficacy'], newIds: ['mbti'] },
             { key: 'relation', emoji: '💞', label: { ko: '관계 속 나', en: 'Me in relationships', ja: '関係の中の私' }, ids: ['love', 'ego', 'dark'], newIds: [] },
           ] as const
         ).map((cat) => (
