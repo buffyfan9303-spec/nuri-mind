@@ -111,6 +111,17 @@ export const TESTS: TestMeta[] = [
     precision: true,
   },
   {
+    id: 'mbti',
+    emoji: '🌗',
+    count: 24,
+    minutes: 4,
+    tint: 'bg-burn-light',
+    text: 'text-burn-deep',
+    gradFrom: '#7C5CE0',
+    gradTo: '#4A7DDF',
+    btn: 'burn',
+  },
+  {
     id: 'love',
     emoji: '💘',
     count: 20,
