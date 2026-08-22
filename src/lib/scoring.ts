@@ -79,6 +79,8 @@ export function scoreAdhd(items: LikertItem[], answers: Record<string, number>):
 export function scoreEgo(items: LikertItem[], answers: Record<string, number>): TestResult {
   const ax: Record<string, { s: number; m: number; n: number }> = {}
   for (const it of items) {
+    // ⚠️ reverse 플래그는 의도적으로 미적용 — EMP 규준(μ=18)은 원문 방향(동의=공감↑) 기준.
+    //    scoreLove처럼 6-v를 넣으면 이타 축이 통째로 반전되므로 규준 재보정 없이 '수정' 금지.
     const v = answers[it.id] ?? 3
     const acc = (ax[it.sub] ??= { s: 0, m: 0, n: 0 })
     acc.s += v
@@ -132,7 +134,8 @@ export function scoreEgo(items: LikertItem[], answers: Record<string, number>): 
  *  근거: ICAR(Condon & Revelle 2014) 공개 문항. ICAR16↔WAIS 상관 r≈.81 — 정식 지능검사 추정 지표(대체 아님). */
 const IQ_MU = 14.75
 const IQ_SIGMA = 5.2
-/** 정밀판 20문항 전체 난이도합 — 빠른판(부분 문항)을 동일 척도로 환산하는 기준 */
+/** 정밀판 20문항 전체 난이도합 — 빠른판(부분 문항)을 동일 척도로 환산하는 기준.
+ *  ⚠️ data/iq.ts 문항의 difficulty 합과 일치해야 함 — 문항 수정 시 반드시 함께 갱신. */
 const IQ_FULL_DIFF = 29.5
 
 export function scoreIq(items: IqItem[], answers: Record<string, string | null>): TestResult {
@@ -146,10 +149,11 @@ export function scoreIq(items: IqItem[], answers: Record<string, string | null>)
     acc.s += correct ? 1 : 0
     acc.m += 1
   }
-  // 빠른판(부분 문항)도 정밀판과 동일 척도로 — 응답한 문항 난이도합 기준으로 전체 환산
+  // 빠른판(부분 문항)은 선형 외삽 대신 부분집합 전용 규준으로 — μ는 난이도합 비례, σ는 제곱근 축소.
+  // (절반 길이 점수를 2배로 외삽하면 관측분산이 커져 무료판에서 극단 IQ가 더 쉽게 나오는 문제 방지)
   const totalDiff = items.reduce((a, it) => a + it.difficulty, 0)
-  const weightedScaled = totalDiff > 0 ? weighted * (IQ_FULL_DIFF / totalDiff) : weighted
-  const z = (weightedScaled - IQ_MU) / IQ_SIGMA
+  const ratio = totalDiff > 0 ? totalDiff / IQ_FULL_DIFF : 1
+  const z = (weighted - IQ_MU * ratio) / (IQ_SIGMA * Math.sqrt(ratio))
   const iq = Math.max(60, Math.min(145, Math.round(100 + 15 * z)))
   const pct = Math.min(99.5, Math.max(0.5, Math.round(normalCdf(z) * 1000) / 10))
   const band = iq >= 130 ? 'top' : iq >= 115 ? 'high' : iq >= 105 ? 'upper' : iq >= 95 ? 'avg' : 'grow'
@@ -320,7 +324,11 @@ export function scorePerfection(items: LikertItem[], answers: Record<string, num
   }
   const STD = ax.STD?.s ?? 0
   const malad = (ax.CM?.s ?? 0) + (ax.DA?.s ?? 0) + (ax.SOC?.s ?? 0)
-  const maladRatio = malad / Math.max(1, malad + STD)
+  // 문항 수가 다른 두 축(부적응 15 vs 적응 5)은 문항당 평균으로 비교 — 동일 응답 시 0.5 기준선.
+  // (원점수 합 비교는 기저 비율이 0.75라 driven/eagle 분기가 수학적으로 도달 불가였음)
+  const stdMean = STD / Math.max(1, ax.STD?.n ?? 0)
+  const maladMean = malad / Math.max(1, (ax.CM?.n ?? 0) + (ax.DA?.n ?? 0) + (ax.SOC?.n ?? 0))
+  const maladRatio = maladMean / Math.max(0.001, maladMean + stdMean)
   const pct = percentile(raw, 58, 13)
   let band: string
   let persona: string
@@ -429,7 +437,8 @@ export interface SpanTrial {
   correct: boolean
 }
 const MEM_MU = 7.6
-const MEM_SIGMA = 2.8
+/** 과제 범위(정방향 6·역방향 5시행, 합성 최대 12.5)에 맞춘 σ — 만점이 척도 상단(MQ≈143)에 닿도록 보정 */
+const MEM_SIGMA = 1.7
 
 export function scoreMemory(fwd: SpanTrial[], bwd: SpanTrial[]): TestResult {
   const fwdCorrect = fwd.filter((t) => t.correct).length
