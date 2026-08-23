@@ -29,6 +29,7 @@ export default function Fortune() {
   const fortuneDetailDate = useStore((s) => s.fortuneDetailDate)
   const markFortuneDetail = useStore((s) => s.markFortuneDetail)
   const markFortuneSeen = useStore((s) => s.markFortuneSeen)
+  const claimFortuneShare = useStore((s) => s.claimFortuneShare)
   const spendDiamonds = useStore((s) => s.spendDiamonds)
   const fortuneAiDate = useStore((s) => s.fortuneAiDate)
   const fortuneAiData = useStore((s) => s.fortuneAiData)
@@ -39,6 +40,16 @@ export default function Fortune() {
   const [draft, setDraft] = useState(birthDate)
   const [editing, setEditing] = useState(!birthDate)
   const [saved, setSaved] = useState(false)
+  const [shareBonus, setShareBonus] = useState(false)
+  /** 공유 성공(공유/저장) 시 하루 1회 +5P — 검사 공유와 같은 루프를 운세에도 */
+  const rewardShare = (how: 'shared' | 'downloaded' | 'cancelled') => {
+    if (how === 'cancelled') return
+    if (claimFortuneShare() > 0) {
+      burst()
+      setShareBonus(true)
+      setTimeout(() => setShareBonus(false), 2400)
+    }
+  }
   const [unlocked, setUnlocked] = useState(false)
   const [needCharge, setNeedCharge] = useState(false)
   const [showAd, setShowAd] = useState(false)
@@ -139,6 +150,7 @@ export default function Fortune() {
         ctaSub: '지금 누리 마인드에서 무료로 →',
       })
       const how = await shareCardBlob(blob, `[누리 마인드] 오늘의 운세 · ${saju.zodiacKo}띠 ${saju.iljuKo}`, 'nurimind-fortune.png')
+      rewardShare(how)
       if (how === 'downloaded') {
         setSaved(true)
         setTimeout(() => setSaved(false), 2200)
@@ -170,6 +182,7 @@ export default function Fortune() {
         ctaSub: l({ ko: '지금 누리 마인드에서 →', en: 'Now on NURI MIND →', ja: '今すぐ NURI MIND で →' }),
       })
       const how = await shareCardBlob(blob, `[누리 마인드] 오늘의 상세 운세 · ${saju.zodiacKo}${t('fortune.zodiacSuffix')}`, 'nurimind-fortune-detail.png')
+      rewardShare(how)
       if (how === 'downloaded') {
         setSaved(true)
         setTimeout(() => setSaved(false), 2200)
@@ -604,7 +617,16 @@ export default function Fortune() {
           <Button color="sky" onClick={shareFortune}>🖼 {t('fortune.share')}</Button>
         </div>
         {saved && (
-          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">✅ {t('share.saved')}</p>
+          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">✅ {t('share.saved')}
+        {shareBonus && (
+          <motion.p
+            initial={{ opacity: 0, y: 8, scale: 0.9, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
+            className="fixed bottom-40 left-1/2 z-50 rounded-full bg-mind-600 px-4 py-2 text-[13.5px] font-extrabold text-white shadow-pop"
+          >
+            📤 공유 보상 +5P!
+          </motion.p>
+        )}</p>
         )}
 
         <p className="mt-4 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">{t('fortune.disclaimer')}</p>

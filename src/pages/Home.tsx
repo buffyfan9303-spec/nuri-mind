@@ -502,7 +502,7 @@ export default function Home() {
         />
 
         {/* 종합 인지 프로필 (정밀검사 레이더) */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, type: 'spring', stiffness: 240, damping: 24 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 240, damping: 24 }}>
           <Card onClick={() => nav('/cog')} className="mt-2.5 flex items-center gap-3 !bg-gradient-to-r from-[#5B6CF0] to-[#3B82F6] !p-3.5">
             <IconBadge emoji="🧩" tone="frost" size={40} radius={13} wiggle />
             <div className="min-w-0 flex-1">
@@ -515,7 +515,7 @@ export default function Home() {
 
         {/* ── 통합 자기 리포트 (자기 3부작 완료 시) — 검사 섹션 뒤 완료자 대상 ── */}
         {trioDone && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
             <button
               onClick={() => nav('/self-report')}
               className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
@@ -536,7 +536,7 @@ export default function Home() {
         )}
 
         {/* ── 프리미엄 구독 CTA — 수익화 존(검사 가치 체험 뒤) ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
           <button
             onClick={() => nav('/premium')}
             className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
@@ -565,8 +565,7 @@ export default function Home() {
 
         <motion.div
           initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, type: 'spring', stiffness: 220, damping: 22 }}
+          whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }}
           className="mt-4"
         >
           <Card onClick={() => nav('/rewards')} className="flex items-center gap-3.5 !p-4">
@@ -580,7 +579,7 @@ export default function Home() {
         </motion.div>
 
         {/* 친구 초대 CTA — 바이럴 후크 (둘 다 +100P) */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
           <button
             onClick={() => nav('/rewards')}
             className="flex w-full items-center gap-3.5 rounded-3xl p-4 text-left shadow-pop"
@@ -596,7 +595,7 @@ export default function Home() {
         </motion.div>
 
         {/* 심리 매거진 — 최신 글 제목 롤링(누르면 해당 글로) */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
           <Card onClick={() => nav(magHead ? `/magazine/${magHead.id}` : '/magazine')} className="flex items-center gap-3.5 !p-4">
             <IconBadge emoji="📖" color="#8B95F6" size={46} radius={15} wiggle />
             <div className="min-w-0 flex-1">

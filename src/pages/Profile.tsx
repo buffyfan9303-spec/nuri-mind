@@ -36,8 +36,12 @@ export default function Profile() {
   const [pushOn, setPushOn] = useState(false)
   useEffect(() => {
     if (!pushSupported() || !pushConfigured() || pushPermission() !== 'granted') return
-    navigator.serviceWorker.ready
-      .then((r) => r.pushManager.getSubscription())
+    // SW 미등록(localhost)이면 ready가 영구 pending — 등록 확인 후에만
+    navigator.serviceWorker.getRegistration().then((r) => {
+      if (!r) return null
+      return navigator.serviceWorker.ready
+    })
+      .then((r) => (r ? r.pushManager.getSubscription() : null))
       .then((sub) => setPushOn(!!sub))
       .catch(() => {})
   }, [])

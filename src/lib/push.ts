@@ -6,7 +6,11 @@
  */
 import { supabase } from './supabase'
 
-const VAPID_PUBLIC = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined
+// 공개키는 클라이언트 노출이 정상(ads.ts와 같은 패턴) — env 없이도 동작, env로 덮어쓰기 가능.
+// ⚠️ 키 교체 시 Supabase 엣지 시크릿(VAPID_PRIVATE_KEY)과 반드시 쌍으로 교체할 것.
+const VAPID_DEFAULT = 'BDjBm6Tc8x_Emd8lzJY-I5CQtt2Z40W9ygK9KrDDxymBYL7DDpqAjnLCWSbBuLb6luaHlMGDbqBGuayyBNbqjSc'
+const envKey = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined
+const VAPID_PUBLIC = envKey && !/X{4,}/.test(envKey) ? envKey : VAPID_DEFAULT
 
 export function pushSupported(): boolean {
   return (
@@ -39,6 +43,8 @@ function urlBase64ToUint8Array(base64: string): Uint8Array {
 /** 알림 켜기 — 권한 요청 + 구독 + 서버 저장. 성공 시 true. */
 export async function enablePush(): Promise<boolean> {
   if (!pushSupported() || !pushConfigured() || !supabase) return false
+  // SW 미등록(localhost 개발 등)이면 serviceWorker.ready가 영원히 pending — 먼저 등록 여부 확인
+  if (!(await navigator.serviceWorker.getRegistration())) return false
   const perm = await Notification.requestPermission()
   if (perm !== 'granted') return false
   const reg = await navigator.serviceWorker.ready

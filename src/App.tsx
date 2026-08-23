@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Onboarding from './components/Onboarding'
@@ -81,14 +81,16 @@ export default function App() {
   if (!onboarded && !location.pathname.startsWith('/legal')) return <Onboarding />
 
   return (
+    // reducedMotion="user": 시스템 '동작 줄이기' 설정 시 framer 전체가 자동으로 이동/스케일 생략(접근성 정합 단일 스위치)
+    <MotionConfig reducedMotion="user">
     <div className="mx-auto min-h-dvh max-w-2xl">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, y: 14, scale: 0.985 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -8, scale: 0.99 }}
-          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          exit={{ opacity: 0, y: -8, scale: 0.99, transition: { duration: 0.14, ease: 'easeIn' } }}
+          transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
         >
           <Suspense fallback={<Skeleton />}>
             <Routes location={location}>
@@ -137,5 +139,6 @@ export default function App() {
       <ReConsent />
       <InstallPrompt />
     </div>
+    </MotionConfig>
   )
 }

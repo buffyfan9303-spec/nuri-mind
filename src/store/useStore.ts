@@ -111,6 +111,8 @@ interface State {
   fortuneDetailDate: string
   /** 오늘의 운세를 열람한 날짜(YYYY-MM-DD) — 퀘스트 판정용 */
   fortuneSeenDate: string
+  /** 운세 공유 보상을 받은 날짜(YYYY-MM-DD) — 하루 1회 */
+  fortuneShareDate: string
   /** AI 개인화 상세 운세 캐시(해당 날짜 1회 생성) */
   fortuneAiDate: string
   fortuneAiData: FortuneDetailText | null
@@ -237,6 +239,8 @@ interface State {
   markFortuneDetail: () => void
   /** 오늘의 운세 열람 기록(퀘스트) */
   markFortuneSeen: () => void
+  /** 운세 공유 보상 — 하루 1회 +5P(공유/저장 성공 시) */
+  claimFortuneShare: () => number
   /** AI 개인화 상세 운세 캐시 저장(날짜+데이터) */
   setFortuneAi: (date: string, data: FortuneDetailText) => void
   /** IQ 정밀검사 전체 해제(10다이아) — 부족 시 false */
@@ -274,6 +278,7 @@ const initial = () => ({
   fortuneFreeUses: 0,
   fortuneDetailDate: '',
   fortuneSeenDate: '',
+  fortuneShareDate: '',
   fortuneAiDate: '',
   fortuneAiData: null,
   iqUnlocked: false,
@@ -726,6 +731,13 @@ export const useStore = create<State>()(
         markFortuneDetail: () => set({ fortuneDetailDate: today() }),
         markFortuneSeen: () => {
           if (get().fortuneSeenDate !== today()) set({ fortuneSeenDate: today() })
+        },
+        /** 운세 공유 보상 — sharedResults(검사 결과 전용·업적 집계)와 분리된 일일 가드 */
+        claimFortuneShare: () => {
+          const t = today()
+          if (get().fortuneShareDate === t) return 0
+          set({ fortuneShareDate: t })
+          return grantFree(5, '📤 운세 공유 보상', `share:fortune:${t}`)
         },
         setFortuneAi: (date, data) => set({ fortuneAiDate: date, fortuneAiData: data }),
         /** IQ 정밀검사 전체 해제 — 1회 10다이아(영구) */

@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useT } from '../i18n/useT'
+import { haptic } from '../lib/haptic'
 
 const TABS = [
   { to: '/', icon: '🏠', key: 'nav.home' },
@@ -24,14 +25,19 @@ export default function BottomNav() {
           {TABS.map((tab) => {
             const active = tab.to === '/' ? loc.pathname === '/' : loc.pathname.startsWith(tab.to)
             return (
-              <NavLink key={tab.to} to={tab.to} className="flex w-[60px] flex-col items-center py-0.5">
+              <NavLink key={tab.to} to={tab.to} onClick={() => haptic(6)} className="flex w-[60px] flex-col items-center py-0.5">
                 <motion.span
                   animate={
                     active
-                      ? { y: -2, boxShadow: '0 5px 12px rgba(47,107,82,0.28)' }
-                      : { y: 0, boxShadow: '0 0px 0px rgba(0,0,0,0)' }
+                      ? { y: -2, scale: [0.88, 1.14, 1], boxShadow: '0 5px 12px rgba(47,107,82,0.28)' }
+                      : { y: 0, scale: 1, boxShadow: '0 0px 0px rgba(0,0,0,0)' }
                   }
-                  transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 420,
+                    damping: 24,
+                    scale: { duration: 0.34, times: [0, 0.55, 1], ease: 'easeOut' },
+                  }}
                   className="flex h-9 w-9 items-center justify-center rounded-full text-[19px]"
                   style={{ background: active ? 'linear-gradient(135deg, #9BC4B2, #8FB8E8)' : 'transparent' }}
                 >
