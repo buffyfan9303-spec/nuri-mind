@@ -58,11 +58,45 @@ export default function Home() {
     .filter((sv) => sv.status === 'approved' && !sv.mine && !s.takenSurveys.includes(sv.id))
     .sort((a, b) => b.reward - a.reward)[0]
 
+  // 오늘의 운세 프리뷰 — saju 모듈(별도 청크 gzip 32KB)은 지연 로드(메인 번들 오염 방지 표준 패턴)
+  const [fx, setFx] = useState<{ overall: number; luckyColorKo: string; luckyNumber: number; zodiacEmoji: string } | null>(null)
+  const [zlines, setZlines] = useState<{ emoji: string; zo: string; line: L }[]>([])
+  const [zPick, setZPick] = useState<number | null>(null)
+  useEffect(() => {
+    let alive = true
+    import('../lib/saju').then((m) => {
+      if (!alive) return
+      const now = new Date()
+      const td = { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() }
+      if (s.birthDate) {
+        const [y, mo, d] = s.birthDate.split('-').map(Number)
+        if (y && mo && d) {
+          const f = m.fortuneOf({ y, m: mo, d }, td)
+          const sj = m.sajuOf(y, mo, d)
+          setFx({ overall: f.overall, luckyColorKo: f.luckyColorKo, luckyNumber: f.luckyNumber, zodiacEmoji: sj.zodiacEmoji })
+          return
+        }
+      }
+      // 생년월일 없음 → 띠 12지 맛보기(입력 장벽 제거: zodiacTodayLines는 생일이 필요 없음)
+      setZlines(m.zodiacTodayLines(td).map((z) => ({ emoji: z.zodiacEmoji, zo: z.zodiacKo, line: z.line })))
+    })
+    return () => {
+      alive = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [s.birthDate])
+
+  // 출석 직후 운세 넛지 — 이미 하는 행동(출석)에 얹는 재방문 습관 고리
+  const [fortuneNudge, setFortuneNudge] = useState(false)
+  const fortuneSeenToday = s.fortuneSeenDate === todayStr()
   const onCheckIn = () => {
-    if (s.checkIn()) fire('coin')
+    if (s.checkIn()) {
+      fire('coin')
+      if (!fortuneSeenToday) setFortuneNudge(true)
+    }
   }
 
-  // 오늘의 퀘스트 (출석 + 데일리퀴즈 + 검사 1개 → +50P)
+  // 오늘의 퀘스트 (출석 + 데일리퀴즈 + 검사 1개 + 운세 확인 → +50P)
   const quizDoneToday = s.lastQuizDate === todayStr()
   const testedToday = s.results.some((r) => localDayOf(r.at) === todayStr())
   const questClaimed = s.questClaimedDate === todayStr()
@@ -70,6 +104,7 @@ export default function Home() {
     { key: 'checkin', emoji: '📅', label: l({ ko: '출석 체크', en: 'Check in', ja: '出席チェック' }), done: checkedToday, go: onCheckIn },
     { key: 'quiz', emoji: '🧠', label: l({ ko: '데일리 퀴즈 풀기', en: 'Daily quiz', ja: 'デイリークイズ' }), done: quizDoneToday, go: () => nav('/rewards') },
     { key: 'test', emoji: '🔬', label: l({ ko: '심리검사 1개 완료', en: 'Finish 1 test', ja: '検査を1つ' }), done: testedToday, go: () => document.getElementById('deep-tests')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
+    { key: 'fortune', emoji: '🔮', label: l({ ko: '오늘의 운세 확인', en: "Check today's fortune", ja: '今日の運勢を見る' }), done: fortuneSeenToday, go: () => nav('/fortune') },
   ]
   const questDone = quests.filter((q) => q.done).length
   const onClaimQuest = () => {
@@ -240,12 +275,31 @@ export default function Home() {
           )}
         </div>
 
+        {/* 출석 직후 운세 넛지 — 출석이라는 기존 습관에 운세 확인을 얹음 */}
+        <AnimatePresence>
+          {fortuneNudge && !fortuneSeenToday && (
+            <motion.button
+              initial={{ opacity: 0, y: -8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8 }}
+              onClick={() => nav('/fortune')}
+              className="mt-3 flex w-full items-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#6B4FB8] to-[#A88BF2] px-4 py-3 text-left shadow-card"
+            >
+              <span className="shrink-0 text-[22px]">🔮</span>
+              <span className="min-w-0 flex-1 break-keep text-[13.5px] font-extrabold leading-snug text-white">
+                {l({ ko: '출석 완료! 오늘의 운세도 확인해보세요', en: "Checked in! See today's fortune too", ja: '出席完了！今日の運勢もチェック' })}
+              </span>
+              <span className="shrink-0 text-[15px] text-white/80">›</span>
+            </motion.button>
+          )}
+        </AnimatePresence>
+
         {/* ── 오늘의 퀘스트 ── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, type: 'spring', stiffness: 220, damping: 22 }}>
           <Card className="mt-3.5 !p-4">
             <div className="flex items-center justify-between">
               <h3 className="flex items-center gap-1.5 text-[15px] font-extrabold">🎯 {l({ ko: '오늘의 퀘스트', en: 'Daily quest', ja: '今日のクエスト' })}</h3>
-              <span className="text-[12.5px] font-extrabold text-mind-600">{questDone}/3</span>
+              <span className="text-[12.5px] font-extrabold text-mind-600">{questDone}/{quests.length}</span>
             </div>
             <div className="mt-3 space-y-2">
               {quests.map((q) => (
@@ -296,24 +350,83 @@ export default function Home() {
           </Card>
         </motion.div>
 
-        {/* ── 오늘의 운세 (신규: 사주·음양오행) ── */}
+        {/* ── 오늘의 운세 히어로 — 결과 프리뷰(생일 없으면 띠 맛보기)로 존재감 강화 ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 22 }}
         >
-          <div className="mt-3.5 grid grid-cols-2 gap-2.5">
-            <Card onClick={() => nav('/fortune')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-3.5">
+          <Card onClick={() => nav('/fortune')} className="mt-3.5 overflow-hidden !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-4">
+            <div className="flex items-center gap-2.5">
               <IconBadge emoji="🔮" tone="frost" size={40} radius={13} wiggle />
-              <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</h3>
+              <div className="min-w-0 flex-1">
+                <h3 className="break-keep text-[15.5px] font-extrabold leading-tight text-white">{t('fortune.title')}</h3>
+                <p className="mt-0.5 break-keep text-[11.5px] font-bold text-white/80">{t('fortune.homeSub')}</p>
+              </div>
               <span className="shrink-0 text-[15px] text-white/70">›</span>
-            </Card>
-            <Card onClick={() => nav('/compat')} className="flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#F25C8E] to-[#FF9EC0] !p-3.5">
-              <IconBadge emoji="💞" tone="frost" size={40} radius={13} wiggle />
-              <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('compat.title')}</h3>
-              <span className="shrink-0 text-[15px] text-white/70">›</span>
-            </Card>
-          </div>
+            </div>
+
+            {fx ? (
+              <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                <span className="flex items-center gap-1 rounded-full bg-white/20 px-3 py-1.5 text-[13px] font-extrabold text-white">
+                  {fx.zodiacEmoji} {l({ ko: `총운 ${fx.overall}점`, en: `Overall ${fx.overall}`, ja: `総運 ${fx.overall}点` })}
+                </span>
+                <span className="rounded-full bg-white/15 px-2.5 py-1.5 text-[12px] font-extrabold text-white/90">🎨 {fx.luckyColorKo}</span>
+                <span className="rounded-full bg-white/15 px-2.5 py-1.5 text-[12px] font-extrabold text-white/90">🔢 {fx.luckyNumber}</span>
+              </div>
+            ) : zlines.length > 0 ? (
+              <div className="mt-3" onClick={(e) => e.stopPropagation()}>
+                <p className="text-[12px] font-extrabold text-white/85">
+                  {l({ ko: '내 띠 누르고 3초 맛보기', en: 'Tap your zodiac for a 3s taste', ja: '干支をタップして3秒お試し' })}
+                </p>
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {zlines.map((z, i2) => (
+                    <button
+                      key={z.zo}
+                      onClick={() => setZPick(i2)}
+                      aria-label={z.zo}
+                      className={`rounded-full px-2 py-1 text-[16px] leading-none transition-colors ${zPick === i2 ? 'bg-white/90' : 'bg-white/15'}`}
+                    >
+                      {z.emoji}
+                    </button>
+                  ))}
+                </div>
+                <AnimatePresence mode="wait">
+                  {zPick !== null && zlines[zPick] && (
+                    <motion.div
+                      key={zPick}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="mt-2 rounded-xl bg-white/15 px-3 py-2.5"
+                    >
+                      <p className="break-keep text-[12.5px] font-bold leading-relaxed text-white">
+                        {zlines[zPick].emoji} {l(zlines[zPick].line)}
+                      </p>
+                      <button
+                        onClick={() => nav('/fortune')}
+                        className="mt-1.5 text-[12px] font-extrabold text-white underline underline-offset-2"
+                      >
+                        {l({ ko: '내 사주로 정확히 보기 →', en: 'See my exact fortune →', ja: '私の四柱で正確に見る →' })}
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <div className="mt-3 flex gap-2">
+                <SkeletonBlock className="h-8 w-28 rounded-full" />
+                <SkeletonBlock className="h-8 w-20 rounded-full" />
+              </div>
+            )}
+          </Card>
+
+          {/* 생일 궁합 — 슬림 배너 */}
+          <Card onClick={() => nav('/compat')} className="mt-2.5 flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#F25C8E] to-[#FF9EC0] !p-3.5">
+            <IconBadge emoji="💞" tone="frost" size={36} radius={12} wiggle />
+            <h3 className="min-w-0 flex-1 break-keep text-[14px] font-extrabold leading-tight text-white">{t('compat.title')}</h3>
+            <span className="shrink-0 text-[15px] text-white/70">›</span>
+          </Card>
         </motion.div>
 
         {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}

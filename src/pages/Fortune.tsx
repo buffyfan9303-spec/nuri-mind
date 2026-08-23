@@ -28,6 +28,7 @@ export default function Fortune() {
   const viewFortuneFull = useStore((s) => s.viewFortuneFull)
   const fortuneDetailDate = useStore((s) => s.fortuneDetailDate)
   const markFortuneDetail = useStore((s) => s.markFortuneDetail)
+  const markFortuneSeen = useStore((s) => s.markFortuneSeen)
   const spendDiamonds = useStore((s) => s.spendDiamonds)
   const fortuneAiDate = useStore((s) => s.fortuneAiDate)
   const fortuneAiData = useStore((s) => s.fortuneAiData)
@@ -41,6 +42,13 @@ export default function Fortune() {
   const [unlocked, setUnlocked] = useState(false)
   const [needCharge, setNeedCharge] = useState(false)
   const [showAd, setShowAd] = useState(false)
+  // 생일 입력 전 띠 맛보기(12지 — 생일 불필요, 오늘 날짜만 사용)
+  const zTaste = useMemo(() => {
+    const now = new Date()
+    return zodiacTodayLines({ y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() })
+      .map((z) => ({ emoji: z.zodiacEmoji, zo: z.zodiacKo, line: z.line }))
+  }, [])
+  const [zTastePick, setZTastePick] = useState<number | null>(null)
 
   const data = useMemo(() => {
     if (!birthDate) return null
@@ -63,6 +71,12 @@ export default function Fortune() {
   useEffect(() => {
     if (data) track('fortune_view')
   }, [data])
+
+  // 오늘의 퀘스트 '운세 확인' 판정 — 페이지 진입 자체를 열람으로 기록
+  useEffect(() => {
+    markFortuneSeen()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 상세 운세 해제 상태면 AI 개인화본을 하루 1회 생성·캐싱 (미배포/실패 시 결정론 템플릿 폴백)
   useEffect(() => {
@@ -177,6 +191,39 @@ export default function Fortune() {
                 🔮 {t('fortune.see')}
               </Button>
             </div>
+          </Card>
+
+          {/* 생일 입력 전에도 즉시 가치 — 띠만 골라 오늘의 기운 맛보기(zodiacTodayLines는 생일 불필요) */}
+          <Card className="mt-4">
+            <p className="px-1 text-[13.5px] font-extrabold">
+              {l({ ko: '🐾 먼저 띠로 3초 맛보기', en: '🐾 Quick taste by zodiac', ja: '🐾 まず干支で3秒お試し' })}
+            </p>
+            <div className="mt-2.5 grid grid-cols-6 gap-1.5">
+              {zTaste.map((z, i) => (
+                <button
+                  key={z.zo}
+                  onClick={() => setZTastePick(i)}
+                  aria-label={z.zo}
+                  className="flex aspect-square items-center justify-center rounded-2xl border-2 text-[22px]"
+                  style={{
+                    borderColor: zTastePick === i ? '#6B4FB8' : 'rgb(var(--line))',
+                    background: zTastePick === i ? '#6B4FB816' : 'rgb(var(--surface))',
+                  }}
+                >
+                  {z.emoji}
+                </button>
+              ))}
+            </div>
+            {zTastePick !== null && zTaste[zTastePick] && (
+              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-3 rounded-2xl bg-surface2 px-4 py-3">
+                <p className="break-keep text-[13px] font-bold leading-relaxed">
+                  {zTaste[zTastePick].emoji} <b>{zTaste[zTastePick].zo}{t('fortune.zodiacSuffix')}</b> · {l(zTaste[zTastePick].line)}
+                </p>
+                <p className="mt-1.5 break-keep text-[11.5px] font-medium text-ink-faint">
+                  {l({ ko: '위에 생년월일을 넣으면 사주(일주)로 훨씬 정확해져요', en: 'Add your birthday above for a much more precise reading', ja: '上に生年月日を入れると四柱でより正確に' })}
+                </p>
+              </motion.div>
+            )}
           </Card>
         </main>
       </div>

@@ -109,6 +109,8 @@ interface State {
   fortuneFreeUses: number
   /** 오늘의 상세 운세를 해제한 날짜(YYYY-MM-DD) — 오늘과 같으면 해제 상태(하루 1회) */
   fortuneDetailDate: string
+  /** 오늘의 운세를 열람한 날짜(YYYY-MM-DD) — 퀘스트 판정용 */
+  fortuneSeenDate: string
   /** AI 개인화 상세 운세 캐시(해당 날짜 1회 생성) */
   fortuneAiDate: string
   fortuneAiData: FortuneDetailText | null
@@ -233,6 +235,8 @@ interface State {
   viewFortuneFull: () => 'free' | 'dia' | 'need'
   /** 오늘의 상세 운세 해제 표시(오늘 날짜로) — 광고 시청 또는 다이아 차감 후 호출 */
   markFortuneDetail: () => void
+  /** 오늘의 운세 열람 기록(퀘스트) */
+  markFortuneSeen: () => void
   /** AI 개인화 상세 운세 캐시 저장(날짜+데이터) */
   setFortuneAi: (date: string, data: FortuneDetailText) => void
   /** IQ 정밀검사 전체 해제(10다이아) — 부족 시 false */
@@ -269,6 +273,7 @@ const initial = () => ({
   fortuneMonth: '',
   fortuneFreeUses: 0,
   fortuneDetailDate: '',
+  fortuneSeenDate: '',
   fortuneAiDate: '',
   fortuneAiData: null,
   iqUnlocked: false,
@@ -594,13 +599,13 @@ export const useStore = create<State>()(
           return correct ? grantFree(5, '🧠 데일리 심리 퀴즈 정답', `quiz:${today()}`) : 0
         },
 
-        /** 오늘의 퀘스트 — 출석 + 데일리퀴즈 + 검사 1개 모두 완료 시 보너스 +50P(하루 1회) */
+        /** 오늘의 퀘스트 — 출석 + 데일리퀴즈 + 검사 1개 + 운세 확인 모두 완료 시 보너스 +50P(하루 1회) */
         claimDailyQuest: () => {
           const s = get()
           const t = today()
           if (s.questClaimedDate === t) return 0
           const tested = s.results.some((r) => localDayOf(r.at) === t)
-          if (!(s.lastCheckIn === t && s.lastQuizDate === t && tested)) return 0
+          if (!(s.lastCheckIn === t && s.lastQuizDate === t && tested && s.fortuneSeenDate === t)) return 0
           set({ questClaimedDate: t })
           return grantFree(50, '🎯 오늘의 퀘스트 완료 보너스', `quest:${t}`)
         },
@@ -719,6 +724,9 @@ export const useStore = create<State>()(
           return 'need'
         },
         markFortuneDetail: () => set({ fortuneDetailDate: today() }),
+        markFortuneSeen: () => {
+          if (get().fortuneSeenDate !== today()) set({ fortuneSeenDate: today() })
+        },
         setFortuneAi: (date, data) => set({ fortuneAiDate: date, fortuneAiData: data }),
         /** IQ 정밀검사 전체 해제 — 1회 10다이아(영구) */
         unlockIq: () => {
