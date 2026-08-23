@@ -166,7 +166,7 @@ export default function Profile() {
             <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">
               {isPremium(s.premiumUntil)
                 ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
-                : l({ ko: '프리미엄 · 광고 제거 + 무제한', en: 'Premium · no ads + unlimited', ja: 'プレミアム・広告除去+無制限' })}
+                : l({ ko: '프리미엄 · 운세 무제한', en: 'Premium · unlimited fortune', ja: 'プレミアム・運勢無制限' })}
             </h3>
             <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">
               {isPremium(s.premiumUntil)

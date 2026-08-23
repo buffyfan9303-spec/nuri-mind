@@ -20,7 +20,9 @@ export function adsEnabled(): boolean {
 /**
  * AdSense 로더 스크립트를 <head>에 1회 주입.
  * VITE_ADSENSE_CLIENT 설정 시에만 동작 — index.html을 건드릴 필요 없이 env로 켜고 끔.
- * main.tsx 시작 시 호출.
+ * ⚠️ AdSlot 마운트 시에만 호출(콘텐츠 화면 전용) — 전역 주입 금지.
+ *    Auto Ads가 대시보드에서 켜져 있어도 비콘텐츠 화면엔 스크립트 자체가 없어 광고 불가
+ *    ("게시자 콘텐츠 없는 화면 광고" 정책 위반의 코드 레벨 방어).
  */
 export function loadAdSenseScript(): void {
   if (!adsEnabled() || typeof document === 'undefined') return

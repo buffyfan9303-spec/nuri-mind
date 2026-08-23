@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import './index.css'
-import { loadAdSenseScript } from './lib/ads'
 import { loadAnalytics } from './lib/analytics'
 import { loadKakao } from './lib/kakao'
 import { initSentry, SentryErrorBoundary } from './lib/sentry'
@@ -14,8 +13,7 @@ initSentry()
 // PWA — 서비스워커(라이브 도메인만) + 홈화면 설치 프롬프트 후킹
 registerSW()
 initInstallPrompt()
-// AdSense 로더 — VITE_ADSENSE_CLIENT 설정 시에만 주입(미설정이면 no-op)
-loadAdSenseScript()
+// ⚠️ AdSense 로더는 전역 주입 금지 — AdSlot 마운트 시에만(src/lib/ads.ts 참고, 정책 방어)
 // GA4 — VITE_GA_ID 설정 시에만 (미설정이면 no-op)
 loadAnalytics()
 // 카카오 공유 SDK — VITE_KAKAO_KEY 설정 시에만 (미설정이면 no-op)

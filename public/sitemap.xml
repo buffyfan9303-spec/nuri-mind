@@ -23,4 +23,17 @@
   <url><loc>https://www.nurimind.co.kr/magazine/sleep-phone</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.nurimind.co.kr/magazine/perfect-procrastination</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.nurimind.co.kr/magazine/emotion-regulation</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/fortune</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/rat</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/ox</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/tiger</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/rabbit</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/dragon</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/snake</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/horse</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/sheep</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/monkey</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/rooster</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/dog</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/pig</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
 </urlset>

@@ -23,6 +23,15 @@ import { localDay, localDayOf } from '../lib/date'
 
 const todayStr = () => localDay()
 
+/** 행운색 다국어(saju.ts COLOR_KO 5색 — 모듈이 지연 로드라 렌더용 미니맵을 여기 둠) */
+const LUCKY_COLOR_L: Record<string, L> = {
+  초록: { ko: '초록', en: 'Green', ja: '緑' },
+  빨강: { ko: '빨강', en: 'Red', ja: '赤' },
+  노랑: { ko: '노랑', en: 'Yellow', ja: '黄' },
+  흰색: { ko: '흰색', en: 'White', ja: '白' },
+  남색: { ko: '남색', en: 'Navy', ja: '紺' },
+}
+
 export default function Home() {
   const t = useT()
   const l = useL()
@@ -62,6 +71,7 @@ export default function Home() {
   const [fx, setFx] = useState<{ overall: number; luckyColorKo: string; luckyNumber: number; zodiacEmoji: string } | null>(null)
   const [zlines, setZlines] = useState<{ emoji: string; zo: string; line: L }[]>([])
   const [zPick, setZPick] = useState<number | null>(null)
+  const [sajuFail, setSajuFail] = useState(false)
   useEffect(() => {
     let alive = true
     import('../lib/saju').then((m) => {
@@ -79,6 +89,9 @@ export default function Home() {
       }
       // 생년월일 없음 → 띠 12지 맛보기(입력 장벽 제거: zodiacTodayLines는 생일이 필요 없음)
       setZlines(m.zodiacTodayLines(td).map((z) => ({ emoji: z.zodiacEmoji, zo: z.zodiacKo, line: z.line })))
+    }).catch(() => {
+      // 청크 로드 실패(재배포 후 구 해시·오프라인) — 스켈레톤 영구화 방지, 헤더+CTA만 렌더
+      if (alive) setSajuFail(true)
     })
     return () => {
       alive = false
@@ -312,7 +325,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            {questDone === 3 && !questClaimed && (
+            {questDone === quests.length && !questClaimed && (
               <button onClick={onClaimQuest} className="mt-3 w-full rounded-2xl bg-mind-500 py-3 text-[14.5px] font-extrabold text-white shadow-[0_3px_0_#2F6B52] transition-transform active:translate-y-[3px]">
                 🎁 {l({ ko: '보너스 +50P 받기', en: 'Claim +50P', ja: 'ボーナス+50P受取' })}
               </button>
@@ -371,7 +384,7 @@ export default function Home() {
                 <span className="flex items-center gap-1 rounded-full bg-white/20 px-3 py-1.5 text-[13px] font-extrabold text-white">
                   {fx.zodiacEmoji} {l({ ko: `총운 ${fx.overall}점`, en: `Overall ${fx.overall}`, ja: `総運 ${fx.overall}点` })}
                 </span>
-                <span className="rounded-full bg-white/15 px-2.5 py-1.5 text-[12px] font-extrabold text-white/90">🎨 {fx.luckyColorKo}</span>
+                <span className="rounded-full bg-white/15 px-2.5 py-1.5 text-[12px] font-extrabold text-white/90">🎨 {l(LUCKY_COLOR_L[fx.luckyColorKo] ?? { ko: fx.luckyColorKo, en: fx.luckyColorKo, ja: fx.luckyColorKo })}</span>
                 <span className="rounded-full bg-white/15 px-2.5 py-1.5 text-[12px] font-extrabold text-white/90">🔢 {fx.luckyNumber}</span>
               </div>
             ) : zlines.length > 0 ? (
@@ -385,7 +398,7 @@ export default function Home() {
                       key={z.zo}
                       onClick={() => setZPick(i2)}
                       aria-label={z.zo}
-                      className={`rounded-full px-2 py-1 text-[16px] leading-none transition-colors ${zPick === i2 ? 'bg-white/90' : 'bg-white/15'}`}
+                      className={`rounded-full px-2.5 py-2 text-[18px] leading-none transition-colors ${zPick === i2 ? 'bg-white/90' : 'bg-white/15'}`}
                     >
                       {z.emoji}
                     </button>
@@ -413,7 +426,7 @@ export default function Home() {
                   )}
                 </AnimatePresence>
               </div>
-            ) : (
+            ) : sajuFail ? null : (
               <div className="mt-3 flex gap-2">
                 <SkeletonBlock className="h-8 w-28 rounded-full" />
                 <SkeletonBlock className="h-8 w-20 rounded-full" />
@@ -534,7 +547,7 @@ export default function Home() {
               <h3 className="text-[15px] font-extrabold tracking-tight text-white">
                 {premium
                   ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
-                  : l({ ko: '프리미엄 · 광고 제거 + 무제한', en: 'Premium · no ads + unlimited', ja: 'プレミアム・広告除去+無制限' })}
+                  : l({ ko: '프리미엄 · 운세 무제한', en: 'Premium · unlimited fortune', ja: 'プレミアム・運勢無制限' })}
               </h3>
               <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
                 {premium

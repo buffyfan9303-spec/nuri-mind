@@ -78,6 +78,23 @@ export default function Fortune() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // SEO 메타 — sitemap 등재 경로라 canonical을 자기 자신으로(정적 index.html은 홈 고정). 언마운트 시 원복
+  useEffect(() => {
+    const prevTitle = document.title
+    const md = document.querySelector('meta[name="description"]')
+    const prevDesc = md?.getAttribute('content') ?? ''
+    const cl = document.querySelector('link[rel="canonical"]')
+    const prevCanon = cl?.getAttribute('href') ?? ''
+    document.title = '오늘의 운세 무료보기 — 사주·음양오행 | 누리 마인드'
+    md?.setAttribute('content', '생년월일만 넣으면 사주(일주)·음양오행으로 오늘의 총운·애정운·금전운·건강운과 행운의 색·숫자·방향까지 무료. 띠별 운세와 생일 궁합도 함께.')
+    cl?.setAttribute('href', 'https://www.nurimind.co.kr/fortune')
+    return () => {
+      document.title = prevTitle
+      md?.setAttribute('content', prevDesc)
+      if (prevCanon) cl?.setAttribute('href', prevCanon)
+    }
+  }, [])
+
   // 상세 운세 해제 상태면 AI 개인화본을 하루 1회 생성·캐싱 (미배포/실패 시 결정론 템플릿 폴백)
   useEffect(() => {
     const today = localDay()

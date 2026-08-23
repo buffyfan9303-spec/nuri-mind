@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { ADSENSE_CLIENT, ADSENSE_SLOT_BANNER, ADSENSE_SLOT_RECT, adsEnabled, pushAd } from '../lib/ads'
+import { ADSENSE_CLIENT, ADSENSE_SLOT_BANNER, ADSENSE_SLOT_RECT, adsEnabled, loadAdSenseScript, pushAd } from '../lib/ads'
 import { useStore, isPremium } from '../store/useStore'
 import { useNavigate } from 'react-router-dom'
 import { useT, useL } from '../i18n/useT'
@@ -23,6 +23,10 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
 
   useEffect(() => {
     if (isPremium(premiumUntil)) return
+    // ⚠️ 애드센스 정책 방어: 로더는 광고 슬롯이 실제로 있는 화면(결과지·매거진)에서만 주입.
+    //    전역(main.tsx) 주입 시 대시보드 Auto Ads가 켜져 있으면 홈·이동 화면에도 광고가
+    //    자동 삽입돼 "게시자 콘텐츠 없는 화면 광고" 위반이 된다 — 코드 레벨에서 원천 차단.
+    loadAdSenseScript()
     // 같은 <ins>에 중복 push 방지 — AdSense가 채운 요소엔 data-adsbygoogle-status가 붙는다.
     // (StrictMode 이중 실행·리렌더 시 "already have ads in them" TagError 발생 원인)
     const el = insRef.current
