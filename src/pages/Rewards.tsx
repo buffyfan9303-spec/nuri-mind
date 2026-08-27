@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
 import { DailyCapMeter, DailyQuiz, DailySpin } from '../components/Daily'
 import DailyExtras from '../components/DailyExtras'
@@ -19,6 +19,19 @@ export default function Rewards() {
   const t = useT()
   const l = useL()
   const nav = useNavigate()
+  const loc = useLocation()
+
+  // 홈 '친구 초대' CTA 딥링크 — 페이지 최상단이 아니라 초대 섹션으로 이동
+  useEffect(() => {
+    if ((loc.state as { scrollTo?: string } | null)?.scrollTo !== 'invite') return
+    const id = requestAnimationFrame(() => {
+      document.getElementById('invite')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      // 뒤로가기 후 재진입 시 다시 스크롤되지 않도록 state 소거
+      nav('.', { replace: true, state: null })
+    })
+    return () => cancelAnimationFrame(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loc.state])
   const points = useStore((s) => s.points)
   const streak = useStore((s) => s.streak)
   const lastCheckIn = useStore((s) => s.lastCheckIn)
@@ -210,8 +223,8 @@ export default function Rewards() {
           </Section>
         )}
 
-        {/* 친구 초대 */}
-        <div className="mt-6">
+        {/* 친구 초대 — 홈 CTA가 state.scrollTo='invite'로 딥링크(스크롤) */}
+        <div id="invite" className="mt-6 scroll-mt-20">
           <Invite />
         </div>
 

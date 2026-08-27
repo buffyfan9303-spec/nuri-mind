@@ -149,6 +149,8 @@ export default function Home() {
   }, [magHeads.length])
   const magHead = magHeads[magIdx]
   const trioDone = (['selfesteem', 'perfect', 'efficacy'] as const).every((id) => s.results.some((r) => r.testId === id))
+  // 심층검사 전 종목 완주 시 AI 종합 심층 리포트 진입 노출(프리미엄 가치 상단 노출)
+  const deepAllDone = TESTS.filter((tm) => !tm.precision).every((tm) => s.results.some((r) => r.testId === tm.id))
 
   return (
     <div className="bg-dots min-h-dvh pb-36">
@@ -535,6 +537,33 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* ── AI 종합 심층 리포트 — 심층 전종목 완주자 전용 진입(프리미엄 가치) ── */}
+        {deepAllDone && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px 0px' }}
+            transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+            className="mt-4"
+          >
+            <Card
+              onClick={() => nav('/deep-report')}
+              className="flex items-center gap-3.5 !bg-gradient-to-r from-[#6E7BF2] to-[#A88BF2] !p-4"
+            >
+              <IconBadge emoji="🧬" tone="frost" size={46} radius={15} wiggle />
+              <div className="min-w-0 flex-1">
+                <h3 className="break-keep text-[15.5px] font-extrabold tracking-tight text-white">
+                  {l({ ko: 'AI 종합 심층 리포트', en: 'AI deep report', ja: 'AI総合レポート' })}
+                </h3>
+                <p className="mt-0.5 break-keep text-[12.5px] font-bold text-white/85">
+                  {l({ ko: '심층검사 전 종목 완주! 나를 하나로 읽어드려요', en: 'All deep tests done — read as one person', ja: '深層検査完走！一つに読み解きます' })}
+                </p>
+              </div>
+              <span className="shrink-0 text-[15px] text-white/80">›</span>
+            </Card>
+          </motion.div>
+        )}
+
         {/* ── 프리미엄 구독 CTA — 수익화 존(검사 가치 체험 뒤) ── */}
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
           <button
@@ -581,7 +610,7 @@ export default function Home() {
         {/* 친구 초대 CTA — 바이럴 후크 (둘 다 +100P) */}
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
           <button
-            onClick={() => nav('/rewards')}
+            onClick={() => nav('/rewards', { state: { scrollTo: 'invite' } })}
             className="flex w-full items-center gap-3.5 rounded-3xl p-4 text-left shadow-pop"
             style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)' }}
           >

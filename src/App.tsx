@@ -46,6 +46,7 @@ const Charge = lazy(() => import('./pages/Charge'))
 const Premium = lazy(() => import('./pages/Premium'))
 const Duel = lazy(() => import('./pages/Duel'))
 const SelfReport = lazy(() => import('./pages/SelfReport'))
+const DeepReport = lazy(() => import('./pages/DeepReport'))
 
 export default function App() {
   const location = useLocation()
@@ -128,6 +129,7 @@ export default function App() {
               <Route path="/premium" element={<Premium />} />
               <Route path="/vs" element={<Duel />} />
               <Route path="/self-report" element={<SelfReport />} />
+              <Route path="/deep-report" element={<DeepReport />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<Navigate to="/" replace />} />

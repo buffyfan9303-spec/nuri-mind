@@ -27,6 +27,7 @@ export default function Premium() {
     : ''
 
   const BENEFITS = [
+    { e: '🧬', t: l({ ko: 'AI 종합 심층 리포트', en: 'AI deep report', ja: 'AI総合レポート' }), d: l({ ko: '심층검사 11종을 하나로 읽은 나의 설명서(전 섹션)', en: 'All 11 deep tests read as one person', ja: '深層検査11種を一つに読む' }) },
     { e: '🔮', t: l({ ko: '운세 무제한', en: 'Unlimited fortune', ja: '運勢無制限' }), d: l({ ko: '종합·상세 운세 매일 무제한 — 매달 다이아 걱정 끝', en: 'Full & detail fortune daily', ja: '総合・詳細運勢を無制限' }) },
     { e: '🚫', t: l({ ko: '광고 완전 제거', en: 'No ads', ja: '広告完全除去' }), d: l({ ko: '앱 전체 배너·하단 광고 제거', en: 'Removes all banners', ja: '全広告を除去' }) },
     { e: '🧠', t: l({ ko: '전 정밀검사 해제', en: 'All precision tests', ja: '全精密検査解除' }), d: l({ ko: 'IQ·기억·집중·처리속도·공간 상세 전부', en: 'IQ·memory·focus·speed·spatial', ja: 'IQ・記憶・集中・速度・空間' }) },
