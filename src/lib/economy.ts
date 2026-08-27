@@ -250,7 +250,10 @@ async function syncAccount(hooks: SyncHooks): Promise<void> {
     if (ledgerCount === null) return // 네트워크 실패 — 마커 미설정 상태로 다음 트리거에서 재시도
 
     if (marker && marker !== uid) {
-      // 계정 전환: 이전 지갑(다른 사람 포인트일 수 있음)을 새 계정으로 이관하지 않음
+      // 계정 전환: 이전 지갑(다른 사람 포인트일 수 있음)을 새 계정으로 이관하지 않음.
+      // ⚠️ 다만 '이전 계정 소유(uid 태그)' 미전송 항목은 지갑을 덮어쓰기 전에 반드시 배출해야
+      //    적립분이 로컬에서 영구 증발하지 않는다(force로 마커 불일치와 무관하게 전송).
+      if (!(await flushOutbox(true))) return
       saveOutbox(loadOutbox().filter((e) => e.uid !== null)) // 이전 지갑의 비로그인 활동 폐기
       if (ledgerCount > 0) {
         const server = await fetchServerPoints()

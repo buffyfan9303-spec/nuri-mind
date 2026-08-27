@@ -32,7 +32,7 @@ export default function Chemi() {
     if (!mine) return
     track('share', { channel: 'chemi' })
     const url = `${location.origin}/chemi?a=${mine}`
-    const txt = `[누리 마인드] 나랑 연애 궁합 볼래? 내 연애 동물은 ${l(PERSONAS[mine].name)} ${PERSONAS[mine].emoji}!`
+    const txt = `[누리 마인드] 나랑 연애 궁합 볼래? 내 연애 동물은 ${l(PERSONAS[mine]?.name ?? { ko: '', en: '', ja: '' })} ${PERSONAS[mine]?.emoji ?? '🐾'}!`
     try {
       if (navigator.share) await navigator.share({ text: txt, url })
       else {
@@ -74,7 +74,7 @@ export default function Chemi() {
       <TopBar back="/profile" title={t('chemi.title')} />
       <main className="mx-auto max-w-md px-5">
         <p className="px-1 text-[14px] font-medium leading-relaxed text-ink-sub">
-          {shared ? t('chemi.subFriend', { a: l(PERSONAS[theirs!].name) }) : t('chemi.sub')}
+          {shared && theirs && PERSONAS[theirs] ? t('chemi.subFriend', { a: l(PERSONAS[theirs].name) }) : t('chemi.sub')}
         </p>
 
         {/* 나 */}
@@ -104,11 +104,11 @@ export default function Chemi() {
             className="mt-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#F25C8E] to-[#FF8AAE] p-6 text-center text-white shadow-pop"
           >
             <div className="flex items-center justify-center gap-2 text-[40px]">
-              <span>{PERSONAS[mine].emoji}</span>
+              <span>{PERSONAS[mine]?.emoji ?? '🐾'}</span>
               <motion.span animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 1.6 }} className="text-[24px]">
                 ❤️
               </motion.span>
-              <span>{PERSONAS[theirs].emoji}</span>
+              <span>{PERSONAS[theirs]?.emoji ?? '🐾'}</span>
             </div>
             <div className="mt-3 text-[46px] font-extrabold leading-none">{chemi.score}%</div>
             <div className="mx-auto mt-3 h-2.5 max-w-[220px] overflow-hidden rounded-full bg-white/30">

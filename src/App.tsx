@@ -48,6 +48,9 @@ const Duel = lazy(() => import('./pages/Duel'))
 const SelfReport = lazy(() => import('./pages/SelfReport'))
 const DeepReport = lazy(() => import('./pages/DeepReport'))
 
+/** 가입 없이 볼 수 있는 공개 경로(SEO·공유 유입) — sitemap 등재 경로와 일치시킬 것 */
+const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs)(\/|$)/
+
 export default function App() {
   const location = useLocation()
   const fontScale = useStore((s) => s.fontScale)
@@ -77,9 +80,10 @@ export default function App() {
   }, [location.pathname])
 
 
-  // 회원가입(온보딩) 전이면 입장 대신 가입 화면
-  // 단, 약관·개인정보 페이지는 가입 화면에서 탭해 열 수 있도록 통과시킴
-  if (!onboarded && !location.pathname.startsWith('/legal')) return <Onboarding />
+  // 회원가입(온보딩) 전이면 입장 대신 가입 화면.
+  // 단, 공개 경로(약관·SEO 랜딩·매거진·공유 결과)는 통과 — 검색 유입·크롤러·공유링크가
+  // 가입 게이트에 막히면 sitemap 등재 URL이 전부 렌더되지 않는다.
+  if (!onboarded && !PUBLIC_ROUTES.test(location.pathname)) return <Onboarding />
 
   return (
     // reducedMotion="user": 시스템 '동작 줄이기' 설정 시 framer 전체가 자동으로 이동/스케일 생략(접근성 정합 단일 스위치)

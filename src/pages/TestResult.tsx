@@ -8,6 +8,7 @@ import Gauge from '../components/Gauge'
 import AiReport from '../components/AiReport'
 import Trend from '../components/Trend'
 import { ROUTINES } from '../data/routines'
+import type { TestId } from '../data/types'
 import { Card, Chip, TopBar, Modal } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
 import { testMeta } from '../data/tests'
@@ -21,6 +22,15 @@ import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
 import { encodeDuel } from '../lib/duel'
+
+/** 정밀검사 전용 실행 라우트 — 문항뱅크(/test/:id/run)가 아니라 인지과제 화면으로 보내야 한다 */
+const PRECISION_RUN: Partial<Record<TestId, string>> = {
+  memory: '/memory/run',
+  focus: '/focus/run',
+  speed: '/speed/run',
+  spatial: '/spatial/run',
+  switch: '/switch/run',
+}
 
 export default function TestResult() {
   const { rid } = useParams<{ rid: string }>()
@@ -822,8 +832,10 @@ export default function TestResult() {
             color={tm.btn}
             onClick={() =>
               nav(
-                // IQ 정밀(pro) 결과의 재검사는 같은 모드로 — mode 누락 시 빠른(fast) 10문항으로 떨어지는 버그 방지
-                `/test/${result.testId}/run${result.testId === 'iq' && result.iqMode === 'pro' ? '?mode=pro' : ''}`,
+                // 정밀검사(인지과제)는 전용 런 라우트를 쓴다 — /test/:id/run 은 문항뱅크 전용이라 백지가 됨.
+                // IQ 정밀(pro) 결과의 재검사는 같은 모드로(mode 누락 시 빠른 10문항으로 떨어지는 버그 방지)
+                PRECISION_RUN[result.testId] ??
+                  `/test/${result.testId}/run${result.testId === 'iq' && result.iqMode === 'pro' ? '?mode=pro' : ''}`,
                 { replace: true },
               )
             }

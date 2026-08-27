@@ -1,4 +1,5 @@
 import { LEGAL_VERSION } from '../../data/legal'
+import { localDay } from '../../lib/date'
 import { setSoundEnabled } from '../../lib/sound'
 import type { Avatar, Lang } from '../../data/types'
 
@@ -28,7 +29,7 @@ export interface SettingsActions {
 /** persist set (Partial<State> 패치) — 슬라이스 내부는 set의 형태만 알면 충분하므로 any로 느슨하게 받는다. */
 type Patch = (partial: any) => void
 
-const today = () => new Date().toISOString().slice(0, 10)
+const today = () => localDay()
 
 export const createSettingsSlice = (set: Patch): SettingsActions => ({
   setLang: (lang) => set({ lang }),

@@ -166,7 +166,7 @@ export default function ZodiacLanding() {
             <button
               key={z.slug}
               onClick={() => nav(`/zodiac/${z.slug}`)}
-              className={`rounded-2xl border-2 py-2 text-center ${z.slug === page.slug ? 'border-mind-400 bg-mind-50' : 'border-line bg-surface'}`}
+              className={`rounded-2xl border-2 py-2 text-center ${z.slug === page.slug ? 'border-mind-400 bg-mind-50 text-mind-800 dark:bg-mind-500/20 dark:text-mind-100' : 'border-line bg-surface'}`}
             >
               <span className="text-[20px]">{z.emoji}</span>
               <p className="text-[11px] font-extrabold">{z.ko}띠</p>

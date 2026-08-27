@@ -23,7 +23,8 @@ export default function SurveyTake() {
   const [doneOpen, setDoneOpen] = useState(false)
   const [earned, setEarned] = useState(0)
 
-  if (!survey || survey.status !== 'approved' || taken.includes(survey.id)) {
+  // ⚠️ 제출 직후엔 taken에 방금 id가 들어가므로, doneOpen(완료 모달) 중에는 리다이렉트하지 않는다.
+  if (!survey || survey.status !== 'approved' || (!doneOpen && taken.includes(survey.id))) {
     return <Navigate to="/rewards" replace />
   }
 

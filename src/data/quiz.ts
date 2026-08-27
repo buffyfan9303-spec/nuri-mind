@@ -157,6 +157,7 @@ export const QUIZ_BANK: QuizItem[] = [
 
 /** 날짜 기반 오늘의 퀴즈 인덱스 */
 export function todayQuizIndex(d = new Date()): number {
-  const days = Math.floor(d.getTime() / 86400000)
-  return days % QUIZ_BANK.length
+  // ⚠️ UTC 기준이면 로컬 일일 게이트(lib/date)와 경계가 달라 같은 문제가 이틀 연속 나온다
+  const localMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  return Math.floor(localMidnight / 86400000) % QUIZ_BANK.length
 }

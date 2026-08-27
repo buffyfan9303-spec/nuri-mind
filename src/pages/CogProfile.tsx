@@ -35,6 +35,9 @@ const poly = (rs: number[]) => rs.map((r, i) => pt(i, r).join(',')).join(' ')
 /** 지수(60~145) → 레이더 반경 비율(0.05~1) */
 const norm = (v: number | null) => (v == null ? 0 : Math.max(0.05, Math.min(1, (v - 60) / 85)))
 
+/** 축 개수 단일 소스 — 하드코딩 5는 6축 추가 후 '6/5' 오표기를 냈다 */
+const TOTAL_METRICS = METRICS.length
+
 export default function CogProfile() {
   const l = useL()
   const nav = useNavigate()
@@ -138,7 +141,7 @@ export default function CogProfile() {
           <h1 className="mt-2 text-[22px] font-extrabold tracking-tight">{l({ ko: '종합 인지 프로필', en: 'Cognitive Profile', ja: '総合認知プロフィール' })}</h1>
           <p className="mt-1.5 text-[13.5px] font-bold text-white/85">
             {avg != null
-              ? l({ ko: `정밀검사 ${doneCount}/5 · 종합 ${avg}`, en: `${doneCount}/5 tests · avg ${avg}`, ja: `精密検査 ${doneCount}/5・総合 ${avg}` })
+              ? l({ ko: `정밀검사 ${doneCount}/${TOTAL_METRICS} · 종합 ${avg}`, en: `${doneCount}/${TOTAL_METRICS} tests · avg ${avg}`, ja: `精密検査 ${doneCount}/${TOTAL_METRICS}・総合 ${avg}` })
               : l({ ko: '정밀검사를 풀면 인지 지도가 그려져요', en: 'Take precision tests to map your mind', ja: '精密検査を解くと認知地図が描かれます' })}
           </p>
         </motion.div>
@@ -253,9 +256,9 @@ export default function CogProfile() {
           </div>
         )}
 
-        {doneCount < 5 && (
+        {doneCount < TOTAL_METRICS && (
           <p className="mt-3 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">
-            {l({ ko: `정밀검사 ${5 - doneCount}종을 더 풀면 인지 지도가 완성돼요.`, en: `Take ${5 - doneCount} more precision tests to complete your map.`, ja: `あと${5 - doneCount}種でマップが完成します。` })}
+            {l({ ko: `정밀검사 ${TOTAL_METRICS - doneCount}종을 더 풀면 인지 지도가 완성돼요.`, en: `Take ${TOTAL_METRICS - doneCount} more precision tests to complete your map.`, ja: `あと${TOTAL_METRICS - doneCount}種でマップが完成します。` })}
           </p>
         )}
 

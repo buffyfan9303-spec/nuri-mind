@@ -129,18 +129,23 @@ export default function Home() {
   // 퀵테스트 칩 — 문항·결과 데이터(60KB)는 지연 로드(메인 번들 오염 방지). 칩엔 메타 4필드만 필요
   const [quickChips, setQuickChips] = useState<{ id: string; emoji: string; title: L; grad0: string }[]>([])
   useEffect(() => {
-    import('../data/quick').then((m) =>
-      setQuickChips(m.QUICK_TESTS.map((q) => ({ id: q.id, emoji: q.emoji, title: q.title, grad0: q.grad[0] }))),
-    )
+    import('../data/quick')
+      .then((m) =>
+        setQuickChips(m.QUICK_TESTS.map((q) => ({ id: q.id, emoji: q.emoji, title: q.title, grad0: q.grad[0] }))),
+      )
+      // 청크 로드 실패(재배포 후 구 해시·오프라인) — 스켈레톤 영구 고착·unhandled rejection 방지
+      .catch(() => setQuickChips([]))
   }, [])
 
   // 매거진 최신 글 롤링 — 본문 데이터는 지연 로드(메인 번들에 매거진 전문 미포함)
   const [magHeads, setMagHeads] = useState<{ id: string; emoji: string; title: L }[]>([])
   const [magIdx, setMagIdx] = useState(0)
   useEffect(() => {
-    import('../data/magazine').then((m) =>
-      setMagHeads(m.ARTICLES.slice(-4).reverse().map((a) => ({ id: a.id, emoji: a.emoji, title: a.title }))),
-    )
+    import('../data/magazine')
+      .then((m) =>
+        setMagHeads(m.ARTICLES.slice(-4).reverse().map((a) => ({ id: a.id, emoji: a.emoji, title: a.title }))),
+      )
+      .catch(() => setMagHeads([]))
   }, [])
   useEffect(() => {
     if (magHeads.length < 2) return

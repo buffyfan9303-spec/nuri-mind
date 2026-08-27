@@ -1,4 +1,5 @@
-import { Navigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useStore } from '../store/useStore'
 import { Card, Chip, TopBar } from '../components/ui'
 import { useT } from '../i18n/useT'
 import { LEGAL_EFFECTIVE } from '../data/legal'
@@ -376,12 +377,14 @@ const PRIVACY = `누리 마인드 개인정보처리방침
 
 export default function Legal() {
   const { doc } = useParams<{ doc: string }>()
+  const nav = useNavigate()
+  const onboarded = useStore((st) => st.onboarded)
   const t = useT()
   if (doc !== 'terms' && doc !== 'privacy') return <Navigate to="/profile" replace />
   const isTerms = doc === 'terms'
   return (
     <div className="min-h-dvh pb-36">
-      <TopBar back="/profile" title={t(isTerms ? 'legal.terms' : 'legal.privacy')} />
+      <TopBar back={onboarded ? '/profile' : () => nav(-1)} title={t(isTerms ? 'legal.terms' : 'legal.privacy')} />
       <main className="mx-auto max-w-md px-5">
         <Chip tone="mind">✅ {LEGAL_EFFECTIVE} 시행 · 엔에이치홀딩스</Chip>
         <Card className="mt-3">

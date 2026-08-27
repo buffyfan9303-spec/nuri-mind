@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
@@ -10,6 +11,7 @@ import { track } from '../lib/analytics'
 
 export default function Compat() {
   const t = useT()
+  const nav = useNavigate()
   const l = useL()
   const birthDate = useStore((s) => s.birthDate)
   const setBirthDate = useStore((s) => s.setBirthDate)
@@ -60,7 +62,7 @@ export default function Compat() {
 
   return (
     <div className="bg-dots min-h-dvh pb-36">
-      <TopBar back="/fortune" title={t('compat.title')} />
+      <TopBar back={() => nav(-1)} title={t('compat.title')} />
       <main className="mx-auto max-w-md px-5">
         <div className="mt-6 text-center">
           <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.8 }} className="text-[52px] leading-none">

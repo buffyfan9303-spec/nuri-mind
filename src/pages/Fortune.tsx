@@ -50,7 +50,9 @@ export default function Fortune() {
       setTimeout(() => setShareBonus(false), 2400)
     }
   }
-  const [unlocked, setUnlocked] = useState(false)
+  // 오늘 이미 해제했다면 새로고침해도 열린 상태 유지(유료 결제 소멸 방지)
+  const fortuneFullDate = useStore((st) => st.fortuneFullDate)
+  const [unlocked, setUnlocked] = useState(fortuneFullDate === localDay())
   const [needCharge, setNeedCharge] = useState(false)
   const [showAd, setShowAd] = useState(false)
   // 생일 입력 전 띠 맛보기(12지 — 생일 불필요, 오늘 날짜만 사용)
@@ -210,7 +212,7 @@ export default function Fortune() {
             <input
               type="date"
               value={draft}
-              max="2025-12-31"
+              max={localDay()}
               min="1920-01-01"
               onChange={(e) => setDraft(e.target.value)}
               className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[16px] font-extrabold outline-none focus:border-mind-400"

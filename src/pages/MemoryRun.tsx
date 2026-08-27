@@ -46,6 +46,7 @@ export default function MemoryRun() {
   const bwdRef = useRef<SpanTrial[]>([])
   const startRef = useRef(Date.now())
   const finishedRef = useRef(false)
+  const flowRef = useRef<number | undefined>(undefined)
 
   const lensFor = (b: number) => (b === 0 ? FWD_LENS : BWD_LENS)
   const done = fwdRef.current.length + bwdRef.current.length
@@ -64,6 +65,9 @@ export default function MemoryRun() {
   }
 
   // 최초 진입 — 정방향 1번부터
+
+  // 언마운트 시 진행 타이머 해제(중단 후 결과 저장·강제 이동 방지)
+  useEffect(() => () => window.clearTimeout(flowRef.current), [])
   useEffect(() => {
     beginTrial(0, 0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,7 +125,9 @@ export default function MemoryRun() {
     if (correct) sfx.coin()
     else sfx.err()
     setPhase('feedback')
-    setTimeout(() => {
+    // ⚠️ 핸들을 보관해 언마운트/중단 시 해제 — 안 그러면 이탈 후에도 finish()가 실행돼
+    //    결과가 저장되고 결과 화면으로 강제 이동한다.
+    flowRef.current = window.setTimeout(() => {
       const lens = lensFor(block)
       if (trialIdx < lens.length - 1) beginTrial(block, trialIdx + 1)
       else if (block === 0) beginTrial(1, 0)

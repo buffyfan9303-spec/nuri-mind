@@ -27,7 +27,7 @@ export function Modal({
             exit={{ y: 90, opacity: 0 }}
             transition={SPRING.bounce}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-t-3xl bg-surface p-6 pb-8 shadow-pop sm:rounded-3xl sm:pb-6"
+            className="max-h-[85dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-3xl bg-surface p-6 pb-8 shadow-pop sm:rounded-3xl sm:pb-6"
           >
             {children}
           </motion.div>

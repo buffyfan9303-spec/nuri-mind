@@ -32,13 +32,15 @@ self.addEventListener('fetch', (e) => {
       (async () => {
         try {
           const fresh = await fetch(req)
-          // 5xx/404 HTML이 정상 셸('/')을 덮어쓰지 않게 — 성공 응답만 캐시
-          if (fresh.ok) {
+          // 5xx/404 HTML이 정상 셸('/')을 덮어쓰지 않게 — 성공 응답만 캐시.
+          // ⚠️ /api/* 는 SPA 셸이 아니므로 절대 '/'로 저장하면 안 된다(오프라인 셸 오염·리다이렉트 루프).
+          if (fresh.ok && !url.pathname.startsWith('/api/')) {
             const cache = await caches.open(CACHE)
             cache.put('/', fresh.clone()).catch(() => {})
           }
           return fresh
         } catch {
+          if (url.pathname.startsWith('/api/')) return Response.error()
           const cache = await caches.open(CACHE)
           return (await cache.match('/')) || (await cache.match(req)) || Response.error()
         }

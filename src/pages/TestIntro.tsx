@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import { TopBar, Card } from '../components/ui'
@@ -14,6 +14,9 @@ export default function TestIntro() {
   const nav = useNavigate()
   const tm = testMeta(id as TestId)
   const iqUnlocked = useStore((s) => s.iqUnlocked)
+
+  // 알 수 없는 검사 id(오타·구링크)면 크래시 대신 홈으로 — tm 단언(!) 사용처 보호
+  if (!tm) return <Navigate to="/" replace />
 
   return (
     <div className="min-h-dvh pb-36">

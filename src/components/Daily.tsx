@@ -6,9 +6,11 @@ import { QUIZ_BANK, todayQuizIndex } from '../data/quiz'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
+import { localDay } from '../lib/date'
 import { sfx } from '../lib/sound'
 
-const todayStr = () => new Date().toISOString().slice(0, 10)
+// ⚠️ UTC(toISOString)는 KST 하루 경계를 오전 9시로 밀어 스토어(lib/date)와 어긋난다
+const todayStr = () => localDay()
 
 /** 오늘 무료 적립 — 제한 없음(무제한). 오늘 적립량만 가볍게 표시. */
 export function DailyCapMeter() {

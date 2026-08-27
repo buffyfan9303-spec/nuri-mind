@@ -111,6 +111,8 @@ interface State {
   fortuneDetailDate: string
   /** 오늘의 운세를 열람한 날짜(YYYY-MM-DD) — 퀘스트 판정용 */
   fortuneSeenDate: string
+  /** 종합 운세를 해제한 날짜(YYYY-MM-DD) — 같은 날 재차감 방지(영속) */
+  fortuneFullDate: string
   /** 운세 공유 보상을 받은 날짜(YYYY-MM-DD) — 하루 1회 */
   fortuneShareDate: string
   /** AI 개인화 상세 운세 캐시(해당 날짜 1회 생성) */
@@ -278,6 +280,7 @@ const initial = () => ({
   fortuneFreeUses: 0,
   fortuneDetailDate: '',
   fortuneSeenDate: '',
+  fortuneFullDate: '',
   fortuneShareDate: '',
   fortuneAiDate: '',
   fortuneAiData: null,
@@ -716,14 +719,16 @@ export const useStore = create<State>()(
         viewFortuneFull: () => {
           const s = get()
           if (isPremium(s.premiumUntil)) return 'free' // 프리미엄 = 무제한 무료
+          // ⚠️ 오늘 이미 해제(무료횟수 or 다이아 결제)했으면 재차감 금지 — 새로고침·재진입해도 유지
+          if (s.fortuneFullDate === today()) return 'free'
           const m = localMonth()
           const used = s.fortuneMonth === m ? s.fortuneFreeUses : 0
           if (used < FORTUNE_FREE_PER_MONTH) {
-            set({ fortuneMonth: m, fortuneFreeUses: used + 1 })
+            set({ fortuneMonth: m, fortuneFreeUses: used + 1, fortuneFullDate: today() })
             return 'free'
           }
           if (s.diamonds >= FORTUNE_DIA_COST) {
-            set({ diamonds: s.diamonds - FORTUNE_DIA_COST })
+            set({ diamonds: s.diamonds - FORTUNE_DIA_COST, fortuneFullDate: today() })
             return 'dia'
           }
           return 'need'

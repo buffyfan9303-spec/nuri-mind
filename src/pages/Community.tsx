@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '../components/Button'
 import Avatar from '../components/Avatar'
@@ -74,7 +74,8 @@ export default function Community() {
   const [server, setServer] = useState<boolean | null>(null)
   const [serverPosts, setServerPosts] = useState<CommunityPost[]>([])
   const [newCount, setNewCount] = useState(0)
-  const [pulling, setPulling] = useState(0) // 당겨서 새로고침 거리(px)
+  const [pulling, setPulling] = useState(0)
+  const pullRef = useRef(0) // 당겨서 새로고침 거리(px)
   const [refreshing, setRefreshing] = useState(false)
 
   const reload = async () => {
@@ -123,7 +124,10 @@ export default function Community() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [server])
 
-  /** 당겨서 새로고침 — 스크롤 최상단에서 아래로 당길 때만 */
+  /** 당겨서 새로고침 — 스크롤 최상단에서 아래로 당길 때만.
+   *  ⚠️ deps에 pulling을 두면 onMove의 setPulling이 이펙트를 재실행시켜 리스너가 재등록되고
+   *     제스처 로컬 상태(startY/active)가 초기화된다 → onEnd가 영원히 안 걸려 인디케이터 고착.
+   *     당김 값은 ref로 들고, 리스너는 마운트당 1회만 등록한다. */
   useEffect(() => {
     let startY = 0
     let active = false
@@ -136,18 +140,27 @@ export default function Community() {
     const onMove = (e: TouchEvent) => {
       if (!active) return
       const d = e.touches[0].clientY - startY
-      if (d > 0) setPulling(Math.min(d * 0.5, 80))
+      if (d > 0) {
+        const v = Math.min(d * 0.5, 80)
+        pullRef.current = v
+        setPulling(v)
+      }
     }
     const onEnd = async () => {
       if (!active) return
       active = false
-      if (pulling > 50) {
+      const pulled = pullRef.current
+      pullRef.current = 0
+      setPulling(0)
+      if (pulled > 50) {
         setRefreshing(true)
-        await reload()
-        setRefreshing(false)
+        try {
+          await reload()
+        } finally {
+          setRefreshing(false)
+        }
         sfx.tap()
       }
-      setPulling(0)
     }
     window.addEventListener('touchstart', onStart, { passive: true })
     window.addEventListener('touchmove', onMove, { passive: true })
@@ -158,7 +171,7 @@ export default function Community() {
       window.removeEventListener('touchend', onEnd)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pulling])
+  }, [])
 
   const myAnimal = results[0] ? PERSONAS[results[0].persona]?.emoji : undefined
   const raw = server ? serverPosts : localPosts
