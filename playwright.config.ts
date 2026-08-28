@@ -28,7 +28,19 @@ export default defineConfig({
   webServer: {
     command: 'npm run build && npx vite preview --port 4173 --strictPort',
     url: 'http://localhost:4173',
-    reuseExistingServer: !process.env.CI,
+    /**
+     * ⚠️ 절대 true로 되돌리지 말 것.
+     *
+     * true이면 4173에 뭔가 떠 있을 때 빌드를 건너뛰고 그걸 재사용한다. Windows에서는
+     * `npm run build && vite preview`가 셸을 거쳐 실행돼 Playwright가 셸을 죽여도 vite가
+     * 고아로 남는데, 그 고아가 **옛 dist를 계속 서빙한다**. 그러면 테스트는 방금 고친 코드가
+     * 아니라 몇 판 전 빌드를 검사한다 — 실제로 그래서 30/30이 통째로 거짓 실패했고,
+     * 반대 방향이었다면 깨진 코드가 초록불로 통과했을 것이다.
+     *
+     * false면 매번 새로 빌드하고, 포트가 잡혀 있으면 --strictPort가 요란하게 실패한다.
+     * 느리지만 "조용히 틀린 것"보다 "시끄럽게 멈추는 것"이 낫다.
+     */
+    reuseExistingServer: false,
     timeout: 180_000,
   },
 })
