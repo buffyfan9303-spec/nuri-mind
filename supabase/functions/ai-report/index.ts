@@ -5,7 +5,7 @@
  * 제공자·모델 선택은 ./llm.ts — ANTHROPIC_API_KEY 또는 GOOGLE_API_KEY 중 설정된 쪽을 자동 사용.
  * 키 미설정 시 클라이언트가 기존 정적 리포트로 폴백하므로 앱은 그대로 동작합니다.
  */
-import { callLlm } from './llm.ts'
+import { callLlm, withinQuota } from './llm.ts'
 
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +22,9 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return json({ error: 'method' }, 405)
   try {
+    // 남용 차단 — anon 키가 번들에 있어 누구나 호출할 수 있다. 한 주체가 하루 할당량을
+    // 독점하면 정상 사용자 전원이 그날 기능을 못 쓴다(검사 종류만큼 + 재시도 여유).
+    if (!(await withinQuota(req, 'ai-report', 30))) return json({ error: 'quota' }, 429)
     const b = await req.json()
     const lang: string = b.lang ?? 'ko'
     const langName = lang === 'en' ? 'English' : lang === 'ja' ? 'Japanese' : 'Korean'

@@ -181,3 +181,59 @@ export function parseJson<T>(text: string): T | null {
     }
   }
 }
+
+/* ────────────────────────── 쿼터 가드 ────────────────────────── */
+
+/**
+ * 호출 주체 식별 — 로그인 사용자는 uid, 비로그인은 IP 해시.
+ *
+ * ⚠️ 원문 IP는 저장하지 않는다. anon 키가 클라이언트 번들에 들어있는 이상
+ * "인증 여부"만으로는 남용을 막을 수 없어 비로그인도 주체로 세야 하는데,
+ * 그렇다고 방문자 IP를 DB에 남길 이유는 없다(개인정보 최소수집).
+ */
+async function callerSubject(req: Request): Promise<string> {
+  const auth = req.headers.get('authorization') ?? ''
+  const jwt = auth.replace(/^Bearer\s+/i, '')
+  const parts = jwt.split('.')
+  if (parts.length === 3) {
+    try {
+      const pad = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+      const claims = JSON.parse(atob(pad + '='.repeat((4 - (pad.length % 4)) % 4)))
+      // role이 authenticated여야 진짜 로그인 사용자다 — anon 키의 sub는 신뢰할 수 없다
+      if (claims.role === 'authenticated' && typeof claims.sub === 'string') return `u:${claims.sub}`
+    } catch {
+      /* 토큰이 아니면 아래 IP 경로로 */
+    }
+  }
+  const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown'
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`nuri-mind:${ip}`))
+  const hex = Array.from(new Uint8Array(buf))
+    .slice(0, 12)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+  return `ip:${hex}`
+}
+
+/**
+ * 일일 호출 한도 확인. 한도 내면 true(카운터 1 증가).
+ *
+ * 실패 시(테이블 미배포·네트워크 오류) true를 돌려준다 — 가드가 죽었다고 기능을 막지는 않는다.
+ * 이건 남용 방지 장치지 인증 장치가 아니다. 인증은 verify_jwt가 담당한다.
+ */
+export async function withinQuota(req: Request, fn: string, limit: number): Promise<boolean> {
+  const url = env('SUPABASE_URL')
+  const svc = env('SUPABASE_SERVICE_ROLE_KEY')
+  if (!url || !svc) return true
+  try {
+    const subject = await callerSubject(req)
+    const r = await fetch(`${url}/rest/v1/rpc/bump_ai_usage`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', apikey: svc, authorization: `Bearer ${svc}` },
+      body: JSON.stringify({ p_subject: subject, p_fn: fn, p_limit: limit }),
+    })
+    if (!r.ok) return true
+    return (await r.json()) !== false
+  } catch {
+    return true
+  }
+}

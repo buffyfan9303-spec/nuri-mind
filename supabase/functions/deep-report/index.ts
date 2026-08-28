@@ -11,7 +11,7 @@
  * ⚠️ 프리미엄 판정은 현재 클라이언트 attested(구독 상태를 클라가 보냄).
  *    서버측 검증(profiles.premium_until 조회)은 하드닝 항목 — PG 연동 시 함께 적용.
  */
-import { callLlm, parseJson } from './llm.ts'
+import { callLlm, parseJson, withinQuota } from './llm.ts'
 
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -50,6 +50,9 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return json({ error: 'method' }, 405)
   try {
+    // 남용 차단 — anon 키가 번들에 있어 누구나 호출할 수 있다. 한 주체가 하루 할당량을
+    // 독점하면 정상 사용자 전원이 그날 기능을 못 쓴다(리포트는 한 번 만들면 캐시된다 — 재시도 여유까지 5회면 충분).
+    if (!(await withinQuota(req, 'deep-report', 5))) return json({ error: 'quota' }, 429)
     const b = await req.json()
     const lang: string = b.lang ?? 'ko'
     const langName = lang === 'en' ? 'English' : lang === 'ja' ? 'Japanese' : 'Korean'

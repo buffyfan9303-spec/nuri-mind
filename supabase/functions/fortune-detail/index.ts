@@ -9,7 +9,7 @@
  *    GEMINI_MODEL / AI_MODEL 시크릿으로 이 함수만 따로 지정할 수는 없으니(공용 어댑터),
  *    비용이 문제라면 전체를 Gemini로 돌리는 편이 단순하다.
  */
-import { callLlm, parseJson } from './llm.ts'
+import { callLlm, parseJson, withinQuota } from './llm.ts'
 
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -28,6 +28,9 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return json({ error: 'method' }, 405)
   try {
+    // 남용 차단 — anon 키가 번들에 있어 누구나 호출할 수 있다. 한 주체가 하루 할당량을
+    // 독점하면 정상 사용자 전원이 그날 기능을 못 쓴다(운세는 하루 1회 캐시 — 언어 전환·재시도 여유까지 10회).
+    if (!(await withinQuota(req, 'fortune-detail', 10))) return json({ error: 'quota' }, 429)
     const b = await req.json()
     const lang: string = b.lang ?? 'ko'
     const langName = lang === 'en' ? 'English' : lang === 'ja' ? 'Japanese' : 'Korean'

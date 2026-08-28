@@ -74,6 +74,7 @@ const VERDICT: Record<string, string> = {
   not_configured: '❌ Supabase 미설정(VITE_SUPABASE_URL/ANON_KEY)',
   network: '❌ 네트워크 오류 — 함수에 도달하지 못함',
   http: '❌ 함수 호출 자체가 거부됨(인증/배포 확인)',
+  quota: '⏳ 오늘 호출 한도 도달 — 남용 차단 장치가 정상 동작 중(내일 초기화)',
 }
 
 export async function probeAi(fn: AiFnName): Promise<AiHealth> {
