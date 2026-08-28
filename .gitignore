@@ -13,3 +13,5 @@ PUSH-KEYS.local.txt
 /playwright/.cache/
 *.tmp.config.ts
 pw.*.config.*
+.mutbak/
+mut.sh

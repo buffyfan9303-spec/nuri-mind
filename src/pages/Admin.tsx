@@ -360,8 +360,8 @@ function Console() {
           <div className="mt-3 rounded-2xl bg-white/10 p-4">
             <h3 className="text-[14px] font-extrabold text-white">🩺 AI 연결 진단</h3>
             <p className="mt-1 text-[11.5px] leading-relaxed text-white/50">
-              ANTHROPIC_API_KEY가 없으면 앱은 조용히 정적 요약으로 착지해요. 키를 넣은 뒤 여기서 실제 동작을 확인하세요.
-              (실호출 1회분이 과금됩니다)
+              키(ANTHROPIC_API_KEY 또는 GOOGLE_API_KEY)가 없으면 앱은 조용히 정적 요약으로 착지해요.
+              키를 넣은 뒤 여기서 실제 동작과 어느 제공자가 붙었는지 확인하세요. (실호출 1회분이 과금됩니다)
             </p>
             <button
               disabled={aiBusy}

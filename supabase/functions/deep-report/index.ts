@@ -4,14 +4,15 @@
  * 개별 검사 리포트(ai-report)와 다른 점: 검사 하나를 해석하는 게 아니라
  * **전 검사를 가로질러 "한 사람"으로 통합**한다. 이것이 프리미엄의 유일한 가치.
  *
- * 키는 서버(엣지)에만 — 클라이언트에 ANTHROPIC_API_KEY가 절대 노출되지 않습니다.
- * 배포: MCP deploy_edge_function 또는 supabase functions deploy deep-report
- * 시크릿: ANTHROPIC_API_KEY (선택: AI_MODEL)
+ * 키는 서버(엣지)에만 — 클라이언트에 노출되지 않습니다. 제공자·모델 선택은 ./llm.ts 참고
+ * (ANTHROPIC_API_KEY 또는 GOOGLE_API_KEY 중 설정된 쪽을 자동 사용).
  * 미배포/키 없음 → 클라가 정적 폴백(페르소나 조합)으로 동작하므로 앱은 그대로.
  *
  * ⚠️ 프리미엄 판정은 현재 클라이언트 attested(구독 상태를 클라가 보냄).
  *    서버측 검증(profiles.premium_until 조회)은 하드닝 항목 — PG 연동 시 함께 적용.
  */
+import { callLlm, parseJson } from './llm.ts'
+
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -49,12 +50,6 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return json({ error: 'method' }, 405)
   try {
-    // @ts-ignore Deno
-    const key = Deno.env.get('ANTHROPIC_API_KEY')
-    if (!key) return json({ error: 'no_key' }, 500)
-    // @ts-ignore Deno
-    const model = Deno.env.get('AI_MODEL') ?? 'claude-opus-5'
-
     const b = await req.json()
     const lang: string = b.lang ?? 'ko'
     const langName = lang === 'en' ? 'English' : lang === 'ja' ? 'Japanese' : 'Korean'
@@ -91,56 +86,27 @@ Deno.serve(async (req: Request) => {
       (hasCog ? `Cognitive indices (100=avg, SD15): ${JSON.stringify(cog)}\n` : '') +
       `\nWrite the integrated report now. Remember: cross-test threads, not a per-test list.`
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model,
-        // ⚠️ Opus 5는 thinking이 기본 ON이고 그 토큰도 max_tokens에서 나간다. 4000이면 8섹션 JSON이
-        //    생각 도중 잘려 파싱에 실패하고, 사용자는 키를 넣었는데도 정적 폴백만 본다.
-        max_tokens: 12000,
-        // 화면이 '20초 정도'를 약속한다 — 리포트 작성은 medium이면 충분하고 지연이 절반 이하로 준다
-        output_config: { effort: 'medium' },
-        system,
-        messages: [{ role: 'user', content: user }],
-      }),
+    const r = await callLlm(system, user, {
+      // ⚠️ 생각 토큰이 이 예산에서 나간다 — 8섹션(~1800자) JSON을 4000으로 잡으면
+      //    생각 도중 잘려 파싱에 실패하고, 사용자는 키를 넣었는데도 정적 폴백만 본다.
+      maxTokens: 12000,
+      json: true,
+      // 화면이 '20초 정도'를 약속한다 — 리포트 작성은 medium이면 충분하다
+      effort: 'medium',
     })
-    if (!resp.ok) {
-      // 상류 오류 메시지를 그대로 넘긴다 — 키 오타·크레딧 소진·모델명 오류를 구분하려면 이게 필요하다.
-      // (응답 본문에 API 키가 들어가지 않는다 — 상류는 키를 에코하지 않는다.)
-      const why = await resp.text().catch(() => '')
-      return json({ error: 'upstream', status: resp.status, detail: why.slice(0, 300) }, 502)
-    }
-    const data = await resp.json()
-    // 안전 차단은 HTTP 200으로 온다 — content를 읽기 전에 stop_reason부터 확인
-    if (data.stop_reason === 'refusal') return json({ error: 'refusal' }, 502)
-    // thinking 블록이 섞여 오므로 text 블록만 취한다(합치면 JSON 앞에 요약문이 붙어 파싱이 깨진다)
-    const text = (data.content ?? [])
-      .filter((c: { type?: string }) => c.type === 'text')
-      .map((c: { text?: string }) => c.text ?? '')
-      .join('')
-      .trim()
-    if (!text) return json({ error: 'empty' }, 502)
-    // 잘림은 'parse' 실패로 뭉뚱그리지 않는다 — 원인이 다르면 대응(max_tokens 상향)도 다르다
-    if (data.stop_reason === 'max_tokens') return json({ error: 'truncated' }, 502)
+    if (!r.ok || !r.text) return json({ error: r.error ?? 'empty', detail: r.detail, provider: r.provider, model: r.model }, r.error === 'no_key' ? 500 : 502)
 
-    // 모델이 코드펜스를 붙이는 경우까지 방어적으로 파싱
-    const raw = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '')
-    let parsed: { sections?: { key?: string; title?: string; body?: string }[] }
-    try {
-      parsed = JSON.parse(raw)
-    } catch {
-      const a = raw.indexOf('{')
-      const z = raw.lastIndexOf('}')
-      if (a < 0 || z <= a) return json({ error: 'parse' }, 502)
-      parsed = JSON.parse(raw.slice(a, z + 1))
-    }
+    // Gemini는 responseMimeType으로 JSON을 강제하지만 Claude는 프롬프트 규약에 의존하므로
+    // 코드펜스·앞뒤 설명까지 방어적으로 파싱한다(제공자에 따라 응답 모양이 다르다).
+    const parsed = parseJson<{ sections?: { key?: string; title?: string; body?: string }[] }>(r.text)
+    if (!parsed) return json({ error: 'parse', provider: r.provider, model: r.model }, 502)
+
     const sections = (parsed.sections ?? [])
       .filter((s) => s && typeof s.body === 'string' && s.body.trim().length > 0)
       .map((s) => ({ key: String(s.key ?? ''), title: String(s.title ?? ''), body: String(s.body) }))
-    if (sections.length < 3) return json({ error: 'thin' }, 502)
+    if (sections.length < 3) return json({ error: 'thin', provider: r.provider, model: r.model }, 502)
 
-    return json({ sections, at: Date.now() })
+    return json({ sections, at: Date.now(), provider: r.provider, model: r.model })
   } catch (e) {
     return json({ error: 'server', detail: String(e).slice(0, 200) }, 500)
   }

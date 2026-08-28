@@ -86,24 +86,33 @@ test.describe('16가지 성격유형', () => {
     await expect(page.getByText('100% · 0%', { exact: true })).toHaveCount(4)
   })
 
-  test('심층검사 채점 — 전 문항 매우 그렇다면 극별 3:3 균형 덕에 네 축 모두 50:50', async ({ page }) => {
+  test('심층검사 채점 — 1번만 보통이면 E축이 42:58로 기울어 ISTJ, 나머지 세 축은 50:50', async ({ page }) => {
     await open(page, '/mbti/deep')
 
     for (let i = 0; i < 24; i++) {
       // '1/24'~'24/24' — MBTI_DEEP.length가 24가 아니면 즉시 깨진다
       await expect(page.getByText(`${i + 1}/24`, { exact: true })).toBeVisible()
-      await page.getByRole('button', { name: '매우 그렇다', exact: true }).click()
+      /*
+       * 1번(E극)만 '보통'으로 흘려 대칭을 깬다. 전 문항을 '매우 그렇다'로 밀면 축마다 12:12라
+       * 화면 숫자가 tally가 비었을 때의 기본값(sum===0 → 50)과 완전히 같아져서,
+       * pickDeep의 setTally를 통째로 지워도 네 축 50:50 · ESTJ가 그대로 통과한다(과거의 오답 초록).
+       */
+      await page.getByRole('button', { name: i === 0 ? '보통' : '매우 그렇다', exact: true }).click()
     }
 
     /*
-     * v=5 → pole += 4, other += 0. 축마다 E극 문항 3개(+12) · I극 문항 3개(+12)라 12:12 = 50:50.
-     * 극별 문항 수가 3:3에서 어긋나는 순간(예: 4:2) 67:33으로 기울므로, 이 단언이
-     * data/mbti.ts 주석이 경고한 "모순 응답 체계적 편향"의 감시자다.
+     * E/I축: 1번 v=3 → E+2·I+2, 2~3번(E극) v=5 → E+8, 4~6번(I극) v=5 → I+12  →  E 10 : I 14 = 42:58.
+     * 나머지 세 축은 전 문항 v=5 → pole += 4, other += 0. 극별 문항 3개씩이라 12:12 = 50:50.
+     * 극별 문항 수가 3:3에서 어긋나는 순간(예: 4:2) 그 축은 67:33으로 기울고 E축은 58:42로 뒤집히므로,
+     * 이 세 줄이 data/mbti.ts 주석이 경고한 "모순 응답 체계적 편향"의 감시자다.
      */
-    await expect(page.getByText('50% · 50%', { exact: true })).toHaveCount(4)
+    await expect(page.getByText('42% · 58%', { exact: true })).toBeVisible()
+    await expect(page.getByText('50% · 50%', { exact: true })).toHaveCount(3)
     await expect(page.getByText('100% · 0%', { exact: true })).toHaveCount(0)
-    // 50이면 typeFromAxes가 >=50 규칙으로 첫 극을 고른다 → ESTJ
-    await expect(page.getByText('ESTJ', { exact: true })).toBeVisible()
+    // 42<50이라 typeFromAxes가 두 번째 극(I)을 고르는 분기 — 이 파일에서 유일하게 ESTJ가 아닌 결과다.
+    // 동시에 42가 하필 E/I축 값이라는 증거이기도 하다(S/N축에 붙었다면 ENTJ가 나온다)
+    await expect(page.getByText('ISTJ', { exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '기록하는 성실가' })).toBeVisible()
   })
 
   test('심층검사 배점 — E문항 3개만 매우 그렇다면 E축만 75:25, 나머지는 50:50', async ({ page }) => {
@@ -121,7 +130,10 @@ test.describe('16가지 성격유형', () => {
      * `other += 5 - v`가 빠지면 12:6=67, `pole += v-1`이 v로 바뀌면 21:9=70 —
      * 어느 쪽으로 틀어져도 75가 아니게 되므로 배점식 회귀를 직격한다.
      */
-    await expect(page.getByText('75% · 25%', { exact: true })).toBeVisible()
+    // 75:25가 하필 **E/I 줄**에 붙었는지까지 본다 — 게이지가 엉뚱한 축에 붙어도
+    // ESTJ와 '50% · 50%' 3개는 그대로라, 축 매핑 뒤바뀜은 이 스코프에서만 잡힌다
+    const eAxisRow = page.getByText('E · 외향', { exact: true }).locator('xpath=../..')
+    await expect(eAxisRow.getByText('75% · 25%', { exact: true })).toBeVisible()
     // 나머지 3축은 전 문항 '보통'이라 정확히 반반
     await expect(page.getByText('50% · 50%', { exact: true })).toHaveCount(3)
     await expect(page.getByText('ESTJ', { exact: true })).toBeVisible()

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { LEGAL_VERSION } from '../src/data/legal'
-import { STORE_KEY, allDeepResults, premiumUntil, seedOnboarded, todayKey, waitForApp } from './helpers'
+import { STORE_KEY, allDeepResults, premiumUntil, seedOnboarded, waitForApp } from './helpers'
 
 /**
  * 🌱 성장 플래너(/growth) — 3상태 게이트(검사부족·페이월·플랜) + 과제 토글 경제 + 28일 히트맵.
@@ -16,6 +16,29 @@ const CONSENT = { v: LEGAL_VERSION, at: '2026-01-01' }
 /** pickFocusIds가 needScore 랭킹 + 페르소나 중복 스킵으로 뽑는 결과 — (c)에서 실제로 검증한다 */
 const FOCUS_IDS = ['adhd', 'burnout', 'selfesteem']
 const HEAT_DAYS = 28
+
+/**
+ * 날짜 키는 **브라우저 타임존(playwright.config의 Asia/Seoul)** 으로 만들어야 한다.
+ * 러너(Node)의 로컬 타임존으로 만들면 KST가 아닌 머신(CI=UTC)에서 하루가 통째로 어긋나
+ * 히트맵·완료 판정 단언이 매일 9시간씩 깨진다. helpers.todayKey는 러너 로컬이라 여기선 안 쓴다.
+ */
+function kstDay(offsetDays = 0): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(
+    new Date(Date.now() - offsetDays * 86_400_000),
+  )
+}
+
+/**
+ * 같은 주(월요일 시작) 안의 '오늘이 아닌' 하루 — 오늘이 월요일이면 화요일.
+ * 주간 과제를 오늘 날짜로 심으면 isTaskDone이 daily로 퇴화해도 통과한다(주 단위 판정을 못 본다).
+ */
+function otherDayInSameWeek(dayKey: string): string {
+  const [y, m, d] = dayKey.split('-').map(Number)
+  const dt = new Date(Date.UTC(y, m - 1, d))
+  const dow = (dt.getUTCDay() + 6) % 7 // 월=0
+  dt.setUTCDate(dt.getUTCDate() + (dow === 0 ? 1 : -dow))
+  return dt.toISOString().slice(0, 10)
+}
 
 async function seedGrowth(page: Page, extra: Record<string, unknown>): Promise<void> {
   await seedOnboarded(page, { consent: CONSENT, ...extra })
@@ -60,6 +83,9 @@ test.describe('성장 플래너', () => {
     // 페이월 카드가 죽으면 결제 유입이 통째로 끊긴다 — 이동까지 확인
     await main.getByRole('button', { name: '프리미엄 시작' }).click()
     await expect(page).toHaveURL(/\/premium$/)
+    // URL만 보면 라우트가 죽어 빈 화면이 떠도 통과한다 — 결제 화면이 실제로 그려졌는지까지
+    // (Premium 페이지엔 <main>이 없어 main 스코프로 보면 안 된다)
+    await expect(page.getByRole('heading', { name: '누리 마인드 프리미엄' })).toBeVisible()
   })
 
   test('페르소나가 겹친 결과 11건이어도 포커스 3장 · 과제 6개가 살아남는다', async ({ page }) => {
@@ -98,7 +124,7 @@ test.describe('성장 플래너', () => {
       growthFocusIds: FOCUS_IDS,
     })
     const main = await openGrowth(page)
-    const today = todayKey()
+    const today = kstDay()
 
     const first = main.locator('button[aria-pressed]').first()
     await expect(first).toHaveAttribute('aria-pressed', 'false')
@@ -119,15 +145,24 @@ test.describe('성장 플래너', () => {
     await expect.poll(() => readPoints(page)).toBe(before + 5)
   })
 
-  test('28일 히트맵은 칸 28개이고 하루 완료 개수를 합산해 보여준다', async ({ page }) => {
-    const today = todayKey()
+  test('28일 히트맵은 칸 28개로 합산되고, 주간 과제는 주 단위로 판정된다', async ({ page }) => {
+    const today = kstDay()
+    const sameWeek = otherDayInSameWeek(today) // 이번 주 · 오늘 아닌 날
+    const lastWeek = kstDay(7) // 항상 지난주
     await seedGrowth(page, {
       results: allDeepResults(),
       premiumUntil: premiumUntil(),
       growthPlanAt: Date.now() - 1000,
       growthFocusIds: FOCUS_IDS,
-      // 매일 2 + 주간 1 — 주간 과제도 이번 주면 완료로 세어야 한다(weekKeyOfDay)
-      growthDone: { 'adhd:0': [today], 'adhd:1': [today], 'burnout:0': [today] },
+      // 매일 3건은 오늘(히트맵 합산용). 주간 2건은 날짜를 갈라 weekKeyOfDay를 실제로 가른다 —
+      // 예전처럼 주간 과제까지 '오늘'로 심으면 daily로 퇴화한 구현도 그대로 통과했다.
+      growthDone: {
+        'adhd:0': [today],
+        'burnout:0': [today],
+        'selfesteem:0': [today],
+        'adhd:1': [sameWeek],
+        'burnout:1': [lastWeek],
+      },
     })
     const main = await openGrowth(page)
 
@@ -136,6 +171,9 @@ test.describe('성장 플래너', () => {
     await expect(main.locator('div[title]')).toHaveCount(HEAT_DAYS)
     // 세 과제가 한 칸으로 합산돼야 3 — 과제별로 칸이 갈라지거나 중복 카운트되면 값이 어긋난다
     await expect(main.locator(`div[title="${today} · 3"]`)).toBeVisible()
-    await expect(main.locator('p').filter({ hasText: /^\d+ \/ \d+$/ })).toHaveText('3 / 6')
+    // 매일 3 + 이번 주 주간 1 = 4. 주간이 '오늘'로 좁아지면 3, 날짜를 아예 무시하면 5가 된다
+    await expect(main.locator('p').filter({ hasText: /^\d+ \/ \d+$/ })).toHaveText('4 / 6')
+    // 지난주 완료는 이번 주 체크를 켜면 안 된다(burnout 카드의 주간 과제 = 6개 중 4번째)
+    await expect(main.locator('button[aria-pressed]').nth(3)).toHaveAttribute('aria-pressed', 'false')
   })
 })

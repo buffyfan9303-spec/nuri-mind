@@ -7,7 +7,8 @@ import { FUNCTIONS_URL, ANON_KEY } from './supabase'
  * "AI 리포트"가 그냥 밋밋한 요약으로 보일 뿐, 키가 없는 건지·오타인지·크레딧이 없는 건지 알 길이 없다.
  * 키를 넣은 뒤 "제대로 들어갔나"를 확인할 수단이 이 화면 하나뿐이라 진단을 명시적으로 만든다.
  *
- * 각 함수는 실패 사유를 구조화된 error 코드로 돌려준다(no_key / upstream+detail / truncated / refusal / parse).
+ * 각 함수는 실패 사유를 구조화된 error 코드로 돌려준다(no_key / upstream+detail / truncated / refusal / parse)와
+ * 함께 실제로 사용된 provider·model을 돌려준다 — 키를 둘 다 넣었을 때 어느 쪽이 붙는지 확인할 수 있어야 한다.
  */
 
 export type AiFnName = 'deep-report' | 'ai-report' | 'fortune-detail'
@@ -19,8 +20,11 @@ export interface AiHealth {
   ok: boolean
   /** 원인 코드 — 대응이 서로 다르므로 뭉뚱그리지 않는다 */
   code: string
-  /** 상류(Anthropic) 오류 본문 일부 — 키 오타/크레딧 소진 구분용 */
+  /** 상류 오류 본문 일부 — 키 오타/크레딧 소진 구분용 */
   detail?: string
+  /** 실제로 붙은 제공자·모델 — 키를 둘 다 넣었을 때 어느 쪽이 쓰이는지 확인용 */
+  provider?: string
+  model?: string
 }
 
 /** 각 함수를 최소 유효 페이로드로 한 번 호출한다(과금은 실제 1회분). */
@@ -60,8 +64,8 @@ const PROBE: Record<AiFnName, unknown> = {
 }
 
 const VERDICT: Record<string, string> = {
-  no_key: '❌ ANTHROPIC_API_KEY 미설정 — 정적 폴백으로만 동작',
-  upstream: '❌ 키는 있으나 Anthropic 호출 실패(아래 상세 확인)',
+  no_key: '❌ 키 미설정 — ANTHROPIC_API_KEY 또는 GOOGLE_API_KEY 중 하나가 필요해요',
+  upstream: '❌ 키는 있으나 AI 호출 실패(아래 상세 확인 — 키 오타·할당량·모델명)',
   truncated: '⚠️ 응답이 잘림 — max_tokens 부족',
   refusal: '⚠️ 안전 정책으로 거절됨',
   parse: '⚠️ 응답 JSON 파싱 실패',
@@ -80,15 +84,26 @@ export async function probeAi(fn: AiFnName): Promise<AiHealth> {
       headers: { 'content-type': 'application/json', authorization: `Bearer ${ANON_KEY}`, apikey: ANON_KEY },
       body: JSON.stringify(PROBE[fn]),
     })
-    const body = (await r.json().catch(() => ({}))) as { error?: string; detail?: string; status?: number }
-    if (r.ok) return { fn, ok: true, code: 'ok', verdict: '✅ 정상 — AI 생성이 실제로 동작합니다' }
+    const body = (await r.json().catch(() => ({}))) as {
+      error?: string
+      detail?: string
+      status?: number
+      provider?: string
+      model?: string
+    }
+    const via = body.provider ? ` (${body.provider} · ${body.model ?? '?'})` : ''
+    if (r.ok) {
+      return { fn, ok: true, code: 'ok', verdict: `✅ 정상 — AI 생성이 실제로 동작합니다${via}`, provider: body.provider, model: body.model }
+    }
     const code = body.error ?? 'http'
     return {
       fn,
       ok: false,
       code,
-      verdict: VERDICT[code] ?? `❌ ${code} (HTTP ${r.status})`,
-      detail: body.detail ? `${body.status ?? r.status}: ${body.detail}` : undefined,
+      verdict: (VERDICT[code] ?? `❌ ${code} (HTTP ${r.status})`) + via,
+      detail: body.detail,
+      provider: body.provider,
+      model: body.model,
     }
   } catch {
     return { fn, ok: false, code: 'network', verdict: VERDICT.network }

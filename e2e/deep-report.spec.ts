@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { LEGAL_VERSION } from '../src/data/legal'
 import { allDeepResults, premiumUntil, seedOnboarded, waitForApp } from './helpers'
 
@@ -32,6 +32,36 @@ const cachedReport = (at = Date.now()) =>
       { key: 'work', title: '일과 성취', body: 'E2E 캐시 본문 work' },
     ],
   })
+
+/**
+ * 배포된 엣지(supabase/functions/deep-report)와 동일한 CORS 헤더.
+ * 빠뜨리면 브라우저가 응답 본문을 못 읽어 fetchDeepReport가 `!r.ok`(=500 처리)가 아니라
+ * catch(네트워크 오류)로 빠진다 — 착지 화면은 같아 보여도 검증하는 경로가 달라진다.
+ */
+const EDGE_CORS: Record<string, string> = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type',
+  'access-control-allow-methods': 'POST, OPTIONS',
+}
+
+/**
+ * 엣지 호출을 가로채고 **POST 횟수**를 센다(프리플라이트 OPTIONS는 통과시키되 세지 않는다).
+ * 호출 횟수가 곧 과금이라, 캐시·비프리미엄 비용 가드는 '화면에 로딩이 보였는가'로는 검증할 수 없다.
+ * 로딩 카드는 호출이 끝나면 어차피 사라져서 toHaveCount(0)이 뒤늦게 초록불이 되기 때문이다.
+ */
+async function stubEdge(page: Page): Promise<() => number> {
+  let calls = 0
+  await page.route('**/functions/v1/deep-report', (route) => {
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: EDGE_CORS })
+    calls++
+    return route.fulfill({
+      status: 500,
+      headers: { ...EDGE_CORS, 'content-type': 'application/json' },
+      body: '{"error":"no_key"}',
+    })
+  })
+  return () => calls
+}
 
 test.describe('/deep-report 게이트', () => {
   test('미완주(7/11)면 잠금 화면 — 남은 개수·진행률이 계산되고 리포트 본문은 없다', async ({ page }) => {
@@ -79,6 +109,9 @@ test.describe('/deep-report 게이트', () => {
   })
 
   test('정밀검사 결과가 있으면 잠긴 섹션이 7개 — 인지 프로필이 목록에 합류한다', async ({ page }) => {
+    // 비프리미엄 + 캐시 없음 = 비용 가드가 유일하게 맨몸으로 드러나는 조합.
+    // 가드가 무너지면 무료 사용자마다 엣지가 돌지만 화면은 똑같아서 눈으로는 절대 안 잡힌다.
+    const edgeCalls = await stubEdge(page)
     await seedOnboarded(page, {
       consent: CONSENT,
       results: [
@@ -94,9 +127,12 @@ test.describe('/deep-report 게이트', () => {
     await expect(page.getByText('🔒', { exact: true })).toHaveCount(7)
     // 정밀검사는 DEEP_IDS(비정밀 11종) 밖 — 완주 판정 분모에 섞이면 영원히 안 열린다
     await expect(page.getByText('심층검사 11종 완주')).toBeVisible()
+
+    expect(edgeCalls(), '비프리미엄인데 엣지를 호출했다 — 무료 사용자마다 과금되는 비용 가드 붕괴').toBe(0)
   })
 
   test('완주 + 프리미엄 — 잠금이 사라지고 캐시 섹션이 ORDER 순서로 펼쳐진다', async ({ page }) => {
+    const edgeCalls = await stubEdge(page)
     await seedOnboarded(page, {
       consent: CONSENT,
       results: allDeepResults(),
@@ -109,7 +145,6 @@ test.describe('/deep-report 게이트', () => {
     // 시드는 roadmap→core→work 순. 화면은 ORDER(core→work→roadmap)로 재정렬돼야 한다
     await expect(page.locator('main h2')).toHaveText([/핵심 프로필/, /일과 성취/, /90일 로드맵/])
     await expect(page.getByText('E2E 캐시 본문 core')).toBeVisible()
-    // 캐시가 있으면 엣지를 다시 부르지 않는다 — 로딩 카드가 뜨면 JSON 캐시 판정이 깨진 것(매 진입마다 과금)
     await expect(page.getByText(LOADING)).toHaveCount(0)
 
     // 잠금 흔적이 남으면 결제한 사용자가 계속 페이월을 본다
@@ -118,15 +153,17 @@ test.describe('/deep-report 게이트', () => {
 
     // 방금 만든 리포트라 재생성 쿨다운(24h) 안 — 버튼이 열려 있으면 엣지 호출이 무제한으로 샌다
     await expect(page.getByText('재생성은 하루 1회예요')).toBeVisible()
+
+    // 캐시가 있으면 엣지를 다시 부르지 않는다. 로딩 카드 부재로는 증명이 안 된다 —
+    // 호출이 실제로 나가도 응답이 끝나면 카드가 사라져 toHaveCount(0)이 뒤늦게 통과하기 때문.
+    expect(edgeCalls(), '캐시가 있는데 엣지를 다시 호출했다 — 재진입마다 과금').toBe(0)
   })
 
   test('엣지가 500이어도 무한 로딩 대신 정적 폴백으로 착지한다', async ({ page }) => {
     // 키 없는 현재 배포와 같은 조건(엣지가 {"error":"no_key"} 500).
     // 과거 이펙트 deps/cleanup 때문에 응답이 통째로 버려져 로딩 카드에 영구히 갇히는 버그가 났다.
     // 앱 라우트(/deep-report)까지 가로채지 않도록 엣지 경로 전체(functions/v1)로만 좁힌다.
-    await page.route('**/functions/v1/deep-report', (route) =>
-      route.fulfill({ status: 500, contentType: 'application/json', body: '{"error":"no_key"}' }),
-    )
+    const edgeCalls = await stubEdge(page)
     await seedOnboarded(page, { consent: CONSENT, results: allDeepResults(), premiumUntil: premiumUntil() })
     await page.goto('/deep-report')
     await waitForApp(page)
@@ -140,5 +177,9 @@ test.describe('/deep-report 게이트', () => {
     // 안내 문구에도 '다시 시도'가 들어 있어 텍스트로 잡으면 strict 위반 — 버튼 롤로 좁힌다
     await expect(page.getByRole('button', { name: '🔄 다시 시도' })).toBeVisible()
     await expect(page.getByRole('button', { name: '성장 플랜 열기' })).toBeVisible()
+
+    // 목이 한 번도 안 걸렸다면 이 테스트는 '500 착지'가 아니라 '엣지 미설정 착지'를 본 것이다
+    // (VITE_SUPABASE_ANON_KEY 없이 빌드하면 FUNCTIONS_URL이 ''이라 fetch 자체가 없다).
+    expect(edgeCalls(), '엣지 500 목이 적용되지 않았다 — .env의 VITE_SUPABASE_ANON_KEY 확인').toBeGreaterThan(0)
   })
 })

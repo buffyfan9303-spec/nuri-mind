@@ -1,14 +1,16 @@
 /**
- * Supabase Edge Function — 오늘의 '상세 운세' AI 개인화 (Claude haiku).
+ * Supabase Edge Function — 오늘의 '상세 운세' AI 개인화.
  *
- * 키는 서버(엣지)에만: 클라이언트에 ANTHROPIC_API_KEY가 절대 노출되지 않습니다.
- * 결과는 클라가 (생일+날짜) 기준 하루 1회만 호출·캐싱하고, 미배포/실패 시 결정론 템플릿으로 자동 폴백.
+ * 키는 서버(엣지)에만: 클라이언트에 노출되지 않습니다.
+ * 제공자·모델 선택은 ./llm.ts — ANTHROPIC_API_KEY 또는 GOOGLE_API_KEY 중 설정된 쪽을 자동 사용.
+ * 결과는 클라가 (생일+날짜) 기준 하루 1회만 호출·캐싱하고, 실패 시 결정론 템플릿으로 자동 폴백.
  *
- * 배포(유저 1회 작업):
- *   1) supabase functions deploy fortune-detail --project-ref xdcglyavndiwbbaryocx
- *   2) supabase secrets set ANTHROPIC_API_KEY=sk-ant-...   (선택: FORTUNE_MODEL)
- *   배포 전엔 앱이 기존 12종 템플릿(결정론)으로 그대로 동작합니다.
+ * ⚠️ 셋 중 호출량이 가장 많은 함수다 — 무료 티어(Gemini)나 저가 모델을 쓰고 싶다면 여기부터.
+ *    GEMINI_MODEL / AI_MODEL 시크릿으로 이 함수만 따로 지정할 수는 없으니(공용 어댑터),
+ *    비용이 문제라면 전체를 Gemini로 돌리는 편이 단순하다.
  */
+import { callLlm, parseJson } from './llm.ts'
+
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -26,12 +28,6 @@ Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   if (req.method !== 'POST') return json({ error: 'method' }, 405)
   try {
-    // @ts-ignore Deno
-    const key = Deno.env.get('ANTHROPIC_API_KEY')
-    if (!key) return json({ error: 'no_key' }, 500)
-    // @ts-ignore Deno
-    const model = Deno.env.get('FORTUNE_MODEL') ?? 'claude-haiku-4-5-20251001'
-
     const b = await req.json()
     const lang: string = b.lang ?? 'ko'
     const langName = lang === 'en' ? 'English' : lang === 'ja' ? 'Japanese' : 'Korean'
@@ -47,39 +43,15 @@ Deno.serve(async (req: Request) => {
       `Today's lucky direction: ${b.luckyDir}. Lucky time hint: ${b.luckyTime}. Date: ${b.date}. ` +
       `Write this person's personalized detailed fortune for today as the JSON object.`
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model,
-        // ⚠️ 이 함수만 Haiku 4.5다(운세는 호출량이 많아 의도적으로 저가 모델). Haiku 4.5는
-        //    thinking·output_config.effort를 지원하지 않으므로 절대 넣지 말 것 — 넣으면 요청이 거부된다.
-        //    thinking이 없으니 예산은 본문에만 쓰이지만, 다항목 JSON이라 900은 잘릴 여지가 있어 여유를 준다.
-        max_tokens: 2000,
-        system,
-        messages: [{ role: 'user', content: user }],
-      }),
-    })
-    if (!resp.ok) {
-      // 상류 오류 메시지를 그대로 넘긴다 — 키 오타·크레딧 소진·모델명 오류를 구분하려면 이게 필요하다.
-      // (응답 본문에 API 키가 들어가지 않는다 — 상류는 키를 에코하지 않는다.)
-      const why = await resp.text().catch(() => '')
-      return json({ error: 'upstream', status: resp.status, detail: why.slice(0, 300) }, 502)
-    }
-    const data = await resp.json()
-    const text = (data.content ?? []).map((c: { text?: string }) => c.text ?? '').join('').trim()
+    const r = await callLlm(system, user, { maxTokens: 4000, json: true, effort: 'low' })
+    if (!r.ok || !r.text) return json({ error: r.error ?? 'empty', detail: r.detail, provider: r.provider, model: r.model }, r.error === 'no_key' ? 500 : 502)
 
-    let detail: Record<string, unknown>
-    try {
-      const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim()
-      detail = JSON.parse(cleaned)
-    } catch {
-      return json({ error: 'parse' }, 502)
+    const detail = parseJson<Record<string, unknown>>(r.text)
+    if (!detail) return json({ error: 'parse', provider: r.provider, model: r.model }, 502)
+    if (KEYS.some((k) => typeof detail[k] !== 'string' || !(detail[k] as string).trim())) {
+      return json({ error: 'shape', provider: r.provider, model: r.model }, 502)
     }
-    if (!detail || KEYS.some((k) => typeof detail[k] !== 'string' || !(detail[k] as string).trim())) {
-      return json({ error: 'shape' }, 502)
-    }
-    return json({ detail })
+    return json({ detail, provider: r.provider, model: r.model })
   } catch (e) {
     return json({ error: String(e) }, 500)
   }

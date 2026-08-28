@@ -21,7 +21,7 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
     let alive = true
     setBody(null)
     void import('../data/legalDocs').then((m) => {
-      if (alive) setBody(doc === 'terms' ? m.TERMS : m.PRIVACY)
+      if (alive) setBody((doc === 'terms' ? m.TERMS : m.PRIVACY).slice(0, 400))
     })
     return () => {
       alive = false
