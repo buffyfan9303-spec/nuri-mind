@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import type { L } from '../data/types'
 import { useNavigate } from 'react-router-dom'
 import Avatar from '../components/Avatar'
+import Button from '../components/Button'
 import Footer from '../components/Footer'
 import ScrollChips from '../components/ScrollChips'
 import IconBadge from '../components/IconBadge'
@@ -495,6 +496,37 @@ export default function Home() {
 
         {/* 섹션 헤더 — 블록 이동 없이 리듬만 부여(수익·바이럴 CTA는 어떤 버킷에도 넣지 않음) */}
         <p className="mt-6 px-1 text-[12.5px] font-extrabold tracking-wide text-ink-faint">{l({ ko: '나를 탐색하기', en: 'Explore yourself', ja: '自分を知る' })}</p>
+
+        {/* ── 16가지 성격유형 — 일반(12문항)·심층(24문항) 2종 ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px 0px' }}
+          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          className="mt-3.5"
+        >
+          <Card className="!p-4">
+            <div className="flex items-center gap-3">
+              <IconBadge emoji="🧩" color="#6E7BF2" size={44} radius={14} wiggle />
+              <div className="min-w-0 flex-1">
+                <h3 className="break-keep text-[15.5px] font-extrabold tracking-tight">
+                  {l({ ko: '16가지 성격유형', en: '16 personality types', ja: '16の性格タイプ' })}
+                </h3>
+                <p className="mt-0.5 break-keep text-[12.5px] font-bold text-ink-faint">
+                  {l({ ko: '가볍게 12문항 · 정확하게 24문항', en: '12 quick · 24 in depth', ja: '手軽12問・詳細24問' })}
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2.5">
+              <Button color="mind" size="sm" onClick={() => nav('/mbti/quick')}>
+                ⚡ {l({ ko: '빠른 12문항', en: 'Quick 12', ja: '手軽12問' })}
+              </Button>
+              <Button color="white" size="sm" onClick={() => nav('/mbti/deep')}>
+                🔬 {l({ ko: '심층 24문항', en: 'Deep 24', ja: '詳細24問' })}
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
 
         {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}
         <div id="deep-tests" className="mt-6 flex items-center justify-between px-1">
