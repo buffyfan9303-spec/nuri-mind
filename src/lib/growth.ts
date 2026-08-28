@@ -47,13 +47,26 @@ export function latestResults(results: TestResult[]): TestResult[] {
   return [...by.values()]
 }
 
-/** 결과에서 성장 포커스 3개를 고른다(개선 여지가 큰 순, 처방이 있는 검사만) */
+/**
+ * 결과에서 성장 포커스 3개를 고른다(개선 여지가 큰 순, 처방이 있는 검사만).
+ *
+ * ⚠️ 페르소나가 겹치는 검사는 건너뛴다. 처방 문구는 페르소나 단위라서 같은 페르소나를 두 번
+ *    고르면 두 번째 카드의 과제가 중복제거(buildFocuses의 used)에 전부 먹혀 카드째 사라진다 —
+ *    "3가지를 골라 드려요"라고 해놓고 1개만 나오는 결과가 됐다.
+ */
 export function pickFocusIds(results: TestResult[], max = 3): string[] {
-  return latestResults(results)
+  const out: string[] = []
+  const personas = new Set<string>()
+  const ranked = latestResults(results)
     .filter((r) => (PERSONAS[r.persona]?.solutions?.length ?? 0) > 0)
     .sort((a, b) => needScore(b) - needScore(a) || b.at - a.at)
-    .slice(0, max)
-    .map((r) => r.testId)
+  for (const r of ranked) {
+    if (personas.has(r.persona)) continue
+    personas.add(r.persona)
+    out.push(r.testId)
+    if (out.length >= max) break
+  }
+  return out
 }
 
 /**
