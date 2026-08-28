@@ -71,6 +71,21 @@ test.describe('성장 플래너', () => {
     await expect(main.getByRole('button', { name: '검사하러 가기' })).toBeVisible()
   })
 
+  test('검사가 모자라면 비프리미엄이어도 페이월이 아니라 검사 유도 화면이 뜬다', async ({ page }) => {
+    // 게이트 순서를 못 박는다: '검사 부족'이 '프리미엄 여부'보다 먼저다.
+    // 순서가 뒤집히면 아직 아무것도 안 해본 사람에게 결제부터 들이밀게 되고,
+    // 페이월 노출 계측의 분모도 그만큼 부풀어 전환율이 실제보다 나빠 보인다.
+    // (계측 자체는 브라우저에서 관측할 수 없다 — track()이 localhost에서 analyticsEnabled()로
+    //  먼저 빠져나가기 때문. 그래서 계측과 렌더가 같은 showPaywall 값을 쓰도록 코드에서 묶었고,
+    //  여기서는 그 값이 좌우하는 '화면'을 검증한다.)
+    await seedGrowth(page, { results: allDeepResults().slice(0, 2), premiumUntil: 0 })
+    const main = await openGrowth(page)
+
+    await expect(main).toContainText('(2/3)')
+    await expect(main.getByText('프리미엄에서 열려요')).toHaveCount(0)
+    await expect(main.getByRole('button', { name: '내 성장 플랜 만들기' })).toHaveCount(0)
+  })
+
   test('프리미엄이 아니면 생성 버튼 대신 페이월이 뜬다', async ({ page }) => {
     await seedGrowth(page, { results: allDeepResults(), premiumUntil: 0 })
     const main = await openGrowth(page)

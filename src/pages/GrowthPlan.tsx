@@ -37,18 +37,26 @@ export default function GrowthPlan() {
   const toggleTask = useStore((s) => s.toggleGrowthTask)
   const { fire } = useRewardAnimation()
   const premium = isPremium(premiumUntil)
-
-  // 페이월 노출 1회 계측 — 전환율의 분모
-  const seenPaywall = useRef(false)
-  useEffect(() => {
-    if (premium || seenPaywall.current) return
-    seenPaywall.current = true
-    track('paywall_view', { surface: 'growth_plan', price: PREMIUM_KRW })
-  }, [premium])
   const todayKey = localDay()
   const [toast, setToast] = useState('')
 
   const focuses = useMemo(() => buildFocuses(growthFocusIds, results), [growthFocusIds, results])
+
+  /**
+   * 페이월이 실제로 화면에 뜨는 조건. 아래 렌더 분기가 이 값을 그대로 쓴다 —
+   * 계측과 렌더가 각자 조건을 갖고 있으면 반드시 갈라진다.
+   * (실제로 갈라졌었다: 검사가 3개 미만이면 페이월 이전 화면으로 빠지는데 노출은 세고 있었고,
+   *  그러면 전환율의 분모가 부풀어 실제보다 나빠 보인다 — 가격 판단을 그르치는 종류의 오류다.)
+   */
+  const showPaywall = !premium && results.length >= MIN_TESTS && (!growthPlanAt || focuses.length === 0)
+
+  // 노출 1회만 계측 — 전환율의 분모
+  const seenPaywall = useRef(false)
+  useEffect(() => {
+    if (!showPaywall || seenPaywall.current) return
+    seenPaywall.current = true
+    track('paywall_view', { surface: 'growth_plan', price: PREMIUM_KRW })
+  }, [showPaywall])
   const allTasks = useMemo(() => focuses.flatMap((f) => f.tasks), [focuses])
   const doneToday = allTasks.filter((tk) => isTaskDone(growthDone[tk.id], tk.cadence, todayKey)).length
 
@@ -127,7 +135,8 @@ export default function GrowthPlan() {
             </p>
           </motion.div>
 
-          {premium ? (
+          {/* ⚠️ premium이 아니라 showPaywall로 분기한다 — 노출 계측이 쓰는 값과 같아야 갈라지지 않는다 */}
+          {!showPaywall ? (
             <div className="mt-5">
               <Button color="mind" size="lg" onClick={onCreate}>
                 🌱 {l({ ko: '내 성장 플랜 만들기', en: 'Build my plan', ja: 'プランを作る' })}
