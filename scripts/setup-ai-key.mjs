@@ -1,5 +1,14 @@
 /**
- * AI 키 설정 도우미 — `npm run setup:ai`  (검증용: `npm run setup:ai -- --dry-run`)
+ * AI 키 설정 도우미
+ *
+ *   node "<프로젝트>/scripts/setup-ai-key.mjs"        ← PowerShell에서는 이 형태로
+ *   npm run setup:ai                                  ← cmd/bash에서는 이것도 됨
+ *   ... --dry-run                                     ← 등록하지 않고 전달 지문만 확인
+ *
+ * ⚠️ PowerShell은 실행 정책(Restricted)이면 npm/npx를 못 띄운다 — 그것들이 .ps1 껍데기라서다.
+ *    node.exe는 진짜 실행파일이라 영향을 받지 않고, 이 스크립트 내부의 npx 호출도
+ *    Node가 ComSpec(cmd.exe)을 쓰므로 정책과 무관하다. 즉 설정을 바꾸지 않아도 동작한다.
+ *    어느 폴더에서 실행하든 되도록 프로젝트 루트는 스스로 잡는다.
  *
  * 키 입력은 이 스크립트를 실행하는 사람의 터미널에서만 일어나고, 값은 화면에도 로그에도 남지 않는다.
  *
@@ -13,11 +22,14 @@
 import { spawnSync } from 'node:child_process'
 import { createInterface } from 'node:readline'
 import { writeFileSync, unlinkSync, existsSync, mkdtempSync, rmSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { tmpdir } from 'node:os'
 import { stdin, stdout, argv } from 'node:process'
 
 const PROJECT_REF = 'xdcglyavndiwbbaryocx'
+/** 어느 폴더에서 실행해도 동작하도록 프로젝트 루트를 스스로 잡는다(사장님이 다른 폴더에서 실행했다) */
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DRY = argv.includes('--dry-run')
 
 /** 입력을 화면에 남기지 않는 프롬프트. TTY가 아니면 가리지 못한다는 사실을 숨기지 않는다. */
@@ -125,6 +137,7 @@ try {
   const r = spawnSync(`npx supabase secrets set --env-file "${envPath}" --project-ref ${PROJECT_REF}`, {
     stdio: 'inherit',
     shell: true,
+    cwd: ROOT,
   })
   if (r.error) console.log(`
 실행 오류: ${r.error.code ?? ''} ${r.error.message ?? ''}`)
