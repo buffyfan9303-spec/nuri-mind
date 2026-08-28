@@ -17,7 +17,11 @@ export function authReady(): boolean {
 export async function signInWithKakao(): Promise<{ ok: boolean; error?: string }> {
   if (!supabase) return { ok: false, error: 'supabase_not_configured' }
   // 로그인 후 '지금 있던 페이지'로 복귀(예: 우편함). Supabase Redirect URLs에 `https://www.nurimind.co.kr/**` 와일드카드 등록 필요.
-  const redirectTo = typeof window !== 'undefined' ? window.location.origin + window.location.pathname : undefined
+  // query·hash까지 보존 — 공유 링크(?s=, /vs 결과 등)로 들어온 사용자가 로그인 왕복에서 맥락을 잃지 않게.
+  const redirectTo =
+    typeof window !== 'undefined'
+      ? window.location.origin + window.location.pathname + window.location.search + window.location.hash
+      : undefined
   // 닉네임만 요청 — account_email은 카카오 동의항목 미설정 시 KOE205 발생(이메일은 비즈앱 검수 필요).
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'kakao',
@@ -47,17 +51,31 @@ export interface AuthUser {
   avatarUrl?: string
 }
 
-/** 현재 로그인 사용자(없으면 null). */
+const pickMeta = (id: string, meta: Record<string, unknown>): AuthUser => ({
+  id,
+  nickname: (meta.name as string) || (meta.nickname as string) || undefined,
+  avatarUrl: (meta.avatar_url as string) || (meta.picture as string) || undefined,
+})
+
+/**
+ * 현재 로그인 사용자(없으면 null).
+ *
+ * ⚠️ 로그인 여부 판정은 로컬 세션(getSession)으로 한다. getUser()는 네트워크 호출이라
+ *    지하철·비행기·일시 5xx에서 null을 돌려주고, 그러면 화면 3곳이 전부 '로그아웃'으로 렌더돼
+ *    로그아웃 버튼조차 사라진다(실제로는 로그인 상태). getUser는 메타데이터 보강용 best-effort로만 쓴다.
+ */
 export async function getAuthUser(): Promise<AuthUser | null> {
   if (!supabase) return null
-  const { data } = await supabase.auth.getUser()
-  const u = data.user
-  if (!u) return null
-  const meta = (u.user_metadata ?? {}) as Record<string, unknown>
-  return {
-    id: u.id,
-    nickname: (meta.name as string) || (meta.nickname as string) || undefined,
-    avatarUrl: (meta.avatar_url as string) || (meta.picture as string) || undefined,
+  const { data: sess } = await supabase.auth.getSession()
+  const su = sess.session?.user
+  if (!su) return null
+  const local = pickMeta(su.id, (su.user_metadata ?? {}) as Record<string, unknown>)
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (error || !data.user) return local // 네트워크성 오류 — 세션 메타로 폴백(로그인 상태 유지)
+    return pickMeta(data.user.id, (data.user.user_metadata ?? {}) as Record<string, unknown>)
+  } catch {
+    return local
   }
 }
 

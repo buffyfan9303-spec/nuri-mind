@@ -10,7 +10,28 @@ import { useT } from '../i18n/useT'
 import { celebrate } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { LEGAL_EFFECTIVE } from '../data/legal'
-import { authReady, signInWithKakao, getAuthUser, onAuthChange } from '../lib/auth'
+import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange } from '../lib/auth'
+import { moderateText } from '../lib/moderation'
+
+/**
+ * 온보딩 입력 초안 — 이 화면은 두 정상 동선에서 통째로 언마운트된다.
+ *  · 약관 열람: /legal/*는 공개 라우트라 App의 온보딩 분기가 다른 트리로 교체된다
+ *  · 카카오 가입(주 경로): OAuth 전체 페이지 리다이렉트 후 새 문서로 복귀
+ * 둘 다 컴포넌트 state를 날려 닉네임·캐릭터·필수 동의 체크가 리셋되므로 밖에 보관한다.
+ */
+const DRAFT_KEY = 'nuri-mind-onboard-draft'
+/** 초대 링크(?invite=CODE)의 코드 — 카카오 리다이렉트로 URL이 갈리므로 세션에 보관 */
+const INVITE_KEY = 'nuri-mind-invite-code'
+type Draft = { nick: string; picked: string | null; agreed: boolean }
+const loadDraft = (): Draft => {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY)
+    if (raw) return { nick: '', picked: null, agreed: false, ...(JSON.parse(raw) as Partial<Draft>) }
+  } catch {
+    /* 저장소 불가 — 빈 초안 */
+  }
+  return { nick: '', picked: null, agreed: false }
+}
 
 // 시작 캐릭터 후보(귀여운 페르소나) — 검사로 더 모을 수 있음
 const STARTERS = ['penguin', 'koala', 'cat', 'dolphin', 'hamster', 'owl', 'meerkat', 'collie']
@@ -19,10 +40,36 @@ export default function Onboarding() {
   const t = useT()
   const nav = useNavigate()
   const completeOnboarding = useStore((s) => s.completeOnboarding)
-  const [nick, setNick] = useState('')
-  const [picked, setPicked] = useState<string | null>(null)
-  const [agreed, setAgreed] = useState(false)
+  const redeemCode = useStore((s) => s.redeemCode)
+  const [draft0] = useState(loadDraft)
+  const [nick, setNick] = useState(draft0.nick)
+  const [picked, setPicked] = useState<string | null>(draft0.picked)
+  const [agreed, setAgreed] = useState(draft0.agreed)
   const [kakaoNick, setKakaoNick] = useState<string | null>(null)
+  const [nickErr, setNickErr] = useState('')
+
+  // 초대 코드 캡처 — URL에서 한 번 읽어 보관하고 주소창은 정리한다
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get('invite')
+    if (!code) return
+    try {
+      sessionStorage.setItem(INVITE_KEY, code.trim().toUpperCase().slice(0, 12))
+    } catch {
+      /* ignore */
+    }
+    const q = new URLSearchParams(window.location.search)
+    q.delete('invite')
+    window.history.replaceState({}, '', window.location.pathname + (q.toString() ? `?${q}` : ''))
+  }, [])
+
+  // 입력이 바뀔 때마다 초안 저장 — 약관 이동·카카오 리다이렉트를 건너 살아남는다
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ nick, picked, agreed }))
+    } catch {
+      /* 저장소 불가 — 초안 보존만 포기 */
+    }
+  }, [nick, picked, agreed])
 
   // 카카오 로그인 복귀 시(또는 APK 자동로그인) 닉네임 자동 프리필
   useEffect(() => {
@@ -60,8 +107,30 @@ export default function Onboarding() {
 
   const start = () => {
     if (!nick.trim() || !agreed) return
+    // 닉네임도 커뮤니티 표시 문자열이다 — 전광판·댓글과 같은 필터를 통과해야 우회가 막힌다
+    const mod = moderateText(nick)
+    if (!mod.ok) {
+      setNickErr(t('community.badword'))
+      return
+    }
     const avatar: AvatarT = picked ? { kind: 'animal', persona: picked } : null
+    try {
+      sessionStorage.removeItem(DRAFT_KEY)
+    } catch {
+      /* ignore */
+    }
     completeOnboarding(nick, avatar)
+    // 초대 링크(?invite=CODE)로 들어온 경우 가입 직후 자동 적용 — 코드를 외워 다시 칠 필요가 없다.
+    // 카카오 리다이렉트를 건너오므로 URL이 아닌 sessionStorage에서 읽는다.
+    try {
+      const code = sessionStorage.getItem(INVITE_KEY)
+      if (code) {
+        redeemCode(code)
+        sessionStorage.removeItem(INVITE_KEY)
+      }
+    } catch {
+      /* ignore */
+    }
     celebrate()
     sfx.coin()
   }
@@ -86,8 +155,19 @@ export default function Onboarding() {
         {authReady() && (
           <div className="mt-7">
             {kakaoNick ? (
-              <div className="flex items-center justify-center gap-2 rounded-2xl bg-[#FEE500]/90 py-3.5 text-[14px] font-extrabold text-[#3A1D1D]">
+              <div className="rounded-2xl bg-[#FEE500]/90 py-3.5 text-center text-[14px] font-extrabold text-[#3A1D1D]">
                 💬 {t('onboard.kakaoReady', { nick: kakaoNick })}
+                {/* 다른 계정으로 붙었을 때 빠져나갈 길 — 온보딩 게이트 탓에 Profile에 못 가므로 여기 필요 */}
+                <button
+                  onClick={async () => {
+                    await signOut()
+                    setKakaoNick(null)
+                    setNick('')
+                  }}
+                  className="mt-1.5 block w-full text-[12px] font-bold text-[#3A1D1D]/60 underline"
+                >
+                  {t('onboard.otherAccount')}
+                </button>
               </div>
             ) : (
               <motion.button
@@ -111,12 +191,18 @@ export default function Onboarding() {
           <label className="px-1 text-[14px] font-extrabold">{t('onboard.nickLabel')}</label>
           <input
             value={nick}
-            onChange={(e) => setNick(e.target.value)}
+            onChange={(e) => {
+              setNick(e.target.value)
+              if (nickErr) setNickErr('')
+            }}
             placeholder={t('onboard.nickPh')}
             maxLength={12}
             autoFocus
-            className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[16px] font-extrabold outline-none focus:border-mind-400"
+            className={`mt-2 w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-[16px] font-extrabold outline-none ${
+              nickErr ? 'border-red-300 focus:border-red-400' : 'border-line focus:border-mind-400'
+            }`}
           />
+          {nickErr && <p className="mt-1.5 px-1 text-[12.5px] font-bold text-red-500">{nickErr}</p>}
         </div>
 
         {/* 시작 캐릭터 */}

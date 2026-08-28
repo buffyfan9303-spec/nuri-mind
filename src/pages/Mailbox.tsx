@@ -6,6 +6,7 @@ import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { authReady, getAuthUser, onAuthChange, signInWithKakao } from '../lib/auth'
 import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem, confirmMailDelivery } from '../lib/mailbox'
+import { isAccountSwitchPending } from '../lib/economy'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 
@@ -32,12 +33,14 @@ export default function Mailbox() {
   const [mail, setMail] = useState<MailItem[]>([])
   const [loading, setLoading] = useState(true)
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null)
+  const [uid, setUid] = useState<string | null>(null)
   const [msg, setMsg] = useState('')
 
   const load = async () => {
     setLoading(true)
     const u = await getAuthUser()
     setLoggedIn(!!u)
+    setUid(u?.id ?? null)
     setMail(u ? await fetchMail() : [])
     setLoading(false)
   }
@@ -73,7 +76,16 @@ export default function Mailbox() {
   const claimFailMsg = () =>
     flash(l({ ko: '받기에 실패했어요. 네트워크 확인 후 다시 시도해 주세요.', en: 'Claim failed. Check your connection and retry.', ja: '受取に失敗。接続を確認して再試行してください。' }))
 
+  /** 계정 전환 반영 전에는 수령 금지 — 서버에서 이미 claimed 처리된 다이아가 직후 스왑에 덮여 사라진다 */
+  const switchPending = () => {
+    if (!isAccountSwitchPending(uid)) return false
+    sfx.err()
+    flash(l({ ko: '계정 동기화 중이에요. 잠시 후 다시 받아 주세요.', en: 'Syncing your account — please retry in a moment.', ja: 'アカウント同期中です。少し後に再試行してください。' }))
+    return true
+  }
+
   const onClaim = async (it: MailItem) => {
+    if (switchPending()) return
     const got = await claimMail(it.id)
     // 실패(null)는 수령 처리하지 않음 — 가짜 '수령 완료·환불 불가' 표시 방지
     if (got === null) {
@@ -91,6 +103,7 @@ export default function Mailbox() {
   }
 
   const onClaimAll = async () => {
+    if (switchPending()) return
     const got = await claimAllMail()
     if (got === null) {
       sfx.err()

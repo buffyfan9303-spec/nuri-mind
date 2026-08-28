@@ -25,7 +25,7 @@ import { setSoundEnabled } from '../lib/sound'
 import { track } from '../lib/analytics'
 import { moderateText } from '../lib/moderation'
 import { claimDiamondGrantsServer } from '../lib/diamonds'
-import { mirrorEarn, mirrorSpend, initEconomySync } from '../lib/economy'
+import { mirrorEarn, mirrorSpend, initEconomySync, clearAccountSync, type SyncHooks } from '../lib/economy'
 import { createSettingsSlice } from './slices/settingsSlice'
 
 /** 운영자 PIN — 배포 전 반드시 변경 (실서비스는 Supabase Auth 권장) */
@@ -819,6 +819,9 @@ export const useStore = create<State>()(
         /** 매거진 정독 보상 — 글당 1회 +8P(일일 무료 상한 적용) */
         readArticle: (id) => {
           const s = get()
+          // 미가입(약관 미동의)이면 '읽음' 기록조차 남기지 않는다 — 남기면 정식 가입 후에
+          // 같은 글이 이미 수령 처리돼 보상을 영영 못 받는다(공개 매거진 진입 경로).
+          if (!s.onboarded) return 0
           if (s.readArticles.includes(id)) return 0
           set({ readArticles: [...s.readArticles, id] })
           return grantFree(8, '📖 매거진 정독 보상', `read:${id}`)
@@ -849,7 +852,12 @@ export const useStore = create<State>()(
         },
         lockAdmin: () => set({ adminUnlocked: false }),
 
-        resetAll: () => set({ ...initial() }),
+        resetAll: () => {
+          // 마커·아웃박스를 함께 비운다. 남겨두면 '마커 == uid' 값싼 경로로 빠져
+          // 로컬 100P ↔ 서버 잔액이 영구히 어긋난 채 복원되지 않는다.
+          clearAccountSync()
+          set({ ...initial() })
+        },
       }
     },
     {
@@ -873,7 +881,7 @@ export const useStore = create<State>()(
 )
 
 // ── 서버 경제 동기화(로그인 시) — 키 있는 아웃박스 미러 + 복원/이관(economy.ts 참조) ──
-initEconomySync({
+const econHooks: SyncHooks = {
   getWallet: () => ({ points: useStore.getState().points }),
   restoreTo: (serverPoints, snapshotPoints) => {
     const s = useStore.getState()
@@ -895,9 +903,9 @@ initEconomySync({
             ],
     })
   },
-  resetWallet: (points, memo, prevUid, nextUid) => {
+  swapAccount: (prevUid, nextUid) => {
     const st = useStore.getState()
-    // 계정에 귀속돼야 하는 기기-로컬 필드 — 전환 시 통째로 스냅샷/복원한다.
+    // 계정에 귀속돼야 하는 기기-로컬 필드 — 전환 시 통째로 보관/복원한다.
     // (유료 재화는 서버 복원 경로가 없어 '삭제'하면 영구 소멸, '유지'하면 남의 계정 승계 → 스왑)
     const snap = {
       diamonds: st.diamonds,
@@ -908,6 +916,7 @@ initEconomySync({
       ledger: st.ledger,
       results: st.results,
       rewardedTests: st.rewardedTests,
+      readArticles: st.readArticles,
       birthDate: st.birthDate,
       moodLog: st.moodLog,
       routineDone: st.routineDone,
@@ -932,12 +941,13 @@ initEconomySync({
       referredBy: st.referredBy,
       nickname: st.nickname,
       avatar: st.avatar,
+      deviceId: st.deviceId,
     }
     const KEY = (u: string) => `nuri-mind-acct-${u}`
     try {
-      if (prevUid) localStorage.setItem(KEY(prevUid), JSON.stringify(snap))
+      localStorage.setItem(KEY(prevUid), JSON.stringify(snap))
     } catch {
-      /* 저장소 불가 — 복원만 포기(진행은 계속) */
+      /* 저장소 불가 — 보관은 포기하되 경계(아래 초기화)는 반드시 적용한다 */
     }
     let restored: Partial<typeof snap> | null = null
     try {
@@ -947,21 +957,23 @@ initEconomySync({
       restored = null
     }
     if (restored) {
-      // 이 기기에서 쓰던 계정으로 돌아온 경우 — 보관본 복원(포인트는 서버 권위값 우선)
-      useStore.setState({ ...restored, points, adminUnlocked: false })
+      // 이 기기에서 쓰던 계정으로 돌아온 경우 — 보관본 복원(운영자 잠금은 항상 다시 걸린다)
+      useStore.setState({ ...restored, adminUnlocked: false })
       return
     }
-    // 처음 보는 계정 — 이전 사용자의 흔적을 남기지 않고 새 지갑으로 시작
-    const diff = points - st.points
+    // 처음 보는 계정 — 이전 사용자의 흔적을 남기지 않고 새 프로필로 시작.
+    // onboarded·동의·언어·테마는 기기 설정이므로 유지(로그아웃했다고 온보딩을 다시 시키지 않는다).
+    const base = initial()
     useStore.setState({
-      points,
-      ledger: diff === 0 ? st.ledger : [{ id: uid('lg_'), amount: diff, memo, at: Date.now() }, ...st.ledger],
+      points: base.points,
+      ledger: [],
       diamonds: 0,
       premiumUntil: 0,
       iqUnlocked: false,
       precisionUnlocked: false,
       results: [],
       rewardedTests: [],
+      readArticles: [],
       birthDate: '',
       moodLog: {},
       routineDone: {},
@@ -984,8 +996,30 @@ initEconomySync({
       fortuneMonth: '',
       fortuneFreeUses: 0,
       referredBy: '',
+      nickname: base.nickname,
+      avatar: base.avatar,
       adminUnlocked: false,
+      // 커뮤니티 글 소유권이 새 계정으로 승계되지 않도록 기기 식별자도 새로 발급
       deviceId: uid('dev_'),
     })
   },
-})
+  setWallet: (points, memo) => {
+    const st = useStore.getState()
+    const diff = points - st.points
+    useStore.setState({
+      points,
+      ledger: diff === 0 ? st.ledger : [{ id: uid('lg_'), amount: diff, memo, at: Date.now() }, ...st.ledger],
+    })
+  },
+}
+initEconomySync(econHooks)
+
+/**
+ * 개발 전용 스토어 노출 — 계정 전환처럼 실계정 2개가 필요한 경로를 브라우저에서 직접 검증하기 위함.
+ * 프로덕션 번들에는 남지 않는다(import.meta.env.DEV는 빌드 시 false로 접혀 트리셰이킹됨).
+ */
+if (import.meta.env.DEV) {
+  const w = window as unknown as { __store?: typeof useStore; __econ?: SyncHooks }
+  w.__store = useStore
+  w.__econ = econHooks
+}

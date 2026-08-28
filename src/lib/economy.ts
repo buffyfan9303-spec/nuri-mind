@@ -27,6 +27,14 @@ import { onAuthChange } from './auth'
 const OUTBOX_KEY = 'nuri-mind-econ-outbox-v1'
 /** 이 기기가 마지막으로 동기화를 완료한 계정 uid — 첫 동기화/계정 전환 판별 */
 const SYNC_UID_KEY = 'nuri-mind-econ-sync-uid'
+/**
+ * 이 기기의 로컬 프로필이 "누구 것인가" — 서버 왕복과 무관한 로컬 경계.
+ * SYNC_UID_KEY(서버 동기화 완료)와 분리한 이유: 계정 전환 감지 후 서버 호출이 한 번만 실패해도
+ * 이전 계정의 유료 재화·기록이 새 계정 화면에 남는 창이 생기기 때문(경계는 네트워크와 무관해야 함).
+ */
+const LOCAL_UID_KEY = 'nuri-mind-econ-local-uid'
+/** 로그아웃 상태의 기기 프로필도 하나의 '계정'처럼 보관 — 재로그인 시 원상 복구를 위해 */
+const GUEST = 'guest'
 const MAX_OUTBOX = 300
 /** 서버 grant_points/mirror_spend의 건당 상한과 일치 */
 const MAX_AMOUNT = 100000
@@ -226,7 +234,9 @@ export interface SyncHooks {
    * 새 계정의 보관본이 있으면 복원한다. 파기하지 않는 이유: 유료 재화(다이아·프리미엄)는
    * 서버 복원 경로가 없어 지우면 영구 소멸이고, 남기면 남의 계정에 승계되기 때문.
    */
-  resetWallet: (points: number, memo: string, prevUid: string | null, nextUid: string) => void
+  swapAccount: (prevUid: string, nextUid: string) => void
+  /** 서버 권위 잔액으로 지갑을 맞춤(차액은 원장 1행으로 기록) */
+  setWallet: (points: number, memo: string) => void
 }
 
 /**
@@ -244,35 +254,51 @@ async function syncAccount(hooks: SyncHooks): Promise<void> {
     const uid = await sessionUid()
     if (!uid) return
     currentUid = uid
+
+    // ── ① 로컬 경계를 서버보다 먼저 세운다 ──
+    // 전환 감지 즉시 프로필을 스왑한다. 서버 응답을 기다리면 네트워크가 한 번만 실패해도
+    // 이전 계정의 다이아·프리미엄·검사기록이 새 계정 화면에 그대로 남는다.
+    const localUid = localStorage.getItem(LOCAL_UID_KEY)
+    if (localUid && localUid !== uid) {
+      hooks.swapAccount(localUid, uid)
+      // 이전 지갑에서 로그아웃 상태로 쌓인 활동(uid=null)은 새 계정 것이 아니다.
+      // ⚠️ 반드시 flush "이전"에 폐기 — 뒤에 두면 force flush가 먼저 새 계정 원장에 적립해버린다.
+      saveOutbox(loadOutbox().filter((e) => e.uid !== null))
+      localStorage.setItem(LOCAL_UID_KEY, uid)
+    }
+
     const marker = localStorage.getItem(SYNC_UID_KEY)
     if (marker === uid) {
       await flushOutbox()
       return
     }
 
-    const ledgerCount = await fetchServerLedgerCount()
-    if (ledgerCount === null) return // 네트워크 실패 — 마커 미설정 상태로 다음 트리거에서 재시도
-
     if (marker && marker !== uid) {
-      // 계정 전환: 이전 지갑(다른 사람 포인트일 수 있음)을 새 계정으로 이관하지 않음.
-      // ⚠️ 다만 '이전 계정 소유(uid 태그)' 미전송 항목은 지갑을 덮어쓰기 전에 반드시 배출해야
-      //    적립분이 로컬에서 영구 증발하지 않는다(force로 마커 불일치와 무관하게 전송).
+      // 계정 전환 — 경계는 ①에서 이미 확정됐고, 여기서는 잔액만 서버 권위로 정산한다.
+      // 이전 계정 태그(uid=marker) 항목은 배출하지 않고 휴면 보관 — 그 사용자가 재로그인할 때 전송된다.
       if (!(await flushOutbox(true))) return
-      saveOutbox(loadOutbox().filter((e) => e.uid !== null)) // 이전 지갑의 비로그인 활동 폐기
-      if (ledgerCount > 0) {
+      // ⚠️ 원장 행 수는 반드시 flush "이후"에 읽는다. 배출로 갓 생긴 행을 못 보면
+      //    신규 계정으로 오판해 local_migration 100P를 덧대 로컬·서버가 영구히 어긋난다.
+      const count = await fetchServerLedgerCount()
+      if (count === null) return
+      if (count > 0) {
         const server = await fetchServerPoints()
         if (server === null) return
-        hooks.resetWallet(server, '👤 계정 전환 — 서버 지갑으로 재설정', marker, uid)
+        hooks.setWallet(server, '👤 계정 전환 — 서버 지갑으로 동기화')
       } else {
-        // 새 지갑 시드 100P — 전송 성공을 확인한 뒤에만 지갑 재설정·마커 확정(실패 시 재시도)
+        // 새 지갑 시드 100P — 전송 성공을 확인한 뒤에만 지갑 확정(실패 시 다음 트리거가 재시도)
         if (!(await sendEarn(100, '💾 로컬 지갑 이관', 'local_migration'))) return
-        hooks.resetWallet(100, '👤 계정 전환 — 새 지갑 시작', marker, uid)
+        hooks.setWallet(100, '👤 계정 전환 — 새 지갑 시작')
       }
       localStorage.setItem(SYNC_UID_KEY, uid)
       return
     }
 
-    // 이 기기에서 이 계정 첫 동기화
+    // ── 이 기기에서 이 계정 첫 동기화 ──
+    // 여기서는 원장 행 수를 flush 전에 읽어야 한다. 신규 계정 경로는 flush가 아니라
+    // '아웃박스 폐기 + 잔액 1회 이관'이라서, 먼저 배출해버리면 이관액과 이중 계상된다.
+    const ledgerCount = await fetchServerLedgerCount()
+    if (ledgerCount === null) return
     if (ledgerCount > 0) {
       // 기존 계정(재설치·새 기기) → 비로그인 활동을 전부 서버에 반영한 뒤 서버 잔액으로 복원.
       // 완전 배출이 아니면(네트워크 실패·차감 RPC 미배포) 복원 보류 — 부정확한 잔액 복원 방지.
@@ -290,9 +316,51 @@ async function syncAccount(hooks: SyncHooks): Promise<void> {
       if (amt > 0 && !(await sendEarn(amt, '💾 로컬 지갑 이관', 'local_migration'))) return
     }
     localStorage.setItem(SYNC_UID_KEY, uid)
+    localStorage.setItem(LOCAL_UID_KEY, uid)
   } finally {
     syncing = false
   }
+}
+
+/**
+ * 로그아웃 — 계정 경계를 "로그인 시점"뿐 아니라 로그아웃 시점에도 적용한다.
+ * 적용하지 않으면 로그아웃한 비로그인 사용자가 직전 계정의 지갑·유료재화·검사기록을 그대로 이어받는다.
+ * 기기 프로필을 계정 uid로 보관하고 게스트 프로필로 되돌린 뒤, 마커를 지워 재로그인 시
+ * '보관본 복원 + 서버 잔액 정산' 경로를 다시 타게 한다.
+ */
+export function leaveAccount(): void {
+  const prev = currentUid ?? localStorage.getItem(LOCAL_UID_KEY)
+  if (hooksRef && prev && prev !== GUEST) hooksRef.swapAccount(prev, GUEST)
+  try {
+    localStorage.setItem(LOCAL_UID_KEY, GUEST)
+    localStorage.removeItem(SYNC_UID_KEY)
+    saveOutbox(loadOutbox().filter((e) => e.uid !== null))
+  } catch {
+    /* 저장소 불가 — 스토어 리셋은 이미 적용됨 */
+  }
+  currentUid = null
+}
+
+/**
+ * 계정 전환이 아직 반영되지 않은 상태인가 — 다이아 수령처럼 "받는 즉시 로컬에만 남는" 동작을
+ * 이 구간에서 하면 직후의 프로필 스왑에 덮여 소멸한다. 그 창에서는 수령을 막는다.
+ */
+export function isAccountSwitchPending(uid: string | null): boolean {
+  if (!uid) return false
+  const localUid = localStorage.getItem(LOCAL_UID_KEY)
+  return !!localUid && localUid !== uid
+}
+
+/** 전체 초기화 — 동기화 마커·아웃박스를 통째로 비워 다음 로그인이 처음부터 판정하게 한다. */
+export function clearAccountSync(): void {
+  try {
+    localStorage.removeItem(LOCAL_UID_KEY)
+    localStorage.removeItem(SYNC_UID_KEY)
+    localStorage.removeItem(OUTBOX_KEY)
+  } catch {
+    /* ignore */
+  }
+  currentUid = null
 }
 
 /** 동기화 초기화 — useStore 모듈 로드 시 1회 호출. */

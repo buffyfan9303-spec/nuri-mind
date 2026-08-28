@@ -7,6 +7,7 @@ import { loadAnalytics } from './lib/analytics'
 import { loadKakao } from './lib/kakao'
 import { initSentry, SentryErrorBoundary } from './lib/sentry'
 import { registerSW, initInstallPrompt } from './lib/pwa'
+import { useStore } from './store/useStore'
 
 // 에러 모니터링 — VITE_SENTRY_DSN 설정 시에만 (미설정이면 no-op)
 initSentry()
@@ -18,6 +19,11 @@ initInstallPrompt()
 loadAnalytics()
 // 카카오 공유 SDK — VITE_KAKAO_KEY 설정 시에만 (미설정이면 no-op)
 loadKakao()
+// 탭 간 동기화 — 다른 탭이 저장소를 갱신하면 이 탭의 스냅샷을 최신으로 맞춘다.
+// 없으면 오래 열어둔 탭이 나중에 쓰기를 할 때 그 사이 쌓인 포인트·기록을 통째로 되돌린다.
+window.addEventListener('storage', (e) => {
+  if (e.key === 'nuri-mind-v1') void useStore.persist.rehydrate()
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -14,6 +14,8 @@ import { fileToAvatarDataUrl } from '../lib/image'
 import { scheduleStreakReminder } from '../lib/notify'
 import { enablePush, disablePush, pushSupported, pushConfigured, pushPermission } from '../lib/push'
 import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
+import { leaveAccount } from '../lib/economy'
+import { moderateText } from '../lib/moderation'
 import { useStore, OPERATOR_NICKS, isPremium, PREMIUM_KRW } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 
@@ -52,6 +54,10 @@ export default function Profile() {
     getAuthUser().then(setAuthUser)
     return onAuthChange(() => getAuthUser().then(setAuthUser))
   }, [])
+  const [nickErr, setNickErr] = useState('')
+  const [resetAck, setResetAck] = useState(false)
+  const hasPaid = s.diamonds > 0 || isPremium(s.premiumUntil)
+
   // OAuth 콜백 에러 표시 — Onboarding에만 있어 Profile에서 시작한 로그인 실패가 무음이던 문제
   const [oauthErr, setOauthErr] = useState('')
   useEffect(() => {
@@ -117,6 +123,12 @@ export default function Profile() {
                 />
                 <button
                   onClick={() => {
+                    // 온보딩과 같은 필터 — 여기만 열려 있으면 나중에 바꿔 우회할 수 있다
+                    if (!moderateText(nick).ok) {
+                      setNickErr(t('community.badword'))
+                      return
+                    }
+                    setNickErr('')
                     s.setNickname(nick)
                     setEditing(false)
                   }}
@@ -124,6 +136,10 @@ export default function Profile() {
                 >
                   ✅
                 </button>
+              </div>
+            ) : nickErr ? (
+              <div className="w-full">
+                <p className="text-[12.5px] font-bold text-red-500">{nickErr}</p>
               </div>
             ) : (
               <h2 className="flex items-center gap-2 text-[19px] font-extrabold tracking-tight">
@@ -420,6 +436,9 @@ export default function Profile() {
                 <button
                   onClick={async () => {
                     await signOut()
+                    // 계정 경계는 로그아웃 시점에도 적용 — 안 하면 비로그인 사용자가
+                    // 직전 계정의 지갑·유료재화·검사기록을 그대로 이어받는다(공유 기기).
+                    leaveAccount()
                     setAuthUser(null)
                   }}
                   className="flex w-full items-center justify-between border-t border-line px-3 py-3"
@@ -525,12 +544,32 @@ export default function Profile() {
       <Modal open={resetOpen} onClose={() => setResetOpen(false)}>
         <div className="text-center">
           <div className="text-4xl">🗑</div>
-          <p className="mt-3 text-sm font-bold leading-relaxed text-ink-sub">{t('profile.resetConfirm')}</p>
+          <p className="mt-3 whitespace-pre-line text-sm font-bold leading-relaxed text-ink-sub">{t('profile.resetConfirm')}</p>
+          {hasPaid && (
+            // 복구 불가능한 유료 재화가 있을 때만 2차 확인 — 오탭 한 번으로 결제분이 날아가지 않게.
+            <button
+              onClick={() => setResetAck((v) => !v)}
+              className="mt-4 flex w-full items-start gap-2.5 rounded-2xl bg-red-50 p-3.5 text-left"
+            >
+              <span className={`mt-px shrink-0 text-[15px] ${resetAck ? 'text-red-500' : 'text-red-300'}`}>
+                {resetAck ? '☑' : '☐'}
+              </span>
+              <span className="break-keep text-[12.5px] font-bold leading-relaxed text-red-500">
+                {l({
+                  ko: `다이아 ${s.diamonds}개${isPremium(s.premiumUntil) ? ' · 프리미엄 구독' : ''}이 복구 불가능하게 사라지는 것에 동의해요`,
+                  en: `I understand ${s.diamonds} diamonds${isPremium(s.premiumUntil) ? ' and my premium subscription' : ''} will be lost permanently`,
+                  ja: `ダイヤ${s.diamonds}個${isPremium(s.premiumUntil) ? '・プレミアム購読' : ''}が復元できなくなることに同意します`,
+                })}
+              </span>
+            </button>
+          )}
           <div className="mt-5 space-y-2.5">
             <Button
               color="danger"
+              disabled={hasPaid && !resetAck}
               onClick={() => {
                 s.resetAll()
+                setResetAck(false)
                 setResetOpen(false)
               }}
             >
