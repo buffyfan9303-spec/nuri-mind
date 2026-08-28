@@ -7,6 +7,7 @@ import { useT, useL } from '../i18n/useT'
 import { expById, TIERS } from '../data/rank'
 import { sfx } from '../lib/sound'
 import { grantDiamondsNick, sendMailNick } from '../lib/mailbox'
+import { probeAi, type AiHealth, type AiFnName } from '../lib/aiHealth'
 
 type Tab = 'surveys' | 'redeem' | 'exp' | 'reports' | 'stats'
 
@@ -62,6 +63,8 @@ function PinGate() {
 }
 
 function Console() {
+  const [aiHealth, setAiHealth] = useState<AiHealth[]>([])
+  const [aiBusy, setAiBusy] = useState(false)
   const t = useT()
   const l = useL()
   const [tab, setTab] = useState<Tab>('surveys')
@@ -351,6 +354,39 @@ function Console() {
             >
               <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white transition-transform ${precisionGate ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
             </button>
+          </div>
+
+          {/* AI 엣지 함수 진단 — 키가 실제로 먹었는지 확인할 유일한 수단 */}
+          <div className="mt-3 rounded-2xl bg-white/10 p-4">
+            <h3 className="text-[14px] font-extrabold text-white">🩺 AI 연결 진단</h3>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-white/50">
+              ANTHROPIC_API_KEY가 없으면 앱은 조용히 정적 요약으로 착지해요. 키를 넣은 뒤 여기서 실제 동작을 확인하세요.
+              (실호출 1회분이 과금됩니다)
+            </p>
+            <button
+              disabled={aiBusy}
+              onClick={async () => {
+                setAiBusy(true)
+                setAiHealth([])
+                const fns: AiFnName[] = ['deep-report', 'ai-report', 'fortune-detail']
+                // 순차 실행 — 동시에 때리면 어느 함수가 느린지/막혔는지 구분이 안 된다
+                for (const f of fns) {
+                  const h = await probeAi(f)
+                  setAiHealth((prev) => [...prev, h])
+                }
+                setAiBusy(false)
+              }}
+              className="mt-2.5 w-full rounded-xl bg-[#6E7BF2] py-2.5 text-[13px] font-extrabold text-white disabled:opacity-50"
+            >
+              {aiBusy ? '진단 중…' : '3종 함수 진단 실행'}
+            </button>
+            {aiHealth.map((h) => (
+              <div key={h.fn} className="mt-2 rounded-xl bg-black/20 p-3">
+                <p className="text-[12.5px] font-extrabold text-white">{h.fn}</p>
+                <p className={`mt-0.5 text-[12px] font-bold ${h.ok ? 'text-[#4FA882]' : 'text-[#FF9AA2]'}`}>{h.verdict}</p>
+                {h.detail && <p className="mt-1 break-all text-[10.5px] leading-relaxed text-white/45">{h.detail}</p>}
+              </div>
+            ))}
           </div>
 
           {/* 운영자 도구 — 다이아 지급 / 개인 우편 */}

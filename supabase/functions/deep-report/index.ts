@@ -94,12 +94,35 @@ Deno.serve(async (req: Request) => {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model, max_tokens: 4000, system, messages: [{ role: 'user', content: user }] }),
+      body: JSON.stringify({
+        model,
+        // ⚠️ Opus 5는 thinking이 기본 ON이고 그 토큰도 max_tokens에서 나간다. 4000이면 8섹션 JSON이
+        //    생각 도중 잘려 파싱에 실패하고, 사용자는 키를 넣었는데도 정적 폴백만 본다.
+        max_tokens: 12000,
+        // 화면이 '20초 정도'를 약속한다 — 리포트 작성은 medium이면 충분하고 지연이 절반 이하로 준다
+        output_config: { effort: 'medium' },
+        system,
+        messages: [{ role: 'user', content: user }],
+      }),
     })
-    if (!resp.ok) return json({ error: 'upstream', status: resp.status }, 502)
+    if (!resp.ok) {
+      // 상류 오류 메시지를 그대로 넘긴다 — 키 오타·크레딧 소진·모델명 오류를 구분하려면 이게 필요하다.
+      // (응답 본문에 API 키가 들어가지 않는다 — 상류는 키를 에코하지 않는다.)
+      const why = await resp.text().catch(() => '')
+      return json({ error: 'upstream', status: resp.status, detail: why.slice(0, 300) }, 502)
+    }
     const data = await resp.json()
-    const text = (data.content ?? []).map((c: { text?: string }) => c.text ?? '').join('').trim()
+    // 안전 차단은 HTTP 200으로 온다 — content를 읽기 전에 stop_reason부터 확인
+    if (data.stop_reason === 'refusal') return json({ error: 'refusal' }, 502)
+    // thinking 블록이 섞여 오므로 text 블록만 취한다(합치면 JSON 앞에 요약문이 붙어 파싱이 깨진다)
+    const text = (data.content ?? [])
+      .filter((c: { type?: string }) => c.type === 'text')
+      .map((c: { text?: string }) => c.text ?? '')
+      .join('')
+      .trim()
     if (!text) return json({ error: 'empty' }, 502)
+    // 잘림은 'parse' 실패로 뭉뚱그리지 않는다 — 원인이 다르면 대응(max_tokens 상향)도 다르다
+    if (data.stop_reason === 'max_tokens') return json({ error: 'truncated' }, 502)
 
     // 모델이 코드펜스를 붙이는 경우까지 방어적으로 파싱
     const raw = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '')
