@@ -221,8 +221,12 @@ export interface SyncHooks {
   getWallet: () => { points: number }
   /** 새 기기 복원 — points = 서버잔액 + (현재 − 스냅샷) 으로 동기화 중 적립을 보존 */
   restoreTo: (serverPoints: number, snapshotPoints: number) => void
-  /** 계정 전환 — 지갑을 지정 값으로 재설정(이전 계정 잔액 이관 금지) */
-  resetWallet: (points: number, memo: string) => void
+  /**
+   * 계정 전환 — 이전 계정의 기기-로컬 프로필을 uid별로 보관(스냅샷)하고,
+   * 새 계정의 보관본이 있으면 복원한다. 파기하지 않는 이유: 유료 재화(다이아·프리미엄)는
+   * 서버 복원 경로가 없어 지우면 영구 소멸이고, 남기면 남의 계정에 승계되기 때문.
+   */
+  resetWallet: (points: number, memo: string, prevUid: string | null, nextUid: string) => void
 }
 
 /**
@@ -258,11 +262,11 @@ async function syncAccount(hooks: SyncHooks): Promise<void> {
       if (ledgerCount > 0) {
         const server = await fetchServerPoints()
         if (server === null) return
-        hooks.resetWallet(server, '👤 계정 전환 — 서버 지갑으로 재설정')
+        hooks.resetWallet(server, '👤 계정 전환 — 서버 지갑으로 재설정', marker, uid)
       } else {
         // 새 지갑 시드 100P — 전송 성공을 확인한 뒤에만 지갑 재설정·마커 확정(실패 시 재시도)
         if (!(await sendEarn(100, '💾 로컬 지갑 이관', 'local_migration'))) return
-        hooks.resetWallet(100, '👤 계정 전환 — 새 지갑 시작')
+        hooks.resetWallet(100, '👤 계정 전환 — 새 지갑 시작', marker, uid)
       }
       localStorage.setItem(SYNC_UID_KEY, uid)
       return

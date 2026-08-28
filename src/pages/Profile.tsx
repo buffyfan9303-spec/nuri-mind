@@ -52,6 +52,19 @@ export default function Profile() {
     getAuthUser().then(setAuthUser)
     return onAuthChange(() => getAuthUser().then(setAuthUser))
   }, [])
+  // OAuth 콜백 에러 표시 — Onboarding에만 있어 Profile에서 시작한 로그인 실패가 무음이던 문제
+  const [oauthErr, setOauthErr] = useState('')
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search.slice(1))
+    const h = new URLSearchParams(window.location.hash.slice(1))
+    const err = q.get('error_description') || h.get('error_description') || q.get('error') || h.get('error')
+    if (!err) return
+    setOauthErr(decodeURIComponent(err).slice(0, 90))
+    window.history.replaceState({}, '', window.location.pathname)
+    const id = setTimeout(() => setOauthErr(''), 6000)
+    return () => clearTimeout(id)
+  }, [])
+
   const fileRef = useRef<HTMLInputElement>(null)
 
   // 검사로 얻은 동물(중복 제거) — 아바타 후보
@@ -74,6 +87,15 @@ export default function Profile() {
     <div className="min-h-dvh pb-36">
       <TopBar title={t('profile.title')} />
       <main className="mx-auto max-w-md px-5">
+        {oauthErr && (
+          <motion.p
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-3 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12.5px] font-bold text-red-500"
+          >
+            {l({ ko: '카카오 로그인 실패', en: 'Kakao login failed', ja: 'カカオログイン失敗' })}: {oauthErr}
+          </motion.p>
+        )}
         {/* 유저 카드 */}
         <Card className="flex items-center gap-4">
           <button onClick={() => setAvatarOpen(true)} className="relative shrink-0">

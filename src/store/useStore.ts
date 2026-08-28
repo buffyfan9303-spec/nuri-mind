@@ -363,6 +363,9 @@ export const useStore = create<State>()(
       }
       /** 상한 내에서 적립 — 실제 지급액 반환. reasonKey는 서버 미러 중복 차단 키(일일 보상은 날짜 포함) */
       const grantFree = (amount: number, memo: string, reasonKey: string | null = null): number => {
+        // ⚠️ 공개 라우트(매거진·띠운세 등)는 미가입자도 볼 수 있다 — 약관·개인정보 동의 전에는
+        //    어떤 보상도 적립하지 않는다(동의 우회로 서버 원장까지 귀속되는 것을 차단).
+        if (!get().onboarded) return 0
         const granted = Math.min(amount, freeLeft())
         if (granted <= 0) return 0
         const s = get()
@@ -892,34 +895,97 @@ initEconomySync({
             ],
     })
   },
-  resetWallet: (points, memo) => {
-    const s = useStore.getState()
-    const diff = points - s.points
-    // ⚠️ 계정 전환은 '다른 사람'으로 바뀌는 것 — 포인트만 리셋하면 이전 사용자의 유료 재화
-    //    (다이아·프리미엄·영구 해제)와 1회성/일일 보상 플래그를 새 계정이 그대로 물려받는다.
-    //    공유 기기에서 결제 재화가 새는 경로라 기기-로컬 엔타이틀먼트까지 함께 초기화한다.
+  resetWallet: (points, memo, prevUid, nextUid) => {
+    const st = useStore.getState()
+    // 계정에 귀속돼야 하는 기기-로컬 필드 — 전환 시 통째로 스냅샷/복원한다.
+    // (유료 재화는 서버 복원 경로가 없어 '삭제'하면 영구 소멸, '유지'하면 남의 계정 승계 → 스왑)
+    const snap = {
+      diamonds: st.diamonds,
+      premiumUntil: st.premiumUntil,
+      iqUnlocked: st.iqUnlocked,
+      precisionUnlocked: st.precisionUnlocked,
+      points: st.points,
+      ledger: st.ledger,
+      results: st.results,
+      rewardedTests: st.rewardedTests,
+      birthDate: st.birthDate,
+      moodLog: st.moodLog,
+      routineDone: st.routineDone,
+      growthPlanAt: st.growthPlanAt,
+      growthFocusIds: st.growthFocusIds,
+      growthDone: st.growthDone,
+      aiReports: st.aiReports,
+      aiReportText: st.aiReportText,
+      takenSurveys: st.takenSurveys,
+      sharedResults: st.sharedResults,
+      firstPostDone: st.firstPostDone,
+      firstCommentDone: st.firstCommentDone,
+      lastCheckIn: st.lastCheckIn,
+      streak: st.streak,
+      streakFreezes: st.streakFreezes,
+      questClaimedDate: st.questClaimedDate,
+      fortuneFullDate: st.fortuneFullDate,
+      fortuneDetailDate: st.fortuneDetailDate,
+      fortuneShareDate: st.fortuneShareDate,
+      fortuneMonth: st.fortuneMonth,
+      fortuneFreeUses: st.fortuneFreeUses,
+      referredBy: st.referredBy,
+      nickname: st.nickname,
+      avatar: st.avatar,
+    }
+    const KEY = (u: string) => `nuri-mind-acct-${u}`
+    try {
+      if (prevUid) localStorage.setItem(KEY(prevUid), JSON.stringify(snap))
+    } catch {
+      /* 저장소 불가 — 복원만 포기(진행은 계속) */
+    }
+    let restored: Partial<typeof snap> | null = null
+    try {
+      const raw = localStorage.getItem(KEY(nextUid))
+      if (raw) restored = JSON.parse(raw) as Partial<typeof snap>
+    } catch {
+      restored = null
+    }
+    if (restored) {
+      // 이 기기에서 쓰던 계정으로 돌아온 경우 — 보관본 복원(포인트는 서버 권위값 우선)
+      useStore.setState({ ...restored, points, adminUnlocked: false })
+      return
+    }
+    // 처음 보는 계정 — 이전 사용자의 흔적을 남기지 않고 새 지갑으로 시작
+    const diff = points - st.points
     useStore.setState({
       points,
-      ledger: diff === 0 ? s.ledger : [{ id: uid('lg_'), amount: diff, memo, at: Date.now() }, ...s.ledger],
+      ledger: diff === 0 ? st.ledger : [{ id: uid('lg_'), amount: diff, memo, at: Date.now() }, ...st.ledger],
       diamonds: 0,
       premiumUntil: 0,
       iqUnlocked: false,
       precisionUnlocked: false,
+      results: [],
       rewardedTests: [],
-      firstPostDone: false,
-      firstCommentDone: false,
+      birthDate: '',
+      moodLog: {},
+      routineDone: {},
+      growthPlanAt: 0,
+      growthFocusIds: [],
+      growthDone: {},
+      aiReports: [],
+      aiReportText: {},
       takenSurveys: [],
       sharedResults: [],
+      firstPostDone: false,
+      firstCommentDone: false,
       lastCheckIn: '',
       streak: 0,
+      streakFreezes: 0,
       questClaimedDate: '',
       fortuneFullDate: '',
       fortuneDetailDate: '',
       fortuneShareDate: '',
       fortuneMonth: '',
       fortuneFreeUses: 0,
-      aiReportText: {},
-      aiReports: [],
+      referredBy: '',
+      adminUnlocked: false,
+      deviceId: uid('dev_'),
     })
   },
 })
