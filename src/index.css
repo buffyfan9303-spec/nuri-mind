@@ -37,6 +37,10 @@
 .dark .text-mind-600 { color: #6FB394; }
 .dark .text-mind-700 { color: #79C2A0; }
 .dark .text-mind-800 { color: #A3CFB9; }
+/* 라이트 틴트 배경(bg-mind-50/100)은 다크에서 그대로 밝게 남아 밝은 텍스트와 대비가 무너진다.
+   → 다크에서는 배경을 반투명 브랜드 틴트로 낮춰 4.5:1 이상을 확보. */
+.dark .bg-mind-50 { background-color: rgba(79, 168, 130, 0.16); }
+.dark .bg-mind-100 { background-color: rgba(79, 168, 130, 0.22); }
 .dark .text-reso-deep { color: #34D399; }
 .dark .text-dk-deep { color: #D98AAA; }
 .dark .text-dopa-deep { color: #5BC8DC; }

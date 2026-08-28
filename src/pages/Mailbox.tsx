@@ -5,7 +5,7 @@ import Button from '../components/Button'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { authReady, getAuthUser, onAuthChange, signInWithKakao } from '../lib/auth'
-import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem } from '../lib/mailbox'
+import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem, confirmMailDelivery } from '../lib/mailbox'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 
@@ -82,6 +82,8 @@ export default function Mailbox() {
       return
     }
     if (got > 0) addDiamonds(got)
+    // 로컬 가산이 끝난 뒤에만 서버에 배송 확정 — 그 전엔 서버가 재지급 가능 상태로 보관
+    void confirmMailDelivery([it.id])
     setMail((m) => m.map((x) => (x.id === it.id ? { ...x, claimed: true } : x)))
     burst()
     sfx.coin()
@@ -96,6 +98,7 @@ export default function Mailbox() {
       return
     }
     if (got > 0) addDiamonds(got)
+    void confirmMailDelivery()
     setMail((m) => m.map((x) => ({ ...x, claimed: true })))
     if (got > 0) {
       burst()

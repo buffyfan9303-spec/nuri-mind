@@ -95,3 +95,18 @@ export async function cancelPurchase(id: number): Promise<string> {
     return 'unavailable'
   }
 }
+
+/**
+ * 수령 확정 — 클라가 로컬 잔액에 실제로 가산한 뒤 호출.
+ * 이 호출 전까지 서버는 delivered=false로 남겨두므로, 응답이 유실돼 클라가 못 받은 경우
+ * 다음 claim에서 같은 금액이 다시 반환된다(다이아 영구 소실 방지).
+ * 실패해도 사용자에겐 이미 지급된 상태 — 다음 수령 때 서버가 자동 정리한다.
+ */
+export async function confirmMailDelivery(ids?: number[]): Promise<void> {
+  if (!supabase) return
+  try {
+    await supabase.rpc('confirm_mail_delivery', { p_ids: ids ?? null })
+  } catch {
+    /* 무시 — 미확정으로 남아 다음 수령 시 복구된다 */
+  }
+}

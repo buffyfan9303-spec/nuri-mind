@@ -865,9 +865,31 @@ initEconomySync({
   resetWallet: (points, memo) => {
     const s = useStore.getState()
     const diff = points - s.points
+    // ⚠️ 계정 전환은 '다른 사람'으로 바뀌는 것 — 포인트만 리셋하면 이전 사용자의 유료 재화
+    //    (다이아·프리미엄·영구 해제)와 1회성/일일 보상 플래그를 새 계정이 그대로 물려받는다.
+    //    공유 기기에서 결제 재화가 새는 경로라 기기-로컬 엔타이틀먼트까지 함께 초기화한다.
     useStore.setState({
       points,
       ledger: diff === 0 ? s.ledger : [{ id: uid('lg_'), amount: diff, memo, at: Date.now() }, ...s.ledger],
+      diamonds: 0,
+      premiumUntil: 0,
+      iqUnlocked: false,
+      precisionUnlocked: false,
+      rewardedTests: [],
+      firstPostDone: false,
+      firstCommentDone: false,
+      takenSurveys: [],
+      sharedResults: [],
+      lastCheckIn: '',
+      streak: 0,
+      questClaimedDate: '',
+      fortuneFullDate: '',
+      fortuneDetailDate: '',
+      fortuneShareDate: '',
+      fortuneMonth: '',
+      fortuneFreeUses: 0,
+      aiReportText: {},
+      aiReports: [],
     })
   },
 })

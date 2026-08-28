@@ -111,9 +111,13 @@ export default function Shop() {
                       size="sm"
                       disabled={!afford || maxed}
                       onClick={() => setConfirm(item)}
-                      className="!px-2"
+                      className="!px-2 whitespace-nowrap"
                     >
-                      {maxed ? '보유중' : afford ? '교환' : '부족'}
+                      {maxed
+                        ? l({ ko: '보유중', en: 'Owned', ja: '保有中' })
+                        : afford
+                          ? l({ ko: '교환', en: 'Redeem', ja: '交換' })
+                          : l({ ko: '부족', en: 'Short', ja: '不足' })}
                     </Button>
                   </div>
                 </Card>

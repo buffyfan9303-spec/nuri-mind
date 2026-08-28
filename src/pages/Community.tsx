@@ -75,7 +75,8 @@ export default function Community() {
   const [serverPosts, setServerPosts] = useState<CommunityPost[]>([])
   const [newCount, setNewCount] = useState(0)
   const [pulling, setPulling] = useState(0)
-  const pullRef = useRef(0) // 당겨서 새로고침 거리(px)
+  const pullRef = useRef(0)
+  const likeBusyRef = useRef<Set<string>>(new Set()) // 당겨서 새로고침 거리(px)
   const [refreshing, setRefreshing] = useState(false)
 
   const reload = async () => {
@@ -265,6 +266,10 @@ export default function Community() {
   }
 
   const onLike = async (p: CommunityPost) => {
+    // 연속 탭 방지 — 같은 글의 요청이 비행 중이면 무시(서버 카운트 이중 증가·상태 불일치 차단)
+    if (likeBusyRef.current.has(p.id)) return
+    likeBusyRef.current.add(p.id)
+    setTimeout(() => likeBusyRef.current.delete(p.id), 600)
     if (!p.liked) sfx.tap()
     if (server) {
       setServerPosts((prev) =>
