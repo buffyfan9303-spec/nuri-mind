@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { TopBar, Card, Modal } from '../components/ui'
 import Button from '../components/Button'
 import { useStore, isPremium, PREMIUM_KRW, PREMIUM_DAYS } from '../store/useStore'
+import { track } from '../lib/analytics'
 import { useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
@@ -36,6 +37,9 @@ export default function Premium() {
 
   const onSubscribe = () => {
     // TODO(PG): 카카오페이/카드 정기결제 성공 콜백에서 subscribe() 호출로 교체
+    // ⚠️ 지금은 베타 즉시지급이라 이 이벤트는 '결제'가 아니라 '구독 의사'를 뜻한다.
+    //    PG가 붙으면 결제 성공 콜백으로 옮겨야 매출과 일치한다.
+    track('premium_start', { price: PREMIUM_KRW, billed: false })
     subscribe()
     burst()
     sfx.coin()

@@ -5,7 +5,7 @@
  * 제공자·모델 선택은 ./llm.ts — ANTHROPIC_API_KEY 또는 GOOGLE_API_KEY 중 설정된 쪽을 자동 사용.
  * 키 미설정 시 클라이언트가 기존 정적 리포트로 폴백하므로 앱은 그대로 동작합니다.
  */
-import { callLlm, withinQuota } from './llm.ts'
+import { callLlm, withinQuota } from '../_shared/llm.ts'
 
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',

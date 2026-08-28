@@ -8,7 +8,7 @@
  *  ④ 검사 메타 ↔ i18n 키 불일치(test.{id}.name/short)
  *  ⑤ sitemap 등재 URL ↔ 실제 라우트/데이터 불일치
  *  ⑥ 16유형 심층 문항의 극별 균형(불균형 시 채점 편향)
- *  ⑦ 엣지 함수 공용 모듈 사본이 원본과 갈라졌는가(제공자 어댑터 드리프트)
+ *  ⑦ 엣지 함수가 공용 모듈(_shared)을 올바르게 참조하는가 · 사본이 남아 원본을 가리지 않는가
  *
  * 실행: npm run smoke   (실패 시 exit 1 — 배포 전 게이트로 사용)
  */
@@ -95,18 +95,20 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   check(`16유형 심층 문항 균형(${poles.length}문항)`, bad.length === 0, bad.join(', '))
 }
 
-/* ⑦ 엣지 함수 공용 모듈 사본이 원본과 일치하는가 */
+/* ⑦ 엣지 함수가 공용 모듈을 올바른 경로로 참조하는가 */
 {
-  const { expected, copyPath, TARGETS } = await import('./sync-fn-shared.mjs')
-  const want = expected()
-  const stale = TARGETS.filter((fn) => {
-    try {
-      return readFileSync(copyPath(fn), 'utf8') !== want
-    } catch {
-      return true
-    }
-  })
-  check(`엣지 공용 모듈 동기화(${TARGETS.length}종)`, stale.length === 0, stale.length ? `${stale.join(', ')} — npm run sync:fn 실행 필요` : '')
+  const FNS = ['deep-report', 'ai-report', 'fortune-detail']
+  const shared = existsSync(join(ROOT, 'supabase/functions/_shared/llm.ts'))
+  // 폴더 안에 사본이 남아 있으면 CLI가 그걸 쓰게 돼 원본 수정이 반영되지 않는다
+  const strays = FNS.filter((fn) => existsSync(join(ROOT, `supabase/functions/${fn}/llm.ts`)))
+  const wrong = FNS.filter((fn) => !read(`supabase/functions/${fn}/index.ts`).includes("from '../_shared/llm.ts'"))
+  check(
+    `엣지 공용 모듈 참조(${FNS.length}종)`,
+    shared && strays.length === 0 && wrong.length === 0,
+    [!shared && '_shared/llm.ts 없음', strays.length && `사본 잔존: ${strays.join(', ')}`, wrong.length && `참조 경로 오류: ${wrong.join(', ')}`]
+      .filter(Boolean)
+      .join(' · '),
+  )
 }
 
 /* 결과 */

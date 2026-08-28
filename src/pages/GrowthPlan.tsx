@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import { Card, TopBar } from '../components/ui'
 import { useStore, isPremium, PREMIUM_KRW } from '../store/useStore'
+import { track } from '../lib/analytics'
 import { useT, useL } from '../i18n/useT'
 import { localDay } from '../lib/date'
 import { buildFocuses, isTaskDone, pickFocusIds } from '../lib/growth'
@@ -36,6 +37,14 @@ export default function GrowthPlan() {
   const toggleTask = useStore((s) => s.toggleGrowthTask)
   const { fire } = useRewardAnimation()
   const premium = isPremium(premiumUntil)
+
+  // 페이월 노출 1회 계측 — 전환율의 분모
+  const seenPaywall = useRef(false)
+  useEffect(() => {
+    if (premium || seenPaywall.current) return
+    seenPaywall.current = true
+    track('paywall_view', { surface: 'growth_plan', price: PREMIUM_KRW })
+  }, [premium])
   const todayKey = localDay()
   const [toast, setToast] = useState('')
 
@@ -127,7 +136,10 @@ export default function GrowthPlan() {
           ) : (
             <>
               <Card
-                onClick={() => nav('/premium')}
+                onClick={() => {
+                  track('paywall_click', { surface: 'growth_plan', price: PREMIUM_KRW })
+                  nav('/premium')
+                }}
                 ariaLabel={l({ ko: '프리미엄 시작', en: 'Start premium', ja: 'プレミアム開始' })}
                 className="mt-5 !bg-gradient-to-br from-[#6E7BF2] to-[#A88BF2] !p-5 text-white"
               >

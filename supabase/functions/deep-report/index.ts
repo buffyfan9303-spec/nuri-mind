@@ -11,7 +11,7 @@
  * ⚠️ 프리미엄 판정은 현재 클라이언트 attested(구독 상태를 클라가 보냄).
  *    서버측 검증(profiles.premium_until 조회)은 하드닝 항목 — PG 연동 시 함께 적용.
  */
-import { callLlm, parseJson, withinQuota } from './llm.ts'
+import { callLlm, parseJson, withinQuota } from '../_shared/llm.ts'
 
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',

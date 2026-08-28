@@ -10,8 +10,9 @@
  *   GOOGLE_API_KEY 또는 GEMINI_API_KEY → Gemini 사용 (모델: GEMINI_MODEL, 기본 gemini-3.7-flash)
  *   LLM_PROVIDER=anthropic|google      → 둘 다 넣었을 때 강제 지정(미지정 시 Anthropic 우선)
  *
- * ⚠️ 이 파일은 supabase/functions/_shared/llm.ts 가 원본이다.
- *    각 함수 폴더의 llm.ts는 `npm run sync:fn` 이 만드는 사본 — 직접 고치지 말 것(스모크가 동일성을 검사한다).
+ * 세 함수가 ../_shared/llm.ts 로 직접 참조한다 — Supabase CLI가 함수 밖 의존까지 번들해 준다.
+ * (MCP deploy_edge_function은 폴더 단위 업로드라 이 경로를 못 따라간다. 배포는 CLI로 할 것:
+ *  npx supabase functions deploy <name> --project-ref xdcglyavndiwbbaryocx)
  */
 
 export type Provider = 'anthropic' | 'google'

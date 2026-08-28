@@ -6,6 +6,7 @@ import { Card, TopBar } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
 import { TESTS } from '../data/tests'
 import { useStore, isPremium, PREMIUM_KRW } from '../store/useStore'
+import { track } from '../lib/analytics'
 import { useT, useL } from '../i18n/useT'
 import { SECTION_EMOJI, buildPayload, fetchDeepReport, type DeepReport as Report } from '../lib/deepReport'
 import { burst } from '../lib/confetti'
@@ -48,6 +49,15 @@ export default function DeepReport() {
 
   const doneDeep = useMemo(() => DEEP_IDS.filter((id) => latest.some((r) => r.testId === id)), [latest])
   const complete = doneDeep.length >= DEEP_IDS.length
+
+  // 페이월 노출을 1회만 계측 — 전환율의 분모다(클릭만 세면 '몇 명이 보고 안 눌렀는지'를 모른다).
+  // 잠금 화면이 실제로 렌더되는 조건(완주했는데 프리미엄이 아님)에서만 센다.
+  const seenPaywall = useRef(false)
+  useEffect(() => {
+    if (premium || !complete || seenPaywall.current) return
+    seenPaywall.current = true
+    track('paywall_view', { surface: 'deep_report', price: PREMIUM_KRW })
+  }, [premium, complete])
   const hasCognition = latest.some((r) => r.iq || r.mq || r.fq || r.sq || r.xq || r.wq)
 
   /** 캐시된 리포트 */
@@ -358,7 +368,10 @@ export default function DeepReport() {
               transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 22 }}
             >
               <Card
-                onClick={() => nav('/premium')}
+                onClick={() => {
+                  track('paywall_click', { surface: 'deep_report', price: PREMIUM_KRW })
+                  nav('/premium')
+                }}
                 className="mt-3.5 !bg-gradient-to-br from-[#6E7BF2] to-[#A88BF2] !p-5 text-white"
               >
                 <p className="flex items-center gap-2 text-[15.5px] font-extrabold">

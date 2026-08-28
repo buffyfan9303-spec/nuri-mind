@@ -9,7 +9,7 @@
  *    GEMINI_MODEL / AI_MODEL 시크릿으로 이 함수만 따로 지정할 수는 없으니(공용 어댑터),
  *    비용이 문제라면 전체를 Gemini로 돌리는 편이 단순하다.
  */
-import { callLlm, parseJson, withinQuota } from './llm.ts'
+import { callLlm, parseJson, withinQuota } from '../_shared/llm.ts'
 
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',

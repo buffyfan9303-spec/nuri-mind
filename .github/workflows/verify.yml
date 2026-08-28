@@ -1,0 +1,74 @@
+
+# 푸시·PR마다 도는 검증 게이트.
+#
+# 세 층으로 나눈 이유 — 각각 잡는 것이 다르고, 실패했을 때 봐야 할 곳도 다르다:
+#   verify  : 타입·빌드·정적 스모크    (수십 초. 여기서 막히면 코드가 안 돌아간다)
+#   e2e     : 프로덕션 빌드 대상 브라우저 시나리오 (몇 분. 여기서 막히면 동작이 깨졌다)
+#   mutation: 그 e2e가 진짜 안전망인지  (가장 느림. 여기서 막히면 테스트가 거짓말을 하고 있다)
+#
+# mutation은 소스를 일부러 망가뜨렸다가 git으로 되돌리므로, 반드시 격리된 러너에서만 돈다.
+
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  # 같은 브랜치에 연속 푸시하면 이전 실행은 취소 — 마지막 커밋만 검증하면 된다
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: 타입 · 빌드 · 스모크
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+
+  e2e:
+    name: E2E (프로덕션 빌드)
+    runs-on: ubuntu-latest
+    needs: verify
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # --with-deps: CI 러너엔 브라우저 실행에 필요한 시스템 라이브러리가 없다
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+  mutation:
+    name: 뮤테이션 검증 (테스트가 진짜인가)
+    runs-on: ubuntu-latest
+    needs: e2e
+    # PR마다 돌리기엔 느리다 — main 푸시와 수동 실행에서만.
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: bash scripts/mutation-check.sh
