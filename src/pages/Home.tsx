@@ -168,7 +168,7 @@ export default function Home() {
     <div className="bg-dots min-h-dvh pb-36">
       <header className="mx-auto flex max-w-md items-center justify-between gap-2 px-5 pt-5">
         <div className="flex shrink-0 items-center gap-2">
-          <img src="/icon.svg" alt="" className="floaty h-8 w-8 rounded-xl" />
+          <img src="/icon.svg" alt="" className="floaty h-8 w-8 rounded-2xl" />
           <span className="whitespace-nowrap text-[16px] font-extrabold tracking-tight text-mind-800">{t('app.name')}</span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -321,6 +321,9 @@ export default function Home() {
           )}
         </AnimatePresence>
 
+        {/* 섹션 헤더 — 블록 이동 없이 리듬만 부여(수익·바이럴 CTA는 어떤 버킷에도 넣지 않음) */}
+        <p className="mt-6 px-1 text-[12.5px] font-extrabold tracking-wide text-ink-faint">{l({ ko: '오늘 할 일', en: 'Today', ja: '今日やること' })}</p>
+
         {/* ── 오늘의 퀘스트 ── */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, type: 'spring', stiffness: 220, damping: 22 }}>
           <Card className="mt-3.5 !p-4">
@@ -459,7 +462,7 @@ export default function Home() {
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      className="mt-2 rounded-xl bg-white/15 px-3 py-2.5"
+                      className="mt-2 rounded-2xl bg-white/15 px-3 py-2.5"
                     >
                       <p className="break-keep text-[12.5px] font-bold leading-relaxed text-white">
                         {zlines[zPick].emoji} {l(zlines[zPick].line)}
@@ -489,6 +492,9 @@ export default function Home() {
             <span className="shrink-0 text-[15px] text-white/70">›</span>
           </Card>
         </motion.div>
+
+        {/* 섹션 헤더 — 블록 이동 없이 리듬만 부여(수익·바이럴 CTA는 어떤 버킷에도 넣지 않음) */}
+        <p className="mt-6 px-1 text-[12.5px] font-extrabold tracking-wide text-ink-faint">{l({ ko: '나를 탐색하기', en: 'Explore yourself', ja: '自分を知る' })}</p>
 
         {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}
         <div id="deep-tests" className="mt-6 flex items-center justify-between px-1">
@@ -643,8 +649,8 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }}
           className="mt-4"
         >
-          <Card onClick={() => nav('/rewards')} className="flex items-center gap-3.5 !p-4">
-            <IconBadge emoji="🪙" color="#F2B01E" size={46} radius={15} wiggle />
+          <Card onClick={() => nav('/rewards')} ariaLabel={t('home.rewardsBanner')} className="flex items-center gap-3 !p-3.5">
+            <IconBadge emoji="🪙" color="#F2B01E" size={40} radius={13} wiggle />
             <div className="min-w-0 flex-1">
               <h3 className="text-[16px] font-extrabold tracking-tight">{t('home.rewardsBanner')}</h3>
               <p className="mt-0.5 text-[13px] font-bold text-ink-faint">{t('home.rewardsBannerSub')}</p>
@@ -671,7 +677,7 @@ export default function Home() {
 
         {/* 심리 매거진 — 최신 글 제목 롤링(누르면 해당 글로) */}
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
-          <Card onClick={() => nav(magHead ? `/magazine/${magHead.id}` : '/magazine')} className="flex items-center gap-3.5 !p-4">
+          <Card onClick={() => nav(magHead ? `/magazine/${magHead.id}` : '/magazine')} ariaLabel={l({ ko: '심리 매거진', en: 'Psychology magazine', ja: '心理マガジン' })} className="flex items-center gap-3 !p-3.5">
             <IconBadge emoji="📖" color="#8B95F6" size={46} radius={15} wiggle />
             <div className="min-w-0 flex-1">
               <h3 className="text-[16px] font-extrabold tracking-tight">{t('mag.title')}</h3>

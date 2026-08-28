@@ -69,6 +69,8 @@ export default function TestResult() {
 
   if (!result) return <Navigate to="/" replace />
   const persona = PERSONAS[result.persona]
+  // 이 결과로 '처음 얻은' 동물인지 — 획득 순간에 수집 쾌감을 주는 축하 배지(도감은 갤러리 역할)
+  const isNewAnimal = !results.some((r) => r.id !== result.id && r.persona === result.persona)
   const tm = testMeta(result.testId)
 
   /* 카드 배경 테마 — 기본(페르소나)/다크/파스텔 */
@@ -827,6 +829,24 @@ export default function TestResult() {
           </Button>
         </div>
 
+
+        {/* 새 동물 획득 축하 — 도감 수집 동기를 '획득 순간'에 (검증: /dex 내부보다 여기가 효과) */}
+        {isNewAnimal && state.fresh && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 18, delay: 0.25 }}
+            className="mt-3 flex items-center gap-2.5 rounded-3xl bg-gradient-to-r from-[#F2B01E] to-[#FF7E5F] px-4 py-3 text-white shadow-pop"
+          >
+            <span className="text-[22px] leading-none">🎉</span>
+            <p className="min-w-0 flex-1 break-keep text-[13.5px] font-extrabold leading-snug">
+              {t('result.newAnimal')}
+            </p>
+            <button onClick={() => nav('/dex')} className="shrink-0 rounded-full bg-white/25 px-3 py-1.5 text-[12px] font-extrabold">
+              {t('result.openDex')}
+            </button>
+          </motion.div>
+        )}
         <div className="mt-3 space-y-2.5">
           <Button
             color={tm.btn}

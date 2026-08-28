@@ -22,6 +22,17 @@ export default function TestIntro() {
     <div className="min-h-dvh pb-36">
       <TopBar back="/" title={t(`test.${id}.name`)} />
       <main className="mx-auto max-w-md px-5">
+        {/* 마스코트 인사 — 검사 시작 전 긴장을 낮추는 톤(결과 스포 방지용 중립 아이콘) */}
+        <div className="mt-3 flex items-start gap-2.5 rounded-3xl bg-surface2 px-4 py-3">
+          <span className="text-[22px] leading-none">🧠</span>
+          <p className="min-w-0 flex-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
+            {l({
+              ko: '정답은 없어요. 지금의 나를 솔직하게 고르면 그게 가장 정확한 결과예요.',
+              en: 'There are no right answers — the honest one is the most accurate.',
+              ja: '正解はありません。今の自分に正直に選ぶのが一番正確です。',
+            })}
+          </p>
+        </div>
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 14 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}

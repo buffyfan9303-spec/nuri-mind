@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { localDay, localDayOf } from '../lib/date'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -120,6 +121,34 @@ export default function Profile() {
             >
               {tierOf(lifetimeOf(s.ledger)).emoji} {l(tierOf(lifetimeOf(s.ledger)).name)} ›
             </button>
+          </div>
+        </Card>
+
+        {/* 최근 4주 출석 — 스트릭을 '숫자'가 아니라 '흐름'으로(손실회피 시각화) */}
+        <Card className="mt-3.5 !p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[14.5px] font-extrabold tracking-tight">
+              📅 {l({ ko: '최근 4주 출석', en: 'Last 4 weeks', ja: '直近4週の出席' })}
+            </h3>
+            <span className="text-[12.5px] font-extrabold text-orange-500">🔥 {s.streak}</span>
+          </div>
+          <div className="mt-2.5 grid grid-cols-7 gap-1.5">
+            {Array.from({ length: 28 }, (_, i) => {
+              const key = localDay(27 - i)
+              const on = s.ledger.some((e) => e.memo.includes('출석') && localDayOf(e.at) === key)
+              return (
+                <div
+                  key={key}
+                  title={key}
+                  className="aspect-square rounded-md"
+                  style={{
+                    background: on ? 'rgba(242, 176, 30, 0.85)' : 'rgb(var(--surface2))',
+                    outline: key === localDay() ? '2px solid #F2B01E' : undefined,
+                    outlineOffset: key === localDay() ? '1px' : undefined,
+                  }}
+                />
+              )
+            })}
           </div>
         </Card>
 
