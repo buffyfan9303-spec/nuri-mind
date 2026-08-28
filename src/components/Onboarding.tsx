@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from './Button'
 import Avatar from './Avatar'
@@ -12,6 +11,7 @@ import { sfx } from '../lib/sound'
 import { LEGAL_EFFECTIVE } from '../data/legal'
 import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange } from '../lib/auth'
 import { moderateText } from '../lib/moderation'
+import LegalSheet from './LegalSheet'
 
 /**
  * 온보딩 입력 초안 — 이 화면은 두 정상 동선에서 통째로 언마운트된다.
@@ -38,7 +38,6 @@ const STARTERS = ['penguin', 'koala', 'cat', 'dolphin', 'hamster', 'owl', 'meerk
 
 export default function Onboarding() {
   const t = useT()
-  const nav = useNavigate()
   const completeOnboarding = useStore((s) => s.completeOnboarding)
   const redeemCode = useStore((s) => s.redeemCode)
   const [draft0] = useState(loadDraft)
@@ -47,6 +46,8 @@ export default function Onboarding() {
   const [agreed, setAgreed] = useState(draft0.agreed)
   const [kakaoNick, setKakaoNick] = useState<string | null>(null)
   const [nickErr, setNickErr] = useState('')
+  // 약관은 시트로 — 라우트 이동은 이 화면을 언마운트해 입력을 통째로 날린다
+  const [legal, setLegal] = useState<'terms' | 'privacy' | null>(null)
 
   // 초대 코드 캡처 — URL에서 한 번 읽어 보관하고 주소창은 정리한다
   useEffect(() => {
@@ -255,11 +256,11 @@ export default function Onboarding() {
             </button>
             <p className="break-keep text-left text-[12.5px] font-medium leading-relaxed text-ink-sub">
               {t('onboard.agreePre')}
-              <button type="button" onClick={() => nav('/legal/terms')} className="font-extrabold text-mind-700 underline underline-offset-2">
+              <button type="button" onClick={() => setLegal('terms')} className="font-extrabold text-mind-700 underline underline-offset-2">
                 {t('onboard.terms')}
               </button>
               <span className="mx-1 text-ink-faint">·</span>
-              <button type="button" onClick={() => nav('/legal/privacy')} className="font-extrabold text-mind-700 underline underline-offset-2">
+              <button type="button" onClick={() => setLegal('privacy')} className="font-extrabold text-mind-700 underline underline-offset-2">
                 {t('onboard.privacy')}
               </button>
               {t('onboard.agreeSuf')} <span className="font-extrabold text-mind-600">{t('onboard.agreeReq')}</span>
@@ -284,6 +285,9 @@ export default function Onboarding() {
           </div>
         </div>
       </main>
+
+      <LegalSheet doc={legal} onClose={() => setLegal(null)} />
+
 
       {/* 미리보기 아바타(우상단 작은 표시) */}
       {(picked || nick) && (
