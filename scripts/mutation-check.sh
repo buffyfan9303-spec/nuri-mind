@@ -58,9 +58,10 @@ mutate "성장 포커스 페르소나 중복제거 무력화" \
   "s|if (personas.has(r.persona)) continue|if (false) continue|" \
   "포커스 3장"
 
+# ⚠️ 패턴 안에 ||가 있어 sed 구분자를 #로 바꾼다(|를 쓰면 표현식 자체가 깨진다)
 mutate "온보딩 필수 동의 게이트 제거" \
   src/components/Onboarding.tsx \
-  "s|disabled={!nick.trim() || !agreed}|disabled={!nick.trim()}|" \
+  "s#disabled={!nick.trim() || !agreed}#disabled={!nick.trim()}#" \
   "시작 버튼이 잠긴다"
 
 mutate "16유형 심층 배점 반전" \
