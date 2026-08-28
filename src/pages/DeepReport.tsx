@@ -277,6 +277,26 @@ export default function DeepReport() {
           </Card>
         )}
 
+        {/* 리포트 → 실행 연결: 성장 플랜 */}
+        {premium && (cached || failed) && (
+          <Card
+            onClick={() => nav('/growth')}
+            ariaLabel={l({ ko: '성장 플랜 열기', en: 'Open growth plan', ja: '成長プランを開く' })}
+            className="mt-3.5 flex items-center gap-3 !bg-gradient-to-r from-mind-500 to-sky2-500 !p-4"
+          >
+            <span className="text-[26px]">🌱</span>
+            <div className="min-w-0 flex-1">
+              <h3 className="break-keep text-[15px] font-extrabold text-white">
+                {l({ ko: '읽었으면, 이제 실천으로', en: 'Now turn it into action', ja: '読んだら実践へ' })}
+              </h3>
+              <p className="mt-0.5 break-keep text-[12.5px] font-bold text-white/85">
+                {l({ ko: '오늘 할 일로 바꿔주는 성장 플랜', en: 'A growth plan with daily actions', ja: '今日の行動に変える成長プラン' })}
+              </p>
+            </div>
+            <span className="shrink-0 text-[15px] text-white/80">›</span>
+          </Card>
+        )}
+
         {/* 프리미엄: 재생성 */}
         {premium && cached && (
           <div className="mt-4 text-center">

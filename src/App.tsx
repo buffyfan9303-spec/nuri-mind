@@ -47,6 +47,7 @@ const Premium = lazy(() => import('./pages/Premium'))
 const Duel = lazy(() => import('./pages/Duel'))
 const SelfReport = lazy(() => import('./pages/SelfReport'))
 const DeepReport = lazy(() => import('./pages/DeepReport'))
+const GrowthPlan = lazy(() => import('./pages/GrowthPlan'))
 
 /** 가입 없이 볼 수 있는 공개 경로(SEO·공유 유입) — sitemap 등재 경로와 일치시킬 것 */
 const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs)(\/|$)/
@@ -134,6 +135,7 @@ export default function App() {
               <Route path="/vs" element={<Duel />} />
               <Route path="/self-report" element={<SelfReport />} />
               <Route path="/deep-report" element={<DeepReport />} />
+              <Route path="/growth" element={<GrowthPlan />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<Navigate to="/" replace />} />

@@ -20,6 +20,7 @@ import { TERMS, TEST_SHORT_KEY } from '../data/terms'
 import { unreadMailCount } from '../lib/mailbox'
 
 import { localDay, localDayOf } from '../lib/date'
+import { buildFocuses, isTaskDone } from '../lib/growth'
 
 const todayStr = () => localDay()
 
@@ -156,6 +157,12 @@ export default function Home() {
   const trioDone = (['selfesteem', 'perfect', 'efficacy'] as const).every((id) => s.results.some((r) => r.testId === id))
   // 심층검사 전 종목 완주 시 AI 종합 심층 리포트 진입 노출(프리미엄 가치 상단 노출)
   const deepAllDone = TESTS.filter((tm) => !tm.precision).every((tm) => s.results.some((r) => r.testId === tm.id))
+  // 🌱 성장 플랜 — 오늘 남은 실천 수(플랜이 있을 때만 홈에 노출)
+  const growthTasks = useMemo(
+    () => (s.growthPlanAt ? buildFocuses(s.growthFocusIds, s.results).flatMap((f) => f.tasks) : []),
+    [s.growthPlanAt, s.growthFocusIds, s.results],
+  )
+  const growthLeft = growthTasks.filter((tk) => !isTaskDone(s.growthDone[tk.id], tk.cadence, todayStr())).length
 
   return (
     <div className="bg-dots min-h-dvh pb-36">
@@ -342,6 +349,40 @@ export default function Home() {
             )}
           </Card>
         </motion.div>
+
+        {/* ── 🌱 오늘의 성장 실천 — 플랜 보유자에게만 ── */}
+        {s.growthPlanAt > 0 && growthTasks.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.07, type: 'spring', stiffness: 220, damping: 22 }}
+          >
+            <Card
+              onClick={() => nav('/growth')}
+              ariaLabel={l({ ko: '성장 플랜 열기', en: 'Open growth plan', ja: '成長プランを開く' })}
+              className="mt-3.5 flex items-center gap-3 !p-4"
+            >
+              <IconBadge emoji="🌱" color="#4FA882" size={44} radius={14} wiggle />
+              <div className="min-w-0 flex-1">
+                <h3 className="break-keep text-[15.5px] font-extrabold tracking-tight">
+                  {l({ ko: '오늘의 성장 실천', en: "Today's growth actions", ja: '今日の成長実践' })}
+                </h3>
+                <p className="mt-0.5 break-keep text-[12.5px] font-bold text-ink-faint">
+                  {growthLeft > 0
+                    ? l({
+                        ko: `${growthLeft}개 남았어요 · 하나씩 체크하면 +5P`,
+                        en: `${growthLeft} left · +5P each`,
+                        ja: `残り${growthLeft}件・1つ+5P`,
+                      })
+                    : l({ ko: '오늘 실천 완료! 🎉', en: 'All done today! 🎉', ja: '今日は完了！🎉' })}
+                </p>
+              </div>
+              <span className="shrink-0 rounded-full bg-mind-100 px-2.5 py-1 text-[12.5px] font-extrabold text-mind-700">
+                {growthTasks.length - growthLeft}/{growthTasks.length}
+              </span>
+            </Card>
+          </motion.div>
+        )}
 
         {/* ── 돈 버는 리워드 설문 (즉시 적립) ── */}
         <motion.div

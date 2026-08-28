@@ -179,6 +179,13 @@ interface State {
   aiReportText: Record<string, string>
   /* 매거진 정독 완료한 글 id(보상 1회) */
   readArticles: string[]
+  /* 🌱 성장 플래너 — 검사 결과 → 실천 투두·캘린더 */
+  /** 플랜 생성 시각(ms). 0 = 아직 없음 */
+  growthPlanAt: number
+  /** 성장 포커스로 고른 검사 id(최대 3) */
+  growthFocusIds: string[]
+  /** 과제 완료 기록 — taskId → 완료 날짜키(YYYY-MM-DD)[] */
+  growthDone: Record<string, string[]>
 
   setLang: (l: Lang) => void
   setSound: (v: boolean) => void
@@ -257,6 +264,12 @@ interface State {
   cancelPremium: () => void
   /** 전광판 게시(1다이아) — 'ok'·'dia'(잔액부족)·'bad'(AI필터 차단) */
   postTicker: (text: string) => 'ok' | 'dia' | 'bad'
+  /** 성장 플랜 생성(검사 결과에서 포커스 3개 도출) */
+  buildGrowthPlan: (focusIds: string[]) => void
+  /** 성장 플랜 초기화(다시 만들기) */
+  resetGrowthPlan: () => void
+  /** 성장 과제 완료 토글 — 첫 완료 시 +5P(하루 1회, 서버 멱등키) */
+  toggleGrowthTask: (taskId: string) => number
   readArticle: (id: string) => number
   unlockAdmin: (pin: string) => boolean
   lockAdmin: () => void
@@ -335,6 +348,9 @@ const initial = () => ({
   aiReports: [] as string[],
   aiReportText: {} as Record<string, string>,
   readArticles: [] as string[],
+  growthPlanAt: 0,
+  growthFocusIds: [] as string[],
+  growthDone: {} as Record<string, string[]>,
 })
 
 export const useStore = create<State>()(
@@ -781,6 +797,20 @@ export const useStore = create<State>()(
             tickerMsgs: [{ id: uid('tk_'), text: body, nick: s.nickname, at: Date.now() }, ...s.tickerMsgs].slice(0, 30),
           })
           return 'ok'
+        },
+
+        buildGrowthPlan: (focusIds) => set({ growthPlanAt: Date.now(), growthFocusIds: focusIds.slice(0, 3) }),
+        resetGrowthPlan: () => set({ growthPlanAt: 0, growthFocusIds: [], growthDone: {} }),
+        /** 성장 과제 완료 토글 — 체크 시 그날 1회 +5P(같은 과제 재체크는 무보상) */
+        toggleGrowthTask: (taskId) => {
+          const s = get()
+          const t = today()
+          const cur = s.growthDone[taskId] ?? []
+          const has = cur.includes(t)
+          const next = has ? cur.filter((d) => d !== t) : [...cur, t]
+          set({ growthDone: { ...s.growthDone, [taskId]: next } })
+          if (has) return 0
+          return grantFree(5, '🌱 성장 투두 완료', `growth:${taskId}:${t}`)
         },
 
         /** 매거진 정독 보상 — 글당 1회 +8P(일일 무료 상한 적용) */
