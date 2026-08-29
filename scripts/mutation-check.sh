@@ -69,6 +69,21 @@ mutate "16유형 심층 배점 반전" \
   "s|\[item.pole\]: (p\[item.pole\] ?? 0) + (v - 1)|[item.pole]: (p[item.pole] ?? 0) + (5 - v)|" \
   "심층검사 배점"
 
+# 언어 전환 — 사전을 별도 청크로 뺀 뒤 생긴 '2단계 렌더'가 실제로 검증되는지.
+# 구독을 끊으면 lang은 바뀌지만 화면은 한국어에 머문다(저장소만 보면 초록불인 상태).
+mutate "사전 도착 구독 제거(언어 전환 무력화)" \
+  src/i18n/useT.ts \
+  "s#const version = useSyncExternalStore(subscribeDict, dictVersion, dictVersion)#const version = 0#" \
+  "화면이 실제로 그 언어로 바뀐다"
+
+# ⚠️ useT의 `?? ko[key]`가 아니라 dictFor의 폴백을 겨눈다. 전자는 dictFor가 이미 ko를
+#    돌려주므로 이 경로에선 중복이라, 지워도 테스트가 통과한다(그래서 한 번 헛짚었다).
+#    진짜 안전장치는 dictFor — 없으면 사전 청크 실패 시 undefined 접근으로 화면이 죽는다.
+mutate "사전 폴백 제거(청크 실패 시 화면 붕괴)" \
+  src/i18n/translations.ts \
+  "s#return LOADED\[lang\] ?? ko#return LOADED[lang] as Record<string, string>#" \
+  "한국어로 계속 동작한다"
+
 echo
 echo "진짜 안전망 $pass · 가짜/무효 $fail"
 [ "$fail" -eq 0 ]

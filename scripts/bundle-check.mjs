@@ -17,10 +17,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const ASSETS = join(ROOT, 'dist/assets')
 
 /**
- * 현재값 236KB. 여유를 조금만 둔다 — 넉넉하게 잡으면 경고가 울릴 때쯤엔 이미 늦는다.
+ * 현재값 209KB. 여유를 조금만 둔다 — 넉넉하게 잡으면 경고가 울릴 때쯤엔 이미 늦는다.
  * 의도적으로 늘려야 한다면 이 숫자를 바꾸되, 커밋 메시지에 왜인지 남길 것.
  */
-const BUDGET_GZIP_KB = 260
+const BUDGET_GZIP_KB = 225
 
 /**
  * 메인 번들에 들어오면 안 되는 무거운 모듈 — 각각 그 안에만 있는 문자열로 탐지한다.
@@ -29,6 +29,10 @@ const BUDGET_GZIP_KB = 260
 const FORBIDDEN = [
   { name: 'animalTranslations (페르소나 처방 전문 184KB)', mark: '온 세상의 알림을 다 받아보는 뇌' },
   { name: 'legalDocs (약관 본문 52KB)', mark: '누리 마인드 이용약관' },
+  // ⚠️ 마커는 그 파일에만 있는 문자열이어야 한다. 처음엔 리커트 라벨을 썼다가
+  //    LIKERT_AGREE(정적 유지)에도 같은 문자열이 있어 오탐이 났다.
+  { name: 'dict.en (영어 사전 36KB)', mark: 'New animal unlocked — added to your dex!' },
+  { name: 'dict.ja (일본어 사전 40KB)', mark: 'ヌリマインドへようこそ' },
 ]
 
 if (!existsSync(ASSETS)) {

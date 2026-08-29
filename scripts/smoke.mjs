@@ -39,20 +39,14 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   check('UTC 날짜키 없음', bad.length === 0, bad.join(', '))
 }
 
-/* ② i18n 3국어 키 대칭 */
+/* ② i18n 3국어 키 대칭 — 사전은 언어별 파일로 분리돼 있다(dict.ko/en/ja) */
 {
-  const src = read('src/i18n/translations.ts')
-  // 사전 블록 3개(ko/en/ja)를 순서대로 분리 — 각 블록의 최상위 키 집합 비교
-  const blocks = src.split(/const (?:ko|en|ja)\b[^=]*=\s*\{/).slice(1)
-  if (blocks.length < 3) {
-    check('i18n 블록 3개 인식', false, `발견 ${blocks.length}`)
-  } else {
-    const keysOf = (b) => new Set([...b.matchAll(/^\s{2}'([^']+)':/gm)].map((m) => m[1]))
-    const [k, e, j] = blocks.slice(0, 3).map(keysOf)
-    const missIn = (a, b, label) => [...a].filter((x) => !b.has(x)).slice(0, 6).map((x) => `${label}:${x}`)
-    const diffs = [...missIn(k, e, 'en누락'), ...missIn(k, j, 'ja누락'), ...missIn(e, k, 'ko누락')]
-    check(`i18n 키 대칭(ko ${k.size})`, diffs.length === 0, diffs.join(', '))
-  }
+  const keysOf = (lang) =>
+    new Set([...read(`src/i18n/dict.${lang}.ts`).matchAll(/^\s{2}'([^']+)':/gm)].map((m) => m[1]))
+  const [k, e, j] = ['ko', 'en', 'ja'].map(keysOf)
+  const missIn = (a, b, label) => [...a].filter((x) => !b.has(x)).slice(0, 6).map((x) => `${label}:${x}`)
+  const diffs = [...missIn(k, e, 'en누락'), ...missIn(k, j, 'ja누락'), ...missIn(e, k, 'ko누락')]
+  check(`i18n 키 대칭(ko ${k.size})`, diffs.length === 0, diffs.join(', '))
 }
 
 /* ③ 라우트 → 페이지 파일 존재 */
@@ -67,7 +61,7 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
 /* ④ 검사 메타 ↔ i18n 키 */
 {
   const ids = [...read('src/data/tests.ts').matchAll(/id: '([a-z]+)'/g)].map((m) => m[1])
-  const tr = read('src/i18n/translations.ts')
+  const tr = read('src/i18n/dict.ko.ts')
   const miss = ids.filter((id) => !tr.includes(`'test.${id}.name'`) || !tr.includes(`'test.${id}.short'`))
   check(`검사 i18n 키(${ids.length}종)`, miss.length === 0, miss.join(', '))
 }
