@@ -21,6 +21,15 @@ concurrency:
   group: verify-${{ github.ref }}
   cancel-in-progress: true
 
+# ⚠️ .env는 저장소에 없다(gitignore). 이 값이 없으면 FUNCTIONS_URL이 ''이 되어
+#    앱이 'Supabase 미설정' 모드로 빌드되고, CI는 프로덕션과 **다른 코드 경로**를 검사하게 된다.
+#    실제로 그래서 엣지 목(mock) 테스트가 CI에서만 실패했다(호출 자체가 없었으니까).
+#    네트워크는 테스트가 전부 가로채므로 이 더미 값으로 실제 통신은 일어나지 않는다.
+#    진짜 anon 키가 아니다 — 비밀이 아니라 '설정됨' 상태를 만들기 위한 자리표시자다.
+env:
+  VITE_SUPABASE_URL: https://ci-dummy-not-a-real-project.supabase.co
+  VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ci-dummy-anon-key-for-tests-only.ci-dummy-signature
+
 jobs:
   verify:
     name: 타입 · 빌드 · 스모크

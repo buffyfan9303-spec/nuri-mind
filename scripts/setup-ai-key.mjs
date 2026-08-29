@@ -1,23 +1,21 @@
 /**
  * AI 키 설정 도우미
  *
- *   node "<프로젝트>/scripts/setup-ai-key.mjs"        ← PowerShell에서는 이 형태로
- *   npm run setup:ai                                  ← cmd/bash에서는 이것도 됨
- *   ... --dry-run                                     ← 등록하지 않고 전달 지문만 확인
+ *   node "<프로젝트>/scripts/setup-ai-key.mjs"            등록
+ *   node "<프로젝트>/scripts/setup-ai-key.mjs" --check    등록 없이 사전 점검만(키 불필요)
+ *   node "<프로젝트>/scripts/setup-ai-key.mjs" --dry-run  키는 받되 등록하지 않고 지문만 확인
  *
- * ⚠️ PowerShell은 실행 정책(Restricted)이면 npm/npx를 못 띄운다 — 그것들이 .ps1 껍데기라서다.
- *    node.exe는 진짜 실행파일이라 영향을 받지 않고, 이 스크립트 내부의 npx 호출도
- *    Node가 ComSpec(cmd.exe)을 쓰므로 정책과 무관하다. 즉 설정을 바꾸지 않아도 동작한다.
- *    어느 폴더에서 실행하든 되도록 프로젝트 루트는 스스로 잡는다.
+ * ⚠️ PowerShell 실행 정책이 Restricted면 npm/npx를 못 띄운다(그것들이 .ps1 껍데기라서).
+ *    node.exe는 진짜 실행파일이라 무관하고, 내부 npx 호출도 Node가 ComSpec(cmd.exe)을 쓰므로
+ *    정책 영향을 받지 않는다. 어느 폴더에서 실행하든 프로젝트 루트는 스스로 잡는다.
  *
- * 키 입력은 이 스크립트를 실행하는 사람의 터미널에서만 일어나고, 값은 화면에도 로그에도 남지 않는다.
- *
- * ⚠️ 이 스크립트의 1차 버전은 두 가지가 틀렸다. 같은 함정을 다시 밟지 않도록 남긴다:
- *   1) stdout.clearLine()은 TTY에서만 존재한다 — 파이프로 실행하면 TypeError로 죽었다.
- *   2) `secrets set KEY="$VAR"` 를 shell:true로 넘겼는데, Windows cmd는 $VAR를 확장하지 않는다.
- *      크래시도 없이 시크릿에 문자열 "$NURI_AI_KEY" 가 그대로 저장돼, 나중에 "키가 틀렸다"는
- *      엉뚱한 곳을 파게 만든다. 조용히 잘못되는 쪽이 크래시보다 나쁘다.
- *      → 지금은 임시 .env 파일 + `--env-file` 로 넘기고 finally에서 반드시 지운다.
+ * ⚠️ 이 스크립트가 과거에 틀렸던 것들 — 같은 함정을 다시 밟지 않도록 남긴다:
+ *   1) stdout.clearLine()은 TTY에만 존재 → 파이프 실행 시 TypeError
+ *   2) `KEY="$VAR"` 를 shell:true로 넘김 → Windows cmd는 $VAR를 확장하지 않아
+ *      시크릿에 문자열 "$VAR"가 그대로 저장됐다. 조용히 잘못되는 쪽이 크래시보다 나쁘다.
+ *   3) npx.cmd를 shell:false로 spawn → Node 20+ 보안 패치(CVE-2024-27980)로 EINVAL
+ *   4) exit 코드만 보고 "등록 완료"라고 말했다 → 실제로는 등록이 안 돼 있었다.
+ *      이제 등록 후 반드시 다시 읽어서 확인한다.
  */
 import { spawnSync } from 'node:child_process'
 import { createInterface } from 'node:readline'
@@ -28,15 +26,92 @@ import { tmpdir } from 'node:os'
 import { stdin, stdout, argv } from 'node:process'
 
 const PROJECT_REF = 'xdcglyavndiwbbaryocx'
-/** 어느 폴더에서 실행해도 동작하도록 프로젝트 루트를 스스로 잡는다(사장님이 다른 폴더에서 실행했다) */
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
+const CHECK = argv.includes('--check')
 const DRY = argv.includes('--dry-run')
 
-/** 입력을 화면에 남기지 않는 프롬프트. TTY가 아니면 가리지 못한다는 사실을 숨기지 않는다. */
+/** supabase CLI 호출. 실패해도 던지지 않는다 — 사유를 화면에 그대로 보여줘야 하니까. */
+function cli(args) {
+  const r = spawnSync(`npx supabase ${args}`, { shell: true, cwd: ROOT, encoding: 'utf8' })
+  return {
+    status: r.status,
+    out: (r.stdout ?? '').trim(),
+    err: (r.stderr ?? '').trim(),
+    spawnError: r.error ? `${r.error.code ?? ''} ${r.error.message ?? ''}`.trim() : '',
+  }
+}
+
+/** CLI 출력에 배너가 섞여 나오므로 마지막 JSON 줄만 골라 파싱한다 */
+function lastJson(text) {
+  const line = text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.startsWith('{'))
+    .pop()
+  if (!line) return null
+  try {
+    return JSON.parse(line)
+  } catch {
+    return null
+  }
+}
+
+function secretNames() {
+  const r = cli(`secrets list --project-ref ${PROJECT_REF}`)
+  const j = lastJson(r.out) ?? lastJson(r.err)
+  if (!j?.secrets) return { ok: false, names: [], why: r.err || r.out || r.spawnError || '응답을 읽지 못함' }
+  return { ok: true, names: j.secrets.map((s) => s.name), why: '' }
+}
+
+/* ─────────────────────── 사전 점검 ─────────────────────── */
+
+function preflight() {
+  const rows = []
+  const add = (name, ok, note = '') => rows.push({ name, ok, note })
+
+  add('Node 실행', true, process.version)
+
+  const ver = cli('--version')
+  const cliOk = ver.status === 0 && /\d+\.\d+/.test(ver.out)
+  add('supabase CLI', cliOk, cliOk ? `v${ver.out}` : ver.spawnError || ver.err || '실행 실패')
+
+  let names = []
+  if (cliOk) {
+    // 로그인이 안 됐거나 프로젝트 접근 권한이 없으면 여기서 걸린다 — 등록 실패의 대부분이 이 경우다
+    const s = secretNames()
+    add('로그인 · 프로젝트 접근', s.ok, s.ok ? `시크릿 ${s.names.length}개 조회됨` : s.why.slice(0, 160))
+    names = s.names
+  } else {
+    add('로그인 · 프로젝트 접근', false, 'CLI가 안 떠서 확인 불가')
+  }
+
+  const has = ['GOOGLE_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY'].filter((k) => names.includes(k))
+  add('AI 키 등록 여부', has.length > 0, has.length ? has.join(', ') : '아직 없음 — 이 스크립트로 등록하세요')
+
+  // 한글은 터미널에서 2칸을 차지한다 — .length로 padEnd하면 열이 어긋난다
+  const width = (t) => [...t].reduce((n, ch) => n + (ch.charCodeAt(0) > 0x1100 ? 2 : 1), 0)
+  const w = Math.max(...rows.map((r) => width(r.name)))
+  console.log('\n사전 점검')
+  for (const r of rows) console.log(`  ${r.ok ? '✅' : '❌'} ${r.name}${' '.repeat(w - width(r.name))}  ${r.note}`)
+
+  const blocked = rows.find((r) => !r.ok && r.name !== 'AI 키 등록 여부')
+  if (blocked) {
+    console.log(`\n막힌 지점: ${blocked.name}`)
+    console.log(
+      blocked.name === 'supabase CLI'
+        ? '  · 인터넷 연결을 확인하세요(npx가 CLI를 내려받습니다).'
+        : '  · 로그인이 필요할 수 있습니다:  npx supabase login',
+    )
+  }
+  console.log()
+  return !blocked
+}
+
+/* ─────────────────────── 입력 ─────────────────────── */
+
 function askSecret(question) {
   const canHide = stdin.isTTY && typeof stdout.clearLine === 'function'
   if (!canHide) stdout.write('⚠️  터미널이 아니라 입력을 가릴 수 없습니다(파이프 실행).\n')
-
   return new Promise((resolve) => {
     const rl = createInterface({ input: stdin, output: stdout, terminal: canHide })
     let onData
@@ -83,19 +158,28 @@ function classify(key) {
         '     Gemini 키는 https://aistudio.google.com/apikey 에서 AIza… 형태로 발급됩니다.',
     }
   }
-  return { ok: false, why: '알 수 없는 형식입니다. Gemini는 AIza…, Anthropic은 sk-ant-… 로 시작합니다.' }
+  if (/^AIza/.test(key)) {
+    return { ok: false, why: `구글 키 형태지만 길이가 짧습니다(${key.length}자). 붙여넣기가 잘렸는지 확인하세요.` }
+  }
+  return { ok: false, why: `알 수 없는 형식입니다(${key.length}자). Gemini는 AIza…, Anthropic은 sk-ant-… 로 시작합니다.` }
 }
 
-/** 값이 제대로 전달됐는지 눈으로 확인하되 전체는 보이지 않는다 */
 const fingerprint = (k) => `${k.length}자 · ${k.slice(0, 4)}…${k.slice(-4)}`
 
+/* ─────────────────────── 본류 ─────────────────────── */
+
 console.log(`
-┌─ 누리 마인드 AI 키 설정 ${DRY ? '(예행연습 — 실제로 등록하지 않음)' : ''}
-│ 대상 프로젝트: ${PROJECT_REF} (nuri mind)
-│ 키 값은 화면·셸 기록·프로세스 목록 어디에도 남지 않습니다.
+┌─ 누리 마인드 AI 키 설정 ${CHECK ? '(점검만)' : DRY ? '(예행연습)' : ''}
+│ 프로젝트: ${PROJECT_REF} (nuri mind)
 │ 발급: Gemini → https://aistudio.google.com/apikey
-└────────────────────────────────────────────────────
-`)
+└────────────────────────────────────────────────────`)
+
+const ready = preflight()
+if (CHECK) process.exit(ready ? 0 : 1)
+if (!ready) {
+  console.log('사전 점검이 통과하지 않아 중단합니다. 위 안내를 먼저 해결해 주세요.\n')
+  process.exit(1)
+}
 
 const key = await askSecret('API 키를 붙여넣고 Enter: ')
 if (!key) {
@@ -124,24 +208,14 @@ if (go.toLowerCase() !== 'y') {
 }
 
 // 인자로 넘기면 프로세스 목록에, $VAR로 넘기면 Windows에서 확장되지 않는다.
-// 임시 .env 파일이 두 문제를 모두 피하는 유일한 경로 — 대신 반드시 지운다.
+// 임시 .env 파일이 두 문제를 모두 피하는 유일한 경로 — 대신 finally에서 반드시 지운다.
 const dir = mkdtempSync(join(tmpdir(), 'nuri-ai-'))
 const envPath = join(dir, '.env')
-let status = 1
+let result
 try {
   writeFileSync(envPath, `${kind.name}=${key}\n`, { mode: 0o600 })
-  // ⚠️ Windows에서 npx는 npx.cmd다. Node 20+ 보안 패치(CVE-2024-27980) 이후
-  //    .cmd/.bat은 shell:true 없이 spawn하면 EINVAL로 거부된다 — 실제로 이걸로 실패했다.
-  //    그래서 셸을 쓰되, 셸에 닿는 건 임시 파일 '경로'뿐이고 키 값은 파일 안에만 있다.
-  //    (경로는 우리가 만든 mkdtemp 결과라 인젝션 여지가 없다)
-  const r = spawnSync(`npx supabase secrets set --env-file "${envPath}" --project-ref ${PROJECT_REF}`, {
-    stdio: 'inherit',
-    shell: true,
-    cwd: ROOT,
-  })
-  if (r.error) console.log(`
-실행 오류: ${r.error.code ?? ''} ${r.error.message ?? ''}`)
-  status = r.status ?? 1
+  console.log('\n등록 중…')
+  result = cli(`secrets set --env-file "${envPath}" --project-ref ${PROJECT_REF}`)
 } finally {
   try {
     if (existsSync(envPath)) unlinkSync(envPath)
@@ -151,25 +225,30 @@ try {
   }
 }
 
-if (status !== 0) {
+// ⚠️ exit 코드만 믿지 않는다 — 0을 받고도 등록이 안 돼 있던 적이 있다. 읽어서 확인한다.
+const after = secretNames()
+if (!(after.ok && after.names.includes(kind.name))) {
   console.log(`
-❌ 등록에 실패했습니다.
-   로그인이 안 돼 있을 수 있어요:  npx supabase login
+❌ 등록되지 않았습니다.
+
+  CLI 종료코드: ${result?.status ?? '(없음)'}
+${result?.spawnError ? `  실행 오류: ${result.spawnError}\n` : ''}${result?.out ? `  출력: ${result.out.slice(0, 400)}\n` : ''}${result?.err ? `  오류: ${result.err.slice(0, 400)}\n` : ''}  확인 결과: ${after.ok ? `현재 시크릿 [${after.names.join(', ')}]` : after.why.slice(0, 200)}
+
+  위 내용을 그대로 알려주시면 원인을 짚을 수 있습니다.
 `)
   process.exit(1)
 }
 
 console.log(`
-✅ 등록 완료.
+✅ 등록 확인 완료 — ${kind.name} 이(가) 실제로 존재합니다.
 
-확인 (30초):
+다음 (30초):
   1) https://www.nurimind.co.kr
   2) 프로필 → 운영자 콘솔 → PIN 5690
   3) '현황' 탭 → 🩺 AI 연결 진단 → [3종 함수 진단 실행]
 
   3종 모두 "✅ 정상 (${kind.expect})" 이면 끝입니다.
-  실패하면 화면이 원인(키 오타 / 할당량 / 모델명)까지 구분해 알려줍니다.
 
 참고: 두 제공자 키를 다 넣으면 Claude가 우선입니다.
-      Gemini로 강제:  npx supabase secrets set LLM_PROVIDER=google --project-ref ${PROJECT_REF}
+      Gemini로 강제하려면 LLM_PROVIDER=google 시크릿을 추가하세요.
 `)
