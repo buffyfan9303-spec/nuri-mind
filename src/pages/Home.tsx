@@ -21,7 +21,6 @@ import { TERMS, TEST_SHORT_KEY } from '../data/terms'
 import { unreadMailCount } from '../lib/mailbox'
 
 import { localDay, localDayOf } from '../lib/date'
-import { buildFocuses, isTaskDone } from '../lib/growth'
 
 const todayStr = () => localDay()
 
@@ -159,11 +158,32 @@ export default function Home() {
   // 심층검사 전 종목 완주 시 AI 종합 심층 리포트 진입 노출(프리미엄 가치 상단 노출)
   const deepAllDone = TESTS.filter((tm) => !tm.precision).every((tm) => s.results.some((r) => r.testId === tm.id))
   // 🌱 성장 플랜 — 오늘 남은 실천 수(플랜이 있을 때만 홈에 노출)
-  const growthTasks = useMemo(
-    () => (s.growthPlanAt ? buildFocuses(s.growthFocusIds, s.results).flatMap((f) => f.tasks) : []),
-    [s.growthPlanAt, s.growthFocusIds, s.results],
-  )
-  const growthLeft = growthTasks.filter((tk) => !isTaskDone(s.growthDone[tk.id], tk.cadence, todayStr())).length
+  /**
+   * 🌱 성장 플랜 배너 — 오늘 남은 실천 수.
+   *
+   * ⚠️ lib/growth는 페르소나 처방 전문(animalTranslations, 184KB)을 끌고 온다. 정적 import하면
+   *    Home이 메인 번들이라 **모든 방문자가** 그 184KB를 받는다 — 정작 플랜이 있는 사람만 쓰는데.
+   *    (personaVisual.ts가 애초에 이 연결을 끊으려고 만든 모듈인데 여기로 다시 새고 있었다.)
+   *    플랜이 없으면 아예 로드하지 않고, 있으면 배너에 필요한 '개수'만 지연 계산한다.
+   *    재발 방지는 scripts/bundle-check.mjs 가 맡는다.
+   */
+  const [growth, setGrowth] = useState({ total: 0, left: 0 })
+  useEffect(() => {
+    if (!s.growthPlanAt) {
+      setGrowth({ total: 0, left: 0 })
+      return
+    }
+    let alive = true
+    void import('../lib/growth').then((g) => {
+      if (!alive) return
+      const tasks = g.buildFocuses(s.growthFocusIds, s.results).flatMap((f) => f.tasks)
+      const left = tasks.filter((tk) => !g.isTaskDone(s.growthDone[tk.id], tk.cadence, todayStr())).length
+      setGrowth({ total: tasks.length, left })
+    })
+    return () => {
+      alive = false
+    }
+  }, [s.growthPlanAt, s.growthFocusIds, s.results, s.growthDone])
 
   return (
     <div className="bg-dots min-h-dvh pb-36">
@@ -355,7 +375,7 @@ export default function Home() {
         </motion.div>
 
         {/* ── 🌱 오늘의 성장 실천 — 플랜 보유자에게만 ── */}
-        {s.growthPlanAt > 0 && growthTasks.length > 0 && (
+        {s.growthPlanAt > 0 && growth.total > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -372,17 +392,17 @@ export default function Home() {
                   {l({ ko: '오늘의 성장 실천', en: "Today's growth actions", ja: '今日の成長実践' })}
                 </h3>
                 <p className="mt-0.5 break-keep text-[12.5px] font-bold text-ink-faint">
-                  {growthLeft > 0
+                  {growth.left > 0
                     ? l({
-                        ko: `${growthLeft}개 남았어요 · 하나씩 체크하면 +5P`,
-                        en: `${growthLeft} left · +5P each`,
-                        ja: `残り${growthLeft}件・1つ+5P`,
+                        ko: `${growth.left}개 남았어요 · 하나씩 체크하면 +5P`,
+                        en: `${growth.left} left · +5P each`,
+                        ja: `残り${growth.left}件・1つ+5P`,
                       })
                     : l({ ko: '오늘 실천 완료! 🎉', en: 'All done today! 🎉', ja: '今日は完了！🎉' })}
                 </p>
               </div>
               <span className="shrink-0 rounded-full bg-mind-100 px-2.5 py-1 text-[12.5px] font-extrabold text-mind-700">
-                {growthTasks.length - growthLeft}/{growthTasks.length}
+                {growth.total - growth.left}/{growth.total}
               </span>
             </Card>
           </motion.div>
