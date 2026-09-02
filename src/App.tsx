@@ -1,8 +1,8 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { lazyWithReload } from './lib/lazyWithReload'
 import { sweepScrollLocks } from './lib/scrollLock'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Onboarding from './components/Onboarding'
 import ReConsent from './components/ReConsent'
@@ -55,8 +55,17 @@ const MbtiTest = lazyWithReload(() => import('./pages/MbtiTest'))
 /** 가입 없이 볼 수 있는 공개 경로(SEO·공유 유입) — sitemap 등재 경로와 일치시킬 것 */
 const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs)(\/|$)/
 
+/**
+ * 뒤로가기 스크롤 기억(홀덤에서 이식) — 경로별 마지막 scrollY. 모듈 스코프라 라우트 전환에도 살고, 새로고침이면 비운다.
+ * PUSH(새 화면)는 늘 맨 위, POP(뒤로가기)만 읽던 자리로 — 목록에서 상세로 갔다 돌아왔는데 맨 위로 튕기면
+ * '어디까지 봤지'를 사용자가 다시 찾아야 한다. 복원은 exit 애니메이션이 끝나 새 화면이 실제로 서 있을 때 한다.
+ */
+const scrollMemo = new Map<string, number>()
+
 export default function App() {
   const location = useLocation()
+  const navType = useNavigationType()
+  const restoreY = useRef<number | null>(null)
   const fontScale = useStore((s) => s.fontScale)
   const onboarded = useStore((s) => s.onboarded)
   const theme = useStore((s) => s.theme)
@@ -79,10 +88,19 @@ export default function App() {
     location.pathname.startsWith('/admin')
 
   useEffect(() => {
-    window.scrollTo(0, 0)
+    const remembered = navType === 'POP' ? scrollMemo.get(location.pathname) : undefined
+    if (remembered === undefined) window.scrollTo(0, 0)
+    else restoreY.current = remembered
     // 오버레이가 정리 함수 없이 사라진 경로 전환(딥링크·뒤로가기)에서 잠금이 남으면 앱 전체 스크롤이 죽는다
     sweepScrollLocks()
     pageView(location.pathname)
+    const path = location.pathname
+    // 정리 시점엔 이전 화면이 아직 exit 중이라 scrollY가 그 화면의 값이다
+    return () => {
+      scrollMemo.set(path, window.scrollY)
+    }
+    // navType은 pathname과 함께 바뀐다 — 단독 변화는 없다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname])
 
 
@@ -95,7 +113,15 @@ export default function App() {
     // reducedMotion="user": 시스템 '동작 줄이기' 설정 시 framer 전체가 자동으로 이동/스케일 생략(접근성 정합 단일 스위치)
     <MotionConfig reducedMotion="user">
     <div className="mx-auto min-h-dvh max-w-2xl">
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence
+        mode="wait"
+        initial={false}
+        onExitComplete={() => {
+          if (restoreY.current === null) return
+          window.scrollTo(0, restoreY.current)
+          restoreY.current = null
+        }}
+      >
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, y: 14, scale: 0.985 }}

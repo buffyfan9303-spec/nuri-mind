@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSkeletonGate } from '../hooks/useSkeletonGate'
 import { motion } from 'framer-motion'
 import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
@@ -32,6 +33,8 @@ export default function Mailbox() {
   const addDiamonds = useStore((s) => s.addDiamonds)
   const [mail, setMail] = useState<MailItem[]>([])
   const [loading, setLoading] = useState(true)
+  // 응답이 200ms 안에 오면(대부분) '불러오는 중'을 아예 안 보인다 — 번쩍임이 빈 화면보다 산만하다
+  const showLoading = useSkeletonGate(loading)
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null)
   const [uid, setUid] = useState<string | null>(null)
   const [msg, setMsg] = useState('')
@@ -147,7 +150,9 @@ export default function Mailbox() {
         )}
 
         {loading ? (
-          <p className="mt-16 text-center text-[14px] font-bold text-ink-faint">{l({ ko: '불러오는 중…', en: 'Loading…', ja: '読み込み中…' })}</p>
+          showLoading && (
+            <p className="mt-16 text-center text-[14px] font-bold text-ink-faint">{l({ ko: '불러오는 중…', en: 'Loading…', ja: '読み込み中…' })}</p>
+          )
         ) : !authReady() || loggedIn === false ? (
           <Card className="mt-6 text-center">
             <div className="text-[28px]">📭</div>

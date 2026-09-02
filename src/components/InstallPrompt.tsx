@@ -53,7 +53,7 @@ export default function InstallPrompt() {
         <button onClick={install} className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-semibold text-white">
           {l({ ko: '설치', en: 'Install', ja: '追加' })}
         </button>
-        <button onClick={close} aria-label="close" className="shrink-0 px-1 text-[17px] font-bold text-ink-faint">
+        <button onClick={close} aria-label="close" className="-mr-2 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center text-[17px] font-bold text-ink-faint">
           ✕
         </button>
       </motion.div>

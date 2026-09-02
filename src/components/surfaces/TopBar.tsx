@@ -25,7 +25,7 @@ export function TopBar({
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => (typeof back === 'function' ? back() : back ? nav(back) : nav(-1))}
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-xl text-ink-sub"
+          className="flex h-11 w-11 items-center justify-center rounded-xl text-xl text-ink-sub"
           aria-label="back"
         >
           ←

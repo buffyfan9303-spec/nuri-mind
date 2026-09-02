@@ -45,7 +45,7 @@ function PinGate() {
             type="password"
             value={pin}
             onChange={(e) => setPin(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && tryUnlock()}
+            onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && tryUnlock()}
             placeholder={t('admin.pinPh')}
             className="w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-center text-lg font-extrabold tracking-widest outline-none focus:border-mind-400"
             style={{ borderColor: err ? '#EF4444' : '#E3EAE5' }}

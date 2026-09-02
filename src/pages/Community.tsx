@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
+import { useSkeletonGate } from '../hooks/useSkeletonGate'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -73,6 +74,7 @@ export default function Community() {
   }
 
   const [server, setServer] = useState<boolean | null>(null)
+  const showLoading = useSkeletonGate(server === null)
   const [serverPosts, setServerPosts] = useState<CommunityPost[]>([])
   const [newCount, setNewCount] = useState(0)
   const [pulling, setPulling] = useState(0)
@@ -423,7 +425,7 @@ export default function Community() {
         {/* 피드 */}
         <div className="mt-3.5 space-y-2.5">
           {server === null ? (
-            <p className="py-10 text-center text-3xl">🧠</p>
+            showLoading && <p className="py-10 text-center text-3xl">🧠</p>
           ) : posts.length === 0 ? (
             <Card className="py-10 text-center">
               <div className="text-5xl">🌱</div>
@@ -561,7 +563,7 @@ export default function Community() {
                                 <input
                                   value={openComments === p.id ? commentText : ''}
                                   onChange={(e) => setCommentText(e.target.value)}
-                                  onKeyDown={(e) => e.key === 'Enter' && submitComment(p.id)}
+                                  onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && submitComment(p.id)}
                                   placeholder={t('community.commentPh')}
                                   maxLength={200}
                                   className="min-w-0 flex-1 rounded-full border-2 border-line bg-surface px-3.5 py-2 text-[13px] font-medium outline-none focus:border-mind-400"

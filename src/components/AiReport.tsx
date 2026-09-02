@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSkeletonGate } from '../hooks/useSkeletonGate'
 import { AnimatePresence, motion } from 'framer-motion'
 import AdGate from './AdGate'
 import Button from './Button'
@@ -26,6 +27,8 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
 
   const unlocked = aiReports.includes(result.id)
   const cached = aiReportText[result.id]
+  // 응답이 200ms 안에 오면 스켈레톤을 그리지 않는다 — 캐시 히트 직후의 번쩍임 방지
+  const showLoading = useSkeletonGate(loading && !cached)
   const topPercent = Math.max(0.5, Math.round((100 - result.percentile) * 10) / 10)
 
   // 해금됐고 캐시가 없으면 Edge Function으로 1회 생성(키 미설정/실패 시 정적 폴백)
@@ -90,12 +93,14 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
       </p>
 
       {loading && !cached ? (
-        <div className="mt-3 space-y-2">
-          <div className="h-3.5 w-full animate-pulse rounded bg-surface2" />
-          <div className="h-3.5 w-11/12 animate-pulse rounded bg-surface2" />
-          <div className="h-3.5 w-4/6 animate-pulse rounded bg-surface2" />
-          <p className="pt-1 text-[12px] font-medium text-ink-faint">{t('ai.loading')}</p>
-        </div>
+        showLoading && (
+          <div className="mt-3 space-y-2">
+            <div className="h-3.5 w-full animate-pulse rounded bg-surface2" />
+            <div className="h-3.5 w-11/12 animate-pulse rounded bg-surface2" />
+            <div className="h-3.5 w-4/6 animate-pulse rounded bg-surface2" />
+            <p className="pt-1 text-[12px] font-medium text-ink-faint">{t('ai.loading')}</p>
+          </div>
+        )
       ) : (
         <>
           {cached && (
