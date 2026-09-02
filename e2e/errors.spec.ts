@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { LEGAL_VERSION } from '../src/data/legal'
-import { seedOnboarded, waitForApp } from './helpers'
+import { seedOnboarded, seedStore, waitForApp } from './helpers'
 
 /**
  * 에러 경로 — '흰 화면으로 끝나는 구멍' 두 개를 못 박는다.
@@ -29,6 +29,25 @@ test.describe('에러 경로', () => {
 
     await page.getByRole('button', { name: '홈으로' }).click()
     await expect(page).toHaveURL(/\/$/)
+  })
+
+  test('가입 전 사용자가 모르는 주소로 오면 홈에서 가입을 시작한다 — 가입 직후 첫 화면이 404가 되지 않게', async ({ page }) => {
+    await seedStore(page, { onboarded: false, lang: 'ko' })
+    await page.goto('/old-shared-link')
+    await waitForApp(page)
+
+    await expect(page).toHaveURL(/\/$/)
+    await expect(page.getByPlaceholder('닉네임')).toBeVisible()
+    await expect(page.getByRole('heading', { name: '이 주소엔 아무것도 없어요' })).toHaveCount(0)
+  })
+
+  test('검사 화면처럼 보이는 모르는 주소(/anything/run)에서도 404엔 내비가 남는다', async ({ page }) => {
+    await seedOnboarded(page, { consent: CONSENT })
+    await page.goto('/anything/run')
+    await waitForApp(page)
+
+    await expect(page.getByRole('heading', { name: '이 주소엔 아무것도 없어요' })).toBeVisible()
+    await expect(page.getByRole('navigation')).toBeVisible()
   })
 
   test('청크 로드가 계속 실패하면 그 화면만 폴백으로 바뀌고, 복구 뒤 다시 시도로 원래 화면이 뜬다', async ({ page }) => {

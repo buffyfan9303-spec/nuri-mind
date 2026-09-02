@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Button from './Button'
 import { useL } from '../i18n/useT'
 
@@ -10,10 +10,13 @@ import { useL } from '../i18n/useT'
  *
  * '다시 시도'가 새로고침인 이유: React.lazy는 한 번 거부된 import를 영구 캐시한다 — 경계만 리셋하면
  * 같은 에러를 즉시 다시 던진다. 청크 404(재배포 뒤 옛 index.html)가 이 경계의 주 고객이라 새로고침이 정답이다.
- * '홈으로'는 리셋 + 이동 — 홈은 정적 import라 청크 없이 그려진다.
+ * '홈으로'는 이동 — 경로가 바뀌면 App의 motion.div key가 바뀌어 경계가 새로 마운트되므로 리셋이 필요 없다.
+ * 리셋을 같이 하면 AnimatePresence(mode=wait)가 아직 붙잡고 있는 옛 트리가 다시 렌더돼 같은 에러를 한 번 더 던진다
+ * (Sentry 이벤트 중복). 홈('/')에서 죽은 경우만 key가 안 바뀌니 그때만 리셋한다. 홈은 정적 import라 청크 없이 그려진다.
  */
 export default function RouteFallback({ onReset }: { onReset: () => void }) {
   const nav = useNavigate()
+  const { pathname } = useLocation()
   const l = useL()
   return (
     <main role="alert" className="mx-auto flex min-h-[70dvh] max-w-md flex-col items-center justify-center px-6 text-center">
@@ -35,8 +38,8 @@ export default function RouteFallback({ onReset }: { onReset: () => void }) {
         <Button
           color="white"
           onClick={() => {
-            onReset()
-            nav('/', { replace: true })
+            if (pathname === '/') onReset()
+            else nav('/', { replace: true })
           }}
         >
           {l({ ko: '홈으로', en: 'Go home', ja: 'ホームへ' })}

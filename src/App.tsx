@@ -2,7 +2,7 @@ import { Suspense, useEffect, useRef } from 'react'
 import { lazyWithReload } from './lib/lazyWithReload'
 import { sweepScrollLocks } from './lib/scrollLock'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
+import { Navigate, Route, Routes, matchRoutes, useLocation, useNavigationType } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Onboarding from './components/Onboarding'
 import ReConsent from './components/ReConsent'
@@ -55,6 +55,52 @@ const DeepReport = lazyWithReload(() => import('./pages/DeepReport'))
 const GrowthPlan = lazyWithReload(() => import('./pages/GrowthPlan'))
 const MbtiTest = lazyWithReload(() => import('./pages/MbtiTest'))
 
+/**
+ * 라우트 표 — <Routes> 렌더와 온보딩 전 '아는 주소인가' 판정(matchRoutes)이 같은 표를 본다.
+ * 표가 하나라 새 화면 추가 시 한 줄이면 끝나고, 404 판정이 렌더와 어긋날 수 없다.
+ */
+const ROUTES = [
+  { path: '/', element: <Home /> },
+  { path: '/test/:id', element: <TestIntro /> },
+  { path: '/test/:id/run', element: <TestRun /> },
+  { path: '/memory/run', element: <MemoryRun /> },
+  { path: '/focus/run', element: <FocusRun /> },
+  { path: '/speed/run', element: <SpeedRun /> },
+  { path: '/spatial/run', element: <SpatialRun /> },
+  { path: '/switch/run', element: <SwitchRun /> },
+  { path: '/cog', element: <CogProfile /> },
+  { path: '/mail', element: <Mailbox /> },
+  { path: '/result/:rid', element: <TestResult /> },
+  { path: '/rewards', element: <Rewards /> },
+  { path: '/rewards/survey/:id', element: <SurveyTake /> },
+  { path: '/rewards/create', element: <SurveyCreate /> },
+  { path: '/community', element: <Community /> },
+  { path: '/dex', element: <Dex /> },
+  { path: '/chemi', element: <Chemi /> },
+  { path: '/quick', element: <QuickHub /> },
+  { path: '/quick/:id', element: <QuickTest /> },
+  { path: '/routine/:id', element: <Routine /> },
+  { path: '/magazine', element: <Magazine /> },
+  { path: '/magazine/:id', element: <Article /> },
+  { path: '/insight', element: <Insight /> },
+  { path: '/fortune', element: <Fortune /> },
+  { path: '/zodiac/:slug', element: <ZodiacLanding /> },
+  { path: '/compat', element: <Compat /> },
+  { path: '/rank', element: <Rank /> },
+  { path: '/league', element: <League /> },
+  { path: '/legal/:doc', element: <Legal /> },
+  { path: '/shop', element: <Shop /> },
+  { path: '/charge', element: <Charge /> },
+  { path: '/premium', element: <Premium /> },
+  { path: '/vs', element: <Duel /> },
+  { path: '/self-report', element: <SelfReport /> },
+  { path: '/deep-report', element: <DeepReport /> },
+  { path: '/growth', element: <GrowthPlan /> },
+  { path: '/mbti/:mode', element: <MbtiTest /> },
+  { path: '/admin', element: <Admin /> },
+  { path: '/profile', element: <Profile /> },
+]
+
 /** 가입 없이 볼 수 있는 공개 경로(SEO·공유 유입) — sitemap 등재 경로와 일치시킬 것 */
 const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs)(\/|$)/
 
@@ -83,12 +129,15 @@ export default function App() {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
 
+  // 아는 주소인가 — 404엔 내비를 남긴다(/anything/run 같은 '비슷한' 모르는 주소가 접미사 규칙에 걸려 내비를 잃지 않게)
+  const known = matchRoutes(ROUTES, location.pathname) !== null
   const hideNav =
     !onboarded ||
-    location.pathname.endsWith('/run') ||
-    location.pathname.startsWith('/rewards/survey') ||
-    location.pathname.startsWith('/rewards/create') ||
-    location.pathname.startsWith('/admin')
+    (known &&
+      (location.pathname.endsWith('/run') ||
+        location.pathname.startsWith('/rewards/survey') ||
+        location.pathname.startsWith('/rewards/create') ||
+        location.pathname.startsWith('/admin')))
 
   useEffect(() => {
     const remembered = navType === 'POP' ? scrollMemo.get(location.pathname) : undefined
@@ -110,7 +159,12 @@ export default function App() {
   // 회원가입(온보딩) 전이면 입장 대신 가입 화면.
   // 단, 공개 경로(약관·SEO 랜딩·매거진·공유 결과)는 통과 — 검색 유입·크롤러·공유링크가
   // 가입 게이트에 막히면 sitemap 등재 URL이 전부 렌더되지 않는다.
-  if (!onboarded && !PUBLIC_ROUTES.test(location.pathname)) return <Onboarding />
+  if (!onboarded && !PUBLIC_ROUTES.test(location.pathname)) {
+    // 모르는 주소(옛 공유 링크·오타)로 들어온 새 사용자는 홈에서 가입을 시작한다 — 가입을 마친 첫 화면이 404면 '고장'으로 읽힌다.
+    // 가입한 사용자에게만 404 페이지가 뜬다(주소를 고칠 수 있는 사람이다).
+    if (!known) return <Navigate to="/" replace />
+    return <Onboarding />
+  }
 
   return (
     // reducedMotion="user": 시스템 '동작 줄이기' 설정 시 framer 전체가 자동으로 이동/스케일 생략(접근성 정합 단일 스위치)
@@ -136,45 +190,9 @@ export default function App() {
           <SentryErrorBoundary fallback={({ resetError }) => <RouteFallback onReset={resetError} />}>
           <Suspense fallback={<Skeleton />}>
             <Routes location={location}>
-              <Route path="/" element={<Home />} />
-              <Route path="/test/:id" element={<TestIntro />} />
-              <Route path="/test/:id/run" element={<TestRun />} />
-              <Route path="/memory/run" element={<MemoryRun />} />
-              <Route path="/focus/run" element={<FocusRun />} />
-              <Route path="/speed/run" element={<SpeedRun />} />
-              <Route path="/spatial/run" element={<SpatialRun />} />
-              <Route path="/switch/run" element={<SwitchRun />} />
-              <Route path="/cog" element={<CogProfile />} />
-              <Route path="/mail" element={<Mailbox />} />
-              <Route path="/result/:rid" element={<TestResult />} />
-              <Route path="/rewards" element={<Rewards />} />
-              <Route path="/rewards/survey/:id" element={<SurveyTake />} />
-              <Route path="/rewards/create" element={<SurveyCreate />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/dex" element={<Dex />} />
-              <Route path="/chemi" element={<Chemi />} />
-              <Route path="/quick" element={<QuickHub />} />
-              <Route path="/quick/:id" element={<QuickTest />} />
-              <Route path="/routine/:id" element={<Routine />} />
-              <Route path="/magazine" element={<Magazine />} />
-              <Route path="/magazine/:id" element={<Article />} />
-              <Route path="/insight" element={<Insight />} />
-              <Route path="/fortune" element={<Fortune />} />
-              <Route path="/zodiac/:slug" element={<ZodiacLanding />} />
-              <Route path="/compat" element={<Compat />} />
-              <Route path="/rank" element={<Rank />} />
-              <Route path="/league" element={<League />} />
-              <Route path="/legal/:doc" element={<Legal />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/charge" element={<Charge />} />
-              <Route path="/premium" element={<Premium />} />
-              <Route path="/vs" element={<Duel />} />
-              <Route path="/self-report" element={<SelfReport />} />
-              <Route path="/deep-report" element={<DeepReport />} />
-              <Route path="/growth" element={<GrowthPlan />} />
-              <Route path="/mbti/:mode" element={<MbtiTest />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/profile" element={<Profile />} />
+              {ROUTES.map((r) => (
+                <Route key={r.path} path={r.path} element={r.element} />
+              ))}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
