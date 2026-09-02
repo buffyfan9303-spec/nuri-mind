@@ -351,7 +351,7 @@ export default function Community() {
         >
           <Avatar avatar={avatar} size={34} emojiScale={0.52} />
           <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium text-ink-faint">{t('community.composer')}</span>
-          <span className="shrink-0 rounded-full bg-mind-500 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
+          <span className="shrink-0 rounded-full bg-mind-500 px-3.5 py-1.5 text-[13px] font-semibold text-white">
             ✏️ {t('community.write')}
           </span>
         </button>
@@ -364,15 +364,15 @@ export default function Community() {
           <motion.span
             animate={{ rotate: [0, -10, 10, -6, 6, 0] }}
             transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut', repeatDelay: 2 }}
-            className="text-[22px]"
+            className="text-[20px]"
           >
             🗓️
           </motion.span>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-extrabold tracking-wide text-mind-600">{t('community.themeLabel')}</p>
-            <p className="mt-0.5 break-keep text-[14px] font-extrabold leading-snug">{l(todayTheme())}</p>
+            <p className="text-[11px] font-semibold tracking-wide text-mind-600">{t('community.themeLabel')}</p>
+            <p className="mt-0.5 break-keep text-[14px] font-semibold leading-snug">{l(todayTheme())}</p>
           </div>
-          <span className="shrink-0 whitespace-nowrap rounded-full bg-mind-500 px-3 py-1.5 text-[12px] font-extrabold text-white">
+          <span className="shrink-0 whitespace-nowrap rounded-full bg-mind-500 px-3 py-1.5 text-[12px] font-semibold text-white">
             ✍️ {t('community.themeWrite')}
           </span>
         </button>
@@ -386,7 +386,7 @@ export default function Community() {
               <button
                 key={tp}
                 onClick={() => setFilter(tp)}
-                className="shrink-0 whitespace-nowrap rounded-full border-2 px-3.5 py-1.5 text-[13px] font-extrabold transition-colors"
+                className="shrink-0 whitespace-nowrap rounded-full border-2 px-3.5 py-1.5 text-[13px] font-semibold transition-colors"
                 style={{
                   borderColor: active ? '#4FA882' : '#E3EAE5',
                   background: active ? '#4FA882' : 'rgb(var(--surface))',
@@ -405,7 +405,7 @@ export default function Community() {
             <button
               key={s}
               onClick={() => setSort(s)}
-              className={`flex-1 rounded-xl py-2 text-[13.5px] font-extrabold transition-colors ${
+              className={`flex-1 rounded-xl py-2 text-[13px] font-semibold transition-colors${
                 sort === s ? 'bg-surface text-mind-700 shadow-card' : 'text-ink-faint'
               }`}
             >
@@ -415,7 +415,7 @@ export default function Community() {
         </div>
 
         {copied && (
-          <p className="mt-2 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">
+          <p className="mt-2 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">
             {t('common.copied')}
           </p>
         )}
@@ -427,7 +427,7 @@ export default function Community() {
           ) : posts.length === 0 ? (
             <Card className="py-10 text-center">
               <div className="text-5xl">🌱</div>
-              <p className="mt-3 whitespace-pre-line text-[14.5px] font-bold leading-relaxed text-ink-faint">
+              <p className="mt-3 whitespace-pre-line text-[14px] font-bold leading-relaxed text-ink-faint">
                 {filter === 'all' ? t('community.empty') : t('community.emptyFilter')}
               </p>
               <div className="mx-auto mt-4 max-w-[200px]">
@@ -451,7 +451,7 @@ export default function Community() {
                       <div className="flex items-center gap-2">
                         <Avatar avatar={p.avatar} size={36} emojiScale={0.52} />
                         <div className="min-w-0 flex-1">
-                          <p className="flex min-w-0 items-center gap-1.5 text-[13.5px] font-extrabold">
+                          <p className="flex min-w-0 items-center gap-1.5 text-[13px] font-semibold">
                             <span className="min-w-0 truncate">{p.nick}</span>
                             {p.badge && (
                               <span className="shrink-0 rounded-full bg-mind-50 px-1.5 py-0.5 text-[12px]">
@@ -459,21 +459,21 @@ export default function Community() {
                               </span>
                             )}
                             {hot && (
-                              <span className="shrink-0 rounded-full bg-ego-light px-1.5 py-0.5 text-[10px] font-extrabold text-ego-deep">
+                              <span className="shrink-0 rounded-full bg-ego-light px-1.5 py-0.5 text-[11px] font-semibold text-ego-deep">
                                 🔥 {t('community.hot')}
                               </span>
                             )}
                           </p>
-                          <p className="text-[11.5px] font-bold text-ink-faint">{timeAgo(p.at, t)}</p>
+                          <p className="text-[11px] font-medium text-ink-faint">{timeAgo(p.at, t)}</p>
                         </div>
                         {p.mine && (
-                          <button onClick={() => onDelete(p)} className="shrink-0 text-[12px] font-bold text-ink-faint">
+                          <button onClick={() => onDelete(p)} className="shrink-0 text-[12px] font-medium text-ink-faint">
                             {t('common.delete')}
                           </button>
                         )}
                       </div>
 
-                      <p className="mt-2 whitespace-pre-line break-keep text-[14.5px] font-medium leading-[1.65] text-ink">
+                      <p className="mt-2 whitespace-pre-line break-keep text-[14px] font-medium leading-[1.65] text-ink">
                         {p.text}
                       </p>
 
@@ -481,7 +481,7 @@ export default function Community() {
                         <motion.button
                           whileTap={{ scale: 0.97 }}
                           onClick={() => onLike(p)}
-                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
+                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors${
                             p.liked ? 'bg-red-50 text-red-500' : 'bg-surface2 text-ink-sub'
                           }`}
                         >
@@ -493,7 +493,7 @@ export default function Community() {
                         <motion.button
                           whileTap={{ scale: 0.97 }}
                           onClick={() => toggleComments(p.id)}
-                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
+                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors${
                             openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-sub'
                           }`}
                         >
@@ -501,16 +501,16 @@ export default function Community() {
                         </motion.button>
                         <button
                           onClick={() => onShare(p)}
-                          className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-[12.5px] font-extrabold text-ink-sub"
+                          className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-[12px] font-semibold text-ink-sub"
                         >
                           📤
                         </button>
                         {!p.mine && (
                           <div className="ml-auto flex shrink-0 items-center gap-1">
-                            <button onClick={() => onBlock(p)} className="rounded-full px-2.5 py-1.5 text-[11.5px] font-bold text-ink-faint">
+                            <button onClick={() => onBlock(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-medium text-ink-faint">
                               🚫 {t('community.block')}
                             </button>
-                            <button onClick={() => onReport(p)} className="rounded-full px-2.5 py-1.5 text-[11.5px] font-bold text-ink-faint">
+                            <button onClick={() => onReport(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-medium text-ink-faint">
                               🚩 {t('community.report')}
                             </button>
                           </div>
@@ -529,7 +529,7 @@ export default function Community() {
                           >
                             <div className="mt-3 space-y-2 border-t-2 border-line pt-3">
                               {comments.length === 0 ? (
-                                <p className="py-1 text-center text-[12.5px] font-bold text-ink-faint">
+                                <p className="py-1 text-center text-[12px] font-medium text-ink-faint">
                                   {t('community.commentEmpty')}
                                 </p>
                               ) : (
@@ -542,10 +542,10 @@ export default function Community() {
                                   >
                                     <Avatar avatar={c.avatar} size={26} emojiScale={0.5} />
                                     <div className="min-w-0 flex-1 rounded-2xl bg-surface2 px-3 py-2">
-                                      <p className="flex items-center gap-1 text-[12px] font-extrabold">
+                                      <p className="flex items-center gap-1 text-[12px] font-semibold">
                                         <span className="truncate">{c.nick}</span>
                                         {c.badge && <span className="shrink-0">{c.badge}</span>}
-                                        <span className="ml-auto shrink-0 text-[10.5px] font-bold text-ink-faint">
+                                        <span className="ml-auto shrink-0 text-[11px] font-medium text-ink-faint">
                                           {timeAgo(c.at, t)}
                                         </span>
                                       </p>
@@ -570,7 +570,7 @@ export default function Community() {
                                   whileTap={{ scale: 0.97 }}
                                   onClick={() => submitComment(p.id)}
                                   disabled={!commentText.trim()}
-                                  className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-extrabold text-white disabled:opacity-40"
+                                  className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-40"
                                 >
                                   {t('community.send')}
                                 </motion.button>
@@ -600,7 +600,7 @@ export default function Community() {
             transition={SPRING.flick}
             whileTap={{ scale: 0.97 }}
             onClick={applyNew}
-            className="fixed inset-x-0 top-16 z-40 mx-auto flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-[13.5px] font-extrabold text-white shadow-pop"
+            className="fixed inset-x-0 top-16 z-40 mx-auto flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-semibold text-white shadow-pop"
             style={{ background: 'linear-gradient(135deg, #4FA882, #6E9FDC)' }}
           >
             <motion.span animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 1.2 }}>
@@ -620,7 +620,7 @@ export default function Community() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.9 }}
             transition={SPRING.ui}
-            className="safe-bottom fixed inset-x-0 bottom-28 z-40 mx-auto flex w-fit max-w-[90%] items-center gap-2 rounded-full bg-mind-600 px-5 py-3 text-[14px] font-extrabold text-white shadow-pop"
+            className="safe-bottom fixed inset-x-0 bottom-28 z-40 mx-auto flex w-fit max-w-[90%] items-center gap-2 rounded-full bg-mind-600 px-5 py-3 text-[14px] font-semibold text-white shadow-pop"
           >
             <motion.span animate={{ rotate: [0, -12, 12, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}>
               🎉
@@ -651,14 +651,14 @@ export default function Community() {
         <div className="flex items-center gap-2.5">
           <Avatar avatar={avatar} size={38} />
           <div className="min-w-0">
-            <p className="text-[15px] font-extrabold">{nickname}</p>
-            <p className="text-[12px] font-bold text-ink-faint">{server ? t('community.shared') : t('community.local')}</p>
+            <p className="text-[15px] font-semibold">{nickname}</p>
+            <p className="text-[12px] font-medium text-ink-faint">{server ? t('community.shared') : t('community.local')}</p>
           </div>
         </div>
         {/* 이번 주 주제 힌트 */}
         <div className="mt-2.5 flex items-center gap-2 rounded-xl bg-mind-50 px-3 py-2">
           <span className="shrink-0 text-[14px]">🗓️</span>
-          <p className="break-keep text-[12.5px] font-bold leading-snug text-mind-700">
+          <p className="break-keep text-[12px] font-medium leading-snug text-mind-700">
             {t('community.themeLabel')} · {l(todayTheme())}
           </p>
         </div>
@@ -673,7 +673,7 @@ export default function Community() {
         />
         <div className="mt-1.5 flex items-center justify-between">
           {myAnimal ? (
-            <button onClick={() => setAttach((v) => !v)} className="flex items-center gap-2 text-[13px] font-bold">
+            <button onClick={() => setAttach((v) => !v)} className="flex items-center gap-2 text-[13px] font-medium">
               <span
                 className="flex h-5 w-5 items-center justify-center rounded-md border-2"
                 style={{ borderColor: attach ? '#4FA882' : 'rgb(var(--line))', background: attach ? '#4FA882' : 'rgb(var(--surface))' }}
@@ -685,7 +685,7 @@ export default function Community() {
           ) : (
             <span />
           )}
-          <span className="text-[12px] font-bold text-ink-faint">{text.length}/280</span>
+          <span className="text-[12px] font-medium text-ink-faint">{text.length}/280</span>
         </div>
         <div className="mt-3.5">
           <Button color="mind" disabled={!text.trim()} onClick={submit}>

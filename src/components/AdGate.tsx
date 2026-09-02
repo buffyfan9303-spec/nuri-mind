@@ -69,9 +69,9 @@ export default function AdGate({ onDone }: { onDone: () => void }) {
           transition={{ ...SPRING.sheet, delay: 0.2 }}
           className="rounded-3xl bg-white/10 p-5 text-center"
         >
-          <p className="text-[13px] font-extrabold tracking-wide text-mind-300">💡 {l({ ko: '기다리는 동안, 심리 한 스푼', en: 'While you wait — a psych spoonful', ja: '待つ間に、心理ひとさじ' })}</p>
-          <p className="mt-2 text-[30px] leading-none">{tip.emoji}</p>
-          <p className="mt-2.5 break-keep text-[14.5px] font-bold leading-relaxed text-white">{l(tip.text)}</p>
+          <p className="text-[13px] font-semibold text-mind-300">💡 {l({ ko: '기다리는 동안, 심리 한 스푼', en: 'While you wait — a psych spoonful', ja: '待つ間に、心理ひとさじ' })}</p>
+          <p className="mt-2 text-[28px] leading-none">{tip.emoji}</p>
+          <p className="mt-2.5 break-keep text-[14px] font-bold leading-relaxed text-white">{l(tip.text)}</p>
         </motion.div>
 
         <div className="mt-5">

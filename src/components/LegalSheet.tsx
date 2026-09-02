@@ -67,15 +67,15 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
           >
             <div className="flex shrink-0 items-center justify-between border-b border-line px-5 py-4">
               <div className="min-w-0">
-                <h2 className="truncate text-[16px] font-extrabold tracking-tight">
+                <h2 className="truncate text-[16px] font-semibold">
                   {t(doc === 'terms' ? 'legal.terms' : 'legal.privacy')}
                 </h2>
-                <p className="mt-0.5 text-[11.5px] font-bold text-ink-faint">{LEGAL_EFFECTIVE} 시행 · 엔에이치홀딩스</p>
+                <p className="mt-0.5 text-[11px] font-medium text-ink-faint">{LEGAL_EFFECTIVE} 시행 · 엔에이치홀딩스</p>
               </div>
               <button
                 onClick={onClose}
                 aria-label={t('common.close')}
-                className="-mr-1 shrink-0 rounded-full px-3 py-1.5 text-[15px] font-extrabold text-ink-faint"
+                className="-mr-1 shrink-0 rounded-full px-3 py-1.5 text-[15px] font-semibold text-ink-faint"
               >
                 ✕
               </button>
@@ -89,14 +89,14 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
                   ))}
                 </div>
               ) : (
-                <p className="whitespace-pre-line text-[13.5px] font-medium leading-[1.85] tracking-wide text-ink">{body}</p>
+                <p className="whitespace-pre-line text-[13px] font-medium leading-relaxed text-ink">{body}</p>
               )}
             </div>
 
             <div className="shrink-0 border-t border-line p-4">
               <button
                 onClick={onClose}
-                className="w-full rounded-2xl bg-mind-500 py-3.5 text-[15.5px] font-extrabold text-white transition-transform active:translate-y-[2px]"
+                className="w-full rounded-2xl bg-mind-500 py-3.5 text-[15px] font-semibold text-white transition-transform active:translate-y-[2px]"
               >
                 {t('common.close')}
               </button>

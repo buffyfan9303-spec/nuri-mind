@@ -37,7 +37,7 @@ export default function QuickHub() {
           ))}
         </div>
 
-        <p className="mt-6 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">{t('quick.hint')}</p>
+        <p className="mt-6 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">{t('quick.hint')}</p>
       </main>
     </div>
   )

@@ -68,7 +68,7 @@ export const JellyChip = memo(function JellyChip({
       />
       {badge && (
         <span
-          className="pointer-events-none absolute right-1.5 top-1.5 z-[2] rounded-full px-1.5 py-px text-[8.5px] font-extrabold leading-[1.4] tracking-wide text-white"
+          className="pointer-events-none absolute right-1.5 top-1.5 z-[2] rounded-full px-1.5 py-px text-[11px] font-semibold leading-[1.4] tracking-wide text-white"
           style={{ background: BADGE_BG[badge] }}
         >
           {badge}
@@ -77,7 +77,7 @@ export const JellyChip = memo(function JellyChip({
       <span className="relative z-[1]">
         <IconBadge emoji={emoji} color={color} size={38} radius={12} tone={selected ? 'frost' : 'solid'} />
       </span>
-      <span className="relative z-[1] line-clamp-2 break-keep px-0.5 text-center text-[12.5px] font-extrabold leading-tight">{label}</span>
+      <span className="relative z-[1] line-clamp-2 break-keep px-0.5 text-center text-[12px] font-semibold leading-tight">{label}</span>
     </button>
   )
 })

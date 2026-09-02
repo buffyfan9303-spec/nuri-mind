@@ -141,7 +141,7 @@ export default function Mailbox() {
       <TopBar back="/" title={l({ ko: '우편함', en: 'Mailbox', ja: '郵便箱' })} />
       <main className="mx-auto max-w-md px-5">
         {msg && (
-          <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-3 rounded-2xl bg-mind-100 py-2.5 text-center text-[14px] font-extrabold text-mind-700">
+          <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-3 rounded-2xl bg-mind-100 py-2.5 text-center text-[14px] font-semibold text-mind-700">
             {msg}
           </motion.p>
         )}
@@ -150,19 +150,19 @@ export default function Mailbox() {
           <p className="mt-16 text-center text-[14px] font-bold text-ink-faint">{l({ ko: '불러오는 중…', en: 'Loading…', ja: '読み込み中…' })}</p>
         ) : !authReady() || loggedIn === false ? (
           <Card className="mt-6 text-center">
-            <div className="text-[44px]">📭</div>
-            <h2 className="mt-2 break-keep text-[17px] font-extrabold">{l({ ko: '카카오로 로그인하면 우편을 받아요', en: 'Log in with Kakao to get mail', ja: 'カカオログインで郵便を受取' })}</h2>
+            <div className="text-[28px]">📭</div>
+            <h2 className="mt-2 break-keep text-[17px] font-semibold">{l({ ko: '카카오로 로그인하면 우편을 받아요', en: 'Log in with Kakao to get mail', ja: 'カカオログインで郵便を受取' })}</h2>
             <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
               {l({ ko: '지금은 이 기기에만 저장돼요. 카카오 계정으로 로그인하면 운영자 지급·결제 다이아·개인 우편을 어느 기기에서나 받을 수 있어요.', en: "You're using this device locally. Log in with Kakao to claim operator gifts, purchased diamonds, and personal mail on any device.", ja: '今はこの端末のみ。カカオでログインすると、運営者ギフト・購入ダイヤ・個人郵便をどの端末でも受取れます。' })}
             </p>
-            <button onClick={onLogin} className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[#FEE500] py-3 text-[15px] font-extrabold text-[#191919] shadow-card transition-transform active:translate-y-[2px]">
+            <button onClick={onLogin} className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[#FEE500] py-3 text-[15px] font-semibold text-[#191919] shadow-card transition-transform active:translate-y-[2px]">
               💬 {l({ ko: '카카오로 로그인', en: 'Log in with Kakao', ja: 'カカオでログイン' })}
             </button>
           </Card>
         ) : mail.length === 0 ? (
           <Card className="mt-6 text-center">
-            <div className="text-[44px]">📭</div>
-            <h2 className="mt-2 text-[16px] font-extrabold">{l({ ko: '받은 우편이 없어요', en: 'No mail yet', ja: '郵便はありません' })}</h2>
+            <div className="text-[28px]">📭</div>
+            <h2 className="mt-2 text-[16px] font-semibold">{l({ ko: '받은 우편이 없어요', en: 'No mail yet', ja: '郵便はありません' })}</h2>
           </Card>
         ) : (
           <>
@@ -196,12 +196,12 @@ export default function Mailbox() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="truncate text-[15px] font-extrabold leading-tight">{title}</p>
-                          <span className="shrink-0 text-[11px] font-bold text-ink-faint">{sender}</span>
+                          <p className="truncate text-[15px] font-semibold leading-tight">{title}</p>
+                          <span className="shrink-0 text-[11px] font-medium text-ink-faint">{sender}</span>
                         </div>
                         {body && <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{body}</p>}
                         {(it.amount > 0 || it.points > 0) && (
-                          <p className="mt-1.5 text-[13px] font-extrabold text-mind-700">
+                          <p className="mt-1.5 text-[13px] font-semibold text-mind-700">
                             {it.amount > 0 && `💎 ${it.amount}`}
                             {it.amount > 0 && it.points > 0 && ' · '}
                             {it.points > 0 && `🪙 ${it.points}`}
@@ -209,22 +209,22 @@ export default function Mailbox() {
                         )}
                         <div className="mt-2.5 flex items-center gap-2">
                           {!it.claimed ? (
-                            <button onClick={() => onClaim(it)} className="rounded-full bg-[#6E7BF2] px-4 py-1.5 text-[13px] font-extrabold text-white">
+                            <button onClick={() => onClaim(it)} className="rounded-full bg-[#6E7BF2] px-4 py-1.5 text-[13px] font-semibold text-white">
                               {l({ ko: '받기', en: 'Claim', ja: '受取' })}
                             </button>
                           ) : (
-                            <span className="rounded-full bg-line px-3 py-1.5 text-[12px] font-extrabold text-ink-faint">
+                            <span className="rounded-full bg-line px-3 py-1.5 text-[12px] font-semibold text-ink-faint">
                               ✅ {l({ ko: '수령 완료', en: 'Received', ja: '受取済み' })}
                               {it.kind === 'purchase' && ` · ${l({ ko: '환불 불가', en: 'no refund', ja: '返金不可' })}`}
                             </span>
                           )}
                           {refundable && (
-                            <button onClick={() => onCancel(it)} className="rounded-full border-2 border-line px-3 py-1.5 text-[12px] font-extrabold text-ink-sub">
+                            <button onClick={() => onCancel(it)} className="rounded-full border-2 border-line px-3 py-1.5 text-[12px] font-semibold text-ink-sub">
                               {l({ ko: '청약철회(환불)', en: 'Refund', ja: '返金' })}
                             </button>
                           )}
                           {!it.claimed && it.expires_at && (
-                            <span className={`ml-auto shrink-0 text-[11px] font-extrabold ${expDays(it.expires_at) <= 3 ? 'text-red-400' : 'text-ink-faint'}`}>
+                            <span className={`ml-auto shrink-0 text-[11px] font-semibold${expDays(it.expires_at) <= 3 ? 'text-red-400' : 'text-ink-faint'}`}>
                               ⏳ D-{Math.max(0, expDays(it.expires_at))}
                             </span>
                           )}
@@ -235,7 +235,7 @@ export default function Mailbox() {
                 )
               })}
             </div>
-            <p className="mt-4 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">
+            <p className="mt-4 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
               {l({
                 ko: 'ⓘ 유료 결제 다이아는 우편함에서 "받기" 전까지만 청약철회(환불)할 수 있어요. 받기를 누르면 콘텐츠 사용 개시로 간주되어 환불이 제한됩니다.',
                 en: 'ⓘ Purchased diamonds can be refunded only before you tap "Claim". Claiming counts as using the content, after which refunds are restricted.',

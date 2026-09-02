@@ -38,13 +38,13 @@ export default function BottomNav() {
                     // 탭 배지의 scale만 키프레임으로 따로 간다(스프링으로는 중간 피크를 만들 수 없다)
                     scale: { duration: 0.34, times: [0, 0.55, 1], ease: 'easeOut' },
                   }}
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-[19px]"
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-[20px]"
                   style={{ background: active ? 'linear-gradient(135deg, #9BC4B2, #8FB8E8)' : 'transparent' }}
                 >
                   {tab.icon}
                 </motion.span>
                 <span
-                  className={`mt-px text-[10.5px] font-extrabold leading-tight transition-colors ${
+                  className={`mt-px text-[11px] font-semibold leading-tight transition-colors${
                     active ? 'text-mind-700' : 'text-ink-faint'
                   }`}
                 >

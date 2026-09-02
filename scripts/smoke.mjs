@@ -10,6 +10,7 @@
  *  ⑥ 16유형 심층 문항의 극별 균형(불균형 시 채점 편향)
  *  ⑦ 엣지 함수가 공용 모듈(_shared)을 올바르게 참조하는가 · 사본이 남아 원본을 가리지 않는가
  *  ⑧ 모션이 lib/motion 프리셋을 우회하고 스프링을 하드코딩하지 않는가
+ *  ⑨ 타이포 정책 — ≤17px에 extrabold/tracking-tight 금지, 크기는 10단계 스케일만
  *
  * 실행: npm run smoke   (실패 시 exit 1 — 배포 전 게이트로 사용)
  */
@@ -122,6 +123,33 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   }
   walk('src')
   check('모션 프리셋 사용(하드코딩 스프링 0)', bad.length === 0, bad.slice(0, 5).join(', '))
+}
+
+/* ⑨ 타이포 정책 — 크기별 굵기·자간이 규칙을 지키는가 */
+{
+  // AI 티의 실체는 '규칙 없음'이었다: extrabold 523개가 13px 캡션까지, 반픽셀 크기 42종, 13px에 tracking-tight.
+  // 정책(Apple §15): ≤17px는 semibold 이하·자간 0 / ≥20px만 extrabold·음수 자간. 크기는 10단계 스케일.
+  const SCALE = new Set([11, 12, 13, 14, 15, 16, 17, 20, 24, 28])
+  const bad = []
+  const walk = (dir) => {
+    for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
+      const rel = `${dir}/${e.name}`
+      if (e.isDirectory()) walk(rel)
+      else if (/\.tsx$/.test(e.name)) {
+        for (const m of read(rel).matchAll(/className=(?:"([^"]*)"|\{`([^`]*)`\})/g)) {
+          const cls = m[1] ?? m[2] ?? ''
+          const sz = cls.match(/text-\[(\d+(?:\.\d+)?)px\]/)
+          if (!sz) continue
+          const px = parseFloat(sz[1])
+          if (!SCALE.has(px)) bad.push(`${rel}: text-[${px}px] 스케일 외`)
+          if (px <= 17 && /font-(extrabold|black)/.test(cls)) bad.push(`${rel}: ${px}px에 extrabold`)
+          if (px <= 17 && /tracking-tight/.test(cls)) bad.push(`${rel}: ${px}px에 tracking-tight`)
+        }
+      }
+    }
+  }
+  walk('src')
+  check('타이포 정책(굵기·자간·스케일)', bad.length === 0, bad.slice(0, 4).join(' · '))
 }
 
 /* 결과 */

@@ -55,7 +55,7 @@ export default function Button({
     size === 'lg'
       ? 'px-6 py-3.5 text-[16px]'
       : size === 'sm'
-        ? 'px-3.5 py-2 text-[13.5px]'
+        ? 'px-3.5 py-2 text-[13px]'
         : 'px-5 py-3 text-[15px]'
   const idRef = useRef(0)
   const [bursts, setBursts] = useState<number[]>([])

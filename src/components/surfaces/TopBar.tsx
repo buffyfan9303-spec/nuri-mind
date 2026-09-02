@@ -31,7 +31,7 @@ export function TopBar({
           ←
         </motion.button>
       )}
-      <div className="flex-1 truncate text-[19px] font-extrabold tracking-tight">{title}</div>
+      <div className="flex-1 truncate text-[20px] font-extrabold tracking-tight">{title}</div>
       {right ?? <PointsPill />}
     </div>
   )

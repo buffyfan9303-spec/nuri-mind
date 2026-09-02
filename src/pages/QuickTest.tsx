@@ -180,7 +180,7 @@ export default function QuickTest() {
                   <motion.span
                     key={i}
                     aria-hidden="true"
-                    className="absolute left-1/2 top-1/2 text-[18px] leading-none"
+                    className="absolute left-1/2 top-1/2 text-[17px] leading-none"
                     initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
                     animate={{ x: Math.cos(rad) * 86, y: Math.sin(rad) * 86, scale: [0, 1.1, 0], opacity: [0, 1, 0] }}
                     transition={{ duration: 0.95, delay: 0.3 + i * 0.025, ease: 'easeOut' }}
@@ -203,7 +203,7 @@ export default function QuickTest() {
                       className="h-[108px] w-[108px]"
                     />
                   ) : (
-                    <span className="block text-[80px] leading-none">{winner.emoji}</span>
+                    <span className="block text-[28px] leading-none">{winner.emoji}</span>
                   )}
                 </span>
               </motion.div>
@@ -220,7 +220,7 @@ export default function QuickTest() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.3 }}
-              className="mt-2 text-[15px] font-extrabold text-white/90"
+              className="mt-2 text-[15px] font-semibold text-white/90"
             >
               “{l(winner.tag)}”
             </motion.p>
@@ -228,14 +228,14 @@ export default function QuickTest() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.58, duration: 0.3 }}
-              className="mt-3 break-keep text-[14.5px] font-medium leading-relaxed text-white/95"
+              className="mt-3 break-keep text-[14px] font-medium leading-relaxed text-white/95"
             >
               {l(winner.desc)}
             </motion.p>
           </motion.div>
 
           {(copied || saved) && (
-            <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">
+            <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">
               ✅ {saved ? t('share.saved') : t('common.copied')}
             </p>
           )}
@@ -244,7 +244,7 @@ export default function QuickTest() {
             {kakaoEnabled() && (
               <button
                 onClick={shareKakaoQuick}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-extrabold text-[#3A1D1D]"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-semibold text-[#3A1D1D]"
               >
                 💬 {t('quick.shareKakao')}
               </button>
@@ -259,7 +259,7 @@ export default function QuickTest() {
             </div>
             <button
               onClick={shareDuelQuick}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-extrabold text-white"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-semibold text-white"
               style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }}
             >
               🆚 {l({ ko: '친구와 대결', en: 'Challenge a friend', ja: '友達とバトル' })}
@@ -269,7 +269,7 @@ export default function QuickTest() {
                 🔬 {t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}
               </Button>
             )}
-            <button onClick={reset} className="w-full py-2 text-[13.5px] font-extrabold text-ink-faint">
+            <button onClick={reset} className="w-full py-2 text-[13px] font-semibold text-ink-faint">
               🔄 {t('quick.again')}
             </button>
           </div>
@@ -286,7 +286,7 @@ export default function QuickTest() {
       <main className="mx-auto max-w-md px-5">
         <div className="mt-1">
           <ProgressBar value={(step + 1) / test.questions.length} />
-          <p className="mt-1.5 text-right text-[12px] font-extrabold text-ink-faint">
+          <p className="mt-1.5 text-right text-[12px] font-semibold text-ink-faint">
             {step + 1} / {test.questions.length}
           </p>
         </div>
@@ -299,7 +299,7 @@ export default function QuickTest() {
             exit={{ opacity: 0, x: -24 }}
             transition={SPRING.ui}
           >
-            <h1 className="mt-6 break-keep text-[21px] font-extrabold leading-snug tracking-tight">{l(q.text)}</h1>
+            <h1 className="mt-6 break-keep text-[20px] font-extrabold leading-snug tracking-tight">{l(q.text)}</h1>
             <div className="mt-5 space-y-2.5">
               {q.options.map((op, i) => (
                 <motion.button
@@ -307,7 +307,7 @@ export default function QuickTest() {
                   whileTap={{ scale: 0.97 }}
                   transition={SPRING.flick}
                   onClick={() => pick(op.to)}
-                  className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-4 text-left text-[15.5px] font-bold leading-snug transition-colors active:border-mind-400 active:bg-mind-50"
+                  className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-4 text-left text-[15px] font-bold leading-snug transition-colors active:border-mind-400 active:bg-mind-50"
                 >
                   {l(op.text)}
                 </motion.button>

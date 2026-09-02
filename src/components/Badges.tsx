@@ -44,7 +44,7 @@ export default function Badges() {
   return (
     <Section title={`🏅 ${t('ach.title')}`}>
       <Card className="!p-4">
-        <p className="mb-3 text-center text-[13px] font-extrabold text-ink-faint">
+        <p className="mb-3 text-center text-[13px] font-semibold text-ink-faint">
           {t('ach.progress', { c: unlocked, t: ACHIEVEMENTS.length })}
         </p>
         <div className="grid grid-cols-4 gap-2.5">
@@ -67,8 +67,8 @@ export default function Badges() {
                   background: done ? '#4FA88214' : 'rgb(var(--surface-2))',
                 }}
               >
-                <span className={`text-[24px] leading-none ${done ? '' : 'opacity-25 grayscale'}`}>{a.emoji}</span>
-                <span className={`max-w-full truncate px-1 text-[10px] font-extrabold ${done ? 'text-ink' : 'text-ink-faint'}`}>
+                <span className={`text-[24px] leading-none${done ? '' : 'opacity-25 grayscale'}`}>{a.emoji}</span>
+                <span className={`max-w-full truncate px-1 text-[11px] font-semibold${done ? 'text-ink' : 'text-ink-faint'}`}>
                   {done ? l(a.title) : '???'}
                 </span>
               </motion.button>
@@ -87,10 +87,10 @@ export default function Badges() {
             >
               {sel.emoji}
             </motion.div>
-            <h3 className="mt-3 text-[22px] font-extrabold tracking-tight">{l(sel.title)}</h3>
-            <p className="mt-1.5 text-[14.5px] font-medium leading-relaxed text-ink-sub">{l(sel.desc)}</p>
+            <h3 className="mt-3 text-[20px] font-extrabold tracking-tight">{l(sel.title)}</h3>
+            <p className="mt-1.5 text-[14px] font-medium leading-relaxed text-ink-sub">{l(sel.desc)}</p>
             <p
-              className={`mt-3 inline-block rounded-full px-4 py-1.5 text-[13px] font-extrabold ${
+              className={`mt-3 inline-block rounded-full px-4 py-1.5 text-[13px] font-semibold${
                 selDone ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-faint'
               }`}
             >

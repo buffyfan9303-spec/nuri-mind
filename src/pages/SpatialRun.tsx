@@ -114,7 +114,7 @@ export default function SpatialRun() {
       </div>
 
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5">
-        <p className="mt-5 text-center text-[14px] font-extrabold text-ink-sub">
+        <p className="mt-5 text-center text-[14px] font-semibold text-ink-sub">
           {l({ ko: '이 글자, 정상일까요 거울상일까요?', en: 'Normal or mirror-image?', ja: 'この文字、正常？鏡像？' })}
         </p>
 
@@ -126,14 +126,14 @@ export default function SpatialRun() {
                 /* 회전/반전은 정적 inner span에 — framer가 transform을 덮어쓰지 않도록 entrance 애니는 outer div */
                 <motion.div key={`g-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
                   <span
-                    className="rot-glyph text-[100px] font-black leading-none"
+                    className="rot-glyph text-[28px] font-extrabold leading-none"
                     style={{ display: 'inline-block', color: accent, transform: `rotate(${it.deg}deg) scaleX(${it.mirror ? -1 : 1})` }}
                   >
                     {it.letter}
                   </span>
                 </motion.div>
               ) : (
-                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-[64px] leading-none">
+                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-[28px] leading-none">
                   {verdict ? '✅' : '❌'}
                 </motion.span>
               )}
@@ -147,7 +147,7 @@ export default function SpatialRun() {
             whileTap={{ scale: 0.97 }}
             onClick={() => answer(false)}
             disabled={phase !== 'stim'}
-            className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 border-line bg-surface text-[18px] font-extrabold shadow-card disabled:opacity-50"
+            className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 border-line bg-surface text-[17px] font-semibold shadow-card disabled:opacity-50"
           >
             🔤 {l({ ko: '정상', en: 'Normal', ja: '正常' })}
           </motion.button>
@@ -155,7 +155,7 @@ export default function SpatialRun() {
             whileTap={{ scale: 0.97 }}
             onClick={() => answer(true)}
             disabled={phase !== 'stim'}
-            className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 text-[18px] font-extrabold text-white shadow-card disabled:opacity-50"
+            className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 text-[17px] font-semibold text-white shadow-card disabled:opacity-50"
             style={{ borderColor: accent, background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
           >
             🪞 {l({ ko: '거울상', en: 'Mirror', ja: '鏡像' })}

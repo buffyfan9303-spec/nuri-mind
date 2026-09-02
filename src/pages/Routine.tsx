@@ -44,12 +44,12 @@ export default function Routine() {
           className="rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-5 text-white shadow-pop"
         >
           <div className="flex items-center gap-3">
-            <span className="text-[34px]">{routine.emoji}</span>
+            <span className="text-[28px]">{routine.emoji}</span>
             <div className="min-w-0 flex-1">
-              <h1 className="text-[18px] font-extrabold leading-tight">{l(routine.title)}</h1>
-              <p className="mt-0.5 text-[13px] font-bold text-white/85">{t('routine.sub')}</p>
+              <h1 className="text-[17px] font-semibold leading-tight">{l(routine.title)}</h1>
+              <p className="mt-0.5 text-[13px] font-medium text-white/85">{t('routine.sub')}</p>
             </div>
-            <span className="shrink-0 text-[17px] font-extrabold">{done.length}/7</span>
+            <span className="shrink-0 text-[17px] font-semibold">{done.length}/7</span>
           </div>
           <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/25">
             <motion.div
@@ -60,7 +60,7 @@ export default function Routine() {
             />
           </div>
           {complete && (
-            <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-3 text-center text-[14.5px] font-extrabold">
+            <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-3 text-center text-[14px] font-semibold">
               🎉 {t('routine.done')}
             </motion.p>
           )}
@@ -82,12 +82,12 @@ export default function Routine() {
                 style={{ borderColor: checked ? '#4FA882' : 'rgb(var(--line))' }}
               >
                 <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold"
                   style={{ background: checked ? '#4FA882' : 'rgb(var(--surface-2))', color: checked ? '#fff' : 'rgb(var(--text-faint))' }}
                 >
                   {checked ? '✓' : t('routine.day', { n: i + 1 })}
                 </span>
-                <span className={`break-keep text-[14.5px] font-bold leading-snug ${checked ? 'text-ink-faint line-through' : 'text-ink'}`}>
+                <span className={`break-keep text-[14px] font-bold leading-snug${checked ? 'text-ink-faint line-through' : 'text-ink'}`}>
                   {l(d)}
                 </span>
               </motion.button>
@@ -95,7 +95,7 @@ export default function Routine() {
           })}
         </div>
 
-        <p className="mt-6 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">{t('routine.hint')}</p>
+        <p className="mt-6 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">{t('routine.hint')}</p>
       </main>
     </div>
   )

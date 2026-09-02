@@ -59,18 +59,18 @@ export default function Premium() {
             active ? '!bg-gradient-to-br !from-[#F2B01E] !to-[#FF7E5F]' : '!bg-gradient-to-br !from-[#6E7BF2] !to-[#A88BF2]'
           }`}
         >
-          <p className="text-[34px] leading-none">✨</p>
+          <p className="text-[28px] leading-none">✨</p>
           {active ? (
             <>
-              <h2 className="mt-2 text-[22px] font-extrabold">{l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })}</h2>
-              <p className="mt-1.5 text-[13px] font-bold text-white/90">
+              <h2 className="mt-2 text-[20px] font-extrabold">{l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })}</h2>
+              <p className="mt-1.5 text-[13px] font-medium text-white/90">
                 {l({ ko: `${untilStr}까지 · D-${daysLeft}`, en: `Until ${untilStr} · D-${daysLeft}`, ja: `${untilStr}まで・D-${daysLeft}` })}
               </p>
             </>
           ) : (
             <>
-              <h2 className="mt-2 text-[21px] font-extrabold">{l({ ko: '누리 마인드 프리미엄', en: 'NURI MIND Premium', ja: 'ヌリマインド プレミアム' })}</h2>
-              <p className="mt-2 text-[34px] font-extrabold leading-none">
+              <h2 className="mt-2 text-[20px] font-extrabold">{l({ ko: '누리 마인드 프리미엄', en: 'NURI MIND Premium', ja: 'ヌリマインド プレミアム' })}</h2>
+              <p className="mt-2 text-[28px] font-extrabold leading-none">
                 ₩{PREMIUM_KRW.toLocaleString()}
                 <span className="text-[14px] font-bold text-white/80"> / {l({ ko: '월', en: 'mo', ja: '月' })}</span>
               </p>
@@ -81,16 +81,16 @@ export default function Premium() {
 
         {/* 혜택 */}
         <Card className="!p-5">
-          <p className="text-[14px] font-extrabold">{l({ ko: '프리미엄 혜택', en: 'What you get', ja: '特典' })}</p>
+          <p className="text-[14px] font-semibold">{l({ ko: '프리미엄 혜택', en: 'What you get', ja: '特典' })}</p>
           <div className="mt-3 space-y-3">
             {BENEFITS.map((b) => (
               <div key={b.e} className="flex items-start gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EEF0FE] text-[18px]">{b.e}</span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EEF0FE] text-[17px]">{b.e}</span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[14px] font-extrabold">{b.t}</p>
+                  <p className="text-[14px] font-semibold">{b.t}</p>
                   <p className="mt-0.5 break-keep text-[12px] font-medium text-ink-faint">{b.d}</p>
                 </div>
-                <span className="shrink-0 text-[15px] font-extrabold text-mind-500">✓</span>
+                <span className="shrink-0 text-[15px] font-semibold text-mind-500">✓</span>
               </div>
             ))}
           </div>
@@ -98,7 +98,7 @@ export default function Premium() {
 
         {/* CTA */}
         {active ? (
-          <button onClick={cancel} className="w-full py-2.5 text-[13px] font-bold text-ink-faint">
+          <button onClick={cancel} className="w-full py-2.5 text-[13px] font-medium text-ink-faint">
             {l({ ko: '구독 해지 (베타)', en: 'Cancel subscription (beta)', ja: '解約（ベータ）' })}
           </button>
         ) : (
@@ -120,7 +120,7 @@ export default function Premium() {
       {/* 구독 확인 모달 */}
       <Modal open={confirm} onClose={() => setConfirm(false)}>
         <div className="text-center">
-          <p className="text-[44px] leading-none">✨</p>
+          <p className="text-[28px] leading-none">✨</p>
           <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '프리미엄 구독', en: 'Subscribe Premium', ja: 'プレミアム購読' })}</h3>
           <p className="mt-1 text-[14px] font-bold text-ink-faint">
             ₩{PREMIUM_KRW.toLocaleString()} / {l({ ko: '월', en: 'month', ja: '月' })} · {PREMIUM_DAYS}
@@ -128,8 +128,8 @@ export default function Premium() {
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             {['카카오페이', '신용카드', 'Toss'].map((m) => (
-              <span key={m} className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-[12.5px] font-bold text-ink-faint">
-                {m} <span className="text-[10.5px] text-ink-faint/70">준비중</span>
+              <span key={m} className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-[12px] font-medium text-ink-faint">
+                {m} <span className="text-[11px] text-ink-faint/70">준비중</span>
               </span>
             ))}
           </div>
@@ -137,7 +137,7 @@ export default function Premium() {
             <Button color="iq" onClick={onSubscribe}>
               {l({ ko: '구독하기 (베타 즉시활성)', en: 'Subscribe (beta · instant)', ja: '購読（ベータ即時）' })}
             </Button>
-            <button onClick={() => setConfirm(false)} className="mt-2 w-full py-2 text-[13.5px] font-bold text-ink-faint">
+            <button onClick={() => setConfirm(false)} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">
               {l({ ko: '취소', en: 'Cancel', ja: 'キャンセル' })}
             </button>
           </div>
@@ -150,7 +150,7 @@ export default function Premium() {
       {/* 완료 모달 */}
       <Modal open={done} onClose={() => setDone(false)}>
         <div className="text-center">
-          <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="text-[52px] leading-none">
+          <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="text-[28px] leading-none">
             🎉
           </motion.p>
           <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '프리미엄 활성화!', en: 'Premium activated!', ja: 'プレミアム有効化！' })}</h3>

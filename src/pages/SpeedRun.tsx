@@ -107,11 +107,11 @@ export default function SpeedRun() {
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5">
         {phase === 'ready' ? (
           <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="text-[56px] leading-none">
+            <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="text-[28px] leading-none">
               ⚡
             </motion.div>
-            <h2 className="mt-4 text-[19px] font-extrabold">{l({ ko: '대응표를 외워두세요', en: 'Learn the key', ja: '対応表を覚えて' })}</h2>
-            <p className="mt-1.5 break-keep text-[13.5px] font-bold text-ink-sub">
+            <h2 className="mt-4 text-[20px] font-extrabold">{l({ ko: '대응표를 외워두세요', en: 'Learn the key', ja: '対応表を覚えて' })}</h2>
+            <p className="mt-1.5 break-keep text-[13px] font-medium text-ink-sub">
               {l({ ko: '기호에 맞는 숫자를 최대한 빠르고 정확하게 누르면 돼요. 표는 계속 위에 보여요.', en: 'Press the digit matching each symbol, fast and accurate. The key stays at the top.', ja: '記号に合う数字を最速・正確に。表はずっと上に表示されます。' })}
             </p>
             <div className="mt-5 w-full">
@@ -132,7 +132,7 @@ export default function SpeedRun() {
 
             {/* 현재 기호 */}
             <div className="flex flex-1 flex-col items-center justify-center">
-              <p className="text-[13px] font-extrabold text-ink-faint">{l({ ko: '이 기호의 숫자는?', en: 'Which digit?', ja: 'この記号の数字は？' })}</p>
+              <p className="text-[13px] font-semibold text-ink-faint">{l({ ko: '이 기호의 숫자는?', en: 'Which digit?', ja: 'この記号の数字は？' })}</p>
               <div className="relative mt-3 flex h-32 w-32 items-center justify-center rounded-3xl border-2 shadow-card" style={{ borderColor: accent, background: 'rgb(var(--surface))' }}>
                 <AnimatePresence mode="wait">
                   <motion.span
@@ -141,7 +141,7 @@ export default function SpeedRun() {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.7, opacity: 0 }}
                     transition={{ duration: 0.1 }}
-                    className="text-[68px] leading-none"
+                    className="text-[28px] leading-none"
                   >
                     {SYMBOLS[items[idx]]}
                   </motion.span>
@@ -167,7 +167,7 @@ export default function SpeedRun() {
                   key={d}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => tap(d)}
-                  className="flex h-16 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[26px] font-extrabold shadow-card"
+                  className="flex h-16 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[24px] font-extrabold shadow-card"
                 >
                   {d}
                 </motion.button>

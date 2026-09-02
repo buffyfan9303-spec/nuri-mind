@@ -202,23 +202,23 @@ export default function Fortune() {
         <TopBar back="/" title={t('fortune.title')} />
         <main className="mx-auto max-w-md px-5">
           <div className="mt-7 text-center">
-            <motion.div animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 3 }} className="text-[58px] leading-none">
+            <motion.div animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 3 }} className="text-[28px] leading-none">
               🔮
             </motion.div>
-            <h1 className="mt-3 break-keep text-[22px] font-extrabold leading-tight">{t('fortune.askTitle')}</h1>
+            <h1 className="mt-3 break-keep text-[20px] font-extrabold leading-tight">{t('fortune.askTitle')}</h1>
             <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">{t('fortune.askSub')}</p>
           </div>
           <Card className="mt-6">
-            <label className="px-1 text-[13px] font-extrabold">{t('fortune.birthLabel')}</label>
+            <label className="px-1 text-[13px] font-semibold">{t('fortune.birthLabel')}</label>
             <input
               type="date"
               value={draft}
               max={localDay()}
               min="1920-01-01"
               onChange={(e) => setDraft(e.target.value)}
-              className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[16px] font-extrabold outline-none focus:border-mind-400"
+              className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[16px] font-semibold outline-none focus:border-mind-400"
             />
-            <p className="mt-2 px-1 text-[11.5px] font-medium leading-relaxed text-ink-faint">{t('fortune.birthHint')}</p>
+            <p className="mt-2 px-1 text-[11px] font-medium leading-relaxed text-ink-faint">{t('fortune.birthHint')}</p>
             <div className="mt-4">
               <Button color="mind" size="lg" disabled={!draft} onClick={() => { setBirthDate(draft); setEditing(false) }}>
                 🔮 {t('fortune.see')}
@@ -228,7 +228,7 @@ export default function Fortune() {
 
           {/* 생일 입력 전에도 즉시 가치 — 띠만 골라 오늘의 기운 맛보기(zodiacTodayLines는 생일 불필요) */}
           <Card className="mt-4">
-            <p className="px-1 text-[13.5px] font-extrabold">
+            <p className="px-1 text-[13px] font-semibold">
               {l({ ko: '🐾 먼저 띠로 3초 맛보기', en: '🐾 Quick taste by zodiac', ja: '🐾 まず干支で3秒お試し' })}
             </p>
             <div className="mt-2.5 grid grid-cols-6 gap-1.5">
@@ -237,7 +237,7 @@ export default function Fortune() {
                   key={z.zo}
                   onClick={() => setZTastePick(i)}
                   aria-label={z.zo}
-                  className="flex aspect-square items-center justify-center rounded-2xl border-2 text-[22px]"
+                  className="flex aspect-square items-center justify-center rounded-2xl border-2 text-[20px]"
                   style={{
                     borderColor: zTastePick === i ? '#6B4FB8' : 'rgb(var(--line))',
                     background: zTastePick === i ? '#6B4FB816' : 'rgb(var(--surface))',
@@ -249,10 +249,10 @@ export default function Fortune() {
             </div>
             {zTastePick !== null && zTaste[zTastePick] && (
               <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-3 rounded-2xl bg-surface2 px-4 py-3">
-                <p className="break-keep text-[13px] font-bold leading-relaxed">
+                <p className="break-keep text-[13px] font-medium leading-relaxed">
                   {zTaste[zTastePick].emoji} <b>{zTaste[zTastePick].zo}{t('fortune.zodiacSuffix')}</b> · {l(zTaste[zTastePick].line)}
                 </p>
-                <p className="mt-1.5 break-keep text-[11.5px] font-medium text-ink-faint">
+                <p className="mt-1.5 break-keep text-[11px] font-medium text-ink-faint">
                   {l({ ko: '위에 생년월일을 넣으면 사주(일주)로 훨씬 정확해져요', en: 'Add your birthday above for a much more precise reading', ja: '上に生年月日を入れると四柱でより正確に' })}
                 </p>
               </motion.div>
@@ -322,39 +322,39 @@ export default function Fortune() {
               <img src={`data:image/svg+xml;utf8,${encodeURIComponent(ELEMENT_SVG[saju.ilganEl])}`} alt="" className="h-8 w-8" />
             </div>
           )}
-          <p className="text-[12.5px] font-extrabold text-white/85">{t('fortune.todayIs', { ilju: fortune.todayIljuKo })}</p>
-          <div className="floaty mt-1 text-[58px] leading-none">{saju.zodiacEmoji}</div>
-          <h1 className="mt-2 text-[23px] font-extrabold tracking-tight">{t('fortune.myIlju', { ilju: saju.iljuKo })}</h1>
-          <p className="mt-1.5 text-[13.5px] font-bold text-white/90">
+          <p className="text-[12px] font-semibold text-white/85">{t('fortune.todayIs', { ilju: fortune.todayIljuKo })}</p>
+          <div className="floaty mt-1 text-[28px] leading-none">{saju.zodiacEmoji}</div>
+          <h1 className="mt-2 text-[24px] font-extrabold tracking-tight">{t('fortune.myIlju', { ilju: saju.iljuKo })}</h1>
+          <p className="mt-1.5 text-[13px] font-medium text-white/90">
             {t('fortune.zodiacLine', { zodiac: saju.zodiacKo, ym: saju.ilganYm, el: saju.ilganEl })}
           </p>
         </motion.div>
 
         {/* 탄생화 */}
         <Card className="mt-3 flex items-center gap-3">
-          <span className="text-[32px]">{saju.birthFlower.emoji}</span>
+          <span className="text-[28px]">{saju.birthFlower.emoji}</span>
           <div className="min-w-0 flex-1">
-            <h3 className="break-keep text-[15px] font-extrabold">{t('fortune.birthFlower', { name: saju.birthFlower.nameKo })}</h3>
-            <p className="mt-0.5 break-keep text-[12.5px] font-medium leading-relaxed text-ink-sub">
+            <h3 className="break-keep text-[15px] font-semibold">{t('fortune.birthFlower', { name: saju.birthFlower.nameKo })}</h3>
+            <p className="mt-0.5 break-keep text-[12px] font-medium leading-relaxed text-ink-sub">
               「{saju.birthFlower.meaningKo}」 · {saju.birthFlower.blurbKo}
             </p>
           </div>
         </Card>
 
         {/* 오늘의 기운 */}
-        <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('fortune.todayLuck')}</h2>
+        <h2 className="mt-6 px-1 text-[17px] font-semibold">{t('fortune.todayLuck')}</h2>
         <div className="mt-3 space-y-2.5">
           {gauges.map((g, i) => (
             <motion.div key={g.key} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING.ui, delay: 0.05 * i }}>
               <Card>
                 <div className="flex items-center justify-between">
-                  <span className="text-[14.5px] font-extrabold">{g.emoji} {g.label}</span>
-                  <span className="text-[13.5px] font-extrabold" style={{ color: fortune.grad[0] }}>{g.score}{t('fortune.point')}</span>
+                  <span className="text-[14px] font-semibold">{g.emoji} {g.label}</span>
+                  <span className="text-[13px] font-semibold" style={{ color: fortune.grad[0] }}>{g.score}{t('fortune.point')}</span>
                 </div>
                 <div className="mt-2">
                   <ProgressBar value={g.score / 100} color={fortune.grad[0]} />
                 </div>
-                <p className="mt-2.5 break-keep text-[13.5px] font-medium leading-relaxed text-ink">{g.text}</p>
+                <p className="mt-2.5 break-keep text-[13px] font-medium leading-relaxed text-ink">{g.text}</p>
               </Card>
             </motion.div>
           ))}
@@ -368,25 +368,25 @@ export default function Fortune() {
             { emoji: '🧭', label: t('fortune.luckyDir'), val: fortune.luckyDir },
           ].map((x) => (
             <div key={x.label} className="rounded-2xl bg-surface p-3 text-center shadow-card">
-              <div className="text-[22px] leading-none">{x.emoji}</div>
-              <p className="mt-1.5 text-[11px] font-bold text-ink-faint">{x.label}</p>
-              <p className="mt-0.5 text-[15px] font-extrabold">{x.val}</p>
+              <div className="text-[20px] leading-none">{x.emoji}</div>
+              <p className="mt-1.5 text-[11px] font-medium text-ink-faint">{x.label}</p>
+              <p className="mt-0.5 text-[15px] font-semibold">{x.val}</p>
             </div>
           ))}
         </div>
 
         {/* ── 오늘의 상세 운세 (광고 또는 5💎 해제 · 하루 무제한 열람) ── */}
         <div className="mt-7 flex items-center gap-2 px-1">
-          <h2 className="text-[17px] font-extrabold tracking-tight">🔮 {l({ ko: '오늘의 상세 운세', en: 'Detailed Daily Fortune', ja: '今日の詳細運勢' })}</h2>
+          <h2 className="text-[17px] font-semibold">🔮 {l({ ko: '오늘의 상세 운세', en: 'Detailed Daily Fortune', ja: '今日の詳細運勢' })}</h2>
           {detailUnlocked ? (
-            <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">
+            <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-semibold text-mind-700">
               {usingAi ? `✨ ${l({ ko: 'AI 맞춤', en: 'AI personalized', ja: 'AI個別' })}` : l({ ko: '열람 중', en: 'unlocked', ja: '閲覧中' })}
             </span>
           ) : (
-            <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">📺 {l({ ko: '오늘 무료', en: 'Free today', ja: '今日無料' })}</span>
+            <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-semibold text-mind-700">📺 {l({ ko: '오늘 무료', en: 'Free today', ja: '今日無料' })}</span>
           )}
         </div>
-        <p className="mt-1 break-keep px-1 text-[12.5px] font-medium leading-relaxed text-ink-sub">
+        <p className="mt-1 break-keep px-1 text-[12px] font-medium leading-relaxed text-ink-sub">
           {l({ ko: '시간대별 흐름부터 행운의 방향·장소·아이템까지 아주 자세하게. 매일 광고 한 번이면 무료로 볼 수 있어요.', en: 'From hour-by-hour flow to lucky direction, place, and item — in full detail. One ad a day unlocks it free.', ja: '時間帯ごとの流れから幸運の方角・場所・アイテムまで詳しく。毎日広告1回で無料。' })}
         </p>
 
@@ -394,7 +394,7 @@ export default function Fortune() {
           <div className={detailUnlocked ? 'space-y-3' : 'pointer-events-none max-h-[440px] space-y-3 overflow-hidden select-none blur-[5px]'} aria-hidden={!detailUnlocked}>
             {/* 시간대별 */}
             <Card>
-              <h3 className="text-[14px] font-extrabold">⏰ {l({ ko: '시간대별 운세', en: 'By Time of Day', ja: '時間帯別の運勢' })}</h3>
+              <h3 className="text-[14px] font-semibold">⏰ {l({ ko: '시간대별 운세', en: 'By Time of Day', ja: '時間帯別の運勢' })}</h3>
               <div className="mt-2.5 space-y-2.5">
                 {[
                   { emoji: '🌅', label: l({ ko: '아침', en: 'Morning', ja: '朝' }), text: v.morning },
@@ -402,7 +402,7 @@ export default function Fortune() {
                   { emoji: '🌙', label: l({ ko: '저녁', en: 'Evening', ja: '夜' }), text: v.evening },
                 ].map((r) => (
                   <div key={r.label} className="rounded-2xl bg-surface2 p-3">
-                    <span className="text-[12.5px] font-extrabold text-mind-700">{r.emoji} {r.label}</span>
+                    <span className="text-[12px] font-semibold text-mind-700">{r.emoji} {r.label}</span>
                     <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink">{r.text}</p>
                   </div>
                 ))}
@@ -411,7 +411,7 @@ export default function Fortune() {
 
             {/* 행운 포인트 */}
             <Card>
-              <h3 className="text-[14px] font-extrabold">🍀 {l({ ko: '오늘의 행운 포인트', en: 'Lucky Points', ja: '今日のラッキーポイント' })}</h3>
+              <h3 className="text-[14px] font-semibold">🍀 {l({ ko: '오늘의 행운 포인트', en: 'Lucky Points', ja: '今日のラッキーポイント' })}</h3>
               <div className="mt-2.5 space-y-2">
                 {[
                   { emoji: '⏳', label: l({ ko: '행운의 시간', en: 'Lucky time', ja: 'ラッキー時間' }), val: v.luckyTime },
@@ -421,10 +421,10 @@ export default function Fortune() {
                   { emoji: '🍴', label: l({ ko: '행운의 음식', en: 'Lucky food', ja: 'ラッキーフード' }), val: v.food },
                 ].map((r) => (
                   <div key={r.label} className="flex items-start gap-2.5 rounded-2xl bg-surface2 p-2.5">
-                    <span className="text-[18px] leading-none">{r.emoji}</span>
+                    <span className="text-[17px] leading-none">{r.emoji}</span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[11.5px] font-bold text-ink-faint">{r.label}</p>
-                      <p className="mt-0.5 break-keep text-[13.5px] font-extrabold text-ink">{r.val}</p>
+                      <p className="text-[11px] font-medium text-ink-faint">{r.label}</p>
+                      <p className="mt-0.5 break-keep text-[13px] font-semibold text-ink">{r.val}</p>
                     </div>
                   </div>
                 ))}
@@ -433,7 +433,7 @@ export default function Fortune() {
 
             {/* 분야별 상세 */}
             <Card>
-              <h3 className="text-[14px] font-extrabold">📊 {l({ ko: '분야별 상세', en: 'By Area', ja: '分野別の詳細' })}</h3>
+              <h3 className="text-[14px] font-semibold">📊 {l({ ko: '분야별 상세', en: 'By Area', ja: '分野別の詳細' })}</h3>
               <div className="mt-2.5 space-y-3">
                 {[
                   { emoji: '🤝', label: l({ ko: '인간관계', en: 'Relationships', ja: '人間関係' }), text: v.relation },
@@ -442,7 +442,7 @@ export default function Fortune() {
                   { emoji: '🌿', label: l({ ko: '건강', en: 'Health', ja: '健康' }), text: v.health },
                 ].map((r) => (
                   <div key={r.label}>
-                    <span className="text-[12.5px] font-extrabold text-mind-700">{r.emoji} {r.label}</span>
+                    <span className="text-[12px] font-semibold text-mind-700">{r.emoji} {r.label}</span>
                     <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink">{r.text}</p>
                   </div>
                 ))}
@@ -451,16 +451,16 @@ export default function Fortune() {
 
             {/* 조심 & 조언 */}
             <Card>
-              <h3 className="text-[14px] font-extrabold">⚠️ {l({ ko: '오늘 조심할 것', en: 'Watch Out For', ja: '今日の注意点' })}</h3>
+              <h3 className="text-[14px] font-semibold">⚠️ {l({ ko: '오늘 조심할 것', en: 'Watch Out For', ja: '今日の注意点' })}</h3>
               <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink">{v.caution}</p>
-              <h3 className="mt-3.5 text-[14px] font-extrabold">💡 {l({ ko: '오늘의 조언', en: 'Today’s Advice', ja: '今日の助言' })}</h3>
+              <h3 className="mt-3.5 text-[14px] font-semibold">💡 {l({ ko: '오늘의 조언', en: 'Today’s Advice', ja: '今日の助言' })}</h3>
               <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink">{v.advice}</p>
             </Card>
 
             {/* 총평 */}
             <div className="rounded-3xl p-4 text-white shadow-pop" style={{ background: `linear-gradient(135deg, ${fortune.grad[0]}, ${fortune.grad[1]})` }}>
-              <h3 className="text-[12.5px] font-extrabold text-white/85">📝 {l({ ko: '오늘의 총평', en: 'Summary', ja: '今日の総評' })}</h3>
-              <p className="mt-1.5 break-keep text-[14px] font-extrabold leading-relaxed">{v.summary}</p>
+              <h3 className="text-[12px] font-semibold text-white/85">📝 {l({ ko: '오늘의 총평', en: 'Summary', ja: '今日の総評' })}</h3>
+              <p className="mt-1.5 break-keep text-[14px] font-semibold leading-relaxed">{v.summary}</p>
             </div>
 
             {detailUnlocked && (
@@ -474,9 +474,9 @@ export default function Fortune() {
           {!detailUnlocked && (
             <div className="absolute inset-0 flex items-end justify-center rounded-3xl bg-gradient-to-b from-transparent via-cream/60 to-cream pb-1">
               <div className="w-full rounded-3xl border-2 border-mind-200 bg-surface p-5 text-center shadow-pop">
-                <div className="text-[34px] leading-none">🔮</div>
-                <h3 className="mt-2 break-keep text-[16px] font-extrabold">{l({ ko: '오늘의 상세 운세 — 광고 1회면 무료!', en: 'Detailed fortune — free with 1 ad!', ja: '今日の詳細運勢 — 広告1回で無料！' })}</h3>
-                <p className="mt-1 break-keep text-[12.5px] font-medium leading-relaxed text-ink-sub">
+                <div className="text-[28px] leading-none">🔮</div>
+                <h3 className="mt-2 break-keep text-[16px] font-semibold">{l({ ko: '오늘의 상세 운세 — 광고 1회면 무료!', en: 'Detailed fortune — free with 1 ad!', ja: '今日の詳細運勢 — 広告1回で無料！' })}</h3>
+                <p className="mt-1 break-keep text-[12px] font-medium leading-relaxed text-ink-sub">
                   {l({ ko: '광고 한 번이면 오늘 하루 종일 열람할 수 있어요. 내일 다시 오면 또 무료!', en: 'One ad unlocks it all day — come back tomorrow for another free view!', ja: '広告1回で今日一日中閲覧OK。明日また来ればまた無料！' })}
                 </p>
                 <div className="mt-4 space-y-2.5">
@@ -487,7 +487,7 @@ export default function Fortune() {
                     💎 {l({ ko: `광고 없이 바로 보기 (${FORTUNE_DETAIL_DIA_COST}개)`, en: `Skip the ad (${FORTUNE_DETAIL_DIA_COST}💎)`, ja: `広告なしで見る (${FORTUNE_DETAIL_DIA_COST}💎)` })}
                   </Button>
                 </div>
-                <p className="mt-2.5 text-[11.5px] font-bold text-ink-faint">{l({ ko: '보유', en: 'Balance', ja: '保有' })} 💎 {diamonds.toLocaleString()}</p>
+                <p className="mt-2.5 text-[11px] font-medium text-ink-faint">{l({ ko: '보유', en: 'Balance', ja: '保有' })} 💎 {diamonds.toLocaleString()}</p>
               </div>
             </div>
           )}
@@ -497,17 +497,17 @@ export default function Fortune() {
         {unlocked ? (
           <>
             <div className="mt-6 flex items-center gap-2 px-1">
-              <h2 className="text-[17px] font-extrabold tracking-tight">🔮 {l({ ko: '종합 운세', en: 'Full Fortune', ja: '総合運勢' })}</h2>
-              <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-extrabold text-mind-700">{l({ ko: '열람 중', en: 'unlocked', ja: '閲覧中' })}</span>
+              <h2 className="text-[17px] font-semibold">🔮 {l({ ko: '종합 운세', en: 'Full Fortune', ja: '総合運勢' })}</h2>
+              <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-semibold text-mind-700">{l({ ko: '열람 중', en: 'unlocked', ja: '閲覧中' })}</span>
             </div>
 
             {/* 이번 주 총운 추이 */}
-            <h3 className="mt-4 px-1 text-[15px] font-extrabold tracking-tight text-ink-sub">{t('fortune.weekTitle')}</h3>
+            <h3 className="mt-4 px-1 text-[15px] font-semibold text-ink-sub">{t('fortune.weekTitle')}</h3>
             <Card className="mt-2">
               <div className="flex items-end justify-between gap-1.5">
                 {week.map((w, i) => (
                   <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-                    <span className="text-[10.5px] font-extrabold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.overall}</span>
+                    <span className="text-[11px] font-semibold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.overall}</span>
                     <div className="flex h-[72px] w-full items-end justify-center">
                       <motion.div
                         initial={{ height: 0 }}
@@ -517,7 +517,7 @@ export default function Fortune() {
                         style={{ background: w.isToday ? `linear-gradient(${fortune.grad[0]}, ${fortune.grad[1]})` : '#DCE4DF' }}
                       />
                     </div>
-                    <span className="text-[10.5px] font-bold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.isToday ? t('fortune.today') : w.weekdayKo}</span>
+                    <span className="text-[11px] font-medium" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.isToday ? t('fortune.today') : w.weekdayKo}</span>
                   </div>
                 ))}
               </div>
@@ -526,11 +526,11 @@ export default function Fortune() {
 
             {/* 이달의 운 */}
             <Card className="mt-3 flex items-start gap-3">
-              <span className="shrink-0 text-[26px]">🗓</span>
+              <span className="shrink-0 text-[24px]">🗓</span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-[14.5px] font-extrabold">{l({ ko: `${thisMonth}월의 운`, en: 'This month', ja: `${thisMonth}月の運` })}</h3>
-                  <span className="shrink-0 text-[13px] font-extrabold" style={{ color: fortune.grad[0] }}>{month.overall}{t('fortune.point')}</span>
+                  <h3 className="text-[14px] font-semibold">{l({ ko: `${thisMonth}월의 운`, en: 'This month', ja: `${thisMonth}月の運` })}</h3>
+                  <span className="shrink-0 text-[13px] font-semibold" style={{ color: fortune.grad[0] }}>{month.overall}{t('fortune.point')}</span>
                 </div>
                 <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{l(month.line)}</p>
               </div>
@@ -538,15 +538,15 @@ export default function Fortune() {
 
             {/* 올해의 운 */}
             <Card className="mt-3 flex items-start gap-3">
-              <span className="shrink-0 text-[26px]">📅</span>
+              <span className="shrink-0 text-[24px]">📅</span>
               <div className="min-w-0 flex-1">
-                <h3 className="text-[14.5px] font-extrabold">{t('fortune.yearTitle', { year: thisYear })}</h3>
+                <h3 className="text-[14px] font-semibold">{t('fortune.yearTitle', { year: thisYear })}</h3>
                 <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{l(year.line)}</p>
               </div>
             </Card>
 
             {/* 띠별 오늘 한마디 */}
-            <h3 className="mt-6 px-1 text-[15px] font-extrabold tracking-tight text-ink-sub">{t('fortune.zodiacTitle')}</h3>
+            <h3 className="mt-6 px-1 text-[15px] font-semibold text-ink-sub">{t('fortune.zodiacTitle')}</h3>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {zodiac.map((z) => {
                 const mine = z.zodiacKo === saju.zodiacKo
@@ -556,10 +556,10 @@ export default function Fortune() {
                     className="flex items-center gap-2 rounded-2xl p-2.5"
                     style={{ background: mine ? `${fortune.grad[0]}14` : 'rgb(var(--surface))', border: mine ? `2px solid ${fortune.grad[0]}` : '2px solid rgb(var(--line))' }}
                   >
-                    <span className="shrink-0 text-[22px] leading-none">{z.zodiacEmoji}</span>
+                    <span className="shrink-0 text-[20px] leading-none">{z.zodiacEmoji}</span>
                     <div className="min-w-0">
-                      <p className="text-[11.5px] font-extrabold">{z.zodiacKo}{t('fortune.zodiacSuffix')}{mine ? ' · 나' : ''}</p>
-                      <p className="break-keep text-[10.5px] font-medium leading-tight text-ink-sub">{l(z.line)}</p>
+                      <p className="text-[11px] font-semibold">{z.zodiacKo}{t('fortune.zodiacSuffix')}{mine ? ' · 나' : ''}</p>
+                      <p className="break-keep text-[11px] font-medium leading-tight text-ink-sub">{l(z.line)}</p>
                     </div>
                   </div>
                 )
@@ -575,9 +575,9 @@ export default function Fortune() {
               ))}
             </div>
             <div className="relative">
-              <div className="text-[40px] leading-none">🔮</div>
-              <h3 className="mt-2 text-[18px] font-extrabold">{l({ ko: '종합 운세 풀어보기', en: 'Unlock Full Fortune', ja: '総合運勢を開く' })}</h3>
-              <p className="mx-auto mt-1 max-w-[260px] break-keep text-[12.5px] font-medium leading-relaxed text-ink-sub">
+              <div className="text-[28px] leading-none">🔮</div>
+              <h3 className="mt-2 text-[17px] font-semibold">{l({ ko: '종합 운세 풀어보기', en: 'Unlock Full Fortune', ja: '総合運勢を開く' })}</h3>
+              <p className="mx-auto mt-1 max-w-[260px] break-keep text-[12px] font-medium leading-relaxed text-ink-sub">
                 {l({ ko: '오늘은 무료, 이번 주·이달·올해 운세를 한 번에', en: 'Today is free — unlock week, month & year at once', ja: '今日は無料、今週・今月・今年をまとめて' })}
               </p>
               <div className="mx-auto mt-3 grid max-w-[300px] grid-cols-2 gap-2">
@@ -589,7 +589,7 @@ export default function Fortune() {
                 ].map((h) => (
                   <div key={h.label} className="flex items-center gap-1.5 rounded-2xl border border-line bg-surface px-2.5 py-2 text-left">
                     <span className="shrink-0 text-[16px] leading-none">{h.e}</span>
-                    <span className="min-w-0 flex-1 truncate text-[12px] font-extrabold">{h.label}</span>
+                    <span className="min-w-0 flex-1 truncate text-[12px] font-semibold">{h.label}</span>
                     <span className="shrink-0 text-[11px]">{h.free || premium ? '✅' : '🔒'}</span>
                   </div>
                 ))}
@@ -603,7 +603,7 @@ export default function Fortune() {
                       : l({ ko: `💎 ${FORTUNE_DIA_COST}개로 보기`, en: `View for 💎${FORTUNE_DIA_COST}`, ja: `💎${FORTUNE_DIA_COST}で見る` })}
                 </Button>
               </div>
-              <p className="mt-2 text-[11.5px] font-medium text-ink-faint">
+              <p className="mt-2 text-[11px] font-medium text-ink-faint">
                 {premium
                   ? l({ ko: '프리미엄 구독 중 · 운세 무제한', en: 'Premium active · unlimited', ja: 'プレミアム中・運勢無制限' })
                   : freeLeft > 0
@@ -620,33 +620,33 @@ export default function Fortune() {
           <Button color="sky" onClick={shareFortune}>🖼 {t('fortune.share')}</Button>
         </div>
         {saved && (
-          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">✅ {t('share.saved')}
+          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">✅ {t('share.saved')}
         {shareBonus && (
           <motion.p
             initial={{ opacity: 0, y: 8, scale: 0.9, x: '-50%' }}
             animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
-            className="fixed bottom-40 left-1/2 z-50 rounded-full bg-mind-600 px-4 py-2 text-[13.5px] font-extrabold text-white shadow-pop"
+            className="fixed bottom-40 left-1/2 z-50 rounded-full bg-mind-600 px-4 py-2 text-[13px] font-semibold text-white shadow-pop"
           >
             📤 공유 보상 +5P!
           </motion.p>
         )}</p>
         )}
 
-        <p className="mt-4 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">{t('fortune.disclaimer')}</p>
-        <button onClick={() => { setDraft(birthDate); setEditing(true) }} className="mt-1 w-full py-2 text-[13px] font-extrabold text-ink-faint">
+        <p className="mt-4 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">{t('fortune.disclaimer')}</p>
+        <button onClick={() => { setDraft(birthDate); setEditing(true) }} className="mt-1 w-full py-2 text-[13px] font-semibold text-ink-faint">
           🔁 {t('fortune.changeBirth')}
         </button>
 
         <Modal open={needCharge} onClose={() => setNeedCharge(false)}>
           <div className="text-center">
-            <p className="text-[44px] leading-none">💎</p>
-            <h3 className="mt-2 text-[19px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
-            <p className="mt-1 break-keep text-[13.5px] font-bold text-ink-faint">
+            <p className="text-[28px] leading-none">💎</p>
+            <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
+            <p className="mt-1 break-keep text-[13px] font-medium text-ink-faint">
               {l({ ko: `종합 운세 열람에 ${FORTUNE_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Full fortune needs 💎${FORTUNE_DIA_COST} · you have ${diamonds}`, ja: `総合運勢に💎${FORTUNE_DIA_COST}必要・保有${diamonds}` })}
             </p>
             <div className="mt-5">
               <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
-              <button onClick={() => setNeedCharge(false)} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">{l({ ko: '다음에', en: 'Later', ja: '後で' })}</button>
+              <button onClick={() => setNeedCharge(false)} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">{l({ ko: '다음에', en: 'Later', ja: '後で' })}</button>
             </div>
           </div>
         </Modal>

@@ -40,8 +40,8 @@ export default function Trend({ testId }: { testId: TestId }) {
   return (
     <Card className="mt-4 !p-4">
       <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-1.5 text-[15.5px] font-extrabold tracking-tight">📈 {t('trend.title')}</h2>
-        <span className="text-[12.5px] font-extrabold text-ink-faint">{t('trend.count', { n: series.length })}</span>
+        <h2 className="flex items-center gap-1.5 text-[15px] font-semibold">📈 {t('trend.title')}</h2>
+        <span className="text-[12px] font-semibold text-ink-faint">{t('trend.count', { n: series.length })}</span>
       </div>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" preserveAspectRatio="none" style={{ height: 80 }}>
@@ -62,10 +62,10 @@ export default function Trend({ testId }: { testId: TestId }) {
       </svg>
 
       <div className="mt-2 flex items-center justify-between">
-        <span className="text-[12.5px] font-bold text-ink-faint">
+        <span className="text-[12px] font-medium text-ink-faint">
           {new Date(series[0].at).toLocaleDateString()} → {new Date(series[series.length - 1].at).toLocaleDateString()}
         </span>
-        <span className={`text-[13px] font-extrabold ${delta === 0 ? 'text-ink-faint' : up ? 'text-mind-700' : 'text-amber-600'}`}>
+        <span className={`text-[13px] font-semibold${delta === 0 ? 'text-ink-faint' : up ? 'text-mind-700' : 'text-amber-600'}`}>
           {delta === 0 ? t('trend.same') : t(up ? 'trend.up' : 'trend.down', { p: Math.abs(delta) })}
         </span>
       </div>

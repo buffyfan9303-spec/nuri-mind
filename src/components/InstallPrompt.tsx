@@ -45,15 +45,15 @@ export default function InstallPrompt() {
         transition={SPRING.ui}
         className="fixed inset-x-3 bottom-[84px] z-50 mx-auto flex max-w-md items-center gap-3 rounded-3xl border border-line bg-surface px-4 py-3 shadow-pop"
       >
-        <span className="text-[26px] leading-none">📲</span>
+        <span className="text-[24px] leading-none">📲</span>
         <div className="min-w-0 flex-1">
-          <p className="text-[14px] font-extrabold">{l({ ko: '홈 화면에 앱 설치', en: 'Install the app', ja: 'ホームに追加' })}</p>
-          <p className="truncate text-[12px] font-bold text-ink-faint">{l({ ko: '한 번 탭으로 빠르게 · 오프라인도 OK', en: 'One tap · works offline', ja: 'ワンタップ・オフラインOK' })}</p>
+          <p className="text-[14px] font-semibold">{l({ ko: '홈 화면에 앱 설치', en: 'Install the app', ja: 'ホームに追加' })}</p>
+          <p className="truncate text-[12px] font-medium text-ink-faint">{l({ ko: '한 번 탭으로 빠르게 · 오프라인도 OK', en: 'One tap · works offline', ja: 'ワンタップ・オフラインOK' })}</p>
         </div>
-        <button onClick={install} className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-extrabold text-white">
+        <button onClick={install} className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-semibold text-white">
           {l({ ko: '설치', en: 'Install', ja: '追加' })}
         </button>
-        <button onClick={close} aria-label="close" className="shrink-0 px-1 text-[18px] font-bold text-ink-faint">
+        <button onClick={close} aria-label="close" className="shrink-0 px-1 text-[17px] font-bold text-ink-faint">
           ✕
         </button>
       </motion.div>

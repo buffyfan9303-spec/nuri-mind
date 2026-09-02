@@ -138,9 +138,9 @@ export default function CogProfile() {
           transition={SPRING.ui}
           className="rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#3B82F6] p-6 text-center text-white shadow-pop"
         >
-          <div className="text-[40px] leading-none">🧩</div>
-          <h1 className="mt-2 text-[22px] font-extrabold tracking-tight">{l({ ko: '종합 인지 프로필', en: 'Cognitive Profile', ja: '総合認知プロフィール' })}</h1>
-          <p className="mt-1.5 text-[13.5px] font-bold text-white/85">
+          <div className="text-[28px] leading-none">🧩</div>
+          <h1 className="mt-2 text-[20px] font-extrabold tracking-tight">{l({ ko: '종합 인지 프로필', en: 'Cognitive Profile', ja: '総合認知プロフィール' })}</h1>
+          <p className="mt-1.5 text-[13px] font-medium text-white/85">
             {avg != null
               ? l({ ko: `정밀검사 ${doneCount}/${TOTAL_METRICS} · 종합 ${avg}`, en: `${doneCount}/${TOTAL_METRICS} tests · avg ${avg}`, ja: `精密検査 ${doneCount}/${TOTAL_METRICS}・総合 ${avg}` })
               : l({ ko: '정밀검사를 풀면 인지 지도가 그려져요', en: 'Take precision tests to map your mind', ja: '精密検査を解くと認知地図が描かれます' })}
@@ -195,7 +195,7 @@ export default function CogProfile() {
         {/* AI 종합 코멘트 */}
         {showComment && lvl && (
           <Card className="mt-4">
-            <h2 className="flex items-center gap-2 text-[15.5px] font-extrabold tracking-tight">🤖 {l({ ko: 'AI 종합 코멘트', en: 'AI summary', ja: 'AI総合コメント' })}</h2>
+            <h2 className="flex items-center gap-2 text-[15px] font-semibold">🤖 {l({ ko: 'AI 종합 코멘트', en: 'AI summary', ja: 'AI総合コメント' })}</h2>
             <p className="mt-2 break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">
               {l({
                 ko: `가장 강한 영역은 「${METRICS[strongest].label.ko}」, 상대적으로 약한 영역은 「${METRICS[weakest].label.ko}」예요. 전반적으로 ${lvl.ko} 인지 프로필이고, ${balanceTxt.ko}`,
@@ -218,9 +218,9 @@ export default function CogProfile() {
                   {m.emoji}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[14.5px] font-extrabold leading-tight">
+                  <p className="text-[14px] font-semibold leading-tight">
                     {l(m.label)}
-                    {isStrong && <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10.5px] font-extrabold text-amber-600">{l({ ko: '최강', en: 'Top', ja: '最強' })}</span>}
+                    {isStrong && <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-600">{l({ ko: '최강', en: 'Top', ja: '最強' })}</span>}
                   </p>
                   <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-line">
                     <motion.div
@@ -234,11 +234,11 @@ export default function CogProfile() {
                   </div>
                 </div>
                 {s != null ? (
-                  <span className="shrink-0 text-[18px] font-extrabold" style={{ color: m.color }}>
+                  <span className="shrink-0 text-[17px] font-semibold" style={{ color: m.color }}>
                     {s}
                   </span>
                 ) : (
-                  <button onClick={() => nav(m.route)} className="shrink-0 rounded-full px-3 py-1.5 text-[12px] font-extrabold text-white" style={{ background: m.color }}>
+                  <button onClick={() => nav(m.route)} className="shrink-0 rounded-full px-3 py-1.5 text-[12px] font-semibold text-white" style={{ background: m.color }}>
                     {l({ ko: '검사', en: 'Take', ja: '検査' })}
                   </button>
                 )}
@@ -253,12 +253,12 @@ export default function CogProfile() {
             <Button color="iq" onClick={shareProfile}>
               🎴 {l({ ko: '인지 프로필 카드 공유', en: 'Share profile card', ja: 'プロフィールカードを共有' })}
             </Button>
-            {shareMsg && <p className="mt-2 text-center text-[13.5px] font-extrabold text-mind-700">✅ {shareMsg}</p>}
+            {shareMsg && <p className="mt-2 text-center text-[13px] font-semibold text-mind-700">✅ {shareMsg}</p>}
           </div>
         )}
 
         {doneCount < TOTAL_METRICS && (
-          <p className="mt-3 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">
+          <p className="mt-3 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
             {l({ ko: `정밀검사 ${TOTAL_METRICS - doneCount}종을 더 풀면 인지 지도가 완성돼요.`, en: `Take ${TOTAL_METRICS - doneCount} more precision tests to complete your map.`, ja: `あと${TOTAL_METRICS - doneCount}種でマップが完成します。` })}
           </p>
         )}

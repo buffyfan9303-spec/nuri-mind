@@ -117,8 +117,8 @@ export default function SelfReport() {
                   className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3.5 ${done ? 'border-mind-200 bg-mind-50 dark:border-mind-600/50 dark:bg-mind-500/10' : 'border-line bg-surface'}`}
                 >
                   <span className="text-[20px]">{done ? '✅' : '⬜'}</span>
-                  <span className="flex-1 break-keep text-[14px] font-extrabold">{t(`test.${id}.name`)}</span>
-                  {!done && <span className="text-[13px] font-extrabold text-mind-600">{l({ ko: '하기 ›', en: 'Go ›', ja: 'やる ›' })}</span>}
+                  <span className="flex-1 break-keep text-[14px] font-semibold">{t(`test.${id}.name`)}</span>
+                  {!done && <span className="text-[13px] font-semibold text-mind-600">{l({ ko: '하기 ›', en: 'Go ›', ja: 'やる ›' })}</span>}
                 </button>
               )
             })}
@@ -144,9 +144,9 @@ export default function SelfReport() {
             const p = PERSONAS[r.persona]
             return (
               <div key={r.testId} className="flex flex-col items-center rounded-2xl bg-surface2 p-3 text-center">
-                <span className="text-[26px] leading-none">{p?.emoji ?? '•'}</span>
-                <span className="mt-1.5 break-keep text-[11px] font-extrabold text-ink-sub">{l(AX_LABEL[r.testId])}</span>
-                <span className="mt-1 break-keep text-[11px] font-bold text-ink-faint">{t(`band.${r.testId}.${r.band}`)}</span>
+                <span className="text-[24px] leading-none">{p?.emoji ?? '•'}</span>
+                <span className="mt-1.5 break-keep text-[11px] font-semibold text-ink-sub">{l(AX_LABEL[r.testId])}</span>
+                <span className="mt-1 break-keep text-[11px] font-medium text-ink-faint">{t(`band.${r.testId}.${r.band}`)}</span>
               </div>
             )
           })}
@@ -155,27 +155,27 @@ export default function SelfReport() {
         {/* 통합 유형 */}
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING.sheet, delay: 0.08 }}>
           <Card className="mt-4 !bg-gradient-to-br !from-[#6E7BF2] !to-[#A88BF2] !p-6 text-center text-white">
-            <p className="text-[12px] font-extrabold text-white/80">{l({ ko: '나의 자기 인식 유형', en: 'Your self-profile', ja: 'あなたの自己認識タイプ' })}</p>
-            <p className="mt-2 text-[52px] leading-none">{arch.emoji}</p>
-            <h1 className="mt-2 text-[22px] font-extrabold tracking-tight">{l(arch.name)}</h1>
+            <p className="text-[12px] font-semibold text-white/80">{l({ ko: '나의 자기 인식 유형', en: 'Your self-profile', ja: 'あなたの自己認識タイプ' })}</p>
+            <p className="mt-2 text-[28px] leading-none">{arch.emoji}</p>
+            <h1 className="mt-2 text-[20px] font-extrabold tracking-tight">{l(arch.name)}</h1>
             <p className="mt-3 break-keep text-[14px] font-medium leading-relaxed text-white/95">{l(arch.desc)}</p>
           </Card>
         </motion.div>
 
         {/* 처방 */}
         <Card className="mt-3 !p-5">
-          <p className="text-[14px] font-extrabold">💡 {l({ ko: '나를 위한 한 걸음', en: 'A step for you', ja: 'あなたへの一歩' })}</p>
+          <p className="text-[14px] font-semibold">💡 {l({ ko: '나를 위한 한 걸음', en: 'A step for you', ja: 'あなたへの一歩' })}</p>
           <div className="mt-3 space-y-2.5">
             {arch.tips.map((tip, i) => (
               <div key={i} className="flex items-start gap-2.5">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-mind-100 text-[11px] font-extrabold text-mind-700">{i + 1}</span>
-                <span className="break-keep text-[13.5px] font-bold text-ink-sub">{l(tip)}</span>
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-mind-100 text-[11px] font-semibold text-mind-700">{i + 1}</span>
+                <span className="break-keep text-[13px] font-medium text-ink-sub">{l(tip)}</span>
               </div>
             ))}
           </div>
         </Card>
 
-        <p className="mt-4 px-2 text-center text-[11.5px] font-medium leading-relaxed text-ink-faint">
+        <p className="mt-4 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
           {l({ ko: '본 리포트는 심리 참고용이며 의학적 진단이 아니에요.', en: 'For self-reflection only — not a medical diagnosis.', ja: '心理参考用で医学的診断ではありません。' })}
         </p>
         <div className="mt-4">

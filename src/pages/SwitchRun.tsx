@@ -119,7 +119,7 @@ export default function SwitchRun() {
             key={`cue-${idx}`}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-extrabold text-white"
+            className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-semibold text-white"
             style={{ background: cueColor }}
           >
             {it.task === 'size' ? `🔢 ${l({ ko: '크기 — 5보다?', en: 'Size — vs 5?', ja: '大きさ — 5より？' })}` : `⚖️ ${l({ ko: '홀짝?', en: 'Odd / Even?', ja: '偶奇？' })}`}
@@ -131,11 +131,11 @@ export default function SwitchRun() {
           <div className="flex h-36 w-36 items-center justify-center rounded-3xl border-2 shadow-card" style={{ borderColor: accent, background: 'rgb(var(--surface))' }}>
             <AnimatePresence mode="wait">
               {phase === 'stim' ? (
-                <motion.span key={`n-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }} className="text-[80px] font-black leading-none" style={{ color: accent }}>
+                <motion.span key={`n-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }} className="text-[28px] font-extrabold leading-none" style={{ color: accent }}>
                   {it.num}
                 </motion.span>
               ) : (
-                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-[60px] leading-none">
+                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-[28px] leading-none">
                   {verdict ? '✅' : '❌'}
                 </motion.span>
               )}
@@ -150,7 +150,7 @@ export default function SwitchRun() {
             onClick={() => answer('L')}
             disabled={phase !== 'stim'}
             aria-label="ans-L"
-            className="flex h-16 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[18px] font-extrabold shadow-card disabled:opacity-50"
+            className="flex h-16 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[17px] font-semibold shadow-card disabled:opacity-50"
           >
             {labelL}
           </motion.button>
@@ -159,7 +159,7 @@ export default function SwitchRun() {
             onClick={() => answer('R')}
             disabled={phase !== 'stim'}
             aria-label="ans-R"
-            className="flex h-16 items-center justify-center rounded-2xl border-2 text-[18px] font-extrabold text-white shadow-card disabled:opacity-50"
+            className="flex h-16 items-center justify-center rounded-2xl border-2 text-[17px] font-semibold text-white shadow-card disabled:opacity-50"
             style={{ borderColor: accent, background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
           >
             {labelR}

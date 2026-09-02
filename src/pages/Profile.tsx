@@ -98,7 +98,7 @@ export default function Profile() {
           <motion.p
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-3 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12.5px] font-bold text-red-500"
+            className="mb-3 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-medium text-red-500"
           >
             {l({ ko: '카카오 로그인 실패', en: 'Kakao login failed', ja: 'カカオログイン失敗' })}: {oauthErr}
           </motion.p>
@@ -119,7 +119,7 @@ export default function Profile() {
                   onChange={(e) => setNick(e.target.value)}
                   maxLength={12}
                   placeholder={t('profile.nickPh')}
-                  className="min-w-0 flex-1 rounded-xl border-2 border-mind-300 px-3 py-1.5 text-[15px] font-extrabold outline-none"
+                  className="min-w-0 flex-1 rounded-xl border-2 border-mind-300 px-3 py-1.5 text-[15px] font-semibold outline-none"
                   autoFocus
                 />
                 <button
@@ -140,22 +140,22 @@ export default function Profile() {
               </div>
             ) : nickErr ? (
               <div className="w-full">
-                <p className="text-[12.5px] font-bold text-red-500">{nickErr}</p>
+                <p className="text-[12px] font-medium text-red-500">{nickErr}</p>
               </div>
             ) : (
-              <h2 className="flex items-center gap-2 text-[19px] font-extrabold tracking-tight">
+              <h2 className="flex items-center gap-2 text-[20px] font-extrabold tracking-tight">
                 {s.nickname}
                 <button onClick={() => setEditing(true)} className="text-sm opacity-60">
                   ✏️
                 </button>
               </h2>
             )}
-            <p className="mt-1 text-[13px] font-bold text-ink-faint">
+            <p className="mt-1 text-[13px] font-medium text-ink-faint">
               🪙 {s.points.toLocaleString()}P · 🧪 {s.results.length} · 🔥 {s.streak}
             </p>
             <button
               onClick={() => nav('/rank')}
-              className="mt-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-extrabold"
+              className="mt-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-semibold"
               style={{ background: `${tierOf(lifetimeOf(s.ledger)).color}1F`, color: tierOf(lifetimeOf(s.ledger)).color }}
             >
               {tierOf(lifetimeOf(s.ledger)).emoji} {l(tierOf(lifetimeOf(s.ledger)).name)} ›
@@ -166,10 +166,10 @@ export default function Profile() {
         {/* 최근 4주 출석 — 스트릭을 '숫자'가 아니라 '흐름'으로(손실회피 시각화) */}
         <Card className="mt-3.5 !p-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-[14.5px] font-extrabold tracking-tight">
+            <h3 className="text-[14px] font-semibold">
               📅 {l({ ko: '최근 4주 출석', en: 'Last 4 weeks', ja: '直近4週の出席' })}
             </h3>
-            <span className="text-[12.5px] font-extrabold text-orange-500">🔥 {s.streak}</span>
+            <span className="text-[12px] font-semibold text-orange-500">🔥 {s.streak}</span>
           </div>
           <div className="mt-2.5 grid grid-cols-7 gap-1.5">
             {Array.from({ length: 28 }, (_, i) => {
@@ -195,8 +195,8 @@ export default function Profile() {
         <Card onClick={() => nav('/dex')} className="mt-3.5 flex items-center gap-3.5 !p-4">
           <span className="text-[28px]">🗂</span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15.5px] font-extrabold tracking-tight">{t('dex.title')}</h3>
-            <p className="mt-0.5 text-[12.5px] font-bold text-ink-faint">
+            <h3 className="text-[15px] font-semibold">{t('dex.title')}</h3>
+            <p className="mt-0.5 text-[12px] font-medium text-ink-faint">
               {t('dex.progress', {
                 c: new Set(s.results.map((r) => r.persona).filter((k) => PERSONA_TEST[k])).size,
                 t: Object.keys(PERSONA_TEST).length,
@@ -210,8 +210,8 @@ export default function Profile() {
         <Card onClick={() => nav('/chemi')} className="mt-3 flex items-center gap-3.5 !p-4">
           <span className="text-[28px]">💞</span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15.5px] font-extrabold tracking-tight">{t('chemi.title')}</h3>
-            <p className="mt-0.5 text-[12.5px] font-bold text-ink-faint">{t('chemi.entry')}</p>
+            <h3 className="text-[15px] font-semibold">{t('chemi.title')}</h3>
+            <p className="mt-0.5 text-[12px] font-medium text-ink-faint">{t('chemi.entry')}</p>
           </div>
           <span className="text-lg text-ink-faint">›</span>
         </Card>
@@ -220,8 +220,8 @@ export default function Profile() {
         <Card onClick={() => nav('/insight')} className="mt-3 flex items-center gap-3.5 !bg-gradient-to-r from-[#6E7BF2] to-[#9AA6FF] !p-4">
           <span className="text-[28px]">🧬</span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">{t('insight.title')}</h3>
-            <p className="mt-0.5 text-[12.5px] font-bold text-white/90">{t('insight.entry')}</p>
+            <h3 className="text-[15px] font-semibold text-white">{t('insight.title')}</h3>
+            <p className="mt-0.5 text-[12px] font-medium text-white/90">{t('insight.entry')}</p>
           </div>
           <span className="text-lg text-white/80">›</span>
         </Card>
@@ -235,12 +235,12 @@ export default function Profile() {
         >
           <IconBadge emoji="✨" tone="frost" size={42} radius={13} wiggle />
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15.5px] font-extrabold tracking-tight text-white">
+            <h3 className="text-[15px] font-semibold text-white">
               {isPremium(s.premiumUntil)
                 ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
                 : l({ ko: '프리미엄 · 운세 무제한', en: 'Premium · unlimited fortune', ja: 'プレミアム・運勢無制限' })}
             </h3>
-            <p className="mt-0.5 truncate text-[12.5px] font-bold text-white/90">
+            <p className="mt-0.5 truncate text-[12px] font-medium text-white/90">
               {isPremium(s.premiumUntil)
                 ? l({ ko: '눌러서 구독 관리', en: 'Manage subscription', ja: '購読を管理' })
                 : l({
@@ -273,10 +273,10 @@ export default function Profile() {
                       {p.emoji}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="break-keep text-[15px] font-extrabold leading-tight">
+                      <p className="break-keep text-[15px] font-semibold leading-tight">
                         {t(`test.${r.testId}.name`)}
                       </p>
-                      <p className="mt-1 break-keep text-[12px] font-bold leading-snug text-ink-faint">
+                      <p className="mt-1 break-keep text-[12px] font-medium leading-snug text-ink-faint">
                         {new Date(r.at).toLocaleDateString()} · {l(p.name)}
                         {r.iq ? ` · IQ ${r.iq}` : ''}
                       </p>
@@ -296,7 +296,7 @@ export default function Profile() {
         <Section title={`⚙️ ${t('profile.settings')}`}>
           <Card className="!p-2">
             <div className="flex items-center justify-between px-3 py-3">
-              <span className="text-[15.5px] font-bold">{t('profile.language')}</span>
+              <span className="text-[15px] font-bold">{t('profile.language')}</span>
               <div className="flex gap-1 rounded-xl bg-surface2 p-1">
                 {LANGS.map((lg) => (
                   <button
@@ -312,7 +312,7 @@ export default function Profile() {
               </div>
             </div>
             <div className="flex items-center justify-between border-t border-line px-3 py-3">
-              <span className="text-[15.5px] font-bold">{t('profile.sound')}</span>
+              <span className="text-[15px] font-bold">{t('profile.sound')}</span>
               <button
                 onClick={() => s.setSound(!s.sound)}
                 className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
@@ -329,7 +329,7 @@ export default function Profile() {
 
             {/* 다크 모드 */}
             <div className="flex items-center justify-between border-t border-line px-3 py-3">
-              <span className="text-[15.5px] font-bold">{t('profile.darkMode')}</span>
+              <span className="text-[15px] font-bold">{t('profile.darkMode')}</span>
               <button
                 onClick={() => s.setTheme(s.theme === 'dark' ? 'light' : 'dark')}
                 className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
@@ -347,7 +347,7 @@ export default function Profile() {
             {/* 푸시 알림 (VAPID 설정 시에만 노출) */}
             {pushSupported() && pushConfigured() && (
               <div className="flex items-center justify-between border-t border-line px-3 py-3">
-                <span className="text-[15.5px] font-bold">🔔 {l({ ko: '푸시 알림', en: 'Push notifications', ja: 'プッシュ通知' })}</span>
+                <span className="text-[15px] font-bold">🔔 {l({ ko: '푸시 알림', en: 'Push notifications', ja: 'プッシュ通知' })}</span>
                 <button
                   onClick={async () => {
                     if (pushOn) {
@@ -372,7 +372,7 @@ export default function Profile() {
 
             {/* 검사 중 배경음 */}
             <div className="flex items-center justify-between border-t border-line px-3 py-3">
-              <span className="text-[15.5px] font-bold">{t('profile.ambient')}</span>
+              <span className="text-[15px] font-bold">{t('profile.ambient')}</span>
               <button
                 onClick={() => s.setAmbient(!s.ambient)}
                 className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
@@ -390,11 +390,11 @@ export default function Profile() {
             {/* 글자 크기 슬라이더 */}
             <div className="border-t border-line px-3 py-3">
               <div className="flex items-center justify-between">
-                <span className="text-[15.5px] font-bold">{t('profile.fontSize')}</span>
-                <span className="text-[13px] font-extrabold text-mind-700 dark:text-mind-300">{Math.round(s.fontScale * 100)}%</span>
+                <span className="text-[15px] font-bold">{t('profile.fontSize')}</span>
+                <span className="text-[13px] font-semibold text-mind-700 dark:text-mind-300">{Math.round(s.fontScale * 100)}%</span>
               </div>
               <div className="mt-2 flex items-center gap-2.5">
-                <span className="text-[13px] font-bold text-ink-faint">가</span>
+                <span className="text-[13px] font-medium text-ink-faint">가</span>
                 <input
                   type="range"
                   min={0.9}
@@ -404,14 +404,14 @@ export default function Profile() {
                   onChange={(e) => s.setFontScale(Number(e.target.value))}
                   className="h-2 flex-1 accent-mind-500"
                 />
-                <span className="text-[19px] font-bold text-ink">가</span>
+                <span className="text-[20px] font-bold text-ink">가</span>
               </div>
             </div>
 
             {/* 출석 알림 (APK) */}
             <div className="flex items-center justify-between border-t border-line px-3 py-3">
               <div className="min-w-0 pr-3">
-                <p className="text-[15.5px] font-bold">{t('profile.notify')}</p>
+                <p className="text-[15px] font-bold">{t('profile.notify')}</p>
                 <p className="mt-0.5 text-[12px] font-medium leading-relaxed text-ink-faint">{t('profile.notifyDesc')}</p>
               </div>
               <button
@@ -444,7 +444,7 @@ export default function Profile() {
                   }}
                   className="flex w-full items-center justify-between border-t border-line px-3 py-3"
                 >
-                  <span className="text-[15.5px] font-bold">🔓 {t('auth.logout')}{authUser.nickname ? ` · ${authUser.nickname}` : ''}</span>
+                  <span className="text-[15px] font-bold">🔓 {t('auth.logout')}{authUser.nickname ? ` · ${authUser.nickname}` : ''}</span>
                   <span className="text-ink-faint">›</span>
                 </button>
               ) : (
@@ -455,7 +455,7 @@ export default function Profile() {
                   }}
                   className="flex w-full items-center justify-between border-t border-line px-3 py-3"
                 >
-                  <span className="text-[15.5px] font-bold">💬 {t('auth.kakaoLogin')}</span>
+                  <span className="text-[15px] font-bold">💬 {t('auth.kakaoLogin')}</span>
                   <span className="text-ink-faint">›</span>
                 </button>
               ))}
@@ -463,14 +463,14 @@ export default function Profile() {
               onClick={() => nav('/legal/terms')}
               className="flex w-full items-center justify-between border-t border-line px-3 py-3"
             >
-              <span className="text-[15.5px] font-bold">📜 {t('legal.terms')}</span>
+              <span className="text-[15px] font-bold">📜 {t('legal.terms')}</span>
               <span className="text-ink-faint">›</span>
             </button>
             <button
               onClick={() => nav('/legal/privacy')}
               className="flex w-full items-center justify-between border-t border-line px-3 py-3"
             >
-              <span className="text-[15.5px] font-bold">🔐 {t('legal.privacy')}</span>
+              <span className="text-[15px] font-bold">🔐 {t('legal.privacy')}</span>
               <span className="text-ink-faint">›</span>
             </button>
             {isOperator && (
@@ -478,7 +478,7 @@ export default function Profile() {
                 onClick={() => nav('/admin')}
                 className="flex w-full items-center justify-between border-t border-line px-3 py-3"
               >
-                <span className="text-[15.5px] font-bold">🛠 {t('profile.adminMode')}</span>
+                <span className="text-[15px] font-bold">🛠 {t('profile.adminMode')}</span>
                 <span className="text-ink-faint">›</span>
               </button>
             )}
@@ -486,20 +486,20 @@ export default function Profile() {
               onClick={() => setResetOpen(true)}
               className="flex w-full items-center justify-between border-t border-line px-3 py-3 text-red-500"
             >
-              <span className="text-[15.5px] font-bold">🗑 {t('profile.reset')}</span>
+              <span className="text-[15px] font-bold">🗑 {t('profile.reset')}</span>
               <span>›</span>
             </button>
           </Card>
         </Section>
 
-        <p className="mt-6 text-center text-[12.5px] font-medium text-ink-faint">{t('profile.version')}</p>
+        <p className="mt-6 text-center text-[12px] font-medium text-ink-faint">{t('profile.version')}</p>
       </main>
 
       {/* 아바타 선택 */}
       <input ref={fileRef} type="file" accept="image/*" onChange={onPickPhoto} className="hidden" />
       <Modal open={avatarOpen} onClose={() => setAvatarOpen(false)}>
         <div>
-          <h3 className="text-center text-[18px] font-extrabold tracking-tight">{t('profile.avatarPick')}</h3>
+          <h3 className="text-center text-[17px] font-semibold">{t('profile.avatarPick')}</h3>
           <div className="mt-4 flex justify-center">
             <Avatar avatar={s.avatar} size={88} />
           </div>
@@ -526,7 +526,7 @@ export default function Profile() {
               })}
             </div>
           ) : (
-            <p className="mt-4 rounded-2xl bg-surface2 px-4 py-3 text-center text-[13.5px] font-bold text-ink-faint">
+            <p className="mt-4 rounded-2xl bg-surface2 px-4 py-3 text-center text-[13px] font-medium text-ink-faint">
               {t('profile.avatarNoAnimal')}
             </p>
           )}
@@ -552,10 +552,10 @@ export default function Profile() {
               onClick={() => setResetAck((v) => !v)}
               className="mt-4 flex w-full items-start gap-2.5 rounded-2xl bg-red-50 p-3.5 text-left"
             >
-              <span className={`mt-px shrink-0 text-[15px] ${resetAck ? 'text-red-500' : 'text-red-300'}`}>
+              <span className={`mt-px shrink-0 text-[15px]${resetAck ? 'text-red-500' : 'text-red-300'}`}>
                 {resetAck ? '☑' : '☐'}
               </span>
-              <span className="break-keep text-[12.5px] font-bold leading-relaxed text-red-500">
+              <span className="break-keep text-[12px] font-medium leading-relaxed text-red-500">
                 {l({
                   ko: `다이아 ${s.diamonds}개${isPremium(s.premiumUntil) ? ' · 프리미엄 구독' : ''}이 복구 불가능하게 사라지는 것에 동의해요`,
                   en: `I understand ${s.diamonds} diamonds${isPremium(s.premiumUntil) ? ' and my premium subscription' : ''} will be lost permanently`,

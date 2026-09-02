@@ -62,8 +62,8 @@ export default function Chemi() {
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border-2"
             style={{ borderColor: sel ? '#F25C8E' : 'rgb(var(--line))', background: sel ? '#F25C8E14' : 'rgb(var(--surface-2))' }}
           >
-            <span className={`text-[26px] leading-none ${sel ? '' : 'opacity-70'}`}>{p.emoji}</span>
-            <span className={`text-[10.5px] font-extrabold ${sel ? 'text-[#C2456B]' : 'text-ink-faint'}`}>{l(p.name)}</span>
+            <span className={`text-[24px] leading-none${sel ? '' : 'opacity-70'}`}>{p.emoji}</span>
+            <span className={`text-[11px] font-semibold${sel ? 'text-[#C2456B]' : 'text-ink-faint'}`}>{l(p.name)}</span>
           </motion.button>
         )
       })}
@@ -79,18 +79,18 @@ export default function Chemi() {
         </p>
 
         {/* 나 */}
-        <h2 className="mt-5 px-1 text-[15px] font-extrabold">💗 {t('chemi.me')}</h2>
+        <h2 className="mt-5 px-1 text-[15px] font-semibold">💗 {t('chemi.me')}</h2>
         <div className="mt-2.5">
           <Picker value={mine} onPick={setMine} />
         </div>
         {!myLove && (
-          <button onClick={() => nav('/test/love')} className="mt-2 px-1 text-[12.5px] font-extrabold text-mind-600">
+          <button onClick={() => nav('/test/love')} className="mt-2 px-1 text-[12px] font-semibold text-mind-600">
             {t('chemi.takeLove')} ›
           </button>
         )}
 
         {/* 친구 */}
-        <h2 className="mt-5 px-1 text-[15px] font-extrabold">💛 {t('chemi.friend')}</h2>
+        <h2 className="mt-5 px-1 text-[15px] font-semibold">💛 {t('chemi.friend')}</h2>
         <div className="mt-2.5">
           <Picker value={theirs} onPick={setTheirs} />
         </div>
@@ -104,14 +104,14 @@ export default function Chemi() {
             transition={SPRING.ui}
             className="mt-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#F25C8E] to-[#FF8AAE] p-6 text-center text-white shadow-pop"
           >
-            <div className="flex items-center justify-center gap-2 text-[40px]">
+            <div className="flex items-center justify-center gap-2 text-[28px]">
               <span>{PERSONAS[mine]?.emoji ?? '🐾'}</span>
               <motion.span animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 1.6 }} className="text-[24px]">
                 ❤️
               </motion.span>
               <span>{PERSONAS[theirs]?.emoji ?? '🐾'}</span>
             </div>
-            <div className="mt-3 text-[46px] font-extrabold leading-none">{chemi.score}%</div>
+            <div className="mt-3 text-[28px] font-extrabold leading-none">{chemi.score}%</div>
             <div className="mx-auto mt-3 h-2.5 max-w-[220px] overflow-hidden rounded-full bg-white/30">
               <motion.div
                 className="h-full rounded-full bg-surface"
@@ -120,21 +120,21 @@ export default function Chemi() {
                 transition={{ ...SPRING.gauge, delay: 0.2 }}
               />
             </div>
-            <h3 className="mt-4 text-[22px] font-extrabold tracking-tight">{l(chemi.title)}</h3>
-            <p className="mt-2 break-keep text-[14.5px] font-medium leading-relaxed text-white/95">{l(chemi.desc)}</p>
+            <h3 className="mt-4 text-[20px] font-extrabold tracking-tight">{l(chemi.title)}</h3>
+            <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-white/95">{l(chemi.desc)}</p>
           </motion.div>
         )}
 
         {/* 공유 */}
         {copied && (
-          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">{t('common.copied')}</p>
+          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">{t('common.copied')}</p>
         )}
         <div className="mt-4">
           <Button color="love" disabled={!mine} onClick={share}>
             💌 {t('chemi.invite')}
           </Button>
         </div>
-        <p className="mt-3 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">{t('chemi.hint')}</p>
+        <p className="mt-3 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">{t('chemi.hint')}</p>
       </main>
     </div>
   )

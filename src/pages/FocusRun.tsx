@@ -121,7 +121,7 @@ export default function FocusRun() {
       </div>
 
       {/* 규칙 안내 */}
-      <div className="mx-auto mt-3 flex w-full max-w-md items-center justify-center gap-3 px-5 text-[12.5px] font-extrabold">
+      <div className="mx-auto mt-3 flex w-full max-w-md items-center justify-center gap-3 px-5 text-[12px] font-semibold">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-ink-sub">
           <span className="inline-block h-3 w-3 rounded-full" style={{ background: GO_COLOR }} /> {l({ ko: '초록 = 탭!', en: 'Green = tap!', ja: '緑 = タップ！' })}
         </span>
@@ -139,7 +139,7 @@ export default function FocusRun() {
         >
           <AnimatePresence mode="wait">
             {phase === 'fixation' && (
-              <motion.span key="fix" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-[44px] font-extrabold text-ink-faint">
+              <motion.span key="fix" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-[28px] font-extrabold text-ink-faint">
                 +
               </motion.span>
             )}
@@ -156,8 +156,8 @@ export default function FocusRun() {
             )}
             {phase === 'feedback' && (
               <motion.div key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
-                <div className="text-[56px] leading-none">{verdict === 'hit' || verdict === 'correctStop' ? '✅' : '❌'}</div>
-                <p className="mt-1.5 text-[14px] font-extrabold" style={{ color: verdict === 'hit' || verdict === 'correctStop' ? '#10B981' : '#EF4444' }}>
+                <div className="text-[28px] leading-none">{verdict === 'hit' || verdict === 'correctStop' ? '✅' : '❌'}</div>
+                <p className="mt-1.5 text-[14px] font-semibold" style={{ color: verdict === 'hit' || verdict === 'correctStop' ? '#10B981' : '#EF4444' }}>
                   {verdict === 'hit'
                     ? l({ ko: '좋아요!', en: 'Nice!', ja: 'いいね！' })
                     : verdict === 'correctStop'
@@ -171,11 +171,11 @@ export default function FocusRun() {
           </AnimatePresence>
 
           {phase === 'stim' && isGo && (
-            <span className="pointer-events-none absolute bottom-5 text-[13px] font-extrabold text-white/90">{l({ ko: '탭!', en: 'TAP!', ja: 'タップ！' })}</span>
+            <span className="pointer-events-none absolute bottom-5 text-[13px] font-semibold text-white/90">{l({ ko: '탭!', en: 'TAP!', ja: 'タップ！' })}</span>
           )}
         </button>
 
-        <p className="mb-4 text-center text-[13px] font-bold text-ink-faint">
+        <p className="mb-4 text-center text-[13px] font-medium text-ink-faint">
           {l({ ko: '초록이 뜨면 최대한 빠르게, 빨강이면 누르지 마세요', en: 'Tap as fast as you can on green; do nothing on red', ja: '緑は最速でタップ、赤は押さないで' })}
         </p>
       </main>

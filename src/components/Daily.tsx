@@ -19,7 +19,7 @@ export function DailyCapMeter() {
   const freeAmount = useStore((s) => s.freeAmount)
   const used = freeDate === todayStr() ? freeAmount : 0
   return (
-    <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3 text-[13px] font-extrabold text-white">
+    <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3 text-[13px] font-semibold text-white">
       <span>⚡ {t('daily.cap')}</span>
       <span className="rounded-full bg-white/25 px-2.5 py-0.5">
         {t('daily.unlimited')} · {used}P
@@ -67,8 +67,8 @@ export function DailySpin() {
           🎁
         </motion.div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[16.5px] font-extrabold tracking-tight">{t('spin.title')}</h3>
-          <p className="mt-0.5 text-[13.5px] font-bold text-ink-faint">{t('spin.sub')}</p>
+          <h3 className="text-[16px] font-semibold">{t('spin.title')}</h3>
+          <p className="mt-0.5 text-[13px] font-medium text-ink-faint">{t('spin.sub')}</p>
         </div>
       </div>
 
@@ -78,7 +78,7 @@ export function DailySpin() {
             {t('daily.capFull')}
           </p>
         ) : allDone ? (
-          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14.5px] font-extrabold text-mind-700">
+          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-semibold text-mind-700">
             {t('spin.done')}
           </p>
         ) : (
@@ -109,7 +109,7 @@ export function DailySpin() {
                   {t('spin.win', { p: reward.rolled })}
                 </h3>
                 {reward.granted < reward.rolled && (
-                  <p className="mt-1 text-[13.5px] font-bold text-amber-600">
+                  <p className="mt-1 text-[13px] font-medium text-amber-600">
                     {t('spin.capped', { p: reward.granted })}
                   </p>
                 )}
@@ -161,13 +161,13 @@ export function DailyQuiz() {
       <div className="flex items-center gap-3.5">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-iq-light text-3xl">🧠</div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[16.5px] font-extrabold tracking-tight">{t('quiz.title')}</h3>
-          <p className="mt-0.5 text-[13.5px] font-bold text-ink-faint">{t('quiz.sub')}</p>
+          <h3 className="text-[16px] font-semibold">{t('quiz.title')}</h3>
+          <p className="mt-0.5 text-[13px] font-medium text-ink-faint">{t('quiz.sub')}</p>
         </div>
       </div>
       <div className="mt-3.5">
         {done && !open ? (
-          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14.5px] font-extrabold text-mind-700">
+          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-semibold text-mind-700">
             {t('quiz.done')}
           </p>
         ) : (
@@ -179,7 +179,7 @@ export function DailyQuiz() {
 
       <Modal open={open} onClose={answered ? () => setOpen(false) : undefined}>
         <div>
-          <h3 className="text-[18px] font-extrabold leading-[1.6] tracking-tight">{l(item.q)}</h3>
+          <h3 className="text-[17px] font-semibold leading-[1.6]">{l(item.q)}</h3>
           <div className="mt-4 space-y-2.5">
             {item.options.map((op, i) => {
               const isAnswer = i === item.answer
@@ -189,7 +189,7 @@ export function DailyQuiz() {
                 <button
                   key={i}
                   onClick={() => pick(i)}
-                  className="w-full rounded-2xl border-2 px-4 py-3.5 text-left text-[15.5px] font-bold leading-relaxed"
+                  className="w-full rounded-2xl border-2 px-4 py-3.5 text-left text-[15px] font-bold leading-relaxed"
                   style={{
                     borderColor: show ? (isAnswer ? '#4FA882' : isPicked ? '#EF4444' : '#E3EAE5') : '#E3EAE5',
                     background: show ? (isAnswer ? '#4FA8821A' : isPicked ? '#EF44441A' : 'rgb(var(--surface))') : 'rgb(var(--surface))',
@@ -204,7 +204,7 @@ export function DailyQuiz() {
 
           {answered && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
-              <p className="text-center text-[16px] font-extrabold">
+              <p className="text-center text-[16px] font-semibold">
                 {picked === item.answer
                   ? granted > 0
                     ? t('quiz.correct', { p: granted })

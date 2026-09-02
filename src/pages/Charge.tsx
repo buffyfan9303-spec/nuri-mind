@@ -53,13 +53,13 @@ export default function Charge() {
       <div className="space-y-4 px-4">
         {/* 보유 잔액 */}
         <Card className="!bg-gradient-to-br !from-[#6E7BF2] !to-[#A88BF2] !p-6 text-center text-white">
-          <p className="text-[13px] font-bold text-white/85">{l({ ko: '보유 다이아', en: 'Your diamonds', ja: '保有ダイヤ' })}</p>
+          <p className="text-[13px] font-medium text-white/85">{l({ ko: '보유 다이아', en: 'Your diamonds', ja: '保有ダイヤ' })}</p>
           <motion.p
             key={diamonds}
             initial={{ scale: 1.3 }}
             animate={{ scale: 1 }}
             transition={SPRING.flick}
-            className="mt-1 text-[40px] font-extrabold leading-none"
+            className="mt-1 text-[28px] font-extrabold leading-none"
           >
             💎 {diamonds.toLocaleString()}
           </motion.p>
@@ -68,13 +68,13 @@ export default function Charge() {
 
         {/* 다이아 사용처 */}
         <Card className="!p-5">
-          <p className="text-[14px] font-extrabold">{l({ ko: '다이아로 할 수 있는 것', en: 'What diamonds unlock', ja: 'ダイヤでできること' })}</p>
+          <p className="text-[14px] font-semibold">{l({ ko: '다이아로 할 수 있는 것', en: 'What diamonds unlock', ja: 'ダイヤでできること' })}</p>
           <div className="mt-3 space-y-2.5">
             {USES.map((u) => (
               <div key={u.emoji} className="flex items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EEF0FE] text-[18px]">{u.emoji}</span>
-                <span className="min-w-0 flex-1 break-keep text-[13.5px] font-bold text-ink-sub">{u.label}</span>
-                <span className="shrink-0 rounded-full bg-[#EEF0FE] px-2.5 py-1 text-[12.5px] font-extrabold text-[#6E7BF2]">💎{u.cost}</span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EEF0FE] text-[17px]">{u.emoji}</span>
+                <span className="min-w-0 flex-1 break-keep text-[13px] font-medium text-ink-sub">{u.label}</span>
+                <span className="shrink-0 rounded-full bg-[#EEF0FE] px-2.5 py-1 text-[12px] font-semibold text-[#6E7BF2]">💎{u.cost}</span>
               </div>
             ))}
           </div>
@@ -82,7 +82,7 @@ export default function Charge() {
 
         {/* 충전 번들 */}
         <div>
-          <p className="mb-2 px-1 text-[15px] font-extrabold">{l({ ko: '충전 패키지', en: 'Packages', ja: 'チャージパック' })}</p>
+          <p className="mb-2 px-1 text-[15px] font-semibold">{l({ ko: '충전 패키지', en: 'Packages', ja: 'チャージパック' })}</p>
           <div className="grid grid-cols-2 gap-3">
             {DIA_BUNDLES.map((b) => {
               const orig = b.dia * 100
@@ -98,21 +98,21 @@ export default function Charge() {
                   style={{ borderColor: b.best ? '#6E7BF2' : '#ECECF5' }}
                 >
                   {b.best && (
-                    <span className="absolute right-0 top-0 rounded-bl-xl rounded-tr-3xl bg-[#6E7BF2] px-2.5 py-1 text-[10.5px] font-extrabold text-white">
+                    <span className="absolute right-0 top-0 rounded-bl-xl rounded-tr-3xl bg-[#6E7BF2] px-2.5 py-1 text-[11px] font-semibold text-white">
                       BEST
                     </span>
                   )}
-                  <p className="text-[30px] leading-none">💎</p>
-                  <p className="mt-1.5 text-[19px] font-extrabold text-ink">{b.dia.toLocaleString()}<span className="text-[13px] font-bold text-ink-faint"> 다이아</span></p>
+                  <p className="text-[28px] leading-none">💎</p>
+                  <p className="mt-1.5 text-[20px] font-extrabold text-ink">{b.dia.toLocaleString()}<span className="text-[13px] font-medium text-ink-faint"> 다이아</span></p>
                   {b.off ? (
                     <div className="mt-1">
-                      <span className="text-[12px] font-bold text-ink-faint line-through">₩{orig.toLocaleString()}</span>
-                      <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[11px] font-extrabold text-red-500">-{b.off}%</span>
+                      <span className="text-[12px] font-medium text-ink-faint line-through">₩{orig.toLocaleString()}</span>
+                      <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[11px] font-semibold text-red-500">-{b.off}%</span>
                     </div>
                   ) : (
                     <div className="mt-1 h-[18px]" />
                   )}
-                  <p className="mt-1 text-[17px] font-extrabold text-[#6E7BF2]">₩{b.krw.toLocaleString()}</p>
+                  <p className="mt-1 text-[17px] font-semibold text-[#6E7BF2]">₩{b.krw.toLocaleString()}</p>
                 </motion.button>
               )
             })}
@@ -133,7 +133,7 @@ export default function Charge() {
       <Modal open={!!sel} onClose={close}>
         {sel && !done && (
           <div className="text-center">
-            <p className="text-[44px] leading-none">💎</p>
+            <p className="text-[28px] leading-none">💎</p>
             <h3 className="mt-2 text-[20px] font-extrabold">{sel.dia.toLocaleString()} 다이아 충전</h3>
             <p className="mt-1 text-[14px] font-bold text-ink-faint">
               ₩{sel.krw.toLocaleString()}{sel.off ? ` · ${sel.off}% 할인` : ''}
@@ -141,8 +141,8 @@ export default function Charge() {
 
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               {['카카오페이', '신용카드', 'Toss'].map((m) => (
-                <span key={m} className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-[12.5px] font-bold text-ink-faint">
-                  {m} <span className="text-[10.5px] text-ink-faint/70">준비중</span>
+                <span key={m} className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-[12px] font-medium text-ink-faint">
+                  {m} <span className="text-[11px] text-ink-faint/70">준비중</span>
                 </span>
               ))}
             </div>
@@ -151,7 +151,7 @@ export default function Charge() {
               <Button color="iq" onClick={onPay}>
                 {l({ ko: '충전하기 (베타 즉시지급)', en: 'Charge (beta · instant)', ja: 'チャージ（ベータ即時）' })}
               </Button>
-              <button onClick={close} className="mt-2 w-full py-2 text-[13.5px] font-bold text-ink-faint">
+              <button onClick={close} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">
                 {l({ ko: '취소', en: 'Cancel', ja: 'キャンセル' })}
               </button>
             </div>
@@ -166,7 +166,7 @@ export default function Charge() {
         )}
         {sel && done && (
           <div className="text-center">
-            <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="text-[52px] leading-none">
+            <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="text-[28px] leading-none">
               🎉
             </motion.p>
             <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '충전 완료!', en: 'Charged!', ja: 'チャージ完了！' })}</h3>

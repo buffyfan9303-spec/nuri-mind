@@ -92,7 +92,7 @@ export default function GrowthPlan() {
         <TopBar back="/" title={l({ ko: '성장 플랜', en: 'Growth plan', ja: '成長プラン' })} />
         <main className="mx-auto max-w-md px-5 pt-10 text-center">
           <div className="text-6xl">🌱</div>
-          <h1 className="mt-4 break-keep text-[21px] font-extrabold tracking-tight">
+          <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
             {l({ ko: '검사를 조금만 더 해주세요', en: 'A few more tests first', ja: 'もう少し検査を' })}
           </h1>
           <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
@@ -123,11 +123,11 @@ export default function GrowthPlan() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-5 rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-6 text-center text-white shadow-pop"
           >
-            <div className="text-[44px] leading-none">🌱</div>
+            <div className="text-[28px] leading-none">🌱</div>
             <h1 className="mt-3 break-keep text-[20px] font-extrabold leading-tight">
               {l({ ko: '검사 결과를 오늘 할 일로', en: 'Turn results into daily actions', ja: '結果を今日の行動に' })}
             </h1>
-            <p className="mt-2 break-keep text-[13.5px] font-bold leading-relaxed text-white/90">
+            <p className="mt-2 break-keep text-[13px] font-medium leading-relaxed text-white/90">
               {l({
                 ko: '가장 손볼 가치가 큰 3가지를 골라, 매일·매주 할 수 있는 작은 실천으로 만들어 드려요.',
                 en: 'We pick your 3 highest-leverage areas and turn them into small daily and weekly actions.',
@@ -153,21 +153,21 @@ export default function GrowthPlan() {
                 ariaLabel={l({ ko: '프리미엄 시작', en: 'Start premium', ja: 'プレミアム開始' })}
                 className="mt-5 !bg-gradient-to-br from-[#6E7BF2] to-[#A88BF2] !p-5 text-white"
               >
-                <p className="flex items-center gap-2 text-[15.5px] font-extrabold">
+                <p className="flex items-center gap-2 text-[15px] font-semibold">
                   ✨ {l({ ko: '프리미엄에서 열려요', en: 'Available in Premium', ja: 'プレミアムで解放' })}
                 </p>
-                <p className="mt-1.5 break-keep text-[13px] font-bold leading-relaxed text-white/90">
+                <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-white/90">
                   {l({
                     ko: `성장 플랜 + AI 심층 리포트 + 운세 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
                     en: `Growth plan + AI deep report + unlimited fortune · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
                     ja: `成長プラン+AIレポート+運勢無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
                   })}
                 </p>
-                <div className="mt-3 rounded-2xl bg-white px-4 py-2.5 text-center text-[14px] font-extrabold text-[#5B4FD8]">
+                <div className="mt-3 rounded-2xl bg-white px-4 py-2.5 text-center text-[14px] font-semibold text-[#5B4FD8]">
                   {l({ ko: '프리미엄 시작하기 →', en: 'Start Premium →', ja: 'プレミアム開始 →' })}
                 </div>
               </Card>
-              <p className="mt-4 break-keep px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">
+              <p className="mt-4 break-keep px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
                 {l({
                   ko: '지금도 검사 결과지에서 검사별 7일 루틴은 무료로 이용할 수 있어요.',
                   en: 'The 7-day routine per test is still free from your result page.',
@@ -196,15 +196,15 @@ export default function GrowthPlan() {
         >
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-[13px] font-extrabold text-white/85">
+              <p className="text-[13px] font-semibold text-white/85">
                 🌱 {l({ ko: `성장 ${dayCount}일차`, en: `Day ${dayCount}`, ja: `成長${dayCount}日目` })}
               </p>
-              <p className="mt-1 text-[26px] font-extrabold leading-none">
+              <p className="mt-1 text-[24px] font-extrabold leading-none">
                 {doneToday}
                 <span className="text-[15px] font-bold text-white/80"> / {allTasks.length}</span>
               </p>
             </div>
-            <p className="pb-1 text-[12.5px] font-bold text-white/85">
+            <p className="pb-1 text-[12px] font-medium text-white/85">
               {doneToday >= allTasks.length
                 ? l({ ko: '오늘 완료! 🎉', en: 'All done today! 🎉', ja: '今日は完了！🎉' })
                 : l({ ko: '오늘의 실천', en: "Today's actions", ja: '今日の実践' })}
@@ -223,7 +223,7 @@ export default function GrowthPlan() {
           <motion.p
             initial={{ opacity: 0, y: 8, scale: 0.9, x: '-50%' }}
             animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
-            className="fixed bottom-40 left-1/2 z-50 rounded-full bg-mind-600 px-4 py-2 text-[13.5px] font-extrabold text-white shadow-pop"
+            className="fixed bottom-40 left-1/2 z-50 rounded-full bg-mind-600 px-4 py-2 text-[13px] font-semibold text-white shadow-pop"
           >
             🌱 {toast}
           </motion.p>
@@ -238,7 +238,7 @@ export default function GrowthPlan() {
             transition={{ ...SPRING.ui, delay: 0.04 * i }}
           >
             <Card className="mt-3.5 !p-5">
-              <h2 className="flex items-center gap-2 break-keep text-[15.5px] font-extrabold tracking-tight">
+              <h2 className="flex items-center gap-2 break-keep text-[15px] font-semibold">
                 <span>{f.emoji}</span>
                 {t(`test.${f.testId}.short`)}
               </h2>
@@ -253,7 +253,7 @@ export default function GrowthPlan() {
                       aria-pressed={done}
                     >
                       <span
-                        className={`mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 text-[13px] font-black leading-none transition-colors ${
+                        className={`mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 text-[13px] font-medium leading-none transition-colors${
                           done ? 'border-mind-500 bg-mind-500 text-white' : 'border-line bg-surface text-transparent'
                         }`}
                       >
@@ -261,11 +261,11 @@ export default function GrowthPlan() {
                       </span>
                       <span className="min-w-0 flex-1">
                         <span
-                          className={`block break-keep text-[14px] font-bold leading-relaxed ${done ? 'text-ink-faint line-through' : 'text-ink'}`}
+                          className={`block break-keep text-[14px] font-bold leading-relaxed${done ? 'text-ink-faint line-through' : 'text-ink'}`}
                         >
                           {l(tk.title)}
                         </span>
-                        <span className="mt-0.5 inline-block rounded-full bg-surface2 px-2 py-0.5 text-[10.5px] font-extrabold text-ink-faint">
+                        <span className="mt-0.5 inline-block rounded-full bg-surface2 px-2 py-0.5 text-[11px] font-semibold text-ink-faint">
                           {tk.cadence === 'daily'
                             ? l({ ko: '매일', en: 'Daily', ja: '毎日' })
                             : l({ ko: '주 1회', en: 'Weekly', ja: '週1回' })}
@@ -281,7 +281,7 @@ export default function GrowthPlan() {
 
         {/* 28일 캘린더 히트맵 */}
         <Card className="mt-3.5 !p-5">
-          <h2 className="text-[15.5px] font-extrabold tracking-tight">
+          <h2 className="text-[15px] font-semibold">
             📅 {l({ ko: '최근 4주 실천 기록', en: 'Last 4 weeks', ja: '直近4週の記録' })}
           </h2>
           <div className="mt-3 grid grid-cols-7 gap-1.5">
@@ -301,12 +301,12 @@ export default function GrowthPlan() {
               />
             ))}
           </div>
-          <p className="mt-2.5 text-[11.5px] font-medium text-ink-faint">
+          <p className="mt-2.5 text-[11px] font-medium text-ink-faint">
             {l({ ko: '진할수록 그날 실천이 많았어요', en: 'Darker means more actions that day', ja: '濃いほど実践が多い日' })}
           </p>
         </Card>
 
-        <button onClick={resetPlan} className="mx-auto mt-5 block text-[12.5px] font-extrabold text-ink-faint">
+        <button onClick={resetPlan} className="mx-auto mt-5 block text-[12px] font-semibold text-ink-faint">
           🔄 {l({ ko: '플랜 다시 만들기', en: 'Rebuild plan', ja: 'プランを作り直す' })}
         </button>
       </main>

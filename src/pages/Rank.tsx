@@ -81,8 +81,8 @@ export default function Rank() {
           >
             {tier.emoji}
           </motion.div>
-          <p className="mt-3 text-[14px] font-extrabold tracking-wide text-white/85">{t('rank.current')}</p>
-          <h1 className="mt-0.5 text-[30px] font-extrabold tracking-tight text-white">{l(tier.name)}</h1>
+          <p className="mt-3 text-[14px] font-semibold text-white/85">{t('rank.current')}</p>
+          <h1 className="mt-0.5 text-[28px] font-extrabold tracking-tight text-white">{l(tier.name)}</h1>
           <p className="mt-1 text-[15px] font-bold text-white/90">
             {t('rank.lifetime')} 🪙 {lifetime.toLocaleString()}P
           </p>
@@ -96,7 +96,7 @@ export default function Rank() {
                 className="h-full rounded-full bg-surface"
               />
             </div>
-            <p className="mt-2.5 text-[14px] font-extrabold text-white">
+            <p className="mt-2.5 text-[14px] font-semibold text-white">
               {next
                 ? t('rank.next', { tier: `${next.emoji} ${l(next.name)}`, p: (next.min - lifetime).toLocaleString() })
                 : t('rank.max')}
@@ -128,17 +128,17 @@ export default function Rank() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-[17px] font-extrabold tracking-tight" style={{ color: reached ? tr.color : 'rgb(var(--text-faint))' }}>
+                        <h3 className="text-[17px] font-semibold" style={{ color: reached ? tr.color : 'rgb(var(--text-faint))' }}>
                           {l(tr.name)}
                         </h3>
                         {isCurrent && <Chip tone="mind">NOW</Chip>}
                       </div>
-                      <p className="text-[13px] font-bold text-ink-faint">🪙 {tr.min.toLocaleString()}P+</p>
+                      <p className="text-[13px] font-medium text-ink-faint">🪙 {tr.min.toLocaleString()}P+</p>
                     </div>
                   </div>
                   <ul className="mt-3 space-y-1.5">
                     {tr.perks.map((p, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[14.5px] font-medium leading-relaxed text-ink">
+                      <li key={i} className="flex items-start gap-2 text-[14px] font-medium leading-relaxed text-ink">
                         <span className="mt-0.5 shrink-0" style={{ color: reached ? tr.color : '#C2CBC5' }}>
                           {reached ? '✓' : '·'}
                         </span>
@@ -166,9 +166,9 @@ export default function Rank() {
                       {ex.emoji}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-[16.5px] font-extrabold leading-snug tracking-tight">{l(ex.title)}</h3>
+                      <h3 className="text-[16px] font-semibold leading-snug">{l(ex.title)}</h3>
                       <p className="mt-1 text-[14px] font-medium leading-relaxed text-ink-sub">{l(ex.desc)}</p>
-                      <p className="mt-1.5 text-[14px] font-extrabold text-mind-700 dark:text-mind-300">🎁 {l(ex.reward)}</p>
+                      <p className="mt-1.5 text-[14px] font-semibold text-mind-700 dark:text-mind-300">🎁 {l(ex.reward)}</p>
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-1.5">
@@ -180,7 +180,7 @@ export default function Rank() {
                   </div>
                   <div className="mt-3.5">
                     {app ? (
-                      <div className="flex items-center justify-center gap-2 rounded-2xl bg-mind-100 py-3.5 text-[15px] font-extrabold text-mind-700">
+                      <div className="flex items-center justify-center gap-2 rounded-2xl bg-mind-100 py-3.5 text-[15px] font-semibold text-mind-700">
                         ✅ {t('rank.applied')} ·{' '}
                         {app.status === 'pending'
                           ? t('rewards.status.pending')
@@ -215,7 +215,7 @@ export default function Rank() {
                     <div className="flex min-w-0 items-center gap-2.5">
                       <span className="text-xl">{ex?.emoji}</span>
                       <div className="min-w-0">
-                        <p className="truncate text-[14.5px] font-bold">{l(ex?.title)}</p>
+                        <p className="truncate text-[14px] font-bold">{l(ex?.title)}</p>
                         <p className="text-[12px] font-medium text-ink-faint">{new Date(a.at).toLocaleDateString()}</p>
                       </div>
                     </div>

@@ -74,7 +74,7 @@ export default function SurveyTake() {
             {t('take.needRequired')}
           </p>
         )}
-        <p className="mt-3 text-[15px] font-medium leading-relaxed tracking-wide text-ink-sub">{survey.desc}</p>
+        <p className="mt-3 text-[15px] font-medium leading-relaxed text-ink-sub">{survey.desc}</p>
 
         <div className="mt-4 space-y-4">
           {survey.questions.map((q, qi) => (
@@ -86,7 +86,7 @@ export default function SurveyTake() {
               transition={SPRING.ui}
             >
               <Card>
-                <p className="text-[16.5px] font-extrabold leading-[1.65]">
+                <p className="text-[16px] font-semibold leading-[1.65]">
                   <span className="mr-1.5 text-mind-600">Q{qi + 1}.</span>
                   {q.text}
                   {q.required && <span className="ml-1 text-xs font-bold text-red-400">*</span>}
@@ -103,7 +103,7 @@ export default function SurveyTake() {
                             setAns(q.id, op)
                             sfx.tap()
                           }}
-                          className="flex w-full items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left text-[15.5px] font-bold leading-relaxed"
+                          className="flex w-full items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left text-[15px] font-bold leading-relaxed"
                           style={{
                             borderColor: active ? '#4FA882' : '#E3EAE5',
                             background: active ? '#4FA8821A' : 'rgb(var(--surface))',
@@ -134,7 +134,7 @@ export default function SurveyTake() {
                             setAns(q.id, active ? arr.filter((x) => x !== op) : [...arr, op])
                             sfx.tap()
                           }}
-                          className="rounded-full border-2 px-4 py-2.5 text-[14.5px] font-bold"
+                          className="rounded-full border-2 px-4 py-2.5 text-[14px] font-bold"
                           style={{
                             borderColor: active ? '#4FA882' : '#E3EAE5',
                             background: active ? '#4FA882' : 'rgb(var(--surface))',
@@ -174,7 +174,7 @@ export default function SurveyTake() {
                         )
                       })}
                     </div>
-                    <div className="mt-2 flex justify-between text-[12.5px] font-bold text-ink-faint">
+                    <div className="mt-2 flex justify-between text-[12px] font-medium text-ink-faint">
                       <span>{t('take.scaleLow')}</span>
                       <span>{t('take.scaleHigh')}</span>
                     </div>

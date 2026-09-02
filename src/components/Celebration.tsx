@@ -101,7 +101,7 @@ export default function Celebration({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.1 }}
-              className="mt-5 text-[12px] font-bold text-white/70"
+              className="mt-5 text-[12px] font-medium text-white/70"
             >
               👆
             </motion.p>

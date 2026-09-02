@@ -45,11 +45,11 @@ export default function Dex() {
           transition={SPRING.ui}
           className="rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-5 text-white shadow-pop"
         >
-          <p className="text-[13.5px] font-extrabold tracking-wide text-white/85">{t('dex.sub')}</p>
+          <p className="text-[13px] font-semibold text-white/85">{t('dex.sub')}</p>
           <div className="mt-1 flex items-end gap-1.5">
-            <span className="text-[34px] font-extrabold leading-none">{count}</span>
-            <span className="pb-1 text-[16px] font-extrabold text-white/80">/ {TOTAL} 마리</span>
-            <span className="ml-auto pb-1 text-[15px] font-extrabold text-white/90">{pct}%</span>
+            <span className="text-[28px] font-extrabold leading-none">{count}</span>
+            <span className="pb-1 text-[16px] font-semibold text-white/80">/ {TOTAL} 마리</span>
+            <span className="ml-auto pb-1 text-[15px] font-semibold text-white/90">{pct}%</span>
           </div>
           <div className="mt-2.5 h-2.5 overflow-hidden rounded-full bg-white/25">
             <motion.div
@@ -65,8 +65,8 @@ export default function Dex() {
         <Card onClick={() => nav('/rewards')} className="mt-3.5 flex items-center gap-3.5 !bg-gradient-to-r from-amber-50 to-mind-50 dark:from-surface dark:to-surface !p-4">
           <span className="text-[28px]">🤝</span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15px] font-extrabold leading-tight">{t('dex.friendTitle')}</h3>
-            <p className="mt-0.5 break-keep text-[12.5px] font-bold leading-snug text-ink-faint">{t('dex.friendDesc')}</p>
+            <h3 className="text-[15px] font-semibold leading-tight">{t('dex.friendTitle')}</h3>
+            <p className="mt-0.5 break-keep text-[12px] font-medium leading-snug text-ink-faint">{t('dex.friendDesc')}</p>
           </div>
           <span className="shrink-0 text-lg text-ink-faint">›</span>
         </Card>
@@ -78,9 +78,9 @@ export default function Dex() {
           return (
             <section key={tm.id} className="mt-6">
               <div className="flex items-center gap-2 px-1">
-                <span className="text-[18px]">{tm.emoji}</span>
-                <h2 className="text-[16px] font-extrabold tracking-tight">{t(`test.${tm.id}.name`)}</h2>
-                <span className="ml-auto text-[12.5px] font-extrabold text-ink-faint">
+                <span className="text-[17px]">{tm.emoji}</span>
+                <h2 className="text-[16px] font-semibold">{t(`test.${tm.id}.name`)}</h2>
+                <span className="ml-auto text-[12px] font-semibold text-ink-faint">
                   {got}/{keys.length}
                 </span>
               </div>
@@ -106,10 +106,10 @@ export default function Dex() {
                         background: has ? `${p.grad[0]}14` : 'rgb(var(--surface-2))',
                       }}
                     >
-                      <span className={`text-[26px] leading-none ${has ? '' : 'opacity-25 grayscale'}`}>
+                      <span className={`text-[24px] leading-none${has ? '' : 'opacity-25 grayscale'}`}>
                         {has ? p.emoji : '❓'}
                       </span>
-                      <span className={`max-w-full truncate px-1 text-[10.5px] font-extrabold ${has ? 'text-ink' : 'text-ink-faint'}`}>
+                      <span className={`max-w-full truncate px-1 text-[11px] font-semibold${has ? 'text-ink' : 'text-ink-faint'}`}>
                         {has ? l(p.name) : '???'}
                       </span>
                     </motion.button>
@@ -120,7 +120,7 @@ export default function Dex() {
           )
         })}
 
-        <p className="mt-7 px-2 text-center text-[12.5px] font-medium leading-relaxed text-ink-faint">
+        <p className="mt-7 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
           {t('dex.hint')}
         </p>
       </main>
@@ -132,8 +132,8 @@ export default function Dex() {
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -8, 6, 0] }} className="text-7xl">
               {PERSONAS[detail].emoji}
             </motion.div>
-            <h3 className="mt-3 text-[22px] font-extrabold tracking-tight">{l(PERSONAS[detail].name)}</h3>
-            <p className="mt-1 text-[14px] font-extrabold text-mind-700">{l(PERSONAS[detail].title)}</p>
+            <h3 className="mt-3 text-[20px] font-extrabold tracking-tight">{l(PERSONAS[detail].name)}</h3>
+            <p className="mt-1 text-[14px] font-semibold text-mind-700">{l(PERSONAS[detail].title)}</p>
             <p className="mt-2.5 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
               “{l(PERSONAS[detail].tagline)}”
             </p>

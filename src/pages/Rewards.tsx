@@ -85,7 +85,7 @@ export default function Rewards() {
           transition={SPRING.ui}
           className="rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-6 shadow-pop"
         >
-          <p className="text-[13.5px] font-extrabold tracking-wide text-white/80">{t('rewards.balance')}</p>
+          <p className="text-[13px] font-semibold text-white/80">{t('rewards.balance')}</p>
           <div className="mt-1 flex items-end gap-1.5">
             <span className="text-4xl font-extrabold tracking-tight text-white">🪙 {points.toLocaleString()}</span>
             <span className="pb-1 text-sm font-extrabold text-white/80">P</span>
@@ -96,17 +96,17 @@ export default function Rewards() {
             onClick={() => nav('/rank')}
             className="mt-4 flex w-full items-center justify-between gap-2 rounded-2xl bg-white/20 px-4 py-3.5 text-left"
           >
-            <span className="flex min-w-0 items-center gap-1.5 truncate text-[15px] font-extrabold text-white">
+            <span className="flex min-w-0 items-center gap-1.5 truncate text-[15px] font-semibold text-white">
               {tier.emoji} {t('rank.row')}: {l(tier.name)}
             </span>
-            <span className="shrink-0 whitespace-nowrap text-[13px] font-bold text-white/85">
+            <span className="shrink-0 whitespace-nowrap text-[13px] font-medium text-white/85">
               {next ? `${next.emoji} +${(next.min - lifetime).toLocaleString()}P` : t('rank.max')} ›
             </span>
           </motion.button>
 
           <div className="mt-3">
             {checkedToday ? (
-              <div className="flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3.5 text-[15px] font-extrabold text-white">
+              <div className="flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3.5 text-[15px] font-semibold text-white">
                 <span>✅ {t('rewards.checkinDone')}</span>
                 <span>
                   {streak > 0 && <>🔥 {t('rewards.streak', { n: streak })}</>}
@@ -123,7 +123,7 @@ export default function Rewards() {
           {/* 스트릭 설명 진입 */}
           <button
             onClick={() => setStreakInfo(true)}
-            className="mt-2 flex w-full items-center justify-center gap-1 text-[12.5px] font-bold text-white/80"
+            className="mt-2 flex w-full items-center justify-center gap-1 text-[12px] font-medium text-white/80"
           >
             ⓘ {t('streak.title')}
           </button>
@@ -140,10 +140,10 @@ export default function Rewards() {
             {lgTier.emoji}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[16px] font-extrabold tracking-tight">
+            <h3 className="text-[16px] font-semibold">
               🏆 {t('league.title')} · {l(lgTier.name)}
             </h3>
-            <p className="mt-0.5 text-[13.5px] font-bold text-ink-faint">
+            <p className="mt-0.5 text-[13px] font-medium text-ink-faint">
               {t('league.entrySub', { rank: lgRank, p: myWeek.toLocaleString() })}
             </p>
           </div>
@@ -178,8 +178,8 @@ export default function Rewards() {
                     {sv.emoji}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-[16px] font-extrabold tracking-tight">{sv.title}</h3>
-                    <p className="mt-1 text-[13.5px] font-bold text-ink-faint">
+                    <h3 className="truncate text-[16px] font-semibold">{sv.title}</h3>
+                    <p className="mt-1 text-[13px] font-medium text-ink-faint">
                       {sv.questions.length}
                       {t('common.q')} · {t('rewards.respondents', { n: sv.responses })}
                     </p>
@@ -187,7 +187,7 @@ export default function Rewards() {
                   {done ? (
                     <Chip tone="gray">✓ {t('rewards.taken')}</Chip>
                   ) : (
-                    <span className="shrink-0 rounded-full bg-mind-100 px-3.5 py-2 text-[15px] font-extrabold text-mind-700">
+                    <span className="shrink-0 rounded-full bg-mind-100 px-3.5 py-2 text-[15px] font-semibold text-mind-700">
                       +{sv.reward}P
                     </span>
                   )}
@@ -205,7 +205,7 @@ export default function Rewards() {
                 <Card key={sv.id} className="!p-4">
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{sv.emoji}</span>
-                    <h3 className="min-w-0 flex-1 truncate text-[15px] font-extrabold">{sv.title}</h3>
+                    <h3 className="min-w-0 flex-1 truncate text-[15px] font-semibold">{sv.title}</h3>
                     {sv.status === 'pending' && <Chip tone="amber">⏳ {t('rewards.status.pending')}</Chip>}
                     {sv.status === 'approved' && <Chip tone="mind">🟢 {t('rewards.status.approved')}</Chip>}
                     {sv.status === 'rejected' && <Chip tone="red">⛔ {t('rewards.status.rejected')}</Chip>}
@@ -238,11 +238,11 @@ export default function Rewards() {
                   {of.emoji}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate text-[16px] font-extrabold tracking-tight">{l(of.title)}</h3>
-                  <p className="mt-1 truncate text-[13.5px] font-bold text-ink-faint">{l(of.desc)}</p>
+                  <h3 className="truncate text-[16px] font-semibold">{l(of.title)}</h3>
+                  <p className="mt-1 truncate text-[13px] font-medium text-ink-faint">{l(of.desc)}</p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <div className="text-[15px] font-extrabold text-sky2-600">+{of.reward}P</div>
+                  <div className="text-[15px] font-semibold text-sky2-600">+{of.reward}P</div>
                   <Chip tone="gray">{t('rewards.offerSoon')}</Chip>
                 </div>
               </Card>
@@ -259,12 +259,12 @@ export default function Rewards() {
             {ledger.slice(0, 8).map((e) => (
               <div key={e.id} className="flex items-center justify-between border-b border-line px-3 py-3 last:border-0">
                 <div className="min-w-0">
-                  <p className="truncate text-[14.5px] font-bold">{e.memo}</p>
+                  <p className="truncate text-[14px] font-bold">{e.memo}</p>
                   <p className="mt-0.5 text-[12px] font-medium text-ink-faint">
                     {new Date(e.at).toLocaleDateString()} {new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
-                <span className={`shrink-0 text-[15px] font-extrabold ${e.amount >= 0 ? 'text-mind-600' : 'text-red-400'}`}>
+                <span className={`shrink-0 text-[15px] font-semibold${e.amount >= 0 ? 'text-mind-600' : 'text-red-400'}`}>
                   {e.amount >= 0 ? '+' : ''}
                   {e.amount.toLocaleString()}P
                 </span>
@@ -279,8 +279,8 @@ export default function Rewards() {
       <Modal open={streakInfo} onClose={() => setStreakInfo(false)}>
         <div className="text-center">
           <div className="text-5xl">🔥</div>
-          <h3 className="mt-3 text-[19px] font-extrabold tracking-tight">{t('streak.title')}</h3>
-          <p className="mt-3 whitespace-pre-line text-left text-[14.5px] font-medium leading-[1.85] text-ink-sub">
+          <h3 className="mt-3 text-[20px] font-extrabold tracking-tight">{t('streak.title')}</h3>
+          <p className="mt-3 whitespace-pre-line text-left text-[14px] font-medium leading-[1.85] text-ink-sub">
             {t('streak.body')}
           </p>
           <div className="mt-5">

@@ -144,11 +144,11 @@ export default function Onboarding() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={SPRING.ui} className="text-center">
           <motion.img src="/icon.svg" alt="" className="mx-auto h-20 w-20 rounded-3xl shadow-pop" animate={{ rotate: [0, -6, 6, 0] }} transition={{ repeat: Infinity, duration: 3 }} />
           <h1 className="mt-5 break-keep text-[24px] font-extrabold leading-tight tracking-tight">{t('onboard.welcome')}</h1>
-          <p className="mt-2.5 break-keep text-[14.5px] font-medium leading-relaxed text-ink-sub">{t('onboard.sub')}</p>
+          <p className="mt-2.5 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">{t('onboard.sub')}</p>
         </motion.div>
 
         {oauthErr && (
-          <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12.5px] font-bold text-red-500">
+          <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-medium text-red-500">
             {t('onboard.kakao')} 실패: {oauthErr}
           </motion.p>
         )}
@@ -157,7 +157,7 @@ export default function Onboarding() {
         {authReady() && (
           <div className="mt-7">
             {kakaoNick ? (
-              <div className="rounded-2xl bg-[#FEE500]/90 py-3.5 text-center text-[14px] font-extrabold text-[#3A1D1D]">
+              <div className="rounded-2xl bg-[#FEE500]/90 py-3.5 text-center text-[14px] font-semibold text-[#3A1D1D]">
                 💬 {t('onboard.kakaoReady', { nick: kakaoNick })}
                 {/* 다른 계정으로 붙었을 때 빠져나갈 길 — 온보딩 게이트 탓에 Profile에 못 가므로 여기 필요 */}
                 <button
@@ -166,7 +166,7 @@ export default function Onboarding() {
                     setKakaoNick(null)
                     setNick('')
                   }}
-                  className="mt-1.5 block w-full text-[12px] font-bold text-[#3A1D1D]/60 underline"
+                  className="mt-1.5 block w-full text-[12px] font-medium text-[#3A1D1D]/60 underline"
                 >
                   {t('onboard.otherAccount')}
                 </button>
@@ -175,14 +175,14 @@ export default function Onboarding() {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={doKakao}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-4 text-[16px] font-extrabold text-[#3A1D1D] shadow-card"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-4 text-[16px] font-semibold text-[#3A1D1D] shadow-card"
               >
                 💬 {t('onboard.kakao')}
               </motion.button>
             )}
             <div className="my-5 flex items-center gap-3">
               <div className="h-px flex-1 bg-line" />
-              <span className="shrink-0 text-[12px] font-bold text-ink-faint">{t('onboard.or')}</span>
+              <span className="shrink-0 text-[12px] font-medium text-ink-faint">{t('onboard.or')}</span>
               <div className="h-px flex-1 bg-line" />
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function Onboarding() {
 
         {/* 닉네임 */}
         <div className={authReady() ? '' : 'mt-8'}>
-          <label className="px-1 text-[14px] font-extrabold">{t('onboard.nickLabel')}</label>
+          <label className="px-1 text-[14px] font-semibold">{t('onboard.nickLabel')}</label>
           <input
             value={nick}
             onChange={(e) => {
@@ -200,16 +200,16 @@ export default function Onboarding() {
             placeholder={t('onboard.nickPh')}
             maxLength={12}
             autoFocus
-            className={`mt-2 w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-[16px] font-extrabold outline-none ${
+            className={`mt-2 w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-[16px] font-semibold outline-none${
               nickErr ? 'border-red-300 focus:border-red-400' : 'border-line focus:border-mind-400'
             }`}
           />
-          {nickErr && <p className="mt-1.5 px-1 text-[12.5px] font-bold text-red-500">{nickErr}</p>}
+          {nickErr && <p className="mt-1.5 px-1 text-[12px] font-medium text-red-500">{nickErr}</p>}
         </div>
 
         {/* 시작 캐릭터 */}
         <div className="mt-6">
-          <p className="px-1 text-[14px] font-extrabold">{t('onboard.pickLabel')}</p>
+          <p className="px-1 text-[14px] font-semibold">{t('onboard.pickLabel')}</p>
           <div className="mt-2.5 grid grid-cols-4 gap-2.5">
             {STARTERS.map((key) => {
               const p = PERSONA_VISUAL[key]
@@ -237,7 +237,7 @@ export default function Onboarding() {
 
         {/* 가입 선물 + 시작 */}
         <div className="mt-8">
-          <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-50 py-2.5 text-[14px] font-extrabold text-mind-700">
+          <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-50 py-2.5 text-[14px] font-semibold text-mind-700">
             🎁 {t('onboard.bonus')}
           </div>
           {/* 필수 약관 동의 체크 (실서비스/스토어 심사 대비) */}
@@ -253,9 +253,9 @@ export default function Onboarding() {
               className="mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 transition-colors"
               style={{ borderColor: agreed ? '#4FA882' : 'rgb(var(--line))', background: agreed ? '#4FA882' : 'rgb(var(--surface))' }}
             >
-              {agreed && <span className="text-[13px] font-black leading-none text-white">✓</span>}
+              {agreed && <span className="text-[13px] font-medium leading-none text-white">✓</span>}
             </button>
-            <p className="break-keep text-left text-[12.5px] font-medium leading-relaxed text-ink-sub">
+            <p className="break-keep text-left text-[12px] font-medium leading-relaxed text-ink-sub">
               {t('onboard.agreePre')}
               <button type="button" onClick={() => setLegal('terms')} className="font-extrabold text-mind-700 underline underline-offset-2">
                 {t('onboard.terms')}
@@ -276,7 +276,7 @@ export default function Onboarding() {
 
           {/* 사업자 정보 — 가입 전 첫 화면에서 확인 가능해야 함(카카오 비즈 심사·전자상거래 표시 의무) */}
           <div className="mt-5 border-t border-line pt-4 text-center">
-            <p className="text-[10.5px] font-medium leading-relaxed text-ink-faint">
+            <p className="text-[11px] font-medium leading-relaxed text-ink-faint">
               엔에이치홀딩스 · 대표 김윤혜 · 사업자등록번호 525-20-02937
               <br />
               경기도 남양주시 진건읍 사릉로372번길 25, 201동 1403호
@@ -294,7 +294,7 @@ export default function Onboarding() {
       {(picked || nick) && (
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="pointer-events-none fixed right-5 top-5 flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 shadow-card">
           <Avatar avatar={picked ? { kind: 'animal', persona: picked } : null} size={26} emojiScale={0.5} />
-          <span className="max-w-[90px] truncate text-[13px] font-extrabold">{nick || '친구'}</span>
+          <span className="max-w-[90px] truncate text-[13px] font-semibold">{nick || '친구'}</span>
         </motion.div>
       )}
     </div>

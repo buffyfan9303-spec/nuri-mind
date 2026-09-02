@@ -171,7 +171,7 @@ export default function MemoryRun() {
       {/* 블록 배지 */}
       <div className="mx-auto mt-3 w-full max-w-md px-5">
         <span
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold text-white"
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold text-white"
           style={{ background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
         >
           {isBackward ? '🔄' : '➡️'} {blockLabel}
@@ -192,7 +192,7 @@ export default function MemoryRun() {
               <motion.div
                 animate={{ scale: [1, 1.12, 1] }}
                 transition={{ repeat: Infinity, duration: 1 }}
-                className="text-[64px] leading-none"
+                className="text-[28px] leading-none"
               >
                 {isBackward ? '🔄' : '👀'}
               </motion.div>
@@ -225,13 +225,13 @@ export default function MemoryRun() {
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0.7, opacity: 0 }}
                       transition={{ duration: 0.18 }}
-                      className="text-[92px] font-extrabold leading-none"
+                      className="text-[28px] font-extrabold leading-none"
                       style={{ color: accent }}
                     >
                       {shown}
                     </motion.span>
                   ) : (
-                    <motion.span key="dot" className="text-[40px] text-ink-faint">
+                    <motion.span key="dot" className="text-[28px] text-ink-faint">
                       •
                     </motion.span>
                   )}
@@ -252,7 +252,7 @@ export default function MemoryRun() {
               exit={{ opacity: 0 }}
               className="flex flex-1 flex-col"
             >
-              <p className="mt-4 text-center text-[14px] font-extrabold text-ink-sub">
+              <p className="mt-4 text-center text-[14px] font-semibold text-ink-sub">
                 {isBackward
                   ? l({ ko: '거꾸로 입력하세요', en: 'Enter in reverse', ja: '逆向きに入力' })
                   : l({ ko: '본 순서대로 입력하세요', en: 'Enter in order', ja: '見た順に入力' })}
@@ -286,8 +286,8 @@ export default function MemoryRun() {
                     animate={{ scale: 1, opacity: 1 }}
                     className="text-center"
                   >
-                    <div className="text-[56px] leading-none">{verdict ? '✅' : '❌'}</div>
-                    <p className="mt-2 text-[16px] font-extrabold" style={{ color: verdict ? '#10B981' : '#EF4444' }}>
+                    <div className="text-[28px] leading-none">{verdict ? '✅' : '❌'}</div>
+                    <p className="mt-2 text-[16px] font-semibold" style={{ color: verdict ? '#10B981' : '#EF4444' }}>
                       {verdict
                         ? l({ ko: '정확해요!', en: 'Correct!', ja: '正解！' })
                         : l({ ko: `정답: ${(block === 0 ? seq : [...seq].reverse()).join(' ')}`, en: `Answer: ${(block === 0 ? seq : [...seq].reverse()).join(' ')}`, ja: `正解: ${(block === 0 ? seq : [...seq].reverse()).join(' ')}` })}
@@ -303,7 +303,7 @@ export default function MemoryRun() {
                         key={d}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => tapKey(d)}
-                        className="flex h-16 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[26px] font-extrabold shadow-card"
+                        className="flex h-16 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[24px] font-extrabold shadow-card"
                       >
                         {d}
                       </motion.button>
@@ -321,7 +321,7 @@ export default function MemoryRun() {
                     <button
                       onClick={submit}
                       disabled={entered.length !== seq.length}
-                      className="flex h-14 flex-[2] items-center justify-center rounded-2xl text-[17px] font-extrabold text-white transition-opacity disabled:opacity-40"
+                      className="flex h-14 flex-[2] items-center justify-center rounded-2xl text-[17px] font-semibold text-white transition-opacity disabled:opacity-40"
                       style={{ background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
                     >
                       {l({ ko: '확인', en: 'Submit', ja: '確認' })}

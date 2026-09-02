@@ -106,16 +106,16 @@ export default function ZodiacLanding() {
       <main className="mx-auto max-w-md px-5">
         {/* 히어로 */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="mt-6 text-center">
-          <p className="text-[56px] leading-none">{page.emoji}</p>
-          <h1 className="mt-3 break-keep text-[22px] font-extrabold leading-tight">오늘의 {page.ko}띠 운세</h1>
-          <p className="mt-1.5 text-[13px] font-bold text-ink-faint">{dateLabel} · 음양오행 기준</p>
+          <p className="text-[28px] leading-none">{page.emoji}</p>
+          <h1 className="mt-3 break-keep text-[20px] font-extrabold leading-tight">오늘의 {page.ko}띠 운세</h1>
+          <p className="mt-1.5 text-[13px] font-medium text-ink-faint">{dateLabel} · 음양오행 기준</p>
         </motion.div>
 
         {/* 오늘의 기운(매일 갱신) */}
         <Card className="mt-5 !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-5 text-white">
-          {rel && <p className="text-[13px] font-extrabold text-white/85">{rel.title}</p>}
-          <p className="mt-1.5 break-keep text-[16px] font-extrabold leading-relaxed">{line.line.ko}</p>
-          {rel && <p className="mt-2 break-keep text-[12.5px] font-bold leading-relaxed text-white/85">{rel.desc}</p>}
+          {rel && <p className="text-[13px] font-semibold text-white/85">{rel.title}</p>}
+          <p className="mt-1.5 break-keep text-[16px] font-semibold leading-relaxed">{line.line.ko}</p>
+          {rel && <p className="mt-2 break-keep text-[12px] font-medium leading-relaxed text-white/85">{rel.desc}</p>}
         </Card>
 
         {/* 정확한 운세 CTA */}
@@ -130,12 +130,12 @@ export default function ZodiacLanding() {
 
         {/* 띠 소개(정적 콘텐츠) */}
         <Card className="mt-4 !p-5">
-          <h2 className="text-[15.5px] font-extrabold">
+          <h2 className="text-[15px] font-semibold">
             {page.emoji} {page.ko}띠는 어떤 사람?
           </h2>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {page.traits.map((tr) => (
-              <span key={tr} className="rounded-full bg-mind-50 px-2.5 py-1 text-[12px] font-extrabold text-mind-700">
+              <span key={tr} className="rounded-full bg-mind-50 px-2.5 py-1 text-[12px] font-semibold text-mind-700">
                 #{tr}
               </span>
             ))}
@@ -151,16 +151,16 @@ export default function ZodiacLanding() {
 
         {/* 심리검사 퍼널 — 재미 콘텐츠 → 본업(검사) 연결 */}
         <Card onClick={() => nav('/')} className="mt-3.5 flex items-center gap-3 !p-4">
-          <span className="text-[26px]">🧠</span>
+          <span className="text-[24px]">🧠</span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[14.5px] font-extrabold">성격이 궁금하면 심리검사로</h3>
-            <p className="mt-0.5 break-keep text-[12px] font-bold text-ink-faint">자존감·애착·번아웃 등 공개 척도 기반 12종 무료</p>
+            <h3 className="text-[14px] font-semibold">성격이 궁금하면 심리검사로</h3>
+            <p className="mt-0.5 break-keep text-[12px] font-medium text-ink-faint">자존감·애착·번아웃 등 공개 척도 기반 12종 무료</p>
           </div>
           <span className="shrink-0 text-[15px] text-ink-faint">›</span>
         </Card>
 
         {/* 12지 내부 링크 */}
-        <h2 className="mt-6 px-1 text-[14px] font-extrabold">다른 띠 오늘의 운세</h2>
+        <h2 className="mt-6 px-1 text-[14px] font-semibold">다른 띠 오늘의 운세</h2>
         <div className="mt-2 grid grid-cols-4 gap-2">
           {ZODIAC_PAGES.map((z) => (
             <button
@@ -169,7 +169,7 @@ export default function ZodiacLanding() {
               className={`rounded-2xl border-2 py-2 text-center ${z.slug === page.slug ? 'border-mind-400 bg-mind-50 text-mind-800 dark:bg-mind-500/20 dark:text-mind-100' : 'border-line bg-surface'}`}
             >
               <span className="text-[20px]">{z.emoji}</span>
-              <p className="text-[11px] font-extrabold">{z.ko}띠</p>
+              <p className="text-[11px] font-semibold">{z.ko}띠</p>
             </button>
           ))}
         </div>

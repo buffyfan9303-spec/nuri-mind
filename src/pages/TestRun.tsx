@@ -297,10 +297,10 @@ export default function TestRun() {
           >
             {!isIq ? (
               <>
-                <p className="mt-8 text-[13px] font-extrabold tracking-widest" style={{ color: tm.gradFrom }}>
+                <p className="mt-8 text-[13px] font-semibold" style={{ color: tm.gradFrom }}>
                   Q{idx + 1}
                 </p>
-                <h1 className="mt-2.5 text-[21px] font-extrabold leading-[1.6] tracking-tight">
+                <h1 className="mt-2.5 text-[20px] font-extrabold leading-[1.6] tracking-tight">
                   {l((item as LikertItem).text)}
                 </h1>
                 <div className="mt-8 space-y-3">
@@ -314,7 +314,7 @@ export default function TestRun() {
                         whileTap={{ scale: 0.97 }}
                         animate={active ? { scale: [1, 1.06, 0.98, 1] } : { scale: 1 }}
                         transition={active ? { duration: 0.34, ease: [0.34, 1.4, 0.5, 1] } : SPRING.flick}
-                        className="flex w-full items-center justify-between rounded-2xl border-2 bg-surface px-5 py-4 text-left text-[17px] font-bold leading-relaxed"
+                        className="flex w-full items-center justify-between rounded-2xl border-2 bg-surface px-5 py-4 text-left text-[17px] font-bold leading-tight"
                         style={{
                           borderColor: active ? tm.gradFrom : '#E3EAE5',
                           background: active ? `${tm.gradFrom}1A` : 'rgb(var(--surface))',
@@ -389,7 +389,7 @@ function IqQuestion({
   const isFig = item.options.some((o) => o.fig)
   return (
     <>
-      <p className="mt-6 text-center text-[15px] font-bold leading-relaxed tracking-wide text-ink-sub">
+      <p className="mt-6 text-center text-[15px] font-bold leading-relaxed text-ink-sub">
         {l(item.prompt ?? IQ_PROMPTS[item.kind])}
       </p>
 
@@ -397,12 +397,12 @@ function IqQuestion({
         {item.kind === 'matrix' && item.cells && <MatrixGrid cells={item.cells} />}
         {item.kind === 'fold' && item.cells && <FoldStrip cells={item.cells} />}
         {(item.kind === 'series' || item.kind === 'letter') && (
-          <div className="rounded-2xl border-2 border-line bg-surface px-4 py-8 text-center text-[28px] font-extrabold tracking-widest">
+          <div className="rounded-2xl border-2 border-line bg-surface px-4 py-8 text-center text-[28px] font-extrabold">
             {item.series}
           </div>
         )}
         {item.kind === 'verbal' && (
-          <div className="whitespace-pre-line rounded-2xl border-2 border-line bg-surface px-5 py-6 text-[18px] font-extrabold leading-[1.75]">
+          <div className="whitespace-pre-line rounded-2xl border-2 border-line bg-surface px-5 py-6 text-[17px] font-semibold leading-tight">
             {l(item.prompt)}
           </div>
         )}
@@ -430,7 +430,7 @@ function IqQuestion({
               {o.fig ? (
                 <FigCell fig={o.fig} className="h-full w-full" />
               ) : (
-                <span className={item.kind === 'verbal' ? 'block text-left text-[16px] leading-relaxed' : 'text-[22px]'}>
+                <span className={item.kind === 'verbal' ? 'block text-left text-[16px] leading-relaxed' : 'text-[24px]'}>
                   {l(o.text)}
                 </span>
               )}
