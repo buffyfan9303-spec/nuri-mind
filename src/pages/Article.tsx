@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -37,7 +38,7 @@ export default function Article() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          transition={SPRING.ui}
           className="pt-1 text-center"
         >
           <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[28px] bg-mind-50 shadow-card">
@@ -59,7 +60,7 @@ export default function Article() {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
-                transition={{ type: 'spring', stiffness: 250, damping: 26 }}
+                transition={SPRING.ui}
               >
                 <Card className="!p-4">
                   <div className="flex items-center gap-2.5">
@@ -92,7 +93,7 @@ export default function Article() {
         </div>
 
         {/* 핵심 요약 체크리스트 */}
-        <motion.div initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ type: 'spring', stiffness: 250, damping: 26 }}>
+        <motion.div initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={SPRING.ui}>
           <Card className="mt-5 !bg-mind-50 dark:!bg-surface !p-4 !shadow-none">
             <h3 className="text-[15px] font-extrabold text-mind-700">📌 {t('mag.keypoints')}</h3>
             <ul className="mt-2.5 space-y-2.5">

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { SPRING } from '../../lib/motion'
 
 /**
  * 진행바 — 듀오링고/Typeform 표준(전세계 best-practice).
@@ -13,7 +14,7 @@ export function ProgressBar({ value, color = '#4FA882' }: { value: number; color
         className="relative h-full overflow-hidden rounded-full"
         initial={false}
         animate={{ width: `${pct}%` }}
-        transition={{ type: 'spring', stiffness: 180, damping: 26, mass: 0.7 }}
+        transition={SPRING.ui}
         style={{ background: color, minWidth: pct > 0 ? '0.875rem' : 0 }}
       >
         <span className="pointer-events-none absolute inset-x-1.5 top-[3px] block h-1 rounded-full bg-surface/40" />

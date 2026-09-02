@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { TopBar } from '../components/ui'
 import { JellyChip } from '../components/ScrollChips'
@@ -22,7 +23,7 @@ export default function QuickHub() {
               key={q.id}
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.04 * i, type: 'spring', stiffness: 240, damping: 24 }}
+              transition={{ ...SPRING.ui, delay: 0.04 * i }}
             >
               <JellyChip
                 emoji={q.emoji}

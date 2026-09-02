@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { SPRING } from '../lib/motion'
 import { useRef, useState, type ReactNode } from 'react'
 import { haptic } from '../lib/haptic'
 
@@ -72,7 +73,7 @@ export default function Button({
       disabled={disabled}
       onClick={handleClick}
       whileTap={disabled ? undefined : { y: 3, boxShadow: `0 0px 0 ${c.sh}` }}
-      transition={{ type: 'spring', stiffness: 600, damping: 30 }}
+      transition={SPRING.flick}
       className={`relative ${full ? 'w-full' : ''} ${pad} whitespace-nowrap rounded-2xl font-extrabold tracking-wide select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
       style={{ background: c.bg, color: c.fg, boxShadow: `0 3px 0 ${c.sh}`, border: c.border ?? 'none' }}
     >

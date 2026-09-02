@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { useT } from '../i18n/useT'
 import { haptic } from '../lib/haptic'
@@ -33,9 +34,8 @@ export default function BottomNav() {
                       : { y: 0, scale: 1, boxShadow: '0 0px 0px rgba(0,0,0,0)' }
                   }
                   transition={{
-                    type: 'spring',
-                    stiffness: 420,
-                    damping: 24,
+                    ...SPRING.flick,
+                    // 탭 배지의 scale만 키프레임으로 따로 간다(스프링으로는 중간 피크를 만들 수 없다)
                     scale: { duration: 0.34, times: [0, 0.55, 1], ease: 'easeOut' },
                   }}
                   className="flex h-9 w-9 items-center justify-center rounded-full text-[19px]"

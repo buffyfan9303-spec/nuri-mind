@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { Card, Modal, Section } from './ui'
 import { ACHIEVEMENTS, type AchCtx } from '../data/achievements'
@@ -54,8 +55,8 @@ export default function Badges() {
                 key={a.id}
                 initial={{ opacity: 0, scale: 0.85 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: Math.min(i * 0.02, 0.3), type: 'spring', stiffness: 260, damping: 22 }}
-                whileTap={{ scale: 0.92 }}
+                transition={{ ...SPRING.ui, delay: Math.min(i * 0.02, 0.3) }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => {
                   sfx.tap()
                   setOpen(a.id)

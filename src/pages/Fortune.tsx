@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { TopBar, Card, ProgressBar, Modal } from '../components/ui'
@@ -312,7 +313,7 @@ export default function Fortune() {
         <motion.div
           initial={{ opacity: 0, y: 16, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ type: 'spring', stiffness: 190, damping: 18 }}
+          transition={SPRING.ui}
           className="relative mt-3 rounded-3xl p-6 text-center text-white shadow-pop"
           style={{ background: `linear-gradient(135deg, ${fortune.grad[0]}, ${fortune.grad[1]})` }}
         >
@@ -344,7 +345,7 @@ export default function Fortune() {
         <h2 className="mt-6 px-1 text-[17px] font-extrabold tracking-tight">{t('fortune.todayLuck')}</h2>
         <div className="mt-3 space-y-2.5">
           {gauges.map((g, i) => (
-            <motion.div key={g.key} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i, type: 'spring', stiffness: 240, damping: 24 }}>
+            <motion.div key={g.key} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING.ui, delay: 0.05 * i }}>
               <Card>
                 <div className="flex items-center justify-between">
                   <span className="text-[14.5px] font-extrabold">{g.emoji} {g.label}</span>
@@ -511,7 +512,7 @@ export default function Fortune() {
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${w.overall}%` }}
-                        transition={{ delay: 0.04 * i, type: 'spring', stiffness: 200, damping: 22 }}
+                        transition={{ ...SPRING.ui, delay: 0.04 * i }}
                         className="w-[58%] rounded-full"
                         style={{ background: w.isToday ? `linear-gradient(${fortune.grad[0]}, ${fortune.grad[1]})` : '#DCE4DF' }}
                       />

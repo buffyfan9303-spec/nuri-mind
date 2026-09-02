@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import Celebration from '../components/Celebration'
@@ -69,7 +70,7 @@ export default function Rank() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 14 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 230, damping: 22 }}
+          transition={SPRING.ui}
           className="rounded-3xl p-7 text-center shadow-pop"
           style={{ background: `linear-gradient(140deg, ${tier.grad[0]}, ${tier.grad[1]})` }}
         >
@@ -91,7 +92,7 @@ export default function Rank() {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(100, Math.round(progress * 100))}%` }}
-                transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.3 }}
+                transition={{ ...SPRING.gauge, delay: 0.3 }}
                 className="h-full rounded-full bg-surface"
               />
             </div>

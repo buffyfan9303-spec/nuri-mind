@@ -93,7 +93,7 @@ export default function ScrollChips({ items, baseDelay = 0 }: { items: ChipItem[
           key={it.id}
           initial={{ opacity: 0, x: 18 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ ...SPRING.jelly, delay: baseDelay + 0.045 * i }}
+          transition={{ ...SPRING.ui, delay: baseDelay + 0.045 * i }}
           className="shrink-0 snap-start"
         >
           <JellyChip emoji={it.emoji} label={it.label} color={it.color} badge={it.badge} selected={it.selected} onClick={it.onClick} />

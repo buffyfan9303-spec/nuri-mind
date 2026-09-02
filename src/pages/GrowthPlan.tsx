@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -190,7 +191,7 @@ export default function GrowthPlan() {
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          transition={SPRING.ui}
           className="mt-4 rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-5 text-white shadow-pop"
         >
           <div className="flex items-end justify-between">
@@ -212,7 +213,7 @@ export default function GrowthPlan() {
           <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/25">
             <motion.div
               animate={{ width: `${allTasks.length ? (doneToday / allTasks.length) * 100 : 0}%` }}
-              transition={{ type: 'spring', stiffness: 180, damping: 26 }}
+              transition={SPRING.ui}
               className="h-full rounded-full bg-white"
             />
           </div>
@@ -234,7 +235,7 @@ export default function GrowthPlan() {
             key={f.testId}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.04 * i, type: 'spring', stiffness: 220, damping: 24 }}
+            transition={{ ...SPRING.ui, delay: 0.04 * i }}
           >
             <Card className="mt-3.5 !p-5">
               <h2 className="flex items-center gap-2 break-keep text-[15.5px] font-extrabold tracking-tight">

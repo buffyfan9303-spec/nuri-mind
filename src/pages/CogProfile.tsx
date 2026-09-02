@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { TopBar, Card } from '../components/ui'
@@ -134,7 +135,7 @@ export default function CogProfile() {
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 14 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 240, damping: 24 }}
+          transition={SPRING.ui}
           className="rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#3B82F6] p-6 text-center text-white shadow-pop"
         >
           <div className="text-[40px] leading-none">🧩</div>
@@ -226,7 +227,7 @@ export default function CogProfile() {
                       initial={{ width: 0 }}
                       whileInView={{ width: `${Math.round(norm(s) * 100)}%` }}
                       viewport={{ once: true }}
-                      transition={{ type: 'spring', stiffness: 120, damping: 22 }}
+                      transition={SPRING.gauge}
                       className="h-full rounded-full"
                       style={{ background: m.color }}
                     />

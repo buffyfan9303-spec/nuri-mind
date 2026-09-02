@@ -110,7 +110,7 @@ export default function Ticker() {
             <div className="pointer-events-none absolute inset-y-0 right-0 w-5" style={{ background: `linear-gradient(90deg,transparent,${pal.fade})` }} />
           </div>
           <motion.button
-            whileTap={{ scale: 0.9, y: 2, boxShadow: '0 0 0 rgba(0,0,0,0.18)' }}
+            whileTap={{ scale: 0.97, y: 2, boxShadow: '0 0 0 rgba(0,0,0,0.18)' }}
             onClick={() => {
               setOpen(true)
               sfx.tap()

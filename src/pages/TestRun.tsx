@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Button from '../components/Button'
@@ -228,7 +229,7 @@ export default function TestRun() {
       {/* 헤더: 중단 X + 진행바 + (IQ) 타이머 */}
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
         <motion.button
-          whileTap={{ scale: 0.85 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setQuitOpen(true)}
           className="text-2xl font-bold text-ink-faint"
           aria-label="quit"
@@ -292,7 +293,7 @@ export default function TestRun() {
             initial={{ x: 70, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -70, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+            transition={SPRING.ui}
           >
             {!isIq ? (
               <>
@@ -310,9 +311,9 @@ export default function TestRun() {
                       <motion.button
                         key={i}
                         onClick={() => pickLikert(v)}
-                        whileTap={{ scale: 0.96 }}
+                        whileTap={{ scale: 0.97 }}
                         animate={active ? { scale: [1, 1.06, 0.98, 1] } : { scale: 1 }}
-                        transition={active ? { duration: 0.34, ease: [0.34, 1.4, 0.5, 1] } : { type: 'spring', stiffness: 600, damping: 30 }}
+                        transition={active ? { duration: 0.34, ease: [0.34, 1.4, 0.5, 1] } : SPRING.flick}
                         className="flex w-full items-center justify-between rounded-2xl border-2 bg-surface px-5 py-4 text-left text-[17px] font-bold leading-relaxed"
                         style={{
                           borderColor: active ? tm.gradFrom : '#E3EAE5',
@@ -414,7 +415,7 @@ function IqQuestion({
             <motion.button
               key={o.id}
               onClick={() => onPick(o.id)}
-              whileTap={{ scale: 0.96 }}
+              whileTap={{ scale: 0.97 }}
               animate={active ? { scale: [1, 1.05, 1] } : { scale: 1 }}
               className={`rounded-2xl border-2 bg-surface ${
                 o.fig ? 'aspect-square p-2' : 'px-4 py-4'

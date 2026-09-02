@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
@@ -88,7 +89,7 @@ export default function SurveyCreate() {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1, rotate: [0, -8, 6, 0] }}
-            transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+            transition={SPRING.sheet}
             className="text-6xl"
           >
             🔒
@@ -131,7 +132,7 @@ export default function SurveyCreate() {
             initial={{ x: 60, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -60, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            transition={SPRING.ui}
           >
             {step === 0 && (
               <div className="mt-6 space-y-5">
@@ -141,7 +142,7 @@ export default function SurveyCreate() {
                     {EMOJIS.map((e) => (
                       <motion.button
                         key={e}
-                        whileTap={{ scale: 0.85 }}
+                        whileTap={{ scale: 0.97 }}
                         onClick={() => {
                           setEmoji(e)
                           sfx.tap()
@@ -190,7 +191,7 @@ export default function SurveyCreate() {
                   {TYPES.map(({ type, icon }) => (
                     <motion.button
                       key={type}
-                      whileTap={{ scale: 0.92 }}
+                      whileTap={{ scale: 0.97 }}
                       onClick={() => addQ(type)}
                       className="rounded-2xl border-2 border-line bg-surface px-1 py-3 text-center"
                     >
@@ -263,7 +264,7 @@ export default function SurveyCreate() {
                         >
                           <motion.span
                             animate={{ x: q.required ? 22 : 3 }}
-                            transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                            transition={SPRING.snap}
                             className="absolute top-1 h-5 w-5 rounded-full bg-surface shadow"
                           />
                         </button>

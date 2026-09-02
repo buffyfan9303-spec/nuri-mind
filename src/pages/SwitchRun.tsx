@@ -101,7 +101,7 @@ export default function SwitchRun() {
   return (
     <div className="flex min-h-dvh flex-col">
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button whileTap={{ scale: 0.85 }} onClick={() => setQuitOpen(true)} className="text-2xl font-bold text-ink-faint" aria-label="quit">
+        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setQuitOpen(true)} className="text-2xl font-bold text-ink-faint" aria-label="quit">
           ✕
         </motion.button>
         <div className="flex-1">
@@ -146,7 +146,7 @@ export default function SwitchRun() {
         {/* 답 버튼 (규칙에 따라 라벨 변경) */}
         <div className="mb-7 grid grid-cols-2 gap-3">
           <motion.button
-            whileTap={{ scale: 0.96 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => answer('L')}
             disabled={phase !== 'stim'}
             aria-label="ans-L"
@@ -155,7 +155,7 @@ export default function SwitchRun() {
             {labelL}
           </motion.button>
           <motion.button
-            whileTap={{ scale: 0.96 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => answer('R')}
             disabled={phase !== 'stim'}
             aria-label="ans-R"

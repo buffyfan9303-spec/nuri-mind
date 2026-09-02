@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -92,7 +93,7 @@ export default function Shop() {
                 key={item.id}
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.04 * i, type: 'spring', stiffness: 240, damping: 24 }}
+                transition={{ ...SPRING.ui, delay: 0.04 * i }}
               >
                 <Card className="flex items-center gap-3 !p-3">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-mind-50 text-[26px]">

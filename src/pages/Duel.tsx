@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { SPRING } from '../lib/motion'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { TopBar } from '../components/ui'
@@ -50,7 +51,7 @@ export default function Duel() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 16 }}
+            transition={SPRING.sheet}
             className="mx-auto mt-3 flex w-full max-w-[280px] flex-col items-center rounded-3xl p-6 text-white"
             style={{ background: `linear-gradient(150deg, ${qt?.grad[0] ?? '#9AA6FF'}, ${qt?.grad[1] ?? '#C7B8FF'})` }}
           >
@@ -148,7 +149,7 @@ export default function Duel() {
           <motion.p
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 16 }}
+            transition={SPRING.flick}
             className="mt-4 rounded-2xl bg-mind-100 py-3 text-center text-[15px] font-extrabold text-mind-700"
           >
             {verdict}

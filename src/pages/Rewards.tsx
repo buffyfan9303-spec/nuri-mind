@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
@@ -81,7 +82,7 @@ export default function Rewards() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          transition={SPRING.ui}
           className="rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-6 shadow-pop"
         >
           <p className="text-[13.5px] font-extrabold tracking-wide text-white/80">{t('rewards.balance')}</p>

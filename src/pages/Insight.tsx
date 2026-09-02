@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -68,7 +69,7 @@ export default function Insight() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          transition={SPRING.ui}
           className="rounded-3xl bg-gradient-to-br from-[#6E7BF2] to-[#9AA6FF] p-6 text-center text-white shadow-pop"
         >
           <div className="text-[40px]">🧬</div>

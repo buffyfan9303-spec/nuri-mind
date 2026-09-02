@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { SPRING } from '../lib/motion'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Button from './Button'
 import { useStore } from '../store/useStore'
@@ -31,7 +32,7 @@ export default function ReConsent() {
       <motion.div
         initial={{ y: 28, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+        transition={SPRING.ui}
         className="w-full max-w-sm rounded-3xl bg-surface p-6 shadow-pop"
       >
         <div className="text-center text-[34px]">📋</div>

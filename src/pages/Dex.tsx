@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -41,7 +42,7 @@ export default function Dex() {
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          transition={SPRING.ui}
           className="rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-5 text-white shadow-pop"
         >
           <p className="text-[13.5px] font-extrabold tracking-wide text-white/85">{t('dex.sub')}</p>
@@ -55,7 +56,7 @@ export default function Dex() {
               className="h-full rounded-full bg-surface"
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
-              transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.2 }}
+              transition={{ ...SPRING.gauge, delay: 0.2 }}
             />
           </div>
         </motion.div>
@@ -92,8 +93,8 @@ export default function Dex() {
                       key={key}
                       initial={{ opacity: 0, scale: 0.85 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: Math.min((ti * 4 + i) * 0.015, 0.4), type: 'spring', stiffness: 260, damping: 22 }}
-                      whileTap={{ scale: 0.92 }}
+                      transition={{ ...SPRING.ui, delay: Math.min((ti * 4 + i) * 0.015, 0.4) }}
+                      whileTap={{ scale: 0.97 }}
                       onClick={() => {
                         sfx.tap()
                         if (has) setDetail(key)

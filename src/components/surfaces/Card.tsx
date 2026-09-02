@@ -18,7 +18,7 @@ export function Card({
   return (
     <motion.div
       whileTap={onClick ? { scale: 0.97 } : undefined}
-      transition={SPRING.snappy}
+      transition={SPRING.snap}
       onClick={onClick}
       {...(onClick
         ? {

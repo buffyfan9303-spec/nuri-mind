@@ -1,4 +1,5 @@
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import { TopBar, Card } from '../components/ui'
@@ -36,7 +37,7 @@ export default function TestIntro() {
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 14 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 240, damping: 24 }}
+          transition={SPRING.ui}
           className="rounded-3xl p-6 text-center shadow-pop"
           style={{ background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
         >

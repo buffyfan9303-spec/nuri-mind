@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { haptic } from '../lib/haptic'
 
@@ -46,7 +47,7 @@ export default function Celebration({
             initial={{ scale: 0.7, y: 24, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 260, damping: 17 }}
+            transition={SPRING.sheet}
             className="w-full max-w-[320px] rounded-[28px] p-8 text-center text-white shadow-pop"
             style={{ background: `linear-gradient(150deg, ${grad[0]}, ${grad[1]})` }}
           >
@@ -72,7 +73,7 @@ export default function Celebration({
               <motion.div
                 initial={{ scale: 0, rotate: -18 }}
                 animate={{ scale: 1, rotate: [0, -10, 8, 0] }}
-                transition={{ type: 'spring', stiffness: 240, damping: 11, delay: 0.16 }}
+                transition={{ ...SPRING.sheet, delay: 0.16 }}
                 className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 text-6xl shadow-pop"
               >
                 {emoji}
@@ -81,7 +82,7 @@ export default function Celebration({
             <motion.h2
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.4, type: 'spring', stiffness: 320, damping: 18 }}
+              transition={{ ...SPRING.flick, delay: 0.4 }}
               className="mt-5 break-keep text-[24px] font-extrabold tracking-tight"
             >
               {title}

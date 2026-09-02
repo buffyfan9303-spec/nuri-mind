@@ -9,6 +9,7 @@
  *  ⑤ sitemap 등재 URL ↔ 실제 라우트/데이터 불일치
  *  ⑥ 16유형 심층 문항의 극별 균형(불균형 시 채점 편향)
  *  ⑦ 엣지 함수가 공용 모듈(_shared)을 올바르게 참조하는가 · 사본이 남아 원본을 가리지 않는가
+ *  ⑧ 모션이 lib/motion 프리셋을 우회하고 스프링을 하드코딩하지 않는가
  *
  * 실행: npm run smoke   (실패 시 exit 1 — 배포 전 게이트로 사용)
  */
@@ -103,6 +104,24 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
       .filter(Boolean)
       .join(' · '),
   )
+}
+
+/* ⑧ 모션이 프리셋을 우회하지 않는가 */
+{
+  // stiffness/damping을 손으로 적으면 화면마다 물성이 갈라진다 — 실제로 97곳이 제각각이었다.
+  // 예외는 BottomNav 하나(속성별 키프레임 오버라이드)라 파일 단위로 허용한다.
+  // BottomNav: 속성별 키프레임 오버라이드. Pill: useSpring(값 보간) API로 형태가 다르다.
+  const ALLOW = ['src/components/BottomNav.tsx', 'src/components/primitives/Pill.tsx']
+  const bad = []
+  const walk = (dir) => {
+    for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
+      const rel = `${dir}/${e.name}`
+      if (e.isDirectory()) walk(rel)
+      else if (/\.tsx$/.test(e.name) && !ALLOW.includes(rel) && /stiffness:\s*\d/.test(read(rel))) bad.push(rel)
+    }
+  }
+  walk('src')
+  check('모션 프리셋 사용(하드코딩 스프링 0)', bad.length === 0, bad.slice(0, 5).join(', '))
 }
 
 /* 결과 */

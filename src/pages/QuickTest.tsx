@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -162,7 +163,7 @@ export default function QuickTest() {
           <motion.div
             initial={{ opacity: 0, y: 18, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+            transition={SPRING.ui}
             className="mt-3 rounded-3xl p-7 text-center text-white shadow-pop"
             style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }}
           >
@@ -191,7 +192,7 @@ export default function QuickTest() {
               <motion.div
                 initial={{ scale: 0.5, y: 8 }}
                 animate={{ scale: 1, y: 0, rotate: [0, -8, 6, 0] }}
-                transition={{ type: 'spring', stiffness: 170, damping: 11 }}
+                transition={SPRING.sheet}
                 className="relative drop-shadow-[0_6px_14px_rgba(0,0,0,0.18)]"
               >
                 <span className="floaty block">
@@ -210,7 +211,7 @@ export default function QuickTest() {
             <motion.h1
               initial={{ opacity: 0, y: 10, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.42, type: 'spring', stiffness: 320, damping: 18 }}
+              transition={{ ...SPRING.flick, delay: 0.42 }}
               className="mt-3 text-[28px] font-extrabold tracking-tight"
             >
               {l(winner.name)}
@@ -296,15 +297,15 @@ export default function QuickTest() {
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -24 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+            transition={SPRING.ui}
           >
             <h1 className="mt-6 break-keep text-[21px] font-extrabold leading-snug tracking-tight">{l(q.text)}</h1>
             <div className="mt-5 space-y-2.5">
               {q.options.map((op, i) => (
                 <motion.button
                   key={i}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 24 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={SPRING.flick}
                   onClick={() => pick(op.to)}
                   className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-4 text-left text-[15.5px] font-bold leading-snug transition-colors active:border-mind-400 active:bg-mind-50"
                 >

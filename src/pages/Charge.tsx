@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { TopBar, Card, Modal } from '../components/ui'
 import Button from '../components/Button'
@@ -57,7 +58,7 @@ export default function Charge() {
             key={diamonds}
             initial={{ scale: 1.3 }}
             animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 16 }}
+            transition={SPRING.flick}
             className="mt-1 text-[40px] font-extrabold leading-none"
           >
             💎 {diamonds.toLocaleString()}
@@ -165,7 +166,7 @@ export default function Charge() {
         )}
         {sel && done && (
           <div className="text-center">
-            <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, damping: 14 }} className="text-[52px] leading-none">
+            <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="text-[52px] leading-none">
               🎉
             </motion.p>
             <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '충전 완료!', en: 'Charged!', ja: 'チャージ完了！' })}</h3>

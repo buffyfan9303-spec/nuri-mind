@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -53,7 +54,7 @@ export default function Chemi() {
         return (
           <motion.button
             key={a.key}
-            whileTap={{ scale: 0.92 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => {
               onPick(a.key)
               sfx.tap()
@@ -100,7 +101,7 @@ export default function Chemi() {
             key={`${mine}-${theirs}`}
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+            transition={SPRING.ui}
             className="mt-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#F25C8E] to-[#FF8AAE] p-6 text-center text-white shadow-pop"
           >
             <div className="flex items-center justify-center gap-2 text-[40px]">
@@ -116,7 +117,7 @@ export default function Chemi() {
                 className="h-full rounded-full bg-surface"
                 initial={{ width: 0 }}
                 animate={{ width: `${chemi.score}%` }}
-                transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.2 }}
+                transition={{ ...SPRING.gauge, delay: 0.2 }}
               />
             </div>
             <h3 className="mt-4 text-[22px] font-extrabold tracking-tight">{l(chemi.title)}</h3>

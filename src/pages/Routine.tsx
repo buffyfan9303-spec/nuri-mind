@@ -1,4 +1,5 @@
 import { Navigate, useParams } from 'react-router-dom'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { Card, TopBar } from '../components/ui'
 import { ROUTINES } from '../data/routines'
@@ -39,7 +40,7 @@ export default function Routine() {
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          transition={SPRING.ui}
           className="rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-5 text-white shadow-pop"
         >
           <div className="flex items-center gap-3">
@@ -55,7 +56,7 @@ export default function Routine() {
               className="h-full rounded-full bg-surface"
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
-              transition={{ type: 'spring', stiffness: 120, damping: 22 }}
+              transition={SPRING.gauge}
             />
           </div>
           {complete && (

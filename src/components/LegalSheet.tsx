@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useT } from '../i18n/useT'
 import { LEGAL_EFFECTIVE } from '../data/legal'
@@ -60,7 +61,7 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
-            transition={{ type: 'spring', stiffness: 260, damping: 30 }}
+            transition={SPRING.ui}
             onClick={(e) => e.stopPropagation()}
             className="flex h-[88dvh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-surface"
           >

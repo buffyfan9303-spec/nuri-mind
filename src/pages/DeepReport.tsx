@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -165,7 +166,7 @@ export default function DeepReport() {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${pct}%` }}
-                transition={{ type: 'spring', stiffness: 180, damping: 26 }}
+                transition={SPRING.ui}
                 className="h-full rounded-full bg-gradient-to-r from-mind-500 to-sky2-500"
               />
             </div>
@@ -204,7 +205,7 @@ export default function DeepReport() {
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          transition={SPRING.ui}
           className="mt-4 rounded-3xl bg-gradient-to-br from-[#6E7BF2] to-[#A88BF2] p-5 text-white shadow-pop"
         >
           <div className="flex items-center gap-2.5">
@@ -253,7 +254,7 @@ export default function DeepReport() {
               key={s.key || i}
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.05, 0.3), type: 'spring', stiffness: 220, damping: 24 }}
+              transition={{ ...SPRING.ui, delay: Math.min(i * 0.05, 0.3) }}
             >
               <Card className="mt-3.5 !p-5">
                 <h2 className="flex items-center gap-2 break-keep text-[16px] font-extrabold tracking-tight">
@@ -365,7 +366,7 @@ export default function DeepReport() {
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 22 }}
+              transition={{ ...SPRING.ui, delay: 0.1 }}
             >
               <Card
                 onClick={() => {

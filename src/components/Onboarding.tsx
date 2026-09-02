@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import Button from './Button'
 import Avatar from './Avatar'
@@ -140,7 +141,7 @@ export default function Onboarding() {
     <div className="bg-dots min-h-dvh">
       <main className="mx-auto flex min-h-dvh max-w-md flex-col px-6 pb-10 pt-12">
         {/* 환영 */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="text-center">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={SPRING.ui} className="text-center">
           <motion.img src="/icon.svg" alt="" className="mx-auto h-20 w-20 rounded-3xl shadow-pop" animate={{ rotate: [0, -6, 6, 0] }} transition={{ repeat: Infinity, duration: 3 }} />
           <h1 className="mt-5 break-keep text-[24px] font-extrabold leading-tight tracking-tight">{t('onboard.welcome')}</h1>
           <p className="mt-2.5 break-keep text-[14.5px] font-medium leading-relaxed text-ink-sub">{t('onboard.sub')}</p>
@@ -216,7 +217,7 @@ export default function Onboarding() {
               return (
                 <motion.button
                   key={key}
-                  whileTap={{ scale: 0.9 }}
+                  whileTap={{ scale: 0.97 }}
                   onClick={() => {
                     setPicked(sel ? null : key)
                     sfx.tap()

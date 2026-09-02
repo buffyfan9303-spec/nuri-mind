@@ -153,7 +153,7 @@ export default function MemoryRun() {
       {/* 헤더: 중단 + 진행바 + 진행수 */}
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
         <motion.button
-          whileTap={{ scale: 0.85 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setQuitOpen(true)}
           className="text-2xl font-bold text-ink-faint"
           aria-label="quit"
@@ -301,7 +301,7 @@ export default function MemoryRun() {
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
                       <motion.button
                         key={d}
-                        whileTap={{ scale: 0.92 }}
+                        whileTap={{ scale: 0.97 }}
                         onClick={() => tapKey(d)}
                         className="flex h-16 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[26px] font-extrabold shadow-card"
                       >
@@ -311,7 +311,7 @@ export default function MemoryRun() {
                   </div>
                   <div className="mx-auto mt-2.5 flex w-full max-w-[300px] gap-2.5">
                     <motion.button
-                      whileTap={{ scale: 0.94 }}
+                      whileTap={{ scale: 0.97 }}
                       onClick={backspace}
                       disabled={entered.length === 0}
                       className="flex h-14 flex-1 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[20px] font-extrabold text-ink-sub disabled:opacity-40"

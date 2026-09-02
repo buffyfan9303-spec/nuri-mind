@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
+import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '../components/Button'
 import Avatar from '../components/Avatar'
@@ -444,7 +445,7 @@ export default function Community() {
                   <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i * 0.03, 0.25), type: 'spring', stiffness: 260, damping: 26 }}
+                    transition={{ ...SPRING.ui, delay: Math.min(i * 0.03, 0.25) }}
                   >
                     <Card className="!p-3.5">
                       <div className="flex items-center gap-2">
@@ -478,7 +479,7 @@ export default function Community() {
 
                       <div className="mt-2.5 flex items-center gap-2">
                         <motion.button
-                          whileTap={{ scale: 0.85 }}
+                          whileTap={{ scale: 0.97 }}
                           onClick={() => onLike(p)}
                           className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
                             p.liked ? 'bg-red-50 text-red-500' : 'bg-surface2 text-ink-sub'
@@ -490,7 +491,7 @@ export default function Community() {
                           {p.likes}
                         </motion.button>
                         <motion.button
-                          whileTap={{ scale: 0.85 }}
+                          whileTap={{ scale: 0.97 }}
                           onClick={() => toggleComments(p.id)}
                           className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-extrabold transition-colors ${
                             openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-sub'
@@ -523,7 +524,7 @@ export default function Community() {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+                            transition={SPRING.ui}
                             className="overflow-hidden"
                           >
                             <div className="mt-3 space-y-2 border-t-2 border-line pt-3">
@@ -566,7 +567,7 @@ export default function Community() {
                                   className="min-w-0 flex-1 rounded-full border-2 border-line bg-surface px-3.5 py-2 text-[13px] font-medium outline-none focus:border-mind-400"
                                 />
                                 <motion.button
-                                  whileTap={{ scale: 0.9 }}
+                                  whileTap={{ scale: 0.97 }}
                                   onClick={() => submitComment(p.id)}
                                   disabled={!commentText.trim()}
                                   className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-extrabold text-white disabled:opacity-40"
@@ -596,8 +597,8 @@ export default function Community() {
             initial={{ opacity: 0, y: -20, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.8 }}
-            transition={{ type: 'spring', stiffness: 360, damping: 22 }}
-            whileTap={{ scale: 0.92 }}
+            transition={SPRING.flick}
+            whileTap={{ scale: 0.97 }}
             onClick={applyNew}
             className="fixed inset-x-0 top-16 z-40 mx-auto flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-[13.5px] font-extrabold text-white shadow-pop"
             style={{ background: 'linear-gradient(135deg, #4FA882, #6E9FDC)' }}
@@ -618,7 +619,7 @@ export default function Community() {
             initial={{ opacity: 0, y: 24, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+            transition={SPRING.ui}
             className="safe-bottom fixed inset-x-0 bottom-28 z-40 mx-auto flex w-fit max-w-[90%] items-center gap-2 rounded-full bg-mind-600 px-5 py-3 text-[14px] font-extrabold text-white shadow-pop"
           >
             <motion.span animate={{ rotate: [0, -12, 12, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}>
@@ -631,7 +632,7 @@ export default function Community() {
 
       {/* 플로팅 작성 버튼 */}
       <motion.button
-        whileTap={{ scale: 0.9 }}
+        whileTap={{ scale: 0.97 }}
         onClick={() => setOpen(true)}
         className="safe-bottom fixed bottom-24 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full text-[24px] text-white shadow-pop"
         style={{ background: 'linear-gradient(135deg, #4FA882, #6E9FDC)' }}

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -100,7 +101,7 @@ export default function MbtiTest() {
           <motion.div
             initial={{ opacity: 0, y: 18, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: 'spring', stiffness: 240, damping: 20 }}
+            transition={SPRING.sheet}
             className="mt-4 rounded-3xl p-6 text-center text-white shadow-pop"
             style={{ background: `linear-gradient(135deg, ${type.grad[0]}, ${type.grad[1]})` }}
           >
@@ -130,7 +131,7 @@ export default function MbtiTest() {
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${pct[a]}%` }}
-                      transition={{ type: 'spring', stiffness: 180, damping: 26 }}
+                      transition={SPRING.ui}
                       className="h-full rounded-full bg-gradient-to-r from-mind-500 to-sky2-500"
                     />
                   </div>
@@ -210,7 +211,7 @@ export default function MbtiTest() {
           <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface2">
             <motion.div
               animate={{ width: `${progress}%` }}
-              transition={{ type: 'spring', stiffness: 200, damping: 26 }}
+              transition={SPRING.ui}
               className="h-full rounded-full bg-gradient-to-r from-mind-500 to-sky2-500"
             />
           </div>
@@ -219,7 +220,7 @@ export default function MbtiTest() {
           </span>
         </div>
 
-        <motion.div key={step} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 24 }}>
+        <motion.div key={step} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={SPRING.ui}>
           <Card className="mt-4 !p-6">
             <p className="break-keep text-center text-[17px] font-extrabold leading-relaxed">
               {deep ? l(MBTI_DEEP[step].text) : l(MBTI_QUICK[step].text)}

@@ -3,10 +3,15 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
 
+/** 숫자 카운터 전용 — lib/motion의 transition 프리셋과 API가 달라 여기 둔다(오버슈트 금지) */
+const COUNTER_SPRING = { stiffness: 110, damping: 22 }
+
 /** 숫자 스프링 카운트업 — 잔액이 점프하지 않고 촤르륵 굴러가는 네이티브 감. 동작 줄이기 설정 시 즉시 표시 */
 function useCountUp(value: number) {
   const reduced = useReducedMotion()
-  const spring = useSpring(value, { stiffness: 110, damping: 22 })
+  // 숫자 카운터는 useSpring(값 보간) API라 transition 프리셋과 형태가 다르다 —
+  // 오버슈트가 있으면 포인트가 잠깐 초과 표시되므로 임계감쇠로 둔다.
+  const spring = useSpring(value, COUNTER_SPRING)
   useEffect(() => {
     if (reduced) spring.jump(value)
     else spring.set(value)
@@ -21,7 +26,7 @@ export function DiamondPill() {
   const nav = useNavigate()
   return (
     <motion.button
-      whileTap={{ scale: 0.9 }}
+      whileTap={{ scale: 0.97 }}
       onClick={() => nav('/charge')}
       className="flex items-center gap-1 rounded-full bg-surface px-2 py-1 text-sm font-extrabold text-[#6E7BF2] shadow-card"
     >

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import Button from './Button'
 import { useT, useL } from '../i18n/useT'
@@ -65,7 +66,7 @@ export default function AdGate({ onDone }: { onDone: () => void }) {
         <motion.div
           initial={{ opacity: 0, y: 14, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 20 }}
+          transition={{ ...SPRING.sheet, delay: 0.2 }}
           className="rounded-3xl bg-white/10 p-5 text-center"
         >
           <p className="text-[13px] font-extrabold tracking-wide text-mind-300">💡 {l({ ko: '기다리는 동안, 심리 한 스푼', en: 'While you wait — a psych spoonful', ja: '待つ間に、心理ひとさじ' })}</p>

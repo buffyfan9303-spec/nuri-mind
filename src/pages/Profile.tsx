@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { SPRING } from '../lib/motion'
 import { localDay, localDayOf } from '../lib/date'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -320,7 +321,7 @@ export default function Profile() {
               >
                 <motion.span
                   animate={{ x: s.sound ? 22 : 0 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                  transition={SPRING.snap}
                   className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
                 />
               </button>
@@ -337,7 +338,7 @@ export default function Profile() {
               >
                 <motion.span
                   animate={{ x: s.theme === 'dark' ? 22 : 0 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                  transition={SPRING.snap}
                   className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
                 />
               </button>
@@ -362,7 +363,7 @@ export default function Profile() {
                 >
                   <motion.span
                     animate={{ x: pushOn ? 22 : 0 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                    transition={SPRING.snap}
                     className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
                   />
                 </button>
@@ -380,7 +381,7 @@ export default function Profile() {
               >
                 <motion.span
                   animate={{ x: s.ambient ? 22 : 0 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                  transition={SPRING.snap}
                   className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
                 />
               </button>
@@ -425,7 +426,7 @@ export default function Profile() {
               >
                 <motion.span
                   animate={{ x: s.notify ? 22 : 0 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                  transition={SPRING.snap}
                   className="absolute left-[3px] top-[3px] h-[22px] w-[22px] rounded-full bg-surface shadow"
                 />
               </button>

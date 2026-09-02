@@ -109,7 +109,7 @@ export default function FocusRun() {
     <div className="flex min-h-dvh flex-col">
       {/* 헤더 */}
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button whileTap={{ scale: 0.85 }} onClick={() => setQuitOpen(true)} className="text-2xl font-bold text-ink-faint" aria-label="quit">
+        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setQuitOpen(true)} className="text-2xl font-bold text-ink-faint" aria-label="quit">
           ✕
         </motion.button>
         <div className="flex-1">

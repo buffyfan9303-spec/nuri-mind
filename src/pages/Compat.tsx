@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { TopBar, Card } from '../components/ui'
@@ -86,7 +87,7 @@ export default function Compat() {
         </Card>
 
         {result && (
-          <motion.div initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 190, damping: 18 }} className="mt-4">
+          <motion.div initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={SPRING.ui} className="mt-4">
             <div className="rounded-3xl p-6 text-center text-white shadow-pop" style={{ background: `linear-gradient(135deg, ${result.grad[0]}, ${result.grad[1]})` }}>
               <p className="text-[12.5px] font-extrabold text-white/85">{result.aIlju} ✕ {result.bIlju}</p>
               <div className="floaty mt-2 text-[46px] font-extrabold leading-none">

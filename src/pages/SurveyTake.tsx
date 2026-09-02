@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import Button from '../components/Button'
@@ -82,7 +83,7 @@ export default function SurveyTake() {
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ type: 'spring', stiffness: 240, damping: 24 }}
+              transition={SPRING.ui}
             >
               <Card>
                 <p className="text-[16.5px] font-extrabold leading-[1.65]">
@@ -156,7 +157,7 @@ export default function SurveyTake() {
                         return (
                           <motion.button
                             key={n}
-                            whileTap={{ scale: 0.9 }}
+                            whileTap={{ scale: 0.97 }}
                             onClick={() => {
                               setAns(q.id, n)
                               sfx.tap()

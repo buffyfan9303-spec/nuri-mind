@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../components/Button'
@@ -247,7 +248,7 @@ export default function TestResult() {
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 18 }}
           animate={gate ? {} : { opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 220, damping: 20, delay: 0.05 }}
+          transition={{ ...SPRING.ui, delay: 0.05 }}
           className="rounded-3xl p-7 text-center shadow-pop"
           style={{ background: `linear-gradient(140deg, ${persona.grad[0]}, ${persona.grad[1]})` }}
         >
@@ -275,7 +276,7 @@ export default function TestResult() {
             <motion.div
               initial={{ scale: 0 }}
               animate={gate ? {} : { scale: 1, rotate: [0, -8, 6, 0] }}
-              transition={{ type: 'spring', stiffness: 280, damping: 12, delay: 0.25 }}
+              transition={{ ...SPRING.sheet, delay: 0.25 }}
               className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 text-6xl shadow-pop"
             >
               {persona.emoji}
@@ -292,7 +293,7 @@ export default function TestResult() {
           <motion.h1
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
             animate={gate ? {} : { opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.5, type: 'spring', stiffness: 320, damping: 18 }}
+            transition={{ ...SPRING.flick, delay: 0.5 }}
             className="mt-1 text-[32px] font-extrabold tracking-tight text-white"
           >
             {l(persona.name)}
@@ -355,7 +356,7 @@ export default function TestResult() {
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 20 }}
+            transition={{ ...SPRING.flick, delay: 0.5 }}
             className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-100 py-3.5 text-[15.5px] font-extrabold text-mind-700"
           >
             🪙 {t('result.reward', { p: reward })}
@@ -469,7 +470,7 @@ export default function TestResult() {
           <motion.button
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, type: 'spring', stiffness: 280, damping: 22 }}
+            transition={{ ...SPRING.ui, delay: 0.4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => nav('/test/iq/run?mode=pro')}
             className="mt-4 flex w-full items-center gap-3 rounded-3xl p-4 text-left text-white shadow-pop"
@@ -570,7 +571,7 @@ export default function TestResult() {
                     initial={{ width: 0 }}
                     whileInView={{ width: `${Math.round(s.ratio * 100)}%` }}
                     viewport={{ once: true }}
-                    transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.1 }}
+                    transition={{ ...SPRING.gauge, delay: 0.1 }}
                     className="h-full rounded-full"
                     style={{ background: `linear-gradient(90deg, ${tm.gradFrom}, ${tm.gradTo})` }}
                   />
@@ -835,7 +836,7 @@ export default function TestResult() {
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 18, delay: 0.25 }}
+            transition={{ ...SPRING.sheet, delay: 0.25 }}
             className="mt-3 flex items-center gap-2.5 rounded-3xl bg-gradient-to-r from-[#F2B01E] to-[#FF7E5F] px-4 py-3 text-white shadow-pop"
           >
             <span className="text-[22px] leading-none">🎉</span>

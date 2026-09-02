@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { canInstall, onInstallable, promptInstall } from '../lib/pwa'
 import { useL } from '../i18n/useT'
@@ -41,7 +42,7 @@ export default function InstallPrompt() {
         initial={{ y: 90, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 90, opacity: 0 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+        transition={SPRING.ui}
         className="fixed inset-x-3 bottom-[84px] z-50 mx-auto flex max-w-md items-center gap-3 rounded-3xl border border-line bg-surface px-4 py-3 shadow-pop"
       >
         <span className="text-[26px] leading-none">📲</span>

@@ -36,7 +36,7 @@ export function Modal({
             initial={{ y: 90, opacity: 0, scale: 0.96 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 90, opacity: 0 }}
-            transition={SPRING.bounce}
+            transition={SPRING.sheet}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"

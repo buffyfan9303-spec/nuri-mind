@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { L } from '../data/types'
 import { useNavigate } from 'react-router-dom'
@@ -194,7 +195,7 @@ export default function Home() {
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <motion.button
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => nav('/mail')}
             className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface2 text-[16px] shadow-card"
             aria-label="mailbox"
@@ -215,7 +216,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          transition={SPRING.ui}
           className="mt-4 rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-5 shadow-pop"
         >
           <div className="flex items-center justify-between">
@@ -227,7 +228,7 @@ export default function Home() {
               </p>
             </button>
             <motion.button
-              whileTap={{ scale: 0.94 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => nav('/rank')}
               className="flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-3 py-1.5 text-[13px] font-extrabold text-white"
             >
@@ -265,11 +266,11 @@ export default function Home() {
               <p className="text-[16px] font-extrabold leading-none text-white">🔥 {s.streak}</p>
               <p className="mt-1 whitespace-nowrap text-[10.5px] font-bold text-white/80">{t('dash.streak')}</p>
             </div>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => nav('/league')} className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
+            <motion.button whileTap={{ scale: 0.97 }} onClick={() => nav('/league')} className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
               <p className="text-[16px] font-extrabold leading-none text-white">{lgTier.emoji} {lgRank}위</p>
               <p className="mt-1 whitespace-nowrap text-[10.5px] font-bold text-white/80">{t('dash.leagueShort')}</p>
             </motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => nav('/rewards')} className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
+            <motion.button whileTap={{ scale: 0.97 }} onClick={() => nav('/rewards')} className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
               <p className="text-[16px] font-extrabold leading-none text-white">⚡ {todayFree}P</p>
               <p className="mt-1 whitespace-nowrap text-[10.5px] font-bold text-white/80">{t('dash.freeShort')}</p>
             </motion.button>
@@ -281,7 +282,7 @@ export default function Home() {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(100, Math.round(tierProgress * 100))}%` }}
-                transition={{ type: 'spring', stiffness: 120, damping: 22, delay: 0.25 }}
+                transition={{ ...SPRING.gauge, delay: 0.25 }}
                 className="h-full rounded-full bg-white"
               />
             </div>
@@ -346,7 +347,7 @@ export default function Home() {
         <p className="mt-6 px-1 text-[12.5px] font-extrabold tracking-wide text-ink-faint">{l({ ko: '오늘 할 일', en: 'Today', ja: '今日やること' })}</p>
 
         {/* ── 오늘의 퀘스트 ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, type: 'spring', stiffness: 220, damping: 22 }}>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING.ui, delay: 0.06 }}>
           <Card className="mt-3.5 !p-4">
             <div className="flex items-center justify-between">
               <h3 className="flex items-center gap-1.5 text-[15px] font-extrabold">🎯 {l({ ko: '오늘의 퀘스트', en: 'Daily quest', ja: '今日のクエスト' })}</h3>
@@ -379,7 +380,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.07, type: 'spring', stiffness: 220, damping: 22 }}
+            transition={{ ...SPRING.ui, delay: 0.07 }}
           >
             <Card
               onClick={() => nav('/growth')}
@@ -412,7 +413,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08, type: 'spring', stiffness: 220, damping: 22 }}
+          transition={{ ...SPRING.ui, delay: 0.08 }}
         >
           <Card
             onClick={() => nav(bestSurvey ? `/rewards/survey/${bestSurvey.id}` : '/rewards')}
@@ -439,7 +440,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 22 }}
+          transition={{ ...SPRING.ui, delay: 0.1 }}
         >
           <Card onClick={() => nav('/fortune')} className="mt-3.5 overflow-hidden !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-4">
             <div className="flex items-center gap-2.5">
@@ -522,7 +523,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px 0px' }}
-          transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          transition={SPRING.ui}
           className="mt-3.5"
         >
           <Card className="!p-4">
@@ -608,7 +609,7 @@ export default function Home() {
         />
 
         {/* 종합 인지 프로필 (정밀검사 레이더) */}
-        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 240, damping: 24 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui}>
           <Card onClick={() => nav('/cog')} className="mt-2.5 flex items-center gap-3 !bg-gradient-to-r from-[#5B6CF0] to-[#3B82F6] !p-3.5">
             <IconBadge emoji="🧩" tone="frost" size={40} radius={13} wiggle />
             <div className="min-w-0 flex-1">
@@ -621,7 +622,7 @@ export default function Home() {
 
         {/* ── 통합 자기 리포트 (자기 3부작 완료 시) — 검사 섹션 뒤 완료자 대상 ── */}
         {trioDone && (
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui} className="mt-4">
             <button
               onClick={() => nav('/self-report')}
               className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
@@ -647,7 +648,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px 0px' }}
-            transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+            transition={SPRING.ui}
             className="mt-4"
           >
             <Card
@@ -669,7 +670,7 @@ export default function Home() {
         )}
 
         {/* ── 프리미엄 구독 CTA — 수익화 존(검사 가치 체험 뒤) ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui} className="mt-4">
           <button
             onClick={() => nav('/premium')}
             className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
@@ -698,7 +699,7 @@ export default function Home() {
 
         <motion.div
           initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+          whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui}
           className="mt-4"
         >
           <Card onClick={() => nav('/rewards')} ariaLabel={t('home.rewardsBanner')} className="flex items-center gap-3 !p-3.5">
@@ -712,7 +713,7 @@ export default function Home() {
         </motion.div>
 
         {/* 친구 초대 CTA — 바이럴 후크 (둘 다 +100P) */}
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui} className="mt-4">
           <button
             onClick={() => nav('/rewards', { state: { scrollTo: 'invite' } })}
             className="flex w-full items-center gap-3.5 rounded-3xl p-4 text-left shadow-pop"
@@ -728,7 +729,7 @@ export default function Home() {
         </motion.div>
 
         {/* 심리 매거진 — 최신 글 제목 롤링(누르면 해당 글로) */}
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-4">
+        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui} className="mt-4">
           <Card onClick={() => nav(magHead ? `/magazine/${magHead.id}` : '/magazine')} ariaLabel={l({ ko: '심리 매거진', en: 'Psychology magazine', ja: '心理マガジン' })} className="flex items-center gap-3 !p-3.5">
             <IconBadge emoji="📖" color="#8B95F6" size={46} radius={15} wiggle />
             <div className="min-w-0 flex-1">

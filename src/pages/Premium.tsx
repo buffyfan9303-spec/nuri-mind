@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { TopBar, Card, Modal } from '../components/ui'
 import Button from '../components/Button'
@@ -149,7 +150,7 @@ export default function Premium() {
       {/* 완료 모달 */}
       <Modal open={done} onClose={() => setDone(false)}>
         <div className="text-center">
-          <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, damping: 14 }} className="text-[52px] leading-none">
+          <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="text-[52px] leading-none">
             🎉
           </motion.p>
           <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '프리미엄 활성화!', en: 'Premium activated!', ja: 'プレミアム有効化！' })}</h3>

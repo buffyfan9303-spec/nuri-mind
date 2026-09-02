@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -138,7 +139,7 @@ export default function SelfReport() {
       <TopBar back="/" title={l({ ko: '통합 자기 리포트', en: 'Self report', ja: '統合セルフレポート' })} />
       <main className="mx-auto max-w-md px-5">
         {/* 3축 요약 */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 220, damping: 22 }} className="mt-3 grid grid-cols-3 gap-2">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={SPRING.ui} className="mt-3 grid grid-cols-3 gap-2">
           {axes.map((r) => {
             const p = PERSONAS[r.persona]
             return (
@@ -152,7 +153,7 @@ export default function SelfReport() {
         </motion.div>
 
         {/* 통합 유형 */}
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 240, damping: 18, delay: 0.08 }}>
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING.sheet, delay: 0.08 }}>
           <Card className="mt-4 !bg-gradient-to-br !from-[#6E7BF2] !to-[#A88BF2] !p-6 text-center text-white">
             <p className="text-[12px] font-extrabold text-white/80">{l({ ko: '나의 자기 인식 유형', en: 'Your self-profile', ja: 'あなたの自己認識タイプ' })}</p>
             <p className="mt-2 text-[52px] leading-none">{arch.emoji}</p>

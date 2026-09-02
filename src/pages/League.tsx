@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import Celebration from '../components/Celebration'
 import { Card, Chip, TopBar } from '../components/ui'
@@ -95,7 +96,7 @@ export default function League() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 14 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 230, damping: 22 }}
+          transition={SPRING.ui}
           className="mt-2 rounded-3xl p-6 text-center shadow-pop"
           style={{ background: `linear-gradient(140deg, ${tier.color}, ${tier.color}99)` }}
         >
@@ -143,7 +144,7 @@ export default function League() {
                 <motion.div
                   initial={{ opacity: 0, x: -14 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.04 * i, type: 'spring', stiffness: 260, damping: 24 }}
+                  transition={{ ...SPRING.ui, delay: 0.04 * i }}
                   className={`flex items-center gap-3 rounded-2xl px-3 py-3 ${
                     r.me ? 'bg-mind-50 dark:bg-surface2 ring-2 ring-mind-400' : inPromo ? 'bg-surface2' : inDemo ? 'bg-red-50/60 dark:bg-red-950/40' : ''
                   }`}
