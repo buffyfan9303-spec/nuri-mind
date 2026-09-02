@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useT } from '../i18n/useT'
+import { lockScroll, unlockScroll } from '../lib/scrollLock'
 import { LEGAL_EFFECTIVE } from '../data/legal'
 
 /**
@@ -32,14 +33,13 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
   // 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기
   useEffect(() => {
     if (!doc) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    lockScroll()
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', onKey)
     return () => {
-      document.body.style.overflow = prev
+      unlockScroll()
       window.removeEventListener('keydown', onKey)
     }
   }, [doc, onClose])
@@ -56,6 +56,7 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
         >
           <motion.div
             role="dialog"
+            data-scroll-lock
             aria-modal="true"
             aria-label={t(doc === 'terms' ? 'legal.terms' : 'legal.privacy')}
             initial={{ y: '100%' }}

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
+import { lockScroll, unlockScroll } from '../../lib/scrollLock'
 import type { ReactNode } from 'react'
 import { SPRING } from '../../lib/motion'
 
@@ -22,6 +23,13 @@ export function Modal({
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
+  // 열린 동안 배경 스크롤 잠금 — onClose가 없어도(닫기 불가 모달) 잠겨야 하므로 위 이펙트와 분리
+  useEffect(() => {
+    if (!open) return
+    lockScroll()
+    return unlockScroll
+  }, [open])
+
   return (
     <AnimatePresence>
       {open && (
@@ -39,6 +47,7 @@ export function Modal({
             transition={SPRING.sheet}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
+            data-scroll-lock
             aria-modal="true"
             className="max-h-[85dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-3xl bg-surface p-6 pb-8 shadow-pop sm:rounded-3xl sm:pb-6"
           >

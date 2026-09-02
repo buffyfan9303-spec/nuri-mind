@@ -1,4 +1,6 @@
-import { Suspense, lazy, useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
+import { lazyWithReload } from './lib/lazyWithReload'
+import { sweepScrollLocks } from './lib/scrollLock'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
@@ -11,44 +13,44 @@ import { useStore } from './store/useStore'
 import { pageView } from './lib/analytics'
 
 /** 라우트별 코드 스플리팅 — 첫 로딩엔 홈만 받고 나머지는 진입 시 로드 */
-const TestIntro = lazy(() => import('./pages/TestIntro'))
-const TestRun = lazy(() => import('./pages/TestRun'))
-const MemoryRun = lazy(() => import('./pages/MemoryRun'))
-const FocusRun = lazy(() => import('./pages/FocusRun'))
-const SpeedRun = lazy(() => import('./pages/SpeedRun'))
-const SpatialRun = lazy(() => import('./pages/SpatialRun'))
-const SwitchRun = lazy(() => import('./pages/SwitchRun'))
-const CogProfile = lazy(() => import('./pages/CogProfile'))
-const Mailbox = lazy(() => import('./pages/Mailbox'))
-const TestResult = lazy(() => import('./pages/TestResult'))
-const Rewards = lazy(() => import('./pages/Rewards'))
-const SurveyTake = lazy(() => import('./pages/SurveyTake'))
-const SurveyCreate = lazy(() => import('./pages/SurveyCreate'))
-const Shop = lazy(() => import('./pages/Shop'))
-const Admin = lazy(() => import('./pages/Admin'))
-const Profile = lazy(() => import('./pages/Profile'))
-const Rank = lazy(() => import('./pages/Rank'))
-const League = lazy(() => import('./pages/League'))
-const Legal = lazy(() => import('./pages/Legal'))
-const Community = lazy(() => import('./pages/Community'))
-const Dex = lazy(() => import('./pages/Dex'))
-const Chemi = lazy(() => import('./pages/Chemi'))
-const QuickHub = lazy(() => import('./pages/QuickHub'))
-const QuickTest = lazy(() => import('./pages/QuickTest'))
-const Routine = lazy(() => import('./pages/Routine'))
-const Magazine = lazy(() => import('./pages/Magazine'))
-const Article = lazy(() => import('./pages/Article'))
-const Insight = lazy(() => import('./pages/Insight'))
-const Fortune = lazy(() => import('./pages/Fortune'))
-const ZodiacLanding = lazy(() => import('./pages/ZodiacLanding'))
-const Compat = lazy(() => import('./pages/Compat'))
-const Charge = lazy(() => import('./pages/Charge'))
-const Premium = lazy(() => import('./pages/Premium'))
-const Duel = lazy(() => import('./pages/Duel'))
-const SelfReport = lazy(() => import('./pages/SelfReport'))
-const DeepReport = lazy(() => import('./pages/DeepReport'))
-const GrowthPlan = lazy(() => import('./pages/GrowthPlan'))
-const MbtiTest = lazy(() => import('./pages/MbtiTest'))
+const TestIntro = lazyWithReload(() => import('./pages/TestIntro'))
+const TestRun = lazyWithReload(() => import('./pages/TestRun'))
+const MemoryRun = lazyWithReload(() => import('./pages/MemoryRun'))
+const FocusRun = lazyWithReload(() => import('./pages/FocusRun'))
+const SpeedRun = lazyWithReload(() => import('./pages/SpeedRun'))
+const SpatialRun = lazyWithReload(() => import('./pages/SpatialRun'))
+const SwitchRun = lazyWithReload(() => import('./pages/SwitchRun'))
+const CogProfile = lazyWithReload(() => import('./pages/CogProfile'))
+const Mailbox = lazyWithReload(() => import('./pages/Mailbox'))
+const TestResult = lazyWithReload(() => import('./pages/TestResult'))
+const Rewards = lazyWithReload(() => import('./pages/Rewards'))
+const SurveyTake = lazyWithReload(() => import('./pages/SurveyTake'))
+const SurveyCreate = lazyWithReload(() => import('./pages/SurveyCreate'))
+const Shop = lazyWithReload(() => import('./pages/Shop'))
+const Admin = lazyWithReload(() => import('./pages/Admin'))
+const Profile = lazyWithReload(() => import('./pages/Profile'))
+const Rank = lazyWithReload(() => import('./pages/Rank'))
+const League = lazyWithReload(() => import('./pages/League'))
+const Legal = lazyWithReload(() => import('./pages/Legal'))
+const Community = lazyWithReload(() => import('./pages/Community'))
+const Dex = lazyWithReload(() => import('./pages/Dex'))
+const Chemi = lazyWithReload(() => import('./pages/Chemi'))
+const QuickHub = lazyWithReload(() => import('./pages/QuickHub'))
+const QuickTest = lazyWithReload(() => import('./pages/QuickTest'))
+const Routine = lazyWithReload(() => import('./pages/Routine'))
+const Magazine = lazyWithReload(() => import('./pages/Magazine'))
+const Article = lazyWithReload(() => import('./pages/Article'))
+const Insight = lazyWithReload(() => import('./pages/Insight'))
+const Fortune = lazyWithReload(() => import('./pages/Fortune'))
+const ZodiacLanding = lazyWithReload(() => import('./pages/ZodiacLanding'))
+const Compat = lazyWithReload(() => import('./pages/Compat'))
+const Charge = lazyWithReload(() => import('./pages/Charge'))
+const Premium = lazyWithReload(() => import('./pages/Premium'))
+const Duel = lazyWithReload(() => import('./pages/Duel'))
+const SelfReport = lazyWithReload(() => import('./pages/SelfReport'))
+const DeepReport = lazyWithReload(() => import('./pages/DeepReport'))
+const GrowthPlan = lazyWithReload(() => import('./pages/GrowthPlan'))
+const MbtiTest = lazyWithReload(() => import('./pages/MbtiTest'))
 
 /** 가입 없이 볼 수 있는 공개 경로(SEO·공유 유입) — sitemap 등재 경로와 일치시킬 것 */
 const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs)(\/|$)/
@@ -78,6 +80,8 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
+    // 오버레이가 정리 함수 없이 사라진 경로 전환(딥링크·뒤로가기)에서 잠금이 남으면 앱 전체 스크롤이 죽는다
+    sweepScrollLocks()
     pageView(location.pathname)
   }, [location.pathname])
 
