@@ -11,6 +11,7 @@
  *  ⑦ 엣지 함수가 공용 모듈(_shared)을 올바르게 참조하는가 · 사본이 남아 원본을 가리지 않는가
  *  ⑧ 모션이 lib/motion 프리셋을 우회하고 스프링을 하드코딩하지 않는가
  *  ⑨ 타이포 정책 — ≤17px에 extrabold/tracking-tight 금지, 크기는 10단계 스케일만
+ *  ⑩ 제목·버튼·라벨에 장식 이모지 접두 없음(스탯 타일·뱃지의 내용 이모지는 대상 아님)
  *
  * 실행: npm run smoke   (실패 시 exit 1 — 배포 전 게이트로 사용)
  */
@@ -150,6 +151,29 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   }
   walk('src')
   check('타이포 정책(굵기·자간·스케일)', bad.length === 0, bad.slice(0, 4).join(' · '))
+}
+
+/* ⑩ 이모지 접두 — 제목·버튼·라벨 속성에 장식 이모지가 붙어 있는가 */
+{
+  // 카피 감사에서 82곳을 걷어냈다. 스탯 타일·뱃지·아바타처럼 이모지가 곧 내용인 곳은 대상이 아니고,
+  // 제목(h1~h4)·버튼·라벨 속성에 "⚙️ 설정"식으로 붙는 장식 접두만 막는다 — 실제 한국 앱은 거의 안 한다.
+  const E = '(?:\\p{Extended_Pictographic}|\\p{Emoji_Presentation})(?:\\uFE0F|\\u200D\\p{Extended_Pictographic})*'
+  const TAGS = 'h1|h2|h3|h4|button|Button|motion\\.button'
+  const reTag = new RegExp(`<(?:${TAGS})\\b[^>]*>\\s*${E}\\s+(?:\\{[tl]\\(|[가-힣])`, 'u')
+  const reAttr = new RegExp('(?:title|label|ariaLabel|placeholder)=(?:\\{`|["\'])' + E + '\\s+(?:\\$\\{|[가-힣A-Za-z])', 'u')
+  const bad = []
+  const walk = (dir) => {
+    for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
+      const rel = `${dir}/${e.name}`
+      if (e.isDirectory()) walk(rel)
+      else if (/\.tsx$/.test(e.name)) {
+        const src = read(rel)
+        if (reTag.test(src) || reAttr.test(src)) bad.push(rel)
+      }
+    }
+  }
+  walk('src')
+  check('제목·버튼·라벨 이모지 접두 없음', bad.length === 0, bad.slice(0, 5).join(', '))
 }
 
 /* 결과 */

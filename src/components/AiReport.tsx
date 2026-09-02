@@ -106,9 +106,9 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
       )}
 
       <div className="mt-4 space-y-3.5">
-        <Section title={`⚠️ ${t('result.riskTitle')}`} items={persona.risks.map(l)} mark="•" color="#EF4444" />
-        <Section title={`💊 ${t('result.solutionTitle')}`} items={persona.solutions.map(l)} mark="✓" color="#10B981" />
-        <Section title={`💪 ${t('result.strengthTitle')}`} items={persona.strengths.map(l)} mark="★" color="#6E9FDC" />
+        <Section title={`${t('result.riskTitle')}`} items={persona.risks.map(l)} mark="•" color="#EF4444" />
+        <Section title={`${t('result.solutionTitle')}`} items={persona.solutions.map(l)} mark="✓" color="#10B981" />
+        <Section title={`${t('result.strengthTitle')}`} items={persona.strengths.map(l)} mark="★" color="#6E9FDC" />
       </div>
     </motion.div>
   )

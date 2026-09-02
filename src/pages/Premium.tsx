@@ -30,7 +30,7 @@ export default function Premium() {
 
   const BENEFITS = [
     { e: '🧬', t: l({ ko: 'AI 종합 심층 리포트', en: 'AI deep report', ja: 'AI総合レポート' }), d: l({ ko: '심층검사 11종을 하나로 읽은 나의 설명서(전 섹션)', en: 'All 11 deep tests read as one person', ja: '深層検査11種を一つに読む' }) },
-    { e: '🔮', t: l({ ko: '운세 무제한', en: 'Unlimited fortune', ja: '運勢無制限' }), d: l({ ko: '종합·상세 운세 매일 무제한 — 매달 다이아 걱정 끝', en: 'Full & detail fortune daily', ja: '総合・詳細運勢を無制限' }) },
+    { e: '🔮', t: l({ ko: '운세 무제한', en: 'Unlimited fortune', ja: '運勢無制限' }), d: l({ ko: '종합·상세 운세를 매일 무제한으로. 다이아 걱정 없이', en: 'Full & detail fortune daily', ja: '総合・詳細運勢を無制限' }) },
     { e: '🚫', t: l({ ko: '광고 완전 제거', en: 'No ads', ja: '広告完全除去' }), d: l({ ko: '앱 전체 배너·하단 광고 제거', en: 'Removes all banners', ja: '全広告を除去' }) },
     { e: '🧠', t: l({ ko: '전 정밀검사 해제', en: 'All precision tests', ja: '全精密検査解除' }), d: l({ ko: 'IQ·기억·집중·처리속도·공간 상세 전부', en: 'IQ·memory·focus·speed·spatial', ja: 'IQ・記憶・集中・速度・空間' }) },
     { e: '💎', t: l({ ko: '다이아 절약', en: 'Save diamonds', ja: 'ダイヤ節約' }), d: l({ ko: '다이아 없이도 프리미엄 기능 이용', en: 'No diamonds needed', ja: 'ダイヤ不要' }) },
@@ -110,7 +110,7 @@ export default function Premium() {
         {/* 베타 안내 */}
         <div className="rounded-2xl bg-[#FFF6E5] px-4 py-3 text-[12px] font-semibold leading-relaxed text-[#9A6B00]">
           🧪 {l({
-            ko: '정기결제(PG) 연동 전 베타입니다. 지금은 구독 시 30일 즉시 활성화되며, 정식 오픈 시 카카오페이·카드 정기결제로 전환됩니다.',
+            ko: '정기결제(PG) 연동 전 베타예요. 지금은 구독하면 30일 바로 활성화되고, 정식 오픈 때 카카오페이·카드 정기결제로 바뀌어요.',
             en: 'Beta before recurring billing. Subscribing activates 30 days instantly; real KakaoPay/card billing comes at launch.',
             ja: '定期決済連携前のベータです。今は30日即時有効化され、正式公開時にカカオペイ・カード定期決済へ切り替わります。',
           })}

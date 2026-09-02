@@ -24,6 +24,8 @@ fail=0
 mutate() {
   local name="$1" file="$2" expr="$3" grep_pat="$4"
   restore
+  # 판마다 빌드+preview를 새로 띄운다 — 직전 판의 고아가 4173을 쥐고 있으면 이 판은 시작도 못 한다
+  node scripts/free-port.mjs 4173 >/dev/null 2>&1
   sed -i "$expr" "$file"
   if git diff --quiet -- "$file"; then
     echo "  ⚠️  $name — sed가 아무것도 못 바꿈(패턴 불일치). 검증 무효"

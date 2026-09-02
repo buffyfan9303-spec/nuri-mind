@@ -79,7 +79,7 @@ export default function Chemi() {
         </p>
 
         {/* 나 */}
-        <h2 className="mt-5 px-1 text-[15px] font-semibold">💗 {t('chemi.me')}</h2>
+        <h2 className="mt-5 px-1 text-[15px] font-semibold">{t('chemi.me')}</h2>
         <div className="mt-2.5">
           <Picker value={mine} onPick={setMine} />
         </div>
@@ -90,7 +90,7 @@ export default function Chemi() {
         )}
 
         {/* 친구 */}
-        <h2 className="mt-5 px-1 text-[15px] font-semibold">💛 {t('chemi.friend')}</h2>
+        <h2 className="mt-5 px-1 text-[15px] font-semibold">{t('chemi.friend')}</h2>
         <div className="mt-2.5">
           <Picker value={theirs} onPick={setTheirs} />
         </div>
@@ -131,7 +131,7 @@ export default function Chemi() {
         )}
         <div className="mt-4">
           <Button color="love" disabled={!mine} onClick={share}>
-            💌 {t('chemi.invite')}
+            {t('chemi.invite')}
           </Button>
         </div>
         <p className="mt-3 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">{t('chemi.hint')}</p>

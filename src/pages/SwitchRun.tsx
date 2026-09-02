@@ -122,7 +122,7 @@ export default function SwitchRun() {
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-semibold text-white"
             style={{ background: cueColor }}
           >
-            {it.task === 'size' ? `🔢 ${l({ ko: '크기 — 5보다?', en: 'Size — vs 5?', ja: '大きさ — 5より？' })}` : `⚖️ ${l({ ko: '홀짝?', en: 'Odd / Even?', ja: '偶奇？' })}`}
+            {it.task === 'size' ? `🔢 ${l({ ko: '5보다 클까?', en: 'Size — vs 5?', ja: '大きさ — 5より？' })}` : `⚖️ ${l({ ko: '홀짝?', en: 'Odd / Even?', ja: '偶奇？' })}`}
           </motion.span>
         </div>
 

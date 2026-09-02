@@ -123,7 +123,7 @@ export default function FocusRun() {
       {/* 규칙 안내 */}
       <div className="mx-auto mt-3 flex w-full max-w-md items-center justify-center gap-3 px-5 text-[12px] font-semibold">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-ink-sub">
-          <span className="inline-block h-3 w-3 rounded-full" style={{ background: GO_COLOR }} /> {l({ ko: '초록 = 탭!', en: 'Green = tap!', ja: '緑 = タップ！' })}
+          <span className="inline-block h-3 w-3 rounded-full" style={{ background: GO_COLOR }} /> {l({ ko: '초록 = 탭', en: 'Green = tap!', ja: '緑 = タップ！' })}
         </span>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-ink-sub">
           <span className="inline-block h-3 w-3 rounded-full" style={{ background: NOGO_COLOR }} /> {l({ ko: '빨강 = 참기', en: 'Red = hold', ja: '赤 = 我慢' })}

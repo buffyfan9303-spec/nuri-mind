@@ -24,20 +24,20 @@ const ARCHETYPES: Record<'calm' | 'driven' | 'critic' | 'grow', Arch> = {
     emoji: '🌿',
     name: { ko: '편안한 자기 신뢰형', en: 'Calm self-trust', ja: '穏やかな自己信頼型' },
     desc: {
-      ko: '자신을 있는 그대로 받아들이고 능력도 믿으면서, 완벽에 집착하지 않습니다. 가장 안정적이고 덜 지치는 자기 인식 조합이에요.',
+      ko: '자신을 있는 그대로 받아들이고 능력도 믿으면서, 완벽에 집착하지 않아요. 가장 안정적이고 덜 지치는 자기 인식 조합이에요.',
       en: 'You accept yourself as you are, trust your ability, and don\'t cling to perfect. The steadiest, least-draining self-profile.',
       ja: '自分をそのまま受け入れ能力も信じつつ、完璧に執着しない。最も安定し疲れにくい自己認識の組み合わせです。',
     },
     tips: [
       { ko: '이 안정감을 발판으로 평소보다 한 단계 큰 도전을 시도해보세요', en: 'Use this steadiness to take on a challenge one level above usual', ja: 'この安定を足場に普段より一段大きな挑戦を' },
-      { ko: '주변의 불안한 완벽주의자에게 당신의 여유가 좋은 본보기가 돼요', en: 'Your ease is a great model for anxious perfectionists around you', ja: 'あなたの余裕は不安な完璧主義者の良い手本に' },
+      { ko: '주변의 불안한 완벽주의자에게 그 여유가 좋은 본보기가 돼요', en: 'Your ease is a great model for anxious perfectionists around you', ja: 'あなたの余裕は不安な完璧主義者の良い手本に' },
     ],
   },
   driven: {
     emoji: '🚀',
     name: { ko: '단단한 성취형', en: 'Grounded achiever', ja: '堅実な達成型' },
     desc: {
-      ko: '높은 기준을 세우면서도 자신을 믿고 받아들입니다. 완벽주의가 \'자기비난\'이 아니라 \'성장 동력\'으로 작동하는, 건강한 고성취 조합이에요.',
+      ko: '높은 기준을 세우면서도 자신을 믿고 받아들여요. 완벽주의가 \'자기비난\'이 아니라 \'성장 동력\'으로 작동하는, 건강한 고성취 조합이에요.',
       en: 'You set high standards while still trusting and accepting yourself. Perfectionism works as growth fuel, not self-blame — a healthy high-achiever mix.',
       ja: '高い基準を立てつつ自分を信じ受け入れる。完璧主義が「自己批判」でなく「成長の原動力」として働く健康な高達成型です。',
     },
@@ -56,20 +56,20 @@ const ARCHETYPES: Record<'calm' | 'driven' | 'critic' | 'grow', Arch> = {
     },
     tips: [
       { ko: '기준을 낮추기보다 \'나에게 친절한 말투\'를 먼저 연습하세요', en: 'Rather than lowering the bar, first practice a kinder inner voice', ja: '基準を下げるより「自分に優しい口調」をまず練習' },
-      { ko: '완벽하지 않아도 끝낸 일을 매일 1개 기록 — 효능감의 증거를 모으기', en: 'Log one "done, not perfect" thing daily — gather evidence of efficacy', ja: '完璧でなくても終えた事を毎日1つ記録 — 効力感の証拠集め' },
+      { ko: '완벽하지 않아도 끝낸 일을 매일 1개 기록하세요. 효능감의 증거가 쌓여요', en: 'Log one "done, not perfect" thing daily — gather evidence of efficacy', ja: '完璧でなくても終えた事を毎日1つ記録 — 効力感の証拠集め' },
     ],
   },
   grow: {
     emoji: '🌱',
     name: { ko: '자기 믿음 충전형', en: 'Confidence in the making', ja: '自己信頼チャージ型' },
     desc: {
-      ko: '아직 자신에 대한 믿음이 자라는 중이에요. 완벽주의 압박이 적은 건 오히려 강점 — 부담 없이 작은 성공을 쌓으며 효능감과 자존감을 함께 키우기 좋은 출발점이에요.',
+      ko: '아직 자신에 대한 믿음이 자라는 중이에요. 완벽주의 압박이 적은 건 오히려 강점이에요. 부담 없이 작은 성공을 쌓으며 효능감과 자존감을 함께 키우기 좋은 출발점이에요.',
       en: 'Your self-belief is still growing. Low perfectionistic pressure is actually a strength — a great starting point to stack small wins and build both efficacy and esteem.',
       ja: '自分への信頼はまだ育ち中。完璧主義の圧が少ないのはむしろ強み — 負担なく小さな成功を積み、効力感と自尊心を共に育てる好スタートです。',
     },
     tips: [
       { ko: '5분이면 끝낼 작은 일부터 \'완료\' 경험을 쌓으세요', en: 'Start with a 5-minute task to build "done" experiences', ja: '5分で終わる小さな事から「完了」体験を積む' },
-      { ko: '잘한 일을 매일 1가지 기록 — 자신을 인정하는 근육을 키우기', en: 'Log one thing you did well daily — build the self-credit muscle', ja: '良かった事を毎日1つ記録 — 自己承認の筋トレ' },
+      { ko: '잘한 일을 매일 1가지 기록하세요. 자신을 인정하는 근육이 자라요', en: 'Log one thing you did well daily — build the self-credit muscle', ja: '良かった事を毎日1つ記録 — 自己承認の筋トレ' },
     ],
   },
 }

@@ -109,7 +109,7 @@ export default function Rank() {
         </p>
 
         {/* 등급 사다리 */}
-        <Section title={`🪜 ${t('rank.ladder')}`}>
+        <Section title={`${t('rank.ladder')}`}>
           <div className="space-y-3">
             {TIERS.map((tr) => {
               const reached = lifetime >= tr.min
@@ -153,7 +153,7 @@ export default function Rank() {
         </Section>
 
         {/* 체험단 모집 */}
-        <Section title={`🎁 ${t('rank.exp')}`}>
+        <Section title={`${t('rank.exp')}`}>
           <div className="space-y-3.5">
             {EXPERIENCES.map((ex) => {
               const need = TIERS.find((x) => x.id === ex.minTier)!
@@ -194,7 +194,7 @@ export default function Rank() {
                       </Button>
                     ) : (
                       <Button color="white" disabled>
-                        🔒 {t('rank.lockTier', { tier: `${need.emoji} ${l(need.name)}` })}
+                        {t('rank.lockTier', { tier: `${need.emoji} ${l(need.name)}` })}
                       </Button>
                     )}
                   </div>
@@ -206,7 +206,7 @@ export default function Rank() {
 
         {/* 내 신청 현황 */}
         {applications.length > 0 && (
-          <Section title={`🗂 ${t('rank.myApps')}`}>
+          <Section title={`${t('rank.myApps')}`}>
             <Card className="!p-2">
               {applications.map((a) => {
                 const ex = expById(a.expId)

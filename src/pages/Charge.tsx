@@ -122,7 +122,7 @@ export default function Charge() {
         {/* 베타 안내 */}
         <div className="rounded-2xl bg-[#FFF6E5] px-4 py-3 text-[12px] font-semibold leading-relaxed text-[#9A6B00]">
           🧪 {l({
-            ko: '결제(PG) 연동 전 베타입니다. 지금은 충전 시 즉시 지급되며, 정식 오픈 시 카카오페이·신용카드·토스 결제로 전환됩니다.',
+            ko: '결제(PG) 연동 전 베타예요. 지금은 충전하면 바로 지급되고, 정식 오픈 때 카카오페이·신용카드·토스 결제로 바뀌어요.',
             en: 'Beta before payment gateway. Diamonds are granted instantly now; real KakaoPay/card/Toss checkout comes at launch.',
             ja: '決済連携前のベータです。今は即時付与され、正式公開時にカカオペイ・カード・Toss決済へ切り替わります。',
           })}

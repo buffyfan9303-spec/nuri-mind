@@ -48,7 +48,7 @@ export default function InstallPrompt() {
         <span className="text-[24px] leading-none">📲</span>
         <div className="min-w-0 flex-1">
           <p className="text-[14px] font-semibold">{l({ ko: '홈 화면에 앱 설치', en: 'Install the app', ja: 'ホームに追加' })}</p>
-          <p className="truncate text-[12px] font-medium text-ink-faint">{l({ ko: '한 번 탭으로 빠르게 · 오프라인도 OK', en: 'One tap · works offline', ja: 'ワンタップ・オフラインOK' })}</p>
+          <p className="truncate text-[12px] font-medium text-ink-faint">{l({ ko: '바로 열리고, 오프라인에서도 돼요', en: 'One tap · works offline', ja: 'ワンタップ・オフラインOK' })}</p>
         </div>
         <button onClick={install} className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-semibold text-white">
           {l({ ko: '설치', en: 'Install', ja: '追加' })}

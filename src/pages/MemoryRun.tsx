@@ -202,7 +202,7 @@ export default function MemoryRun() {
               <p className="mt-2 break-keep text-[14px] font-bold text-ink-sub">
                 {isBackward
                   ? l({ ko: '이번엔 본 순서의 반대로 입력해요', en: 'This time, enter them in reverse', ja: '今回は逆の順で入力' })
-                  : l({ ko: '곧 숫자가 하나씩 나타납니다', en: 'Digits will appear one by one', ja: 'まもなく数字が一つずつ表示' })}
+                  : l({ ko: '곧 숫자가 하나씩 나타나요', en: 'Digits will appear one by one', ja: 'まもなく数字が一つずつ表示' })}
               </p>
             </motion.div>
           )}

@@ -89,7 +89,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     expect((st.consent as { v?: string } | null)?.v).toBe(LEGAL_VERSION)
   })
 
-  test('⭐ 약관 시트는 라우트를 바꾸지 않고 열리고, 닫아도 입력이 살아있다', async ({ page }) => {
+  test('약관 시트는 라우트를 바꾸지 않고 열리고, 닫아도 입력이 살아있다', async ({ page }) => {
     await page.goto('/')
     await waitForApp(page)
 
@@ -169,7 +169,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     await expect(start).toBeEnabled()
     await start.click()
 
-    await expect(page.getByText('부적절한 표현이 포함돼 있어요 🙅')).toBeVisible()
+    await expect(page.getByText('부적절한 표현이 있어요')).toBeVisible()
     // 온보딩에 그대로 머물러야 한다(홈이면 필터가 뚫린 것)
     await expect(page.getByRole('heading', { name: '누리 마인드에 오신 걸 환영해요' })).toBeVisible()
     expect((await persisted(page)).onboarded).toBe(false)

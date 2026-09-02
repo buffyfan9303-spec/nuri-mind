@@ -246,7 +246,7 @@ export default function QuickTest() {
                 onClick={shareKakaoQuick}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-semibold text-[#3A1D1D]"
               >
-                💬 {t('quick.shareKakao')}
+                {t('quick.shareKakao')}
               </button>
             )}
             <div className="grid grid-cols-2 gap-2.5">
@@ -254,7 +254,7 @@ export default function QuickTest() {
                 {t('quick.shareCard')}
               </Button>
               <Button color="mind" onClick={share}>
-                📤 {t('quick.share')}
+                {t('quick.share')}
               </Button>
             </div>
             <button
@@ -262,7 +262,7 @@ export default function QuickTest() {
               className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-semibold text-white"
               style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }}
             >
-              🆚 {l({ ko: '친구와 대결', en: 'Challenge a friend', ja: '友達とバトル' })}
+              {l({ ko: '친구와 대결', en: 'Challenge a friend', ja: '友達とバトル' })}
             </button>
             {test.funnel && (
               <Button color="white" onClick={() => nav(`/test/${test.funnel}`)}>
@@ -270,7 +270,7 @@ export default function QuickTest() {
               </Button>
             )}
             <button onClick={reset} className="w-full py-2 text-[13px] font-semibold text-ink-faint">
-              🔄 {t('quick.again')}
+              {t('quick.again')}
             </button>
           </div>
         </main>

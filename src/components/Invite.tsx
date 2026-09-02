@@ -129,7 +129,7 @@ export default function Invite() {
             {copied ? '✅' : `📋 ${t('invite.copy')}`}
           </Button>
           <Button color="mind" size="sm" onClick={share}>
-            📤 {t('common.share')}
+            {t('common.share')}
           </Button>
         </div>
       </div>

@@ -42,7 +42,7 @@ export default function Badges() {
   const selDone = sel ? sel.check(ctx) : false
 
   return (
-    <Section title={`🏅 ${t('ach.title')}`}>
+    <Section title={`${t('ach.title')}`}>
       <Card className="!p-4">
         <p className="mb-3 text-center text-[13px] font-semibold text-ink-faint">
           {t('ach.progress', { c: unlocked, t: ACHIEVEMENTS.length })}

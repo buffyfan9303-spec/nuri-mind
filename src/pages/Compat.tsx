@@ -82,7 +82,7 @@ export default function Compat() {
             <input type="date" value={partner} max="2025-12-31" min="1920-01-01" onChange={(e) => setPartner(e.target.value)} className="mt-1.5 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-semibold outline-none focus:border-mind-400" />
           </div>
           <Button color="love" size="lg" disabled={!me || !partner} onClick={run}>
-            💞 {t('compat.see')}
+            {t('compat.see')}
           </Button>
         </Card>
 
@@ -100,7 +100,7 @@ export default function Compat() {
               <p className="break-keep text-[14px] font-medium leading-relaxed text-ink">{l(result.template.desc)}</p>
             </Card>
             <div className="mt-3">
-              <Button color="love" onClick={shareCompat}>🖼 {t('compat.share')}</Button>
+              <Button color="love" onClick={shareCompat}>{t('compat.share')}</Button>
             </div>
             {saved && <p className="mt-2 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">✅ {t('share.saved')}</p>}
             <p className="mt-3 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">{t('compat.disclaimer')}</p>

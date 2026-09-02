@@ -128,7 +128,7 @@ export default function Shop() {
         </div>
 
         {redemptions.length > 0 && (
-          <Section title={`📦 ${t('shop.history')}`}>
+          <Section title={`${t('shop.history')}`}>
             <Card className="!p-2">
               {redemptions.map((rd) => (
                 <div key={rd.id} className="flex items-center justify-between border-b border-line px-3 py-3 last:border-0">

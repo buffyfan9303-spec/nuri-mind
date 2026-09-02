@@ -140,7 +140,7 @@ export default function GrowthPlan() {
           {!showPaywall ? (
             <div className="mt-5">
               <Button color="mind" size="lg" onClick={onCreate}>
-                🌱 {l({ ko: '내 성장 플랜 만들기', en: 'Build my plan', ja: 'プランを作る' })}
+                {l({ ko: '내 성장 플랜 만들기', en: 'Build my plan', ja: 'プランを作る' })}
               </Button>
             </div>
           ) : (
@@ -158,7 +158,7 @@ export default function GrowthPlan() {
                 </p>
                 <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-white/90">
                   {l({
-                    ko: `성장 플랜 + AI 심층 리포트 + 운세 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
+                    ko: `성장 플랜, AI 심층 리포트, 운세 무제한까지 월 ₩${PREMIUM_KRW.toLocaleString()}`,
                     en: `Growth plan + AI deep report + unlimited fortune · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
                     ja: `成長プラン+AIレポート+運勢無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
                   })}
@@ -169,7 +169,7 @@ export default function GrowthPlan() {
               </Card>
               <p className="mt-4 break-keep px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
                 {l({
-                  ko: '지금도 검사 결과지에서 검사별 7일 루틴은 무료로 이용할 수 있어요.',
+                  ko: '검사별 7일 루틴은 지금도 결과지에서 무료예요.',
                   en: 'The 7-day routine per test is still free from your result page.',
                   ja: '検査ごとの7日ルーティンは結果ページから無料で使えます。',
                 })}
@@ -282,7 +282,7 @@ export default function GrowthPlan() {
         {/* 28일 캘린더 히트맵 */}
         <Card className="mt-3.5 !p-5">
           <h2 className="text-[15px] font-semibold">
-            📅 {l({ ko: '최근 4주 실천 기록', en: 'Last 4 weeks', ja: '直近4週の記録' })}
+            {l({ ko: '최근 4주 실천 기록', en: 'Last 4 weeks', ja: '直近4週の記録' })}
           </h2>
           <div className="mt-3 grid grid-cols-7 gap-1.5">
             {heat.map((d) => (
@@ -307,7 +307,7 @@ export default function GrowthPlan() {
         </Card>
 
         <button onClick={resetPlan} className="mx-auto mt-5 block text-[12px] font-semibold text-ink-faint">
-          🔄 {l({ ko: '플랜 다시 만들기', en: 'Rebuild plan', ja: 'プランを作り直す' })}
+          {l({ ko: '플랜 다시 만들기', en: 'Rebuild plan', ja: 'プランを作り直す' })}
         </button>
       </main>
     </div>

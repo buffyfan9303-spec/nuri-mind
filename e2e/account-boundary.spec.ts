@@ -62,14 +62,14 @@ test('전체 초기화 — 2차 확인 전에는 버튼이 잠기고, 확인 후
   // 마커도 같은 이유로 '있었음'을 먼저 못 박는다 — 키 이름이 바뀌면 아래 "지워졌다"가 공허하게 통과한다
   await expect.poll(() => page.evaluate((k) => localStorage.getItem(k), SYNC_UID_KEY)).toBe(PREV_UID)
 
-  await page.getByRole('button', { name: '🗑 데이터 초기화' }).click()
+  await page.getByRole('button', { name: '데이터 초기화' }).click()
 
   const dialog = page.getByRole('dialog')
   const confirm = dialog.getByRole('button', { name: '데이터 초기화', exact: true })
-  const ack = dialog.getByRole('button', { name: /복구 불가능하게 사라지는 것에 동의해요/ })
+  const ack = dialog.getByRole('button', { name: /복구할 수 없다는 데 동의해요/ })
 
   // 문구에 보유량이 실제 값으로 박혀야 한다 — 하드코딩/0 표시로 퇴화하면 사용자가 뭘 잃는지 모른 채 누른다
-  await expect(dialog.getByText('다이아 12개 · 프리미엄 구독이 복구 불가능하게 사라지는 것에 동의해요')).toBeVisible()
+  await expect(dialog.getByText('다이아 12개 · 프리미엄 구독 전부 사라지고 복구할 수 없다는 데 동의해요')).toBeVisible()
   // ⭐ 오탭 방지: 모달이 뜨자마자 '초기화' 자리를 한 번 더 눌러 결제분이 날아가던 사고의 회귀 가드
   await expect(confirm).toBeDisabled()
 
@@ -141,7 +141,7 @@ test('공개 라우트 이탈 시 SEO 메타가 원복된다 — 띠 페이지 c
 
 /** sitemap에 실려 있고 PUBLIC_ROUTES 정규식에 걸려야 하는 경로 — 마커는 그 페이지 본문에만 있는 문자열 */
 const PUBLIC_ROUTES = [
-  { path: '/magazine', marker: '검사보다 한 걸음 더 — 짧게 읽는 심리 인사이트' },
+  { path: '/magazine', marker: '검사보다 한 걸음 더, 짧게 읽는 심리 인사이트' },
   // 아티클 상세는 sitemap URL의 최대 묶음(10건)이면서 지연 로딩 청크가 따로다 —
   // 목록만 보면 `/magazine`은 열리는데 본문 URL은 전부 막히는 회귀를 놓친다.
   { path: '/magazine/adhd-focus', marker: '집중력이 약한 게 아니라, 뇌가 다른 거예요' },
@@ -163,7 +163,7 @@ for (const { path, marker } of PUBLIC_ROUTES) {
 
 /** 가입자 전용 화면 — 마커는 온보딩 화면에는 없고 해당 페이지에만 있는 문자열이어야 한다 */
 const PRIVATE_ROUTES = [
-  { path: '/profile', marker: '🗑 데이터 초기화' },
+  { path: '/profile', marker: '데이터 초기화' },
   { path: '/growth', marker: '성장 플랜' },
 ] as const
 

@@ -95,7 +95,7 @@ export default function Article() {
         {/* 핵심 요약 체크리스트 */}
         <motion.div initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={SPRING.ui}>
           <Card className="mt-5 !bg-mind-50 dark:!bg-surface !p-4 !shadow-none">
-            <h3 className="text-[15px] font-semibold text-mind-700">📌 {t('mag.keypoints')}</h3>
+            <h3 className="text-[15px] font-semibold text-mind-700">{t('mag.keypoints')}</h3>
             <ul className="mt-2.5 space-y-2.5">
               {a.takeaways.map((k, i) => (
                 <li key={i} className="flex items-start gap-2.5">

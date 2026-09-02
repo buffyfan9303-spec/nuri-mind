@@ -40,7 +40,7 @@ export default function Trend({ testId }: { testId: TestId }) {
   return (
     <Card className="mt-4 !p-4">
       <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-1.5 text-[15px] font-semibold">📈 {t('trend.title')}</h2>
+        <h2 className="flex items-center gap-1.5 text-[15px] font-semibold">{t('trend.title')}</h2>
         <span className="text-[12px] font-semibold text-ink-faint">{t('trend.count', { n: series.length })}</span>
       </div>
 

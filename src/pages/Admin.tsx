@@ -130,7 +130,7 @@ function Console() {
           <span className="text-lg font-extrabold text-white">🛠 {t('admin.title')}</span>
           <div className="flex-1" />
           <button onClick={lockAdmin} className="rounded-xl bg-white/10 px-3 py-1.5 text-xs font-extrabold text-white">
-            🔒 {t('admin.lock')}
+            {t('admin.lock')}
           </button>
         </div>
         <div className="no-scrollbar mx-auto flex max-w-md gap-1.5 overflow-x-auto px-4 pb-3">
@@ -391,7 +391,7 @@ function Console() {
 
           {/* 운영자 도구 — 다이아 지급 / 개인 우편 */}
           <div className="mt-3 rounded-2xl bg-white/10 p-4">
-            <h3 className="text-[14px] font-semibold text-white">🎁 다이아 지급</h3>
+            <h3 className="text-[14px] font-semibold text-white">다이아 지급</h3>
             <button
               onClick={() => { addDiamonds(10000); setOpMsg('이 기기에 💎10,000 지급됨'); sfx.coin() }}
               className="mt-2 w-full rounded-xl bg-[#1ab394] py-2.5 text-[13px] font-semibold text-white"
@@ -404,7 +404,7 @@ function Console() {
               <button onClick={onGrantNick} className="shrink-0 rounded-xl bg-[#6E7BF2] px-4 py-2.5 text-[13px] font-semibold text-white">지급</button>
             </div>
 
-            <h3 className="mt-4 text-[14px] font-semibold text-white">✉️ 개인 우편 보내기</h3>
+            <h3 className="mt-4 text-[14px] font-semibold text-white">개인 우편 보내기</h3>
             <input value={mailNick} onChange={(e) => setMailNick(e.target.value)} placeholder="받는 사람 닉네임" className="mt-2 w-full rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
             <input value={mailTitle} onChange={(e) => setMailTitle(e.target.value)} placeholder="제목" className="mt-2 w-full rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
             <textarea value={mailBody} onChange={(e) => setMailBody(e.target.value)} placeholder="내용" rows={2} className="mt-2 w-full resize-none rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />

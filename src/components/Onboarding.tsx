@@ -177,7 +177,7 @@ export default function Onboarding() {
                 onClick={doKakao}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-4 text-[16px] font-semibold text-[#3A1D1D] shadow-card"
               >
-                💬 {t('onboard.kakao')}
+                {t('onboard.kakao')}
               </motion.button>
             )}
             <div className="my-5 flex items-center gap-3">

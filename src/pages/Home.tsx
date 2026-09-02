@@ -255,7 +255,7 @@ export default function Home() {
                 className="rounded-2xl bg-white px-4 py-2.5 text-[14px] font-semibold text-[#2F6B52]"
                 style={{ boxShadow: '0 3px 0 #D8E0DA' }}
               >
-                📅 {t('dash.checkin')}
+                {t('dash.checkin')}
               </motion.button>
             )}
           </div>
@@ -350,7 +350,7 @@ export default function Home() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING.ui, delay: 0.06 }}>
           <Card className="mt-3.5 !p-4">
             <div className="flex items-center justify-between">
-              <h3 className="flex items-center gap-1.5 text-[15px] font-semibold">🎯 {l({ ko: '오늘의 퀘스트', en: 'Daily quest', ja: '今日のクエスト' })}</h3>
+              <h3 className="flex items-center gap-1.5 text-[15px] font-semibold">{l({ ko: '오늘의 퀘스트', en: 'Daily quest', ja: '今日のクエスト' })}</h3>
               <span className="text-[12px] font-semibold text-mind-600">{questDone}/{quests.length}</span>
             </div>
             <div className="mt-3 space-y-2">
@@ -366,7 +366,7 @@ export default function Home() {
             </div>
             {questDone === quests.length && !questClaimed && (
               <button onClick={onClaimQuest} className="mt-3 w-full rounded-2xl bg-mind-500 py-3 text-[14px] font-semibold text-white shadow-[0_3px_0_#2F6B52] transition-transform active:translate-y-[3px]">
-                🎁 {l({ ko: '보너스 +50P 받기', en: 'Claim +50P', ja: 'ボーナス+50P受取' })}
+                {l({ ko: '보너스 +50P 받기', en: 'Claim +50P', ja: 'ボーナス+50P受取' })}
               </button>
             )}
             {questClaimed && (
@@ -631,7 +631,7 @@ export default function Home() {
               <IconBadge emoji="🪞" tone="frost" size={44} radius={14} wiggle />
               <div className="min-w-0 flex-1">
                 <h3 className="text-[15px] font-semibold text-white">
-                  ✨ {l({ ko: '통합 자기 리포트 완성!', en: 'Self report ready!', ja: '統合セルフレポート完成！' })}
+                  {l({ ko: '통합 자기 리포트 완성!', en: 'Self report ready!', ja: '統合セルフレポート完成！' })}
                 </h3>
                 <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">
                   {l({ ko: '자존감·완벽주의·효능감 종합 분석', en: 'Your combined self-profile', ja: '自尊心・完璧主義・効力感の統合分析' })}

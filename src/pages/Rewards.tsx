@@ -115,7 +115,7 @@ export default function Rewards() {
               </div>
             ) : (
               <Button color="white" onClick={onCheckIn}>
-                📅 {t('rewards.checkin')}
+                {t('rewards.checkin')}
               </Button>
             )}
           </div>
@@ -141,7 +141,7 @@ export default function Rewards() {
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-[16px] font-semibold">
-              🏆 {t('league.title')} · {l(lgTier.name)}
+              {t('league.title')} · {l(lgTier.name)}
             </h3>
             <p className="mt-0.5 text-[13px] font-medium text-ink-faint">
               {t('league.entrySub', { rank: lgRank, p: myWeek.toLocaleString() })}
@@ -159,7 +159,7 @@ export default function Rewards() {
 
         {/* 참여 가능한 설문 */}
         <Section
-          title={`📋 ${t('rewards.surveys')}`}
+          title={`${t('rewards.surveys')}`}
           action={
             <Button color="mind" size="sm" full={false} onClick={() => nav('/rewards/create')}>
               + {t('rewards.create')}
@@ -199,7 +199,7 @@ export default function Rewards() {
 
         {/* 내가 만든 설문 */}
         {mine.length > 0 && (
-          <Section title={`🧾 ${t('rewards.mySurveys')}`}>
+          <Section title={`${t('rewards.mySurveys')}`}>
             <div className="space-y-3">
               {mine.map((sv) => (
                 <Card key={sv.id} className="!p-4">
@@ -230,7 +230,7 @@ export default function Rewards() {
         </div>
 
         {/* 앱 설치 미션 */}
-        <Section title={`📲 ${t('rewards.offers')}`}>
+        <Section title={`${t('rewards.offers')}`}>
           <div className="space-y-3">
             {OFFERS.map((of) => (
               <Card key={of.id} className="flex items-center gap-3.5 !p-4 opacity-75">
@@ -251,7 +251,7 @@ export default function Rewards() {
         </Section>
 
         {/* 포인트 내역 */}
-        <Section title={`🧮 ${t('rewards.ledger')}`}>
+        <Section title={`${t('rewards.ledger')}`}>
           <Card className="!p-2">
             {ledger.length === 0 && (
               <p className="py-6 text-center text-sm font-bold text-ink-faint">{t('rewards.empty.ledger')}</p>

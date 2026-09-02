@@ -156,7 +156,7 @@ export default function Mailbox() {
               {l({ ko: '지금은 이 기기에만 저장돼요. 카카오 계정으로 로그인하면 운영자 지급·결제 다이아·개인 우편을 어느 기기에서나 받을 수 있어요.', en: "You're using this device locally. Log in with Kakao to claim operator gifts, purchased diamonds, and personal mail on any device.", ja: '今はこの端末のみ。カカオでログインすると、運営者ギフト・購入ダイヤ・個人郵便をどの端末でも受取れます。' })}
             </p>
             <button onClick={onLogin} className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[#FEE500] py-3 text-[15px] font-semibold text-[#191919] shadow-card transition-transform active:translate-y-[2px]">
-              💬 {l({ ko: '카카오로 로그인', en: 'Log in with Kakao', ja: 'カカオでログイン' })}
+              {l({ ko: '카카오로 로그인', en: 'Log in with Kakao', ja: 'カカオでログイン' })}
             </button>
           </Card>
         ) : mail.length === 0 ? (
@@ -169,7 +169,7 @@ export default function Mailbox() {
             {unclaimedWithDia > 0 && (
               <div className="mt-4">
                 <Button color="iq" onClick={onClaimAll}>
-                  📬 {l({ ko: `안 받은 우편 ${unclaimedWithDia}개 모두 받기`, en: `Claim all ${unclaimedWithDia}`, ja: `未受取 ${unclaimedWithDia}件 一括受取` })}
+                  {l({ ko: `안 받은 우편 ${unclaimedWithDia}개 모두 받기`, en: `Claim all ${unclaimedWithDia}`, ja: `未受取 ${unclaimedWithDia}件 一括受取` })}
                 </Button>
               </div>
             )}
@@ -179,12 +179,12 @@ export default function Mailbox() {
                 // 서버 문자열이 깨졌으면 클라에서 재구성(폰트 깨짐 방지)
                 const title = isMojibake(it.title)
                   ? it.amount > 0
-                    ? l({ ko: `💎 다이아 ${it.amount}개 도착`, en: `💎 ${it.amount} diamonds arrived`, ja: `💎 ダイヤ${it.amount}個到着` })
+                    ? l({ ko: `다이아 ${it.amount}개 도착`, en: `💎 ${it.amount} diamonds arrived`, ja: `💎 ダイヤ${it.amount}個到着` })
                     : it.kind === 'personal'
-                      ? l({ ko: '✉️ 개인 우편', en: '✉️ Personal mail', ja: '✉️ 個人郵便' })
+                      ? l({ ko: '개인 우편', en: '✉️ Personal mail', ja: '✉️ 個人郵便' })
                       : it.kind === 'system'
-                        ? l({ ko: '📢 공지', en: '📢 Notice', ja: '📢 お知らせ' })
-                        : l({ ko: '📬 새 우편', en: '📬 New mail', ja: '📬 新着郵便' })
+                        ? l({ ko: '공지', en: '📢 Notice', ja: '📢 お知らせ' })
+                        : l({ ko: '새 우편', en: '📬 New mail', ja: '📬 新着郵便' })
                   : it.title
                 const sender = isMojibake(it.sender) ? l({ ko: '운영자', en: 'Operator', ja: '運営' }) : it.sender
                 const body = isMojibake(it.body) ? null : it.body

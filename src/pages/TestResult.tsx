@@ -228,7 +228,7 @@ export default function TestResult() {
       if (navigator.share) await navigator.share({ title: '누리 마인드 결과 대결', text, url })
       else {
         await navigator.clipboard.writeText(url)
-        setShareMsg(l({ ko: '🆚 대결 링크가 복사됐어요!', en: '🆚 Duel link copied!', ja: '🆚 リンクをコピー！' }))
+        setShareMsg(l({ ko: '대결 링크가 복사됐어요', en: '🆚 Duel link copied!', ja: '🆚 リンクをコピー！' }))
         setTimeout(() => setShareMsg(''), 2400)
       }
       track('share', { channel: 'duel' })
@@ -588,7 +588,7 @@ export default function TestResult() {
           viewport={{ once: true }}
           className="mt-4 rounded-3xl bg-gradient-to-br from-[#27343A] to-[#1F2A2F] p-5 shadow-pop"
         >
-          <h2 className="flex items-center gap-1.5 text-[15px] font-semibold text-amber-300">⚡ {t('result.slapTitle')}</h2>
+          <h2 className="flex items-center gap-1.5 text-[15px] font-semibold text-amber-300">{t('result.slapTitle')}</h2>
           <p className="mt-3 text-[16px] font-bold leading-[1.8] text-white/95">
             {l(persona.slap)}
           </p>
@@ -599,7 +599,7 @@ export default function TestResult() {
 
         {/* 위험 신호 + 솔루션 (압축: 한 카드 2섹션) */}
         <Card className="mt-4">
-          <h2 className="text-[15px] font-semibold text-red-500">⚠️ {t('result.riskTitle')}</h2>
+          <h2 className="text-[15px] font-semibold text-red-500">{t('result.riskTitle')}</h2>
           <ul className="mt-2.5 space-y-2">
             {persona.risks.slice(0, 2).map((r, i) => (
               <li key={i} className="flex items-start gap-2.5 text-[14px] font-medium leading-[1.7] text-ink">
@@ -609,7 +609,7 @@ export default function TestResult() {
             ))}
           </ul>
           <div className="my-3 h-px bg-line" />
-          <h2 className="text-[15px] font-semibold text-mind-700">💊 {t('result.solutionTitle')}</h2>
+          <h2 className="text-[15px] font-semibold text-mind-700">{t('result.solutionTitle')}</h2>
           <ul className="mt-2.5 space-y-2">
             {persona.solutions.slice(0, 3).map((r, i) => (
               <li key={i} className="flex items-start gap-2.5 text-[14px] font-medium leading-[1.7] text-ink">
@@ -639,7 +639,7 @@ export default function TestResult() {
         )}
 
         <Card className="mt-4">
-          <h2 className="text-[15px] font-semibold text-sky2-600">💪 {t('result.strengthTitle')}</h2>
+          <h2 className="text-[15px] font-semibold text-sky2-600">{t('result.strengthTitle')}</h2>
           <ul className="mt-2.5 space-y-2">
             {persona.strengths.slice(0, 2).map((r, i) => (
               <li key={i} className="flex items-start gap-2.5 text-[14px] font-medium leading-[1.7] text-ink">
@@ -652,7 +652,7 @@ export default function TestResult() {
 
         {/* 이 검사의 과학 — 척도 근거·백분위 읽는 법·결과 활용법 (결과지 읽을거리 심화) */}
         <Card className="mt-4 !p-5">
-          <h2 className="text-[15px] font-semibold">📖 {l({ ko: '이 검사의 과학', en: 'The science behind this test', ja: 'この検査の科学' })}</h2>
+          <h2 className="text-[15px] font-semibold">{l({ ko: '이 검사의 과학', en: 'The science behind this test', ja: 'この検査の科学' })}</h2>
           {t(`intro.${result.testId}.basis`) !== `intro.${result.testId}.basis` && (
             <div className="mt-3">
               <p className="text-[12px] font-semibold text-mind-600">🧪 {l({ ko: '무엇을 재나요?', en: 'What does it measure?', ja: '何を測る？' })}</p>
@@ -663,7 +663,7 @@ export default function TestResult() {
             <p className="text-[12px] font-semibold text-mind-600">📊 {l({ ko: '상위 %는 어떻게 읽나요?', en: 'How to read the top %', ja: '上位%の読み方' })}</p>
             <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
               {l({
-                ko: `"상위 ${topPercent}%"는 같은 검사를 본 사람 100명을 한 줄로 세웠을 때 당신의 위치예요. 점수는 정규분포(종 모양 곡선) 기반 추정치라, 응답 컨디션에 따라 몇 % 정도는 자연스럽게 오르내릴 수 있어요. 숫자 하나보다 "어느 구간에 있는가"를 보는 게 정확한 해석이에요.`,
+                ko: `"상위 ${topPercent}%"는 같은 검사를 본 사람 100명을 한 줄로 세웠을 때 내 위치예요. 점수는 정규분포(종 모양 곡선) 기반 추정치라, 응답 컨디션에 따라 몇 % 정도는 자연스럽게 오르내릴 수 있어요. 숫자 하나보다 "어느 구간에 있는가"를 보는 게 정확한 해석이에요.`,
                 en: `"Top ${topPercent}%" is your position if 100 test-takers stood in one line. Scores are estimates based on the normal (bell-curve) distribution, so a few percentage points of natural variation is expected. Reading your band matters more than any single number.`,
                 ja: `「上位${topPercent}%」は同じ検査を受けた100人を一列に並べた時のあなたの位置。スコアは正規分布に基づく推定値で、コンディションにより数%は自然に変動します。数字一つより「どの区間か」を見るのが正確な解釈です。`,
               })}
@@ -673,7 +673,7 @@ export default function TestResult() {
             <p className="text-[12px] font-semibold text-mind-600">🌱 {l({ ko: '결과, 이렇게 쓰세요', en: 'How to use your result', ja: '結果の活かし方' })}</p>
             <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
               {l({
-                ko: '심리 상태는 계절처럼 변해요. 결과는 "지금의 나"를 비추는 거울이지 낙인이 아니에요. 위의 솔루션 중 하나를 골라 2~3주 실천해 보고, 4~6주 뒤 재검사로 변화를 확인해 보세요 — 같은 검사를 2회 이상 하면 결과지에 추이 그래프가 생겨요.',
+                ko: '심리 상태는 계절처럼 변해요. 결과는 "지금의 나"를 비추는 거울이지 낙인이 아니에요. 위의 솔루션 중 하나를 골라 2~3주 실천해 보고, 4~6주 뒤 재검사로 변화를 확인해 보세요. 같은 검사를 2회 이상 하면 결과지에 추이 그래프가 생겨요.',
                 en: "Your mind shifts like seasons. This result mirrors the present you — it isn't a label. Pick one solution above, practice it for 2–3 weeks, then retest in 4–6 weeks; take the same test twice or more and a trend graph appears here.",
                 ja: '心の状態は季節のように変わります。結果は「今の自分」を映す鏡でありレッテルではありません。上のソリューションを一つ選び2〜3週間実践し、4〜6週間後に再検査を。同じ検査を2回以上受けると推移グラフが表示されます。',
               })}
@@ -718,11 +718,11 @@ export default function TestResult() {
                 <div className="text-[28px] leading-none">🔒</div>
                 <h3 className="mt-2 text-[17px] font-semibold">{lockedIq ? l({ ko: '정밀 IQ 결과 해제', en: 'Unlock full IQ result', ja: '精密IQ結果を解除' }) : l({ ko: '상세 분석 해제', en: 'Unlock full analysis', ja: '詳細分析を解除' })}</h3>
                 <p className="mx-auto mt-1.5 max-w-[280px] break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
-                  {l({ ko: '인지영역별 분석 · 정밀 해석 · 강점/주의까지 결과지 전체를 한 번만 해제하면 계속 볼 수 있어요.', en: 'Cognitive breakdown, deep interpretation, strengths — unlock the full result once, kept forever.', ja: '認知領域分析・精密解釈・強み/注意まで結果全体を一度解除すればずっと見られます。' })}
+                  {l({ ko: '인지영역별 분석부터 정밀 해석, 강점과 주의점까지. 한 번만 해제하면 결과지 전체를 계속 볼 수 있어요.', en: 'Cognitive breakdown, deep interpretation, strengths — unlock the full result once, kept forever.', ja: '認知領域分析・精密解釈・強み/注意まで結果全体を一度解除すればずっと見られます。' })}
                 </p>
                 <div className="mx-auto mt-4 max-w-[260px]">
                   <Button color="iq" size="lg" onClick={tryUnlockIqResult}>
-                    💎 {l({ ko: `${IQ_DIA_COST}개로 전체 결과 보기`, en: `Unlock for ${IQ_DIA_COST}`, ja: `${IQ_DIA_COST}個で全結果` })}
+                    {l({ ko: `${IQ_DIA_COST}개로 전체 결과 보기`, en: `Unlock for ${IQ_DIA_COST}`, ja: `${IQ_DIA_COST}個で全結果` })}
                   </Button>
                 </div>
                 <p className="mt-2 text-[11px] font-medium text-ink-faint">
@@ -742,7 +742,7 @@ export default function TestResult() {
 
         {/* 공유 보상 섹션 — 바이럴 루프 */}
         <Card className="mt-4 text-center">
-          <h2 className="text-[16px] font-semibold">💎 {t('share.title')}</h2>
+          <h2 className="text-[16px] font-semibold">{t('share.title')}</h2>
           {shareMsg && (
             <motion.p
               initial={{ opacity: 0, scale: 0.9 }}
@@ -797,7 +797,7 @@ export default function TestResult() {
             className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-semibold text-white"
             style={{ background: `linear-gradient(135deg, ${persona.grad[0]}, ${persona.grad[1]})` }}
           >
-            🆚 {l({ ko: '친구와 결과 대결', en: 'Challenge a friend', ja: '友達と結果バトル' })}
+            {l({ ko: '친구와 결과 대결', en: 'Challenge a friend', ja: '友達と結果バトル' })}
           </button>
         </Card>
 

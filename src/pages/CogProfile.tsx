@@ -195,7 +195,7 @@ export default function CogProfile() {
         {/* AI 종합 코멘트 */}
         {showComment && lvl && (
           <Card className="mt-4">
-            <h2 className="flex items-center gap-2 text-[15px] font-semibold">🤖 {l({ ko: 'AI 종합 코멘트', en: 'AI summary', ja: 'AI総合コメント' })}</h2>
+            <h2 className="flex items-center gap-2 text-[15px] font-semibold">{l({ ko: 'AI 종합 코멘트', en: 'AI summary', ja: 'AI総合コメント' })}</h2>
             <p className="mt-2 break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">
               {l({
                 ko: `가장 강한 영역은 「${METRICS[strongest].label.ko}」, 상대적으로 약한 영역은 「${METRICS[weakest].label.ko}」예요. 전반적으로 ${lvl.ko} 인지 프로필이고, ${balanceTxt.ko}`,
@@ -251,7 +251,7 @@ export default function CogProfile() {
         {doneCount >= 1 && (
           <div className="mt-4">
             <Button color="iq" onClick={shareProfile}>
-              🎴 {l({ ko: '인지 프로필 카드 공유', en: 'Share profile card', ja: 'プロフィールカードを共有' })}
+              {l({ ko: '인지 프로필 카드 공유', en: 'Share profile card', ja: 'プロフィールカードを共有' })}
             </Button>
             {shareMsg && <p className="mt-2 text-center text-[13px] font-semibold text-mind-700">✅ {shareMsg}</p>}
           </div>

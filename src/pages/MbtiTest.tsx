@@ -114,7 +114,7 @@ export default function MbtiTest() {
           {/* 4축 게이지 */}
           <Card className="mt-3.5 !p-5">
             <h2 className="text-[15px] font-semibold">
-              📊 {l({ ko: '네 가지 축', en: 'Your four axes', ja: '4つの軸' })}
+              {l({ ko: '네 가지 축', en: 'Your four axes', ja: '4つの軸' })}
             </h2>
             <div className="mt-3 space-y-3">
               {AXES.map(([a, b]) => (
@@ -148,7 +148,7 @@ export default function MbtiTest() {
           </Card>
 
           <Card className="mt-3.5 !p-5">
-            <h2 className="text-[15px] font-semibold">💪 {l({ ko: '강점', en: 'Strengths', ja: '強み' })}</h2>
+            <h2 className="text-[15px] font-semibold">{l({ ko: '강점', en: 'Strengths', ja: '強み' })}</h2>
             <ul className="mt-2 space-y-1.5">
               {type.strengths.map((x, i) => (
                 <li key={i} className="break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
@@ -157,7 +157,7 @@ export default function MbtiTest() {
               ))}
             </ul>
             <h2 className="mt-4 text-[15px] font-semibold">
-              🌑 {l({ ko: '살펴볼 점', en: 'Watch-outs', ja: '注意点' })}
+              {l({ ko: '살펴볼 점', en: 'Watch-outs', ja: '注意点' })}
             </h2>
             <ul className="mt-2 space-y-1.5">
               {type.watch.map((x, i) => (
@@ -188,7 +188,7 @@ export default function MbtiTest() {
 
           <p className="mt-5 break-keep px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
             ⓘ {l({
-              ko: '유형론은 나를 탐색하는 재미있는 도구예요. 사람을 16칸에 가두는 진단이 아니며, 임상 척도 검사와는 성격이 다릅니다.',
+              ko: '유형론은 나를 탐색하는 재미있는 도구예요. 사람을 16칸에 가두는 진단이 아니고, 임상 척도 검사와는 성격이 달라요.',
               en: 'Type theory is a fun lens for self-exploration — not a diagnosis, and different from clinical scales.',
               ja: 'タイプ論は自己探索の楽しい道具です。診断ではなく、臨床尺度とは性質が異なります。',
             })}
@@ -252,7 +252,7 @@ export default function MbtiTest() {
 
         <p className="mt-5 text-center text-[12px] font-medium text-ink-faint">
           {nickname}
-          {l({ ko: '님, 정답은 없어요 — 지금의 나를 고르면 돼요', en: ', there are no right answers', ja: 'さん、正解はありません' })}
+          {l({ ko: '님, 정답은 없어요. 지금의 나를 고르면 돼요', en: ', there are no right answers', ja: 'さん、正解はありません' })}
         </p>
       </main>
     </div>

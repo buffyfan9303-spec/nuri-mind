@@ -167,7 +167,7 @@ export default function Profile() {
         <Card className="mt-3.5 !p-4">
           <div className="flex items-center justify-between">
             <h3 className="text-[14px] font-semibold">
-              📅 {l({ ko: '최근 4주 출석', en: 'Last 4 weeks', ja: '直近4週の出席' })}
+              {l({ ko: '최근 4주 출석', en: 'Last 4 weeks', ja: '直近4週の出席' })}
             </h3>
             <span className="text-[12px] font-semibold text-orange-500">🔥 {s.streak}</span>
           </div>
@@ -254,7 +254,7 @@ export default function Profile() {
         </Card>
 
         {/* 검사 히스토리 */}
-        <Section title={`🗂 ${t('profile.history')}`}>
+        <Section title={`${t('profile.history')}`}>
           {s.results.length === 0 ? (
             <Card className="whitespace-pre-line py-8 text-center text-sm font-bold leading-relaxed text-ink-faint">
               {t('profile.noHistory')}
@@ -293,7 +293,7 @@ export default function Profile() {
         <Badges />
 
         {/* 설정 */}
-        <Section title={`⚙️ ${t('profile.settings')}`}>
+        <Section title={`${t('profile.settings')}`}>
           <Card className="!p-2">
             <div className="flex items-center justify-between px-3 py-3">
               <span className="text-[15px] font-bold">{t('profile.language')}</span>
@@ -557,7 +557,7 @@ export default function Profile() {
               </span>
               <span className="break-keep text-[12px] font-medium leading-relaxed text-red-500">
                 {l({
-                  ko: `다이아 ${s.diamonds}개${isPremium(s.premiumUntil) ? ' · 프리미엄 구독' : ''}이 복구 불가능하게 사라지는 것에 동의해요`,
+                  ko: `다이아 ${s.diamonds}개${isPremium(s.premiumUntil) ? ' · 프리미엄 구독' : ''} 전부 사라지고 복구할 수 없다는 데 동의해요`,
                   en: `I understand ${s.diamonds} diamonds${isPremium(s.premiumUntil) ? ' and my premium subscription' : ''} will be lost permanently`,
                   ja: `ダイヤ${s.diamonds}個${isPremium(s.premiumUntil) ? '・プレミアム購読' : ''}が復元できなくなることに同意します`,
                 })}

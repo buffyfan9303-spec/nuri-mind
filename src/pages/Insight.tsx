@@ -85,7 +85,7 @@ export default function Insight() {
 
         {/* 핵심 강점 */}
         <Card className="mt-4">
-          <h2 className="text-[15px] font-semibold text-sky2-600">💪 {t('insight.strengths')}</h2>
+          <h2 className="text-[15px] font-semibold text-sky2-600">{t('insight.strengths')}</h2>
           <ul className="mt-2.5 space-y-2">
             {strengths.map((s, i) => (
               <li key={i} className="flex items-start gap-2.5 break-keep text-[14px] font-medium leading-[1.7] text-ink">
@@ -98,7 +98,7 @@ export default function Insight() {
 
         {/* 주의할 점 */}
         <Card className="mt-4">
-          <h2 className="text-[15px] font-semibold text-red-500">⚠️ {t('insight.risks')}</h2>
+          <h2 className="text-[15px] font-semibold text-red-500">{t('insight.risks')}</h2>
           <ul className="mt-2.5 space-y-2">
             {risks.map((s, i) => (
               <li key={i} className="flex items-start gap-2.5 break-keep text-[14px] font-medium leading-[1.7] text-ink">
@@ -111,7 +111,7 @@ export default function Insight() {
 
         {/* 종합 한마디 */}
         <div className="mt-4 rounded-3xl bg-gradient-to-br from-[#27343A] to-[#1F2A2F] p-6 text-center shadow-pop">
-          <h2 className="text-[14px] font-semibold text-amber-300">🧠 {t('insight.summaryTitle')}</h2>
+          <h2 className="text-[14px] font-semibold text-amber-300">{t('insight.summaryTitle')}</h2>
           <p className="mt-3 break-keep text-[15px] font-bold leading-[1.8] text-white/95">{t('insight.summary', { n: count })}</p>
         </div>
 

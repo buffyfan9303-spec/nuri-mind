@@ -15,9 +15,9 @@ const WAIT_SEC = 5
  *   APK 전환 시엔 showInterstitial()이 AdMob 전면광고(앱 정책상 허용)로 대체.
  */
 const TIPS: { emoji: string; text: L }[] = [
-  { emoji: '🧠', text: { ko: '뇌는 멀티태스킹을 못 해요 — 실제론 빠르게 "전환"할 뿐이라 그때마다 집중력이 새어나가요.', en: 'Brains can\'t multitask — they rapidly switch, leaking focus each time.', ja: '脳はマルチタスクができません — 実際は高速で「切替」し、その度に集中が漏れます。' } },
+  { emoji: '🧠', text: { ko: '뇌는 멀티태스킹을 못 해요. 실제론 빠르게 "전환"할 뿐이라 그때마다 집중력이 새어나가요.', en: 'Brains can\'t multitask — they rapidly switch, leaking focus each time.', ja: '脳はマルチタスクができません — 実際は高速で「切替」し、その度に集中が漏れます。' } },
   { emoji: '😴', text: { ko: '수면이 부족하면 편도체(감정 뇌)가 60% 더 과민해져요. 예민한 날엔 먼저 잠을 점검하세요.', en: 'Sleep loss makes the amygdala ~60% more reactive. On edgy days, check your sleep first.', ja: '睡眠不足で扁桃体は約60%過敏に。イライラの日はまず睡眠を点検。' } },
-  { emoji: '📝', text: { ko: '걱정을 종이에 적기만 해도 뇌의 위협 반응이 줄어들어요 — "이름 붙이면 길들여진다".', en: 'Just writing worries down calms the brain\'s threat response — "name it to tame it".', ja: '心配を紙に書くだけで脳の脅威反応が減少 —「名付ければ手なずく」。' } },
+  { emoji: '📝', text: { ko: '걱정을 종이에 적기만 해도 뇌의 위협 반응이 줄어들어요. "이름 붙이면 길들여진다"는 말이 있죠.', en: 'Just writing worries down calms the brain\'s threat response — "name it to tame it".', ja: '心配を紙に書くだけで脳の脅威反応が減少 —「名付ければ手なずく」。' } },
   { emoji: '🚶', text: { ko: '10분 산책은 저용량 항우울제만큼 기분을 끌어올린다는 연구가 있어요.', en: 'A 10-minute walk can lift mood comparably to a low-dose antidepressant, studies suggest.', ja: '10分の散歩は低用量抗うつ薬並みに気分を上げるという研究も。' } },
   { emoji: '🫁', text: { ko: '숨을 "4초 들이쉬고 6초 내쉬면" 심박이 느려지며 몸이 먼저 진정돼요. 마음은 그 뒤를 따라와요.', en: 'Breathe in 4s, out 6s — the heart slows, the body calms first, and the mind follows.', ja: '4秒吸って6秒吐くと心拍が落ち、体が先に鎮まり心が続きます。' } },
   { emoji: '🤝', text: { ko: '자존감은 "잘나서" 생기는 게 아니라, 실수한 나를 친구 대하듯 대할 때 자라요.', en: 'Self-esteem grows not from being great, but from treating your failing self like a friend.', ja: '自尊心は「優秀さ」でなく、失敗した自分を友のように扱う時に育ちます。' } },

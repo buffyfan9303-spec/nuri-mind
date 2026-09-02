@@ -85,7 +85,7 @@ export default function DeepReport() {
     const risks = uniq(ps.flatMap((p) => p!.risks.slice(0, 1)).map((x) => l(x)), 2)
     if (!strengths.length) return ''
     return l({
-      ko: `${doneDeep.length}개 검사가 공통으로 가리키는 건 이런 모습이에요 — ${strengths.join(', ')}. 동시에 ${risks.join(', ')} 같은 면도 함께 보입니다. 강점과 취약함은 대개 같은 성향의 앞뒷면이라, 하나만 떼어 고치기보다 둘을 같이 이해할 때 훨씬 잘 다뤄집니다.`,
+      ko: `${doneDeep.length}개 검사가 공통으로 가리키는 건 이런 모습이에요. ${strengths.join(', ')}. 동시에 ${risks.join(', ')} 같은 면도 함께 보입니다. 강점과 취약함은 대개 같은 성향의 앞뒷면이라, 하나만 떼어 고치기보다 둘을 같이 이해할 때 훨씬 잘 다뤄집니다.`,
       en: `Across ${doneDeep.length} tests, a consistent picture emerges — ${strengths.join(', ')}. Alongside it: ${risks.join(', ')}. Strengths and vulnerabilities are usually two sides of one trait, so understanding both together works better than fixing one alone.`,
       ja: `${doneDeep.length}件の検査が共通して示すのは — ${strengths.join('、')}。同時に${risks.join('、')}という面も見えます。強みと弱さは同じ傾向の表裏であることが多く、両方をまとめて理解するほうがうまく扱えます。`,
     })
@@ -271,7 +271,7 @@ export default function DeepReport() {
         {/* 프리미엄: 엣지 실패 → 정적 폴백 */}
         {premium && failed && (
           <Card className="mt-3.5 !p-5">
-            <h2 className="flex items-center gap-2 text-[16px] font-semibold">🧭 {l({ ko: '핵심 성격 요약', en: 'Core summary', ja: '中核サマリー' })}</h2>
+            <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '핵심 성격 요약', en: 'Core summary', ja: '中核サマリー' })}</h2>
             <p className="mt-2.5 break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">{staticCore}</p>
             <p className="mt-3 rounded-2xl bg-surface2 px-3.5 py-2.5 text-[12px] font-medium leading-relaxed text-ink-faint">
               ⓘ {l({
@@ -282,7 +282,7 @@ export default function DeepReport() {
             </p>
             <div className="mt-3">
               <Button color="mind" size="sm" onClick={retry}>
-                🔄 {l({ ko: '다시 시도', en: 'Retry', ja: '再試行' })}
+                {l({ ko: '다시 시도', en: 'Retry', ja: '再試行' })}
               </Button>
             </div>
           </Card>
@@ -328,7 +328,7 @@ export default function DeepReport() {
           <>
             <Card className="mt-4 !p-5">
               <h2 className="flex items-center gap-2 text-[16px] font-semibold">
-                🧭 {l({ ko: '핵심 성격 요약', en: 'Core summary', ja: '中核サマリー' })}
+                {l({ ko: '핵심 성격 요약', en: 'Core summary', ja: '中核サマリー' })}
               </h2>
               <p className="mt-2.5 break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">{staticCore}</p>
             </Card>

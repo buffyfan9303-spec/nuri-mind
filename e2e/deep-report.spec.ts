@@ -175,7 +175,7 @@ test.describe('/deep-report 게이트', () => {
 
     // 생성 실패해도 재시도 경로와 실행 동선(성장 플랜)은 남아야 한다 — 이 아래가 통째로 사라지던 회귀
     // 안내 문구에도 '다시 시도'가 들어 있어 텍스트로 잡으면 strict 위반 — 버튼 롤로 좁힌다
-    await expect(page.getByRole('button', { name: '🔄 다시 시도' })).toBeVisible()
+    await expect(page.getByRole('button', { name: '다시 시도' })).toBeVisible()
     await expect(page.getByRole('button', { name: '성장 플랜 열기' })).toBeVisible()
 
     // 목이 한 번도 안 걸렸다면 이 테스트는 '500 착지'가 아니라 '엣지 미설정 착지'를 본 것이다

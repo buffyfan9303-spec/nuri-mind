@@ -325,7 +325,7 @@ export default function SurveyCreate() {
                   ⚠️ {t('create.policy')}
                 </p>
                 <Button color="mind" size="lg" onClick={submit}>
-                  🚀 {t('create.review')}
+                  {t('create.review')}
                 </Button>
               </div>
             )}

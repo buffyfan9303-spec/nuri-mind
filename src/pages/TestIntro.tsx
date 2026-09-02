@@ -63,14 +63,14 @@ export default function TestIntro() {
         </motion.div>
 
         <Card className="mt-4">
-          <h2 className="flex items-center gap-2 text-[16px] font-semibold">📚 {t('intro.basis')}</h2>
+          <h2 className="flex items-center gap-2 text-[16px] font-semibold">{t('intro.basis')}</h2>
           <p className="mt-2.5 text-[15px] font-medium leading-[1.8] text-ink-sub">
             {t(`intro.${id}.basis`)}
           </p>
         </Card>
 
         <Card className="mt-4">
-          <h2 className="flex items-center gap-2 text-[16px] font-semibold">🤙 {t('intro.caution')}</h2>
+          <h2 className="flex items-center gap-2 text-[16px] font-semibold">{t('intro.caution')}</h2>
           <ul className="mt-3 space-y-2.5">
             {[1, 2, 3].map((n) => (
               <li key={n} className="flex items-start gap-2.5 text-[15px] font-bold leading-relaxed">
@@ -89,10 +89,10 @@ export default function TestIntro() {
           <>
             {/* IQ란? 직관 설명 */}
             <Card className="mt-4">
-              <h2 className="flex items-center gap-2 text-[16px] font-semibold">🧩 {l({ ko: 'IQ 테스트가 뭔가요?', en: 'What is an IQ test?', ja: 'IQテストとは？' })}</h2>
+              <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: 'IQ 테스트가 뭔가요?', en: 'What is an IQ test?', ja: 'IQテストとは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
-                  ko: '숫자·도형·규칙 같은 문제로 추론력·패턴 파악·공간 지각을 재서, 언어나 지식의 영향을 빼고 순수 사고력(유동지능)을 IQ 점수로 추정하는 검사예요. 정답을 빠르고 정확하게 맞힐수록 점수가 높아집니다.',
+                  ko: '숫자·도형·규칙 같은 문제로 추론력·패턴 파악·공간 지각을 재서, 언어나 지식의 영향을 빼고 순수 사고력(유동지능)을 IQ 점수로 추정하는 검사예요. 정답을 빠르고 정확하게 맞힐수록 점수가 높아져요.',
                   en: 'With number, shape, and rule puzzles it measures reasoning, pattern-finding, and spatial sense — estimating pure thinking ability (fluid intelligence) as an IQ score, free of language or knowledge. Faster, more accurate answers raise the score.',
                   ja: '数字・図形・規則の問題で推論力・パターン把握・空間認知を測り、言語や知識の影響を除いた純粋な思考力（流動性知能）をIQで推定する検査です。速く正確に解くほど高得点。',
                 })}
@@ -153,7 +153,7 @@ export default function TestIntro() {
           <>
             {/* 기억력 검사란? 직관 설명 */}
             <Card className="mt-4">
-              <h2 className="flex items-center gap-2 text-[16px] font-semibold">🧠 {l({ ko: '정밀 기억력 검사가 뭔가요?', en: 'What is this memory test?', ja: '精密記憶力検査とは？' })}</h2>
+              <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '정밀 기억력 검사가 뭔가요?', en: 'What is this memory test?', ja: '精密記憶力検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
                   ko: '설문이 아니라 직접 숫자를 외워 되짚는 인지과제예요. 본 순서대로 맞히는 "정방향"으로 즉시 기억폭을, 거꾸로 맞히는 "역방향"으로 머릿속에서 정보를 굴리는 작업기억을 측정해, 100을 기준으로 한 작업기억 지수(MQ)로 알려드려요. 약 4분 걸려요.',
@@ -172,7 +172,7 @@ export default function TestIntro() {
           <>
             {/* 집중력 검사란? 직관 설명 */}
             <Card className="mt-4">
-              <h2 className="flex items-center gap-2 text-[16px] font-semibold">👁️ {l({ ko: '정밀 집중력 검사가 뭔가요?', en: 'What is this focus test?', ja: '精密集中力検査とは？' })}</h2>
+              <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '정밀 집중력 검사가 뭔가요?', en: 'What is this focus test?', ja: '精密集中力検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
                   ko: '설문이 아니라 직접 반응하는 인지과제예요. 초록불이 뜨면 최대한 빠르게 탭하고, 빨간불엔 누르지 않고 참아요. 빠르고 정확한 반응(처리속도)·끝까지 놓치지 않는 집중지속·충동을 참는 억제력을 한 번에 재서, 100을 기준으로 한 집중 지수(FQ)로 알려드려요. 약 3분.',
@@ -191,7 +191,7 @@ export default function TestIntro() {
           <>
             {/* 처리속도 검사란? 직관 설명 */}
             <Card className="mt-4">
-              <h2 className="flex items-center gap-2 text-[16px] font-semibold">⚡ {l({ ko: '정밀 처리속도 검사가 뭔가요?', en: 'What is this speed test?', ja: '精密処理速度検査とは？' })}</h2>
+              <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '정밀 처리속도 검사가 뭔가요?', en: 'What is this speed test?', ja: '精密処理速度検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
                   ko: '설문이 아니라 직접 손이 반응하는 인지과제예요. 위에 뜬 기호↔숫자 대응표를 보고, 나오는 기호에 맞는 숫자를 최대한 빠르고 정확하게 눌러 40개를 풀어요. 웩슬러 지능검사의 기호쓰기 방식으로 정보 처리속도를 재서, 100을 기준으로 한 처리속도 지수(SQ)로 알려드려요. 약 1~2분.',
@@ -210,7 +210,7 @@ export default function TestIntro() {
           <>
             {/* 공간지각 검사란? 직관 설명 */}
             <Card className="mt-4">
-              <h2 className="flex items-center gap-2 text-[16px] font-semibold">🧭 {l({ ko: '정밀 공간지각 검사가 뭔가요?', en: 'What is this spatial test?', ja: '精密空間知覚検査とは？' })}</h2>
+              <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '정밀 공간지각 검사가 뭔가요?', en: 'What is this spatial test?', ja: '精密空間知覚検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
                   ko: '설문이 아니라 머릿속에서 도형을 돌려보는 인지과제예요. 회전하거나 뒤집힌 글자가 나오면, 머릿속에서 똑바로 세워 "정상"인지 좌우가 뒤집힌 "거울상"인지 20문항을 판별해요. Shepard의 심적 회전 방식으로 공간 지각력을 재서, 100을 기준으로 한 공간 지수(XQ)로 알려드려요. 약 3분.',
@@ -229,7 +229,7 @@ export default function TestIntro() {
           <>
             {/* 주의전환 검사란? 직관 설명 */}
             <Card className="mt-4">
-              <h2 className="flex items-center gap-2 text-[16px] font-semibold">🔀 {l({ ko: '정밀 주의전환 검사가 뭔가요?', en: 'What is this switching test?', ja: '精密注意切替検査とは？' })}</h2>
+              <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '정밀 주의전환 검사가 뭔가요?', en: 'What is this switching test?', ja: '精密注意切替検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
                   ko: '설문이 아니라 규칙이 계속 바뀌는 과제를 처리하는 인지과제예요. 신호가 "크기"면 숫자가 5보다 큰지, "홀짝"이면 홀수인지 짝수인지 빠르게 갈아타며 32문항을 판단해요. 과제 전환(Task-switching) 방식으로 집행기능·인지 유연성을 재서, 100을 기준으로 한 전환 지수(WQ)로 알려드려요. 약 2~3분.',
