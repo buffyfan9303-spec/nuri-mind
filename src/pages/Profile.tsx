@@ -486,7 +486,7 @@ export default function Profile() {
               onClick={() => setResetOpen(true)}
               className="flex w-full items-center justify-between border-t border-line px-3 py-3 text-red-500"
             >
-              <span className="text-[15px] font-bold">🗑 {t('profile.reset')}</span>
+              <span className="text-[15px] font-bold">{t('profile.reset')}</span>
               <span>›</span>
             </button>
           </Card>

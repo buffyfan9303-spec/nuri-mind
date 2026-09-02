@@ -3,6 +3,7 @@ import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useT } from '../i18n/useT'
 import { lockScroll, unlockScroll } from '../lib/scrollLock'
+import { useBackClose } from '../lib/backstack'
 import { LEGAL_EFFECTIVE } from '../data/legal'
 
 /**
@@ -29,6 +30,9 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
       alive = false
     }
   }, [doc])
+
+  // 뒤로가기로 시트만 닫힌다 — 약관을 읽다 뒤로가기를 누르면 온보딩이 사라지는 게 아니라 시트가 닫혀야 한다
+  useBackClose(doc !== null, onClose)
 
   // 열려 있는 동안 배경 스크롤 잠금 + ESC로 닫기
   useEffect(() => {

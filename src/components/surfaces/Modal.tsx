@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
 import { lockScroll, unlockScroll } from '../../lib/scrollLock'
+import { useBackClose } from '../../lib/backstack'
 import type { ReactNode } from 'react'
 import { SPRING } from '../../lib/motion'
 
@@ -29,6 +30,9 @@ export function Modal({
     lockScroll()
     return unlockScroll
   }, [open])
+
+  // 뒤로가기(Android·브라우저)로 이 모달만 닫힌다 — 닫을 수 없는 모달(onClose 없음)은 등록하지 않는다
+  useBackClose(open && !!onClose, onClose ?? (() => {}))
 
   return (
     <AnimatePresence>
