@@ -2,11 +2,14 @@ import { Suspense, useEffect, useRef } from 'react'
 import { lazyWithReload } from './lib/lazyWithReload'
 import { sweepScrollLocks } from './lib/scrollLock'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { Navigate, Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Onboarding from './components/Onboarding'
 import ReConsent from './components/ReConsent'
 import Skeleton from './components/Skeleton'
+import RouteFallback from './components/RouteFallback'
+import NotFound from './pages/NotFound'
+import { SentryErrorBoundary } from './lib/sentry'
 import InstallPrompt from './components/InstallPrompt'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
@@ -129,6 +132,8 @@ export default function App() {
           exit={{ opacity: 0, y: -8, scale: 0.99, transition: { duration: 0.14, ease: 'easeIn' } }}
           transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
         >
+          {/* 라우트 경계: 한 화면의 크래시·청크 실패가 앱 전체(내비 포함)를 지우지 않게. motion.div가 경로별 key라 이동하면 자동 리셋 */}
+          <SentryErrorBoundary fallback={({ resetError }) => <RouteFallback onReset={resetError} />}>
           <Suspense fallback={<Skeleton />}>
             <Routes location={location}>
               <Route path="/" element={<Home />} />
@@ -170,9 +175,10 @@ export default function App() {
               <Route path="/mbti/:mode" element={<MbtiTest />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          </SentryErrorBoundary>
         </motion.div>
       </AnimatePresence>
       {!hideNav && <BottomNav />}
