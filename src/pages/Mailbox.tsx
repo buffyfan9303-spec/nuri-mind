@@ -43,6 +43,8 @@ export default function Mailbox() {
   const [msg, setMsg] = useState('')
   /** 서버가 우편을 못 준 것 — '받은 우편이 없어요'와 다른 상태다 */
   const [loadErr, setLoadErr] = useState<string | null>(null)
+  /** 수령 왕복 중 — 다이아가 걸린 버튼이라 두 번 눌리면 '받았는데 안 들어왔다'가 된다 */
+  const [claiming, setClaiming] = useState<number | 'all' | null>(null)
   const lang = useStore((s) => s.lang)
 
   const load = async () => {
@@ -103,8 +105,10 @@ export default function Mailbox() {
   }
 
   const onClaim = async (it: MailItem) => {
-    if (switchPending()) return
+    if (switchPending() || claiming !== null) return
+    setClaiming(it.id)
     const got = await claimMail(it.id)
+    setClaiming(null)
     // 실패(null)는 수령 처리하지 않음 — 가짜 '수령 완료·환불 불가' 표시 방지
     if (got === null) {
       sfx.err()
@@ -121,8 +125,10 @@ export default function Mailbox() {
   }
 
   const onClaimAll = async () => {
-    if (switchPending()) return
+    if (switchPending() || claiming !== null) return
+    setClaiming('all')
     const got = await claimAllMail()
+    setClaiming(null)
     if (got === null) {
       sfx.err()
       claimFailMsg()
@@ -192,7 +198,7 @@ export default function Mailbox() {
           <>
             {unclaimedWithDia > 0 && (
               <div className="mt-4">
-                <Button color="iq" onClick={onClaimAll}>
+                <Button color="iq" busy={claiming === 'all'} onClick={onClaimAll}>
                   {l({ ko: `안 받은 우편 ${unclaimedWithDia}개 모두 받기`, en: `Claim all ${unclaimedWithDia}`, ja: `未受取 ${unclaimedWithDia}件 一括受取` })}
                 </Button>
               </div>
@@ -233,7 +239,11 @@ export default function Mailbox() {
                         )}
                         <div className="mt-2.5 flex items-center gap-2">
                           {!it.claimed ? (
-                            <button onClick={() => onClaim(it)} className="rounded-full bg-[#6E7BF2] px-4 py-1.5 text-[13px] font-semibold text-white">
+                            <button
+                              onClick={() => onClaim(it)}
+                              disabled={claiming !== null}
+                              className="rounded-full bg-[#6E7BF2] px-4 py-1.5 text-[13px] font-semibold text-white disabled:opacity-50"
+                            >
                               {l({ ko: '받기', en: 'Claim', ja: '受取' })}
                             </button>
                           ) : (

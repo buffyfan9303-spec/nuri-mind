@@ -26,14 +26,22 @@ export default function Charge() {
 
   const [sel, setSel] = useState<DiaBundle | null>(null)
   const [done, setDone] = useState(false)
+  /**
+   * 결제 진행 중. 지금은 즉시 지급이라 왕복이 없지만, 여기가 PG 콜백으로 바뀌는 자리다 —
+   * 그때 두 번 눌리면 이중 결제가 된다. 잠금은 결제를 붙이기 전에 있어야 의미가 있다.
+   */
+  const [paying, setPaying] = useState(false)
 
   const onPay = () => {
-    if (!sel) return
-    // TODO(PG): 카카오페이/카드/토스 결제 성공 콜백에서 addDiamonds 호출로 교체
+    if (!sel || paying) return
+    setPaying(true)
+    // TODO(PG): 카카오페이/카드/토스 결제 성공 콜백에서 addDiamonds 호출로 교체.
+    //           그때 setPaying(false)는 콜백의 성공·실패 양쪽에서 반드시 불러야 한다.
     addDiamonds(sel.dia)
     burst()
     sfx.coin()
     setDone(true)
+    setPaying(false)
   }
 
   const close = () => {
@@ -148,7 +156,7 @@ export default function Charge() {
             </div>
 
             <div className="mt-5">
-              <Button color="iq" onClick={onPay}>
+              <Button color="iq" busy={paying} onClick={onPay}>
                 {l({ ko: '충전하기 (베타 즉시지급)', en: 'Charge (beta · instant)', ja: 'チャージ（ベータ即時）' })}
               </Button>
               <button onClick={close} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">

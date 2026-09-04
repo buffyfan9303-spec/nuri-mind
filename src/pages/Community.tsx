@@ -87,6 +87,18 @@ export default function Community() {
   const [loadErr, setLoadErr] = useState<string | null>(null)
   /** 삭제 유예 중인 글 — 화면에서만 빠져 있고 아직 지우지 않았다(되돌리기 창) */
   const [pendingDelete, setPendingDelete] = useState<string[]>([])
+  /** 등록 중 — 왕복이 끝날 때까지 버튼을 잠근다(느린 망에서 두 번 눌러 글이 두 개 올라가던 자리) */
+  const [posting, setPosting] = useState(false)
+  const [postFailed, setPostFailed] = useState(false)
+  /** 댓글 등록 중인 글 id — 글마다 따로 잠근다(다른 글의 댓글까지 막을 이유가 없다) */
+  const [commenting, setCommenting] = useState<string | null>(null)
+  /**
+   * 폴링이 연달아 실패하는 중 — 첫 로드는 됐는데 그 뒤로 새 글을 못 받는 상태.
+   * 화면엔 멀쩡한 글이 있어 사용자는 '조용한 커뮤니티'로 읽지만 실제로는 끊긴 것이다.
+   * 한 번은 흔한 순간 장애라 넘기고, 두 번 연속(약 40초)부터 말한다.
+   */
+  const [stale, setStale] = useState<string | null>(null)
+  const pollFails = useRef(0)
   const showLoading = useSkeletonGate(server === null)
   const [serverPosts, setServerPosts] = useState<CommunityPost[]>([])
   const [newCount, setNewCount] = useState(0)
@@ -106,6 +118,8 @@ export default function Community() {
       setServerPosts(await fetchPosts(deviceId))
       setServer(true)
       setLoadErr(null)
+      setStale(null)
+      pollFails.current = 0
       setNewCount(0)
     } catch (e) {
       setServer(false)
@@ -117,14 +131,19 @@ export default function Community() {
   const poll = async () => {
     try {
       const fresh = await fetchPosts(deviceId)
+      pollFails.current = 0
+      setStale(null)
       setServerPosts((cur) => {
         const known = new Set(cur.map((p) => p.id))
         const n = fresh.filter((p) => !known.has(p.id) && !p.mine).length
         setNewCount(n)
         return cur
       })
-    } catch {
-      /* 무시 */
+    } catch (e) {
+      // 한 번은 흔한 순간 장애라 넘긴다. 두 번 연속(약 40초)이면 사용자가 보는 목록이
+      // '조용한 커뮤니티'가 아니라 '멈춘 화면'이라는 뜻이므로 그때 말한다.
+      pollFails.current += 1
+      if (pollFails.current >= 2) setStale(humanizeError(e, lang))
     }
   }
 
@@ -211,22 +230,29 @@ export default function Community() {
   }, [raw, filter, sort, hiddenPosts, blockedNicks, pendingDelete])
 
   const submit = async () => {
-    if (!text.trim()) return
+    if (!text.trim() || posting) return
     if (!moderateText(text).ok) return flash(t('community.badword'))
     const rl = checkRate('post')
     if (!rl.ok) return flash(t('community.tooFast', { n: rl.waitSec }))
     recordAction('post')
     const badge = attach ? myAnimal : undefined
+    setPosting(true)
+    setPostFailed(false)
     if (server) {
       try {
         await createPost(deviceId, { nick: nickname, avatar, badge, text })
         await reload()
-      } catch {
+      } catch (e) {
+        // 서버에 못 올렸어도 글은 이 기기에 남긴다 — 쓴 글이 통째로 사라지는 것보다 낫다.
+        // 다만 조용히 넘기지 않는다: 다른 사람에게 안 보인다는 사실을 말해야 한다.
         addPost(text, badge)
+        setPostFailed(true)
+        toast.err(humanizeError(e, lang, l({ ko: '이 기기에만 저장했어요', en: 'Saved on this device only', ja: 'この端末にのみ保存しました' })))
       }
     } else {
       addPost(text, badge)
     }
+    setPosting(false)
     setText('')
     burst()
     sfx.coin()
@@ -254,12 +280,13 @@ export default function Community() {
 
   const submitComment = async (postId: string) => {
     const body = commentText.trim()
-    if (!body) return
+    if (!body || commenting) return
     if (!moderateText(body).ok) return flash(t('community.badword'))
     const rl = checkRate('comment')
     if (!rl.ok) return flash(t('community.tooFast', { n: rl.waitSec }))
     recordAction('comment')
     const badge = attach ? myAnimal : undefined
+    setCommenting(postId)
     if (server) {
       try {
         await createComment(deviceId, postId, { nick: nickname, avatar, badge, text: body })
@@ -273,6 +300,7 @@ export default function Community() {
     setCommentText('')
     sfx.tap()
     const r = claimFirstComment()
+    setCommenting(null)
     if (r > 0) flash(t('community.firstCommentReward', { p: r }))
   }
 
@@ -513,6 +541,19 @@ export default function Community() {
               onRetry={reload}
             />
           )}
+          {!loadErr && stale && (
+            <LoadErrorCard
+              compact
+              what={l({ ko: '새 글', en: 'new posts', ja: '新着' })}
+              hint={l({
+                ko: '아래 글은 마지막으로 받아온 내용이에요. 그 뒤로 올라온 글은 아직 못 받았어요.',
+                en: 'These are the posts we last received. Anything newer has not arrived yet.',
+                ja: '以下は最後に取得した投稿です。それ以降の投稿はまだ届いていません。',
+              })}
+              reason={stale}
+              onRetry={reload}
+            />
+          )}
           {server === null ? (
             showLoading && <p className="py-10 text-center text-3xl">🧠</p>
           ) : posts.length === 0 ? (
@@ -660,7 +701,7 @@ export default function Community() {
                                 <motion.button
                                   whileTap={{ scale: 0.97 }}
                                   onClick={() => submitComment(p.id)}
-                                  disabled={!commentText.trim()}
+                                  disabled={!commentText.trim() || commenting === p.id}
                                   className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-40"
                                 >
                                   {t('community.send')}
@@ -779,7 +820,7 @@ export default function Community() {
           <span className="text-[12px] font-medium text-ink-faint">{text.length}/280</span>
         </div>
         <div className="mt-3.5">
-          <Button color="mind" disabled={!text.trim()} onClick={submit}>
+          <Button color="mind" disabled={!text.trim()} busy={posting} error={postFailed} onClick={submit}>
             {t('community.post')}
           </Button>
         </div>
