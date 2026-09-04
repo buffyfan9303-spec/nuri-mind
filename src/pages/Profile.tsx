@@ -43,16 +43,25 @@ const DOW = [
  * 오늘 이후 칸은 점선 빈칸으로 남긴다 — 미출석(실선)과 아직 오지 않은 날은 다른 상태다.
  */
 function attendanceCells(ledger: { at: number; memo: string }[]) {
-  const days = new Date().getDay() + 21 // 이번 주 일요일까지 되감고, 3주 더
+  const todayKey = localDay()
+  // 달력 날짜를 직접 걸어간다 — Date.now()에서 86400000씩 빼면 서머타임 경계에서 하루가 밀려
+  // 열과 요일이 어긋나고(머리글이 거짓말이 된다) 그날 출석이 통째로 사라진다.
+  const start = new Date()
+  start.setHours(12, 0, 0, 0) // 정오 기준이면 서머타임 1시간 이동에도 날짜가 안 바뀐다
+  start.setDate(start.getDate() - (start.getDay() + 21)) // 3주 전 주의 일요일
+  const pad = (n: number) => String(n).padStart(2, '0')
   return Array.from({ length: 28 }, (_, i) => {
-    const offset = days - i
-    const key = localDay(offset)
+    const d = new Date(start)
+    d.setDate(start.getDate() + i)
+    const key = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
     return {
       key,
-      day: Number(key.slice(8)),
-      on: ledger.some((e) => e.memo.includes('출석') && localDayOf(e.at) === key),
-      today: offset === 0,
-      future: offset < 0,
+      day: d.getDate(),
+      // '출석'을 부분 문자열로 찾으면 '❄️ 연속출석 복구권 구매'까지 출석으로 세어, 오지 않은 날이
+      // 금색으로 칠해지고 바로 옆 🔥 연속일수와 어긋난다. 출석 적립 메모만 정확히 본다.
+      on: ledger.some((e) => e.memo.startsWith('📅 출석') && localDayOf(e.at) === key),
+      today: key === todayKey,
+      future: key > todayKey,
     }
   })
 }

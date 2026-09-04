@@ -50,14 +50,54 @@ test.describe('피드백 계약', () => {
 
     await box.click()
     await expect(page.getByRole('status')).toContainText('적립', { timeout: 5_000 })
+    await expect(box).toHaveAttribute('aria-pressed', 'true')
 
     // 같은 자리를 한 번 더 = 해제 → 되돌리기 제안
     await box.click()
+    await expect(box).toHaveAttribute('aria-pressed', 'false')
     const undo = page.getByRole('button', { name: '되돌리기' })
     await expect(undo).toBeVisible({ timeout: 5_000 })
     await undo.click()
 
-    // 되돌린 뒤에는 해제 안내가 남아 있지 않다
-    await expect(page.getByText('체크를 해제했어요')).toHaveCount(0)
+    // 실제 상태를 본다 — 토스트는 run()이 무엇을 하든 닫히므로 '토스트가 사라졌다'는 증거가 되지 못한다
+    // (run을 빈 함수로 바꿔도 토스트만 보는 검사는 통과한다)
+    await expect(box).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  test('체크 → 해제 → 되돌리기를 반복해도 포인트는 한 번만 지급된다', async ({ page }) => {
+    await seedOnboarded(page, {
+      consent: CONSENT,
+      premiumUntil: premiumUntil(),
+      results: allDeepResults(),
+      growthPlanAt: Date.now(),
+      points: 0,
+    })
+    await page.goto('/growth')
+    await waitForApp(page)
+    const make = page.getByRole('button', { name: '내 성장 플랜 만들기' })
+    if (await make.count()) await make.click()
+
+    const box = page.locator('button[aria-pressed]').first()
+    await expect(box).toBeVisible({ timeout: 10_000 })
+
+    const points = async () =>
+      Number(
+        await page.evaluate((k) => {
+          const raw = localStorage.getItem(k)
+          return raw ? JSON.parse(raw).state.points : 0
+        }, 'nuri-mind-v1'),
+      )
+
+    await box.click()
+    const first = await points()
+    expect(first).toBeGreaterThan(0)
+
+    // 해제 → 재체크를 세 바퀴. 지급 키(paidKeys)가 로컬에서도 중복을 막으므로 잔액은 그대로여야 한다.
+    // 막히지 않으면 상점에서 실제로 쓸 수 있는 포인트를 무한히 찍어낼 수 있다.
+    for (let i = 0; i < 3; i++) {
+      await box.click()
+      await box.click()
+    }
+    expect(await points()).toBe(first)
   })
 })

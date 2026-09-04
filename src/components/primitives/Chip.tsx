@@ -8,5 +8,5 @@ export function Chip({ children, tone = 'mind' }: { children: ReactNode; tone?: 
     gray: 'bg-gray-100 text-gray-500',
     blue: 'bg-sky2-100 text-sky2-600',
   }
-  return <span className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-[13px] font-medium leading-none${map[tone]}`}>{children}</span>
+  return <span className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-[13px] font-medium leading-none ${map[tone]}`}>{children}</span>
 }

@@ -10,7 +10,7 @@ import type { Page } from '@playwright/test'
 
 export const STORE_KEY = 'nuri-mind-v1'
 /** useStore의 persist version — 불일치 시 zustand가 마이그레이션/폐기하므로 반드시 맞춘다 */
-export const STORE_VERSION = 2
+export const STORE_VERSION = 3
 
 /** KST 기준 오늘 날짜 키(YYYY-MM-DD) — 앱의 lib/date.localDay와 같은 규칙 */
 export function todayKey(d = new Date()): string {

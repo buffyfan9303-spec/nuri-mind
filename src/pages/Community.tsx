@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useSkeletonGate } from '../hooks/useSkeletonGate'
 import LoadErrorCard from '../components/surfaces/LoadErrorCard'
-import { toast } from '../lib/toast'
+import { toast, UNDO_WINDOW_MS } from '../lib/toast'
 import { humanizeError } from '../lib/dbError'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -96,6 +96,12 @@ export default function Community() {
   const [refreshing, setRefreshing] = useState(false)
 
   const reload = async () => {
+    // 서버를 안 쓰는 모드(설정 없음)에서는 실패가 아니다 — 당겨서 새로고침이 가짜 경고를 띄우면 안 된다
+    if (!supabaseReady()) {
+      setServer(false)
+      setLoadErr(null)
+      return
+    }
     try {
       setServerPosts(await fetchPosts(deviceId))
       setServer(true)
@@ -306,7 +312,7 @@ export default function Community() {
   }
 
   /**
-   * 삭제 되돌리기 — 화면에서는 즉시 사라지되 **실제 삭제는 3초 미룬다**.
+   * 삭제 되돌리기 — 화면에서는 즉시 사라지되 **실제 삭제는 되돌리기 창(UNDO_WINDOW_MS)만큼 미룬다**.
    * 서버 글은 지우고 나면 되살릴 수 없다(본문·좋아요·댓글이 함께 사라진다).
    * 되돌리기를 만드는 유일한 방법은 '아직 지우지 않는 것'이다.
    * 화면을 떠나면 유예분을 즉시 확정한다 — 지웠다고 본 글이 살아 돌아오면 안 된다.
@@ -330,24 +336,35 @@ export default function Community() {
     const onServer = server === true
     setPendingDelete((cur) => [...cur, p.id])
 
+    // 토스트 id를 확정 시점에 내리기 위해 담아 둔다(아래 commit에서 채운다)
+    let toastId = 0
     const commit = () => {
       undoTimers.current.delete(p.id)
       commitRef.current.delete(p.id)
+      // 되돌리기가 무효가 되는 순간 그 버튼을 화면에서 없앤다.
+      // 화면을 떠나면(라우트 이동) 이 confirm이 즉시 돌지만 토스트는 라우터 밖이라 살아남는다 —
+      // 그때 '되돌리기'가 남아 있으면 눌러도 아무 일이 없는 거짓 버튼이 된다.
+      toast.close(toastId)
       if (onServer) {
         setServerPosts((prev) => prev.filter((x) => x.id !== p.id))
-        removePost(p.id, deviceId).catch((e) => {
-          toast.err(humanizeError(e, lang))
-          reload()
-        })
+        removePost(p.id, deviceId)
+          // 서버가 확인해 준 뒤에야 마스킹을 푼다 — 먼저 풀면 그 사이 도착한 새로고침이 지운 글을 되살린다
+          .then(() => setPendingDelete((cur) => cur.filter((id) => id !== p.id)))
+          .catch((e) => {
+            toast.err(humanizeError(e, lang))
+            setPendingDelete((cur) => cur.filter((id) => id !== p.id))
+            reload()
+          })
       } else {
         deletePost(p.id)
+        setPendingDelete((cur) => cur.filter((id) => id !== p.id))
       }
-      setPendingDelete((cur) => cur.filter((id) => id !== p.id))
     }
     commitRef.current.set(p.id, commit)
-    undoTimers.current.set(p.id, setTimeout(commit, 3000))
+    // 토스트가 떠 있는 동안은 반드시 되돌릴 수 있어야 한다 — 같은 상수를 쓴다
+    undoTimers.current.set(p.id, setTimeout(commit, UNDO_WINDOW_MS))
 
-    toast.info(l({ ko: '글을 삭제했어요', en: 'Post deleted', ja: '投稿を削除しました' }), {
+    toastId = toast.info(l({ ko: '글을 삭제했어요', en: 'Post deleted', ja: '投稿を削除しました' }), {
       label: l({ ko: '되돌리기', en: 'Undo', ja: '元に戻す' }),
       run: () => {
         const timer = undoTimers.current.get(p.id)

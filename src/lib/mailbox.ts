@@ -19,15 +19,19 @@ export interface MailItem {
   expires_at: string | null
 }
 
+/**
+ * 우편 목록.
+ *
+ * 실패는 **던진다**. 예전엔 모든 실패를 []로 삼켜서, 오프라인이든 권한 오류든 화면엔
+ * '받은 우편이 없어요'가 떴다 — 운영자 지급·결제 다이아를 기다리는 사용자에겐 정반대의 뜻이다.
+ * 서버 미설정(supabase 없음)만 빈 목록으로 본다. 그건 실패가 아니라 '이 빌드엔 우편이 없다'이다.
+ */
 export async function fetchMail(): Promise<MailItem[]> {
   if (!supabase) return []
-  try {
-    const { data, error } = await supabase.rpc('my_mail')
-    if (error || !Array.isArray(data)) return []
-    return data as MailItem[]
-  } catch {
-    return []
-  }
+  const { data, error } = await supabase.rpc('my_mail')
+  if (error) throw error
+  if (!Array.isArray(data)) throw new Error('my_mail: unexpected payload')
+  return data as MailItem[]
 }
 
 /** 우편 1건 받기 → 첨부 다이아 수. 실패(RPC 에러·오프라인·세션 만료)는 null — 0다이아 정상 수령과 구분. */
@@ -54,10 +58,14 @@ export async function claimAllMail(): Promise<number | null> {
   }
 }
 
-/** 안 받은 우편 개수(홈 배지용). 비로그인/미배포면 0. */
+/** 안 받은 우편 개수(홈 배지용). 비로그인·미배포·실패면 0 — 배지 하나 때문에 홈이 깨지면 안 된다. */
 export async function unreadMailCount(): Promise<number> {
-  const m = await fetchMail()
-  return m.filter((x) => !x.claimed).length
+  try {
+    const m = await fetchMail()
+    return m.filter((x) => !x.claimed).length
+  } catch {
+    return 0
+  }
 }
 
 /** 운영자: 닉네임으로 다이아 지급. 반환 'ok'·'no_user'·'unavailable'(권한없음/오류) */

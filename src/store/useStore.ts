@@ -24,6 +24,8 @@ import { uid } from '../lib/random'
 import { setSoundEnabled } from '../lib/sound'
 import { track } from '../lib/analytics'
 import { moderateText } from '../lib/moderation'
+// ⚠️ '../lib/growth'가 아니라 여기서 가져온다 — growth는 페르소나 처방 전문(184KB)을 정적으로 끌고 온다
+import { isTaskDone, weekKeyOfDay, type Cadence } from '../lib/cadence'
 import { claimDiamondGrantsServer } from '../lib/diamonds'
 import { mirrorEarn, mirrorSpend, initEconomySync, clearAccountSync, type SyncHooks } from '../lib/economy'
 import { createSettingsSlice } from './slices/settingsSlice'
@@ -186,6 +188,8 @@ interface State {
   growthFocusIds: string[]
   /** 과제 완료 기록 — taskId → 완료 날짜키(YYYY-MM-DD)[] */
   growthDone: Record<string, string[]>
+  /** 이미 지급한 보상 키(로컬 중복 지급 차단) — 서버 미러의 reasonKey와 같은 값 */
+  paidKeys: string[]
 
   setLang: (l: Lang) => void
   setSound: (v: boolean) => void
@@ -269,7 +273,7 @@ interface State {
   /** 성장 플랜 초기화(다시 만들기) */
   resetGrowthPlan: () => void
   /** 성장 과제 완료 토글 — 첫 완료 시 +5P(하루 1회, 서버 멱등키) */
-  toggleGrowthTask: (taskId: string) => number
+  toggleGrowthTask: (taskId: string, cadence?: Cadence) => number
   readArticle: (id: string) => number
   unlockAdmin: (pin: string) => boolean
   lockAdmin: () => void
@@ -351,6 +355,7 @@ const initial = () => ({
   growthPlanAt: 0,
   growthFocusIds: [] as string[],
   growthDone: {} as Record<string, string[]>,
+  paidKeys: [] as string[],
 })
 
 export const useStore = create<State>()(
@@ -361,11 +366,20 @@ export const useStore = create<State>()(
         const s = get()
         return s.freeDate === today() ? Math.max(0, DAILY_FREE_CAP - s.freeAmount) : DAILY_FREE_CAP
       }
-      /** 상한 내에서 적립 — 실제 지급액 반환. reasonKey는 서버 미러 중복 차단 키(일일 보상은 날짜 포함) */
+      /**
+        * 상한 내에서 적립 — 실제 지급액 반환.
+        *
+        * reasonKey는 **로컬·서버 양쪽의 중복 지급 차단 키**다(일일 보상은 날짜 포함).
+        * 예전엔 이 키를 서버 미러에만 넘겼다. 서버는 중복을 막았지만 로컬 지갑은 부를 때마다 늘었고,
+        * 상점 결제(redeem)는 로컬 지갑을 본다 — 즉 체크/해제를 반복하면 실제로 쓸 수 있는 포인트가
+        * 무한히 불어났다(DAILY_FREE_CAP도 Infinity라 상한도 없었다).
+        * 이제 지급된 키를 남겨 같은 키의 두 번째 지급을 로컬에서도 거절한다.
+        */
       const grantFree = (amount: number, memo: string, reasonKey: string | null = null): number => {
         // ⚠️ 공개 라우트(매거진·띠운세 등)는 미가입자도 볼 수 있다 — 약관·개인정보 동의 전에는
         //    어떤 보상도 적립하지 않는다(동의 우회로 서버 원장까지 귀속되는 것을 차단).
         if (!get().onboarded) return 0
+        if (reasonKey && get().paidKeys.includes(reasonKey)) return 0
         const granted = Math.min(amount, freeLeft())
         if (granted <= 0) return 0
         const s = get()
@@ -375,6 +389,8 @@ export const useStore = create<State>()(
           freeDate: t,
           freeAmount: (s.freeDate === t ? s.freeAmount : 0) + granted,
           ledger: [{ id: uid('lg_'), amount: granted, memo, at: Date.now() }, ...s.ledger],
+          // 최근 것만 남긴다 — 키는 날짜를 품고 있어 오래된 건 다시 쓰일 일이 없다
+          paidKeys: reasonKey ? [reasonKey, ...s.paidKeys].slice(0, 400) : s.paidKeys,
         })
         mirrorEarn(granted, memo, reasonKey)
         return granted
@@ -804,16 +820,29 @@ export const useStore = create<State>()(
 
         buildGrowthPlan: (focusIds) => set({ growthPlanAt: Date.now(), growthFocusIds: focusIds.slice(0, 3) }),
         resetGrowthPlan: () => set({ growthPlanAt: 0, growthFocusIds: [], growthDone: {} }),
-        /** 성장 과제 완료 토글 — 체크 시 그날 1회 +5P(같은 과제 재체크는 무보상) */
-        toggleGrowthTask: (taskId) => {
+        /**
+         * 성장 과제 완료 토글 — 체크 시 1회 +5P.
+         *
+         * cadence를 받는 이유: 화면은 주간 과제를 '이번 주에 한 번이라도 했으면 완료'로 읽는데(isTaskDone),
+         * 저장은 오늘 날짜만 넣고 빼면 판정이 어긋난다. 월요일에 체크한 주간 과제를 금요일에 누르면
+         * '오늘 날짜가 없으니 체크'로 처리돼 **해제 대신 +5P가 또 나갔다**. 해제는 이번 주 기록을 모두 지운다.
+         * 재체크가 무보상인 근거는 grantFree의 paidKeys(로컬 멱등)다 — 이 함수가 아니라 거기서 막는다.
+         */
+        toggleGrowthTask: (taskId, cadence = 'daily') => {
           const s = get()
           const t = today()
           const cur = s.growthDone[taskId] ?? []
-          const has = cur.includes(t)
-          const next = has ? cur.filter((d) => d !== t) : [...cur, t]
+          const done = isTaskDone(cur, cadence, t)
+          const next = done
+            ? cadence === 'weekly'
+              ? cur.filter((d) => weekKeyOfDay(d) !== weekKeyOfDay(t))
+              : cur.filter((d) => d !== t)
+            : [...cur, t]
           set({ growthDone: { ...s.growthDone, [taskId]: next } })
-          if (has) return 0
-          return grantFree(5, '🌱 성장 투두 완료', `growth:${taskId}:${t}`)
+          if (done) return 0
+          // 주간 과제의 지급 키는 '주'로 잡는다 — 같은 주에 두 번 지급되지 않게
+          const key = cadence === 'weekly' ? `growth:${taskId}:w${weekKeyOfDay(t)}` : `growth:${taskId}:${t}`
+          return grantFree(5, '🌱 성장 투두 완료', key)
         },
 
         /** 매거진 정독 보상 — 글당 1회 +8P(일일 무료 상한 적용) */
@@ -862,7 +891,7 @@ export const useStore = create<State>()(
     },
     {
       name: 'nuri-mind-v1',
-      version: 2,
+      version: 3,
       migrate: (persisted, version) => {
         const s = persisted as Partial<State> | undefined
         if (s) {
@@ -870,6 +899,10 @@ export const useStore = create<State>()(
           if (version < 1) s.fontScale = 1
           // v2: 기존 유저(검사기록 있거나 닉네임 바꾼)는 회원가입 건너뜀
           if (version < 2) s.onboarded = (s.results?.length ?? 0) > 0 || (!!s.nickname && s.nickname !== '누리')
+          // v3: 보상 중복 지급 차단 키 도입. 과거 지급분은 키가 없으므로 빈 배열로 시작한다 —
+          //     오늘 이미 받은 보상을 한 번 더 받을 수 있는 하루짜리 창이 생기지만,
+          //     과거 키를 지어내면 오늘 정상 보상까지 막히므로 이쪽이 안전하다.
+          if (version < 3) s.paidKeys = []
         }
         return s as State
       },

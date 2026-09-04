@@ -72,17 +72,20 @@ export default function GrowthPlan() {
   }, [growthDone])
 
   const onToggle = (id: string) => {
-    const wasDone = isTaskDone(growthDone[id], allTasks.find((tk) => tk.id === id)?.cadence ?? 'daily', todayKey)
-    const got = toggleTask(id)
+    // cadence를 함께 넘겨야 주간 과제의 '완료 판정'과 '저장'이 같은 규칙을 쓴다
+    const cadence = allTasks.find((tk) => tk.id === id)?.cadence ?? 'daily'
+    const wasDone = isTaskDone(growthDone[id], cadence, todayKey)
+    const got = toggleTask(id, cadence)
     if (got > 0) {
       fire('coin')
       toast.ok(l({ ko: `+${got}P 적립!`, en: `+${got}P earned!`, ja: `+${got}P 獲得！` }))
     } else if (wasDone) {
-      // 체크 해제는 실수로 누르기 쉽다(체크와 같은 자리). 되돌려도 포인트 재지급은 없으니 안전하다
+      // 체크 해제는 실수로 누르기 쉽다(체크와 같은 자리).
+      // 되돌려도 포인트가 다시 나가지 않는 근거는 grantFree의 paidKeys(로컬 중복 지급 차단)다.
       sfx.tap()
       toast.info(l({ ko: '체크를 해제했어요', en: 'Unchecked', ja: 'チェックを外しました' }), {
         label: l({ ko: '되돌리기', en: 'Undo', ja: '元に戻す' }),
-        run: () => toggleTask(id),
+        run: () => toggleTask(id, cadence),
       })
     } else sfx.tap()
   }

@@ -383,7 +383,7 @@ function Console() {
             {aiHealth.map((h) => (
               <div key={h.fn} className="mt-2 rounded-xl bg-black/20 p-3">
                 <p className="text-[12px] font-semibold text-white">{h.fn}</p>
-                <p className={`mt-0.5 text-[12px] font-medium${h.ok ? 'text-[#4FA882]' : 'text-[#FF9AA2]'}`}>{h.verdict}</p>
+                <p className={`mt-0.5 text-[12px] font-medium ${h.ok ? 'text-[#4FA882]' : 'text-[#FF9AA2]'}`}>{h.verdict}</p>
                 {h.detail && <p className="mt-1 break-all text-[11px] leading-relaxed text-white/45">{h.detail}</p>}
               </div>
             ))}

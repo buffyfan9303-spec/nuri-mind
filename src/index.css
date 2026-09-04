@@ -181,20 +181,23 @@ h1, h2, h3, h4 {
    여기서는 그 둘이 아닌 **작은 인라인 버튼들**(칩·'하기'·아이콘 버튼 수백 개)을 한 번에 덮는다.
    밝기 4%와 1px 부양은 '눌러도 되는구나'만 말하고 레이아웃은 건드리지 않는 최소 신호다. */
 @media (hover: hover) and (pointer: fine) {
+  /* transform·box-shadow는 절대 전이 대상에 넣지 않는다 —
+     framer-motion이 스프링을 매 프레임 인라인 style로 쓰는데, CSS 전이가 그 값을 다시 0.16초에 걸쳐
+     따라가면 스프링이 저역통과 필터를 통과한 것처럼 뭉개진다(누름이 늦게 들어가고 늦게 빠진다).
+     이 층이 실제로 움직이는 건 filter 하나뿐이다. */
   button:not(:disabled),
   a[href],
   [role='button']:not([aria-disabled='true']) {
-    transition:
-      filter 0.16s ease-out,
-      transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.16s ease-out;
+    transition: filter 0.16s ease-out;
   }
   button:not(:disabled):hover,
   [role='button']:not([aria-disabled='true']):hover {
     filter: brightness(1.04) saturate(1.03);
   }
-  /* 배경이 있는(=버튼처럼 보이는) 것만 살짝 뜬다 — 텍스트 링크가 들썩이면 산만하다 */
-  button:not(:disabled)[class*='bg-']:hover {
+  /* 배경이 있는(=버튼처럼 보이는) 것만 살짝 뜬다 — 텍스트 링크가 들썩이면 산만하다.
+     :not(:active)가 필요한 이유: 마우스로 누르는 동안에도 호버는 유지되는데, 이 규칙이
+     Tailwind의 active:translate-y-[3px](명시도가 더 낮다)를 이겨 '눌리는 느낌'이 통째로 사라졌다. */
+  button:not(:disabled)[class*='bg-']:hover:not(:active) {
     transform: translateY(-1px);
   }
   a[href]:hover {
@@ -203,11 +206,13 @@ h1, h2, h3, h4 {
 }
 
 /* 키보드 포커스 링 — 호버를 넣은 김에 '보이지 않는 사용자'의 현재 위치도 보이게.
-   마우스 클릭엔 안 뜨고(:focus-visible) Tab 이동에만 뜬다. */
+   마우스 클릭엔 안 뜨고(:focus-visible) Tab 이동에만 뜬다.
+   ⚠️ border-radius는 여기서 절대 지정하지 않는다: :where()가 명시도를 0으로 만들어도
+   이 파일이 @tailwind utilities보다 뒤라 rounded-full을 순서로 이겨, 포커스된 동안 원형 버튼이
+   각진 사각형으로 변했다. outline은 원래 요소 자신의 radius를 따라간다 — 지정할 이유가 없다. */
 :where(button, a[href], [role='button'], input, textarea, select):focus-visible {
-  outline: 2px solid #4FA882; /* mind-500 — 토큰이 아니라 팔레트 고정색(다크에서도 대비 충분) */
+  outline: 2px solid #4fa882; /* mind-500 — 토큰이 아니라 팔레트 고정색(다크에서도 대비 충분) */
   outline-offset: 2px;
-  border-radius: 12px;
 }
 
 /* 광고가 안 채워지면(unfilled) 빈 박스(흰 공란)로 남지 않게 접어버림 — 스크롤 시 깨진 공란 방지 */
@@ -233,7 +238,7 @@ ins.adsbygoogle[data-ad-status='unfilled'] {
     scroll-behavior: auto !important;
   }
   /* 호버 부양만 정지 — 밝기 변화는 위치 이동이 없어 멀미와 무관하다 */
-  button:not(:disabled)[class*='bg-']:hover {
+  button:not(:disabled)[class*='bg-']:hover:not(:active) {
     transform: none !important;
   }
 }

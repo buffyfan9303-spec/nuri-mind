@@ -176,6 +176,48 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   check('제목·버튼·라벨 이모지 접두 없음', bad.length === 0, bad.slice(0, 5).join(', '))
 }
 
+/* className 템플릿에서 클래스와 보간이 붙어버린 자리 —
+   text-[12px]${on ? 'bg-a' : 'bg-b'} 는 'text-[12px]bg-b' 한 덩어리가 되어 **둘 다** 무효가 된다.
+   Tailwind가 조용히 무시하므로 콘솔 에러도, 빌드 실패도 없이 배경/색/굵기만 사라진다.
+   실제로 두 차례 났다: 출석 체크의 흰 체크표가 투명 배경 위에 놓여 아이콘 자리가 비었고,
+   Chip 전체가 알약 배경을 잃었다. 사람 눈으로는 안 잡히니 여기서 막는다. */
+{
+  const glued = []
+  const scanGlue = (rel) => {
+    const src = read(rel)
+    for (const m of src.matchAll(/className=\{`/g)) {
+      let i = m.index + m[0].length
+      let depth = 0
+      const start = i
+      while (i < src.length) {
+        if (src[i] === '\\') { i += 2; continue }
+        if (src[i] === '`' && depth === 0) break
+        if (src.slice(i, i + 2) === '${') { depth++; i += 2; continue }
+        if (src[i] === '}' && depth > 0) depth--
+        i++
+      }
+      const body = src.slice(start, i)
+      for (const g of body.matchAll(/\$\{/g)) {
+        const k = g.index
+        // 하이픈/대괄호/슬래시/콜론 뒤는 정당한 보간 (bg-${c}, text-[${n}px])
+        if (k > 0 && !' \n\t-[(/{:+,'.includes(body[k - 1])) {
+          glued.push(rel + ': ...' + body.slice(Math.max(0, k - 26), k) + '${...')
+        }
+      }
+    }
+  }
+  const walkGlue = (dir) => {
+    for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
+      const rel = `${dir}/${e.name}`
+      if (e.isDirectory()) walkGlue(rel)
+      else if (/\.tsx$/.test(e.name)) scanGlue(rel)
+    }
+  }
+  walkGlue('src')
+  check('className 보간 앞 공백(클래스 붙임 없음)', glued.length === 0, glued.slice(0, 4).join(' | '))
+}
+
+
 /* 결과 */
 console.log(`\n✅ 통과 ${ok.length}`)
 ok.forEach((n) => console.log(`   · ${n}`))

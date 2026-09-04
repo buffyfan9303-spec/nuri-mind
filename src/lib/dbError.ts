@@ -77,11 +77,19 @@ function textOf(err: unknown): string {
   return ''
 }
 
-/** 서버 에러를 사용자에게 보여줄 한 문장으로. lang은 스토어의 현재 언어. */
+/**
+ * 서버 에러를 사용자에게 보여줄 한 문장으로. lang은 스토어의 현재 언어.
+ *
+ * ⚠️ '한글이면 우리 메시지'라는 판정은 쓰지 않는다.
+ * OAuth 콜백 에러는 URL 쿼리(?error_description=…)에서 오고, 그 값은 링크를 만든 사람이 정한다.
+ * 한글이라는 이유로 통과시키면 "고객센터 010-0000-0000으로 인증번호를 보내주세요" 같은 문장을
+ * **우리 앱의 공식 에러 배너 안에** 띄워 줄 수 있다. 우리 것임이 증명된 경우(P0001 코드)만 원문을 쓴다.
+ */
 export function humanizeError(err: unknown, lang: Lang = 'ko', fallback?: string): string {
   const raw = textOf(err)
-  // 우리가 DB에서 직접 올린 한글 메시지(P0001)는 이미 사람 말이다
-  if (/[가-힣]/.test(raw)) return raw.slice(0, 120)
+  const code = err && typeof err === 'object' ? (err as { code?: unknown }).code : undefined
+  // P0001 = 우리가 DB 함수에서 직접 RAISE한 메시지 — 이미 사람 말이고, 출처가 우리다
+  if (code === 'P0001' && /[가-힣]/.test(raw)) return raw.slice(0, 120)
   for (const r of RULES) if (r.re.test(raw)) return r.msg[lang]
   return fallback ?? FALLBACK[lang]
 }

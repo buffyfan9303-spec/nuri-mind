@@ -21,11 +21,18 @@ export interface ToastItem {
  * 실패는 다시 읽게 되므로 4.5초, 성공은 이미 예상한 결과라 2.4초면 충분하다.
  */
 const DURATION: Record<ToastVariant, number> = { ok: 2400, err: 4500, info: 2800 }
-const WITH_ACTION = 6000
+
+/**
+ * 되돌리기 창 — 토스트가 떠 있는 시간과 **실제 되돌릴 수 있는 시간이 같아야 한다**.
+ * 호출부(삭제 유예 타이머)가 이 상수를 함께 쓴다. 어긋나면 화면엔 '되돌리기'가 보이는데
+ * 눌러도 아무 일이 없는 구간이 생긴다 — 버튼이 거짓말을 하는 최악의 상태다.
+ */
+export const UNDO_WINDOW_MS = 6000
 
 interface ToastState {
   items: ToastItem[]
-  show: (text: string, variant?: ToastVariant, action?: ToastAction) => void
+  /** 만들어진 토스트 id — 되돌리기가 무효가 되는 순간 호출부가 직접 내릴 수 있어야 한다 */
+  show: (text: string, variant?: ToastVariant, action?: ToastAction) => number
   dismiss: (id: number) => void
 }
 
@@ -44,17 +51,22 @@ const timers = new Map<number, ReturnType<typeof setTimeout>>()
 export const useToastStore = create<ToastState>((set, get) => ({
   items: [],
   show: (text, variant = 'ok', action) => {
-    // 같은 문구가 연달아 쌓이면(따발총 탭) 마지막 하나만 남긴다
-    const dup = get().items.find((i) => i.text === text && i.variant === variant)
-    if (dup) get().dismiss(dup.id)
+    // 같은 문구가 연달아 쌓이면(따발총 탭) 마지막 하나만 남긴다.
+    // 단 되돌리기가 달린 토스트는 겹쳐도 지우지 않는다 — 글 2개를 연속 삭제하면 문구가 같아서
+    // 첫 번째 글의 되돌리기가 사라지고, 그 글은 유예 창이 열려 있는데도 되돌릴 방법이 없어진다.
+    if (!action) {
+      const dup = get().items.find((i) => i.text === text && i.variant === variant && !i.action)
+      if (dup) get().dismiss(dup.id)
+    }
 
     const id = ++seq
     haptic(variant === 'err' ? [18, 40, 18] : 10)
     set((s) => ({ items: [...s.items, { id, text, variant, action }] }))
     timers.set(
       id,
-      setTimeout(() => get().dismiss(id), action ? WITH_ACTION : DURATION[variant]),
+      setTimeout(() => get().dismiss(id), action ? UNDO_WINDOW_MS : DURATION[variant]),
     )
+    return id
   },
   dismiss: (id) => {
     const t = timers.get(id)
@@ -69,4 +81,6 @@ export const toast = {
   ok: (text: string, action?: ToastAction) => useToastStore.getState().show(text, 'ok', action),
   err: (text: string, action?: ToastAction) => useToastStore.getState().show(text, 'err', action),
   info: (text: string, action?: ToastAction) => useToastStore.getState().show(text, 'info', action),
+  /** 되돌리기가 더는 통하지 않을 때 그 토스트를 내린다 — 거짓말하는 버튼을 화면에 남기지 않는다 */
+  close: (id: number) => useToastStore.getState().dismiss(id),
 }

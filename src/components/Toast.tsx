@@ -36,7 +36,8 @@ export default function Toast() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96, transition: { duration: 0.16 } }}
             transition={SPRING.snap}
-            onClick={() => dismiss(it.id)}
+            /* 되돌리기가 달린 토스트는 본문 탭으로 닫지 않는다 — 알림을 치우려다 유일한 되돌리기 수단을 버리게 된다 */
+            onClick={it.action ? undefined : () => dismiss(it.id)}
             className={`pointer-events-auto flex w-full max-w-[340px] items-center gap-2.5 rounded-2xl px-4 py-3 shadow-pop backdrop-blur-md ${
               it.variant === 'err' ? 'bg-[#3B2326]/95 text-[#FFE2E2]' : 'bg-[#22322B]/95 text-[#E7F3EC]'
             }`}

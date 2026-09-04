@@ -11,7 +11,10 @@ import { PERSONAS } from '../i18n/animalTranslations'
 import { TESTS } from '../data/tests'
 import type { L, TestResult } from '../data/types'
 
-export type Cadence = 'daily' | 'weekly'
+// 주기 판정은 의존성 없는 lib/cadence에 산다 — 스토어가 이 파일을 통해 들어오면
+// 위의 animalTranslations(184KB)가 메인 번들로 딸려온다. 소비처 import 경로는 그대로 두려고 재수출한다.
+export { isTaskDone, weekKeyOfDay, type Cadence } from './cadence'
+import type { Cadence } from './cadence'
 
 export interface GrowthTask {
   /** `${testId}:${index}` — 완료 기록(growthDone)의 키 */
@@ -99,19 +102,3 @@ export function buildFocuses(focusIds: string[], results: TestResult[]): GrowthF
     .filter((f) => f.tasks.length > 0)
 }
 
-/** 주간 과제의 기준 주(월요일 시작) 키 — 주 1회 완료 판정용 */
-export function weekKeyOfDay(dayKey: string): string {
-  const [y, m, d] = dayKey.split('-').map(Number)
-  const dt = new Date(y, (m ?? 1) - 1, d ?? 1)
-  const dow = (dt.getDay() + 6) % 7 // 월=0
-  dt.setDate(dt.getDate() - dow)
-  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
-}
-
-/** 오늘(또는 이번 주) 기준으로 이 과제가 완료됐는지 */
-export function isTaskDone(done: string[] | undefined, cadence: Cadence, todayKey: string): boolean {
-  if (!done?.length) return false
-  if (cadence === 'daily') return done.includes(todayKey)
-  const wk = weekKeyOfDay(todayKey)
-  return done.some((d) => weekKeyOfDay(d) === wk)
-}
