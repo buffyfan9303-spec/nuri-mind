@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { SPRING } from '../lib/motion'
 import { useRef, useState, type ReactNode } from 'react'
 import { haptic } from '../lib/haptic'
+import { canHover } from '../lib/device'
 
 export type BtnColor = 'mind' | 'sky' | 'adhd' | 'ego' | 'iq' | 'love' | 'burn' | 'dopa' | 'reso' | 'dk' | 'white' | 'danger'
 
@@ -73,6 +74,12 @@ export default function Button({
       disabled={disabled}
       onClick={handleClick}
       whileTap={disabled ? undefined : { y: 3, boxShadow: `0 0px 0 ${c.sh}` }}
+      /**
+       * 호버: 2px 들리고 아랫면 그림자가 3→5px로 자란다(들린 만큼 바닥과 멀어진 것) + 자기 색 글로우.
+       * 물체가 커지는 게 아니라 '떠오르는' 것으로 읽혀야 눌렀을 때의 내려앉음과 짝이 맞는다.
+       * 터치 기기에서는 끈다 — 탭 뒤 호버가 눌어붙어 버튼 하나만 계속 떠 있는 것처럼 보인다.
+       */
+      whileHover={canHover && !disabled ? { y: -2, boxShadow: `0 5px 0 ${c.sh}, 0 10px 22px -8px ${c.sh}` } : undefined}
       transition={SPRING.flick}
       className={`relative ${full ? 'w-full' : ''} ${pad} whitespace-nowrap rounded-2xl font-extrabold tracking-wide select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
       style={{ background: c.bg, color: c.fg, boxShadow: `0 3px 0 ${c.sh}`, border: c.border ?? 'none' }}

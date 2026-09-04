@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import type { KeyboardEvent, ReactNode } from 'react'
 import { SPRING } from '../../lib/motion'
+import { canHover } from '../../lib/device'
 
 export function Card({
   children,
@@ -18,6 +19,8 @@ export function Card({
   return (
     <motion.div
       whileTap={onClick ? { scale: 0.97 } : undefined}
+      // 누를 수 있는 카드만 떠오른다 — 장식 카드가 따라 뜨면 '누를 수 있음'의 신호가 희석된다
+      whileHover={canHover && onClick ? { y: -3, boxShadow: '0 10px 26px -10px rgba(31, 61, 47, 0.38)' } : undefined}
       transition={SPRING.snap}
       onClick={onClick}
       {...(onClick

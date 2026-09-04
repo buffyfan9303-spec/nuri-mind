@@ -6,7 +6,9 @@ import { useNavigate } from 'react-router-dom'
 import Avatar from '../components/Avatar'
 import Button from '../components/Button'
 import Footer from '../components/Footer'
+import TopStrip from '../components/TopStrip'
 import ScrollChips from '../components/ScrollChips'
+import AdSlot from '../components/AdSlot'
 import IconBadge from '../components/IconBadge'
 import { SkeletonBlock } from '../components/Skeleton'
 import { PointsPill, Card } from '../components/ui'
@@ -22,6 +24,7 @@ import { TERMS, TEST_SHORT_KEY } from '../data/terms'
 import { unreadMailCount } from '../lib/mailbox'
 
 import { localDay, localDayOf } from '../lib/date'
+import { bestSurveyOf } from '../lib/survey'
 
 const todayStr = () => localDay()
 
@@ -64,10 +67,8 @@ export default function Home() {
   const redeemable = SHOP_ITEMS.filter((i) => s.points >= i.cost).length
   const checkedToday = s.lastCheckIn === todayStr()
 
-  /* HOT 칸용: 지금 참여 가능한 최고 보상 설문 */
-  const bestSurvey = s.surveys
-    .filter((sv) => sv.status === 'approved' && !sv.mine && !s.takenSurveys.includes(sv.id))
-    .sort((a, b) => b.reward - a.reward)[0]
+  /* HOT 칸용: 지금 참여 가능한 최고 보상 설문 — 상단 띠(TopStrip)와 같은 선택기를 쓴다 */
+  const bestSurvey = bestSurveyOf(s.surveys, s.takenSurveys)
 
   // 오늘의 운세 프리뷰 — saju 모듈(별도 청크 gzip 32KB)은 지연 로드(메인 번들 오염 방지 표준 패턴)
   const [fx, setFx] = useState<{ overall: number; luckyColorKo: string; luckyNumber: number; zodiacEmoji: string } | null>(null)
@@ -188,6 +189,9 @@ export default function Home() {
 
   return (
     <div className="bg-dots min-h-dvh pb-36">
+      {/* 맨 위 얇은 띠 — 리워드 설문 상시 진입점(본문 레이아웃을 밀지 않는 34px) */}
+      <TopStrip />
+
       <header className="mx-auto flex max-w-md items-center justify-between gap-2 px-5 pt-5">
         <div className="flex shrink-0 items-center gap-2">
           <img src="/icon.svg" alt="" className="floaty h-8 w-8 rounded-2xl" />
@@ -294,35 +298,45 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* ── 1분 바이럴 퀵 테스트 — 첫 화면 핵심 가치(신규 방문자 즉시 체험) ── */}
-        <div className="mt-5">
-          <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
-            <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
-              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
-              {t('quick.banner')}
-            </h2>
-            <span className="text-[12px] font-semibold text-mind-600">{t('community.all')} ›</span>
-          </button>
-          {quickChips.length ? (
-            <ScrollChips
-              items={quickChips.map((q, i) => ({
-                id: q.id,
-                emoji: q.emoji,
-                label: l(q.title),
-                color: q.grad0,
-                onClick: () => nav(`/quick/${q.id}`),
-                badge: i === 0 ? ('HOT' as const) : i >= quickChips.length - 2 ? ('NEW' as const) : undefined,
-              }))}
-            />
-          ) : (
-            /* 데이터 로드 전 스켈레톤 칩 — 레이아웃 시프트 방지(실제 칩과 동일 규격) */
-            <div className="no-scrollbar -mx-5 mt-3 flex gap-3 overflow-x-hidden px-5 pb-4 pt-1">
-              {[0, 1, 2, 3].map((i) => (
-                <SkeletonBlock key={i} className="h-[84px] w-[86px] shrink-0 !rounded-3xl" />
-              ))}
-            </div>
-          )}
+        {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 이 앱의 본편. 자산 대시보드 바로 아래 첫 콘텐츠 ── */}
+        <div id="deep-tests" className="mt-6 flex items-center justify-between px-1">
+          <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
+            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.4 }}>🧠</motion.span>
+            {t('home.testsHeader')}
+          </h2>
+          <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-semibold text-mind-700">
+            {TESTS.filter((tm) => !tm.precision).length}
+            {l(TERMS.unitTests)}
+          </span>
         </div>
+        {/* 카테고리 허브 — 기질·마음 / 나를 알기 / 관계 속 나 (인지=아래 정밀검사 섹션) */}
+        {(
+          [
+            { key: 'temper', emoji: '🧘', label: { ko: '기질 · 마음 컨디션', en: 'Mind & temperament', ja: '気質・心のコンディション' }, ids: ['adhd', 'burnout', 'dopamine', 'resilience', 'socialanx'], newIds: ['socialanx'] },
+            { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['selfesteem', 'perfect', 'efficacy'], newIds: ['efficacy'] },
+            { key: 'relation', emoji: '💞', label: { ko: '관계 속 나', en: 'Me in relationships', ja: '関係の中の私' }, ids: ['love', 'ego', 'dark'], newIds: [] },
+          ] as const
+        ).map((cat) => (
+          <div key={cat.key}>
+            <p className="mt-3 flex items-center gap-1 px-1 text-[13px] font-semibold text-ink-sub">
+              <span aria-hidden="true">{cat.emoji}</span>
+              {l(cat.label)}
+            </p>
+            <ScrollChips
+              items={cat.ids
+                .map((id) => TESTS.find((tm) => tm.id === id))
+                .filter((tm): tm is NonNullable<typeof tm> => !!tm)
+                .map((tm) => ({
+                  id: tm.id,
+                  emoji: tm.emoji,
+                  label: t(TEST_SHORT_KEY(tm.id)),
+                  color: tm.gradFrom,
+                  onClick: () => nav(`/test/${tm.id}`),
+                  badge: (cat.newIds as readonly string[]).includes(tm.id) ? ('NEW' as const) : undefined,
+                }))}
+            />
+          </div>
+        ))}
 
         {/* 출석 직후 운세 넛지 — 출석이라는 기존 습관에 운세 확인을 얹음 */}
         <AnimatePresence>
@@ -435,6 +449,11 @@ export default function Home() {
             )}
           </Card>
         </motion.div>
+
+        {/* 중간 광고 — 콘텐츠 사이에만 둔다(빈 화면 광고는 애드센스 정책 위반). 프리미엄은 AdSlot이 스스로 숨긴다 */}
+        <div className="mt-6">
+          <AdSlot variant="banner" />
+        </div>
 
         {/* ── 오늘의 운세 히어로 — 결과 프리뷰(생일 없으면 띠 맛보기)로 존재감 강화 ── */}
         <motion.div
@@ -549,46 +568,6 @@ export default function Home() {
           </Card>
         </motion.div>
 
-        {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 정밀검사보다 위 ── */}
-        <div id="deep-tests" className="mt-6 flex items-center justify-between px-1">
-          <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
-            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.4 }}>🧠</motion.span>
-            {t('home.testsHeader')}
-          </h2>
-          <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-semibold text-mind-700">
-            {TESTS.filter((tm) => !tm.precision).length}
-            {l(TERMS.unitTests)}
-          </span>
-        </div>
-        {/* 카테고리 허브 — 기질·마음 / 나를 알기 / 관계 속 나 (인지=아래 정밀검사 섹션) */}
-        {(
-          [
-            { key: 'temper', emoji: '🧘', label: { ko: '기질 · 마음 컨디션', en: 'Mind & temperament', ja: '気質・心のコンディション' }, ids: ['adhd', 'burnout', 'dopamine', 'resilience', 'socialanx'], newIds: ['socialanx'] },
-            { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['selfesteem', 'perfect', 'efficacy'], newIds: ['efficacy'] },
-            { key: 'relation', emoji: '💞', label: { ko: '관계 속 나', en: 'Me in relationships', ja: '関係の中の私' }, ids: ['love', 'ego', 'dark'], newIds: [] },
-          ] as const
-        ).map((cat) => (
-          <div key={cat.key}>
-            <p className="mt-3 flex items-center gap-1 px-1 text-[13px] font-semibold text-ink-sub">
-              <span aria-hidden="true">{cat.emoji}</span>
-              {l(cat.label)}
-            </p>
-            <ScrollChips
-              items={cat.ids
-                .map((id) => TESTS.find((tm) => tm.id === id))
-                .filter((tm): tm is NonNullable<typeof tm> => !!tm)
-                .map((tm) => ({
-                  id: tm.id,
-                  emoji: tm.emoji,
-                  label: t(TEST_SHORT_KEY(tm.id)),
-                  color: tm.gradFrom,
-                  onClick: () => nav(`/test/${tm.id}`),
-                  badge: (cat.newIds as readonly string[]).includes(tm.id) ? ('NEW' as const) : undefined,
-                }))}
-            />
-          </div>
-        ))}
-
         {/* ── 정밀검사 (실측 인지과제) — 1분 테스트식 헤더(앞 아이콘+뒤 배지) + 젤리 칩 ── */}
         <div className="mt-6 flex items-center justify-between px-1">
           <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
@@ -607,6 +586,36 @@ export default function Home() {
             badge: i >= arr.length - 2 ? ('NEW' as const) : undefined,
           }))}
         />
+
+        {/* ── 1분 바이럴 퀵 테스트 — 검사 섹션을 다 훑은 뒤의 가벼운 곁들이(첫 화면 자리는 심층검사에 양보) ── */}
+        <div className="mt-5">
+          <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
+            <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
+              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
+              {t('quick.banner')}
+            </h2>
+            <span className="text-[12px] font-semibold text-mind-600">{t('community.all')} ›</span>
+          </button>
+          {quickChips.length ? (
+            <ScrollChips
+              items={quickChips.map((q, i) => ({
+                id: q.id,
+                emoji: q.emoji,
+                label: l(q.title),
+                color: q.grad0,
+                onClick: () => nav(`/quick/${q.id}`),
+                badge: i === 0 ? ('HOT' as const) : i >= quickChips.length - 2 ? ('NEW' as const) : undefined,
+              }))}
+            />
+          ) : (
+            /* 데이터 로드 전 스켈레톤 칩 — 레이아웃 시프트 방지(실제 칩과 동일 규격) */
+            <div className="no-scrollbar -mx-5 mt-3 flex gap-3 overflow-x-hidden px-5 pb-4 pt-1">
+              {[0, 1, 2, 3].map((i) => (
+                <SkeletonBlock key={i} className="h-[84px] w-[86px] shrink-0 !rounded-3xl" />
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* 종합 인지 프로필 (정밀검사 레이더) */}
         <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui}>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { SPRING } from '../lib/motion'
 import { localDay, localDayOf } from '../lib/date'
 import { useNavigate } from 'react-router-dom'
@@ -26,11 +26,42 @@ const LANGS: { key: Lang; label: string }[] = [
   { key: 'ja', label: '日本語' },
 ]
 
+const DOW = [
+  { ko: '일', en: 'S', ja: '日' },
+  { ko: '월', en: 'M', ja: '月' },
+  { ko: '화', en: 'T', ja: '火' },
+  { ko: '수', en: 'W', ja: '水' },
+  { ko: '목', en: 'T', ja: '木' },
+  { ko: '금', en: 'F', ja: '金' },
+  { ko: '토', en: 'S', ja: '土' },
+]
+
+/**
+ * 최근 4주 출석 칸 — 오늘이 든 주가 마지막 줄, 각 열이 같은 요일이 되도록 일요일에 맞춰 정렬한다.
+ * 정렬 없이 '오늘부터 27일 전까지'를 7열로 깔면 열과 요일이 어긋나 요일 머리글이 거짓말이 된다.
+ * 오늘 이후 칸은 점선 빈칸으로 남긴다 — 미출석(실선)과 아직 오지 않은 날은 다른 상태다.
+ */
+function attendanceCells(ledger: { at: number; memo: string }[]) {
+  const days = new Date().getDay() + 21 // 이번 주 일요일까지 되감고, 3주 더
+  return Array.from({ length: 28 }, (_, i) => {
+    const offset = days - i
+    const key = localDay(offset)
+    return {
+      key,
+      day: Number(key.slice(8)),
+      on: ledger.some((e) => e.memo.includes('출석') && localDayOf(e.at) === key),
+      today: offset === 0,
+      future: offset < 0,
+    }
+  })
+}
+
 export default function Profile() {
   const t = useT()
   const l = useL()
   const nav = useNavigate()
   const s = useStore()
+  const attendance = useMemo(() => attendanceCells(s.ledger), [s.ledger])
   const isOperator = OPERATOR_NICKS.includes(s.nickname)
   const [resetOpen, setResetOpen] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -171,24 +202,41 @@ export default function Profile() {
             </h3>
             <span className="text-[12px] font-semibold text-orange-500">🔥 {s.streak}</span>
           </div>
-          <div className="mt-2.5 grid grid-cols-7 gap-1.5">
-            {Array.from({ length: 28 }, (_, i) => {
-              const key = localDay(27 - i)
-              const on = s.ledger.some((e) => e.memo.includes('출석') && localDayOf(e.at) === key)
-              return (
-                <div
-                  key={key}
-                  title={key}
-                  className="aspect-square rounded-md"
-                  style={{
-                    background: on ? 'rgba(242, 176, 30, 0.85)' : 'rgb(var(--surface2))',
-                    outline: key === localDay() ? '2px solid #F2B01E' : undefined,
-                    outlineOffset: key === localDay() ? '1px' : undefined,
-                  }}
-                />
-              )
-            })}
+          {/* 요일 머리글 — 칸이 세로로 같은 요일에 서야 '주말엔 안 오네' 같은 패턴이 보인다 */}
+          <div className="mt-2.5 grid grid-cols-7 gap-1.5 px-0.5">
+            {DOW.map((d, i) => (
+              <span
+                key={d.en + i}
+                className={`text-center text-[11px] font-semibold ${i === 0 ? 'text-red-400' : i === 6 ? 'text-sky-400' : 'text-ink-faint'}`}
+              >
+                {l(d)}
+              </span>
+            ))}
           </div>
+          <div className="mt-1 grid grid-cols-7 gap-1.5">
+            {attendance.map((c) => (
+              <div
+                key={c.key}
+                title={c.key}
+                aria-label={`${c.key}${c.on ? ' 출석' : ''}`}
+                className={`flex aspect-square items-center justify-center rounded-md border text-[11px] font-semibold ${
+                  c.future
+                    ? 'border-line/60 border-dashed text-transparent'
+                    : c.on
+                      ? 'border-transparent bg-[#F2B01E]/85 text-white'
+                      : 'border-line bg-surface2 text-ink-faint/70'
+                } ${c.today ? 'outline outline-2 outline-offset-1 outline-[#F2B01E]' : ''}`}
+              >
+                {c.day}
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 flex items-center justify-end gap-1.5 text-[11px] font-medium text-ink-faint">
+            <span className="inline-block h-2.5 w-2.5 rounded-[3px] border border-line bg-surface2" />
+            {l({ ko: '미출석', en: 'Missed', ja: '未出席' })}
+            <span className="ml-1.5 inline-block h-2.5 w-2.5 rounded-[3px] bg-[#F2B01E]/85" />
+            {l({ ko: '출석', en: 'Checked in', ja: '出席' })}
+          </p>
         </Card>
 
         {/* 동물 도감 진입 */}
