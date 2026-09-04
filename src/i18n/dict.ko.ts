@@ -102,7 +102,7 @@ export default {
   'home.greeting': '안녕하세요, {name}님 👋',
   'home.title': '오늘, 숨겨진 진짜 나를\n만나러 갈까요?',
   'home.subtitle': '솔직하게 답하면\n내 마음을 콕 집어 알려드려요.',
-  'home.testsHeader': '심층 심리검사',
+  'home.testsHeader': '깊이 보는 심리검사',
   'home.rewardsBanner': '설문하고 포인트 모으기',
   'home.rewardsBannerSub': '참여만 해도 포인트가 차곡차곡',
   'home.doneBadge': '검사 완료',
@@ -752,7 +752,7 @@ export default {
   'result.avatarSet': '프로필 동물로 설정했어요',
 
   'ai.title': '정밀 분석 리포트',
-  'ai.sub': '내 점수를 종합한 맞춤 심층 해석',
+  'ai.sub': '내 점수를 모아 읽어주는 맞춤 해석',
   'ai.unlock': '광고 보고 무료로 열기',
   'ai.full': '정밀 분석',
   'ai.headerHi': '{name}님의 {test} 정밀 리포트',

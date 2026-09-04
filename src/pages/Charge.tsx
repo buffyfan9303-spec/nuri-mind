@@ -51,7 +51,7 @@ export default function Charge() {
 
   const USES: { emoji: string; cost: number; label: string }[] = [
     { emoji: '🔮', cost: FORTUNE_DIA_COST, label: l({ ko: '운세 종합 (오늘·주간·월간·올해)', en: 'Full fortune (day·week·month·year)', ja: '総合運勢（今日・週・月・年）' }) },
-    { emoji: '🧠', cost: IQ_DIA_COST, label: l({ ko: 'IQ 정밀검사 전체 해제', en: 'Unlock full precision IQ test', ja: 'IQ精密検査の全解除' }) },
+    { emoji: '🧠', cost: IQ_DIA_COST, label: l({ ko: 'IQ 검사 전체 해제', en: 'Unlock full precision IQ test', ja: 'IQ精密検査の全解除' }) },
   ]
 
   return (

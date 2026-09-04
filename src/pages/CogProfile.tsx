@@ -114,7 +114,7 @@ export default function CogProfile() {
         axes: METRICS.map((m, i) => ({ label: l(m.label), value: scores[i], color: m.color })),
         grad: ['#5B6CF0', '#3B82F6'],
         ctaTop: l({ ko: '내 인지 능력은? 🧠', en: 'How sharp is your mind? 🧠', ja: 'あなたの認知力は？🧠' }),
-        ctaSub: l({ ko: '누리 마인드 정밀검사로 무료 확인 →', en: 'Find out free at NURI MIND →', ja: 'ヌリマインドの精密検査で無料確認 →' }),
+        ctaSub: l({ ko: '누리 마인드에서 무료로 확인 →', en: 'Find out free at NURI MIND →', ja: 'ヌリマインドの精密検査で無料確認 →' }),
       })
       const how = await shareCardBlob(blob, l({ ko: '내 인지 프로필을 확인해보세요!', en: 'Check out my cognitive profile!', ja: '私の認知プロフィール！' }), 'nuri-cog-profile.png')
       if (how === 'downloaded') {
@@ -142,8 +142,8 @@ export default function CogProfile() {
           <h1 className="mt-2 text-[20px] font-extrabold tracking-tight">{l({ ko: '종합 인지 프로필', en: 'Cognitive Profile', ja: '総合認知プロフィール' })}</h1>
           <p className="mt-1.5 text-[13px] font-medium text-white/85">
             {avg != null
-              ? l({ ko: `정밀검사 ${doneCount}/${TOTAL_METRICS} · 종합 ${avg}`, en: `${doneCount}/${TOTAL_METRICS} tests · avg ${avg}`, ja: `精密検査 ${doneCount}/${TOTAL_METRICS}・総合 ${avg}` })
-              : l({ ko: '정밀검사를 풀면 인지 지도가 그려져요', en: 'Take precision tests to map your mind', ja: '精密検査を解くと認知地図が描かれます' })}
+              ? l({ ko: `두뇌 측정 ${doneCount}/${TOTAL_METRICS} · 종합 ${avg}`, en: `${doneCount}/${TOTAL_METRICS} tests · avg ${avg}`, ja: `精密検査 ${doneCount}/${TOTAL_METRICS}・総合 ${avg}` })
+              : l({ ko: '두뇌 측정을 하면 내 머리 지도가 그려져요', en: 'Take precision tests to map your mind', ja: '精密検査を解くと認知地図が描かれます' })}
           </p>
         </motion.div>
 
@@ -259,7 +259,7 @@ export default function CogProfile() {
 
         {doneCount < TOTAL_METRICS && (
           <p className="mt-3 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
-            {l({ ko: `정밀검사 ${TOTAL_METRICS - doneCount}종을 더 풀면 인지 지도가 완성돼요.`, en: `Take ${TOTAL_METRICS - doneCount} more precision tests to complete your map.`, ja: `あと${TOTAL_METRICS - doneCount}種でマップが完成します。` })}
+            {l({ ko: `${TOTAL_METRICS - doneCount}종을 더 하면 머리 지도가 완성돼요.`, en: `Take ${TOTAL_METRICS - doneCount} more precision tests to complete your map.`, ja: `あと${TOTAL_METRICS - doneCount}種でマップが完成します。` })}
           </p>
         )}
 

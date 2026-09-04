@@ -204,7 +204,7 @@ export default function MbtiTest() {
     <div className="bg-dots min-h-dvh pb-24">
       <TopBar
         back="/"
-        title={deep ? l({ ko: '자세히 보는 유형검사', en: 'Deep type test', ja: '詳細タイプ検査' }) : l({ ko: '빠른 유형검사', en: 'Quick type test', ja: 'クイックタイプ' })}
+        title={deep ? l({ ko: '깊이 보는 유형검사', en: 'Deep type test', ja: '詳細タイプ検査' }) : l({ ko: '빠른 유형검사', en: 'Quick type test', ja: 'クイックタイプ' })}
       />
       <main className="mx-auto max-w-md px-5">
         <div className="mt-3 flex items-center gap-2.5">

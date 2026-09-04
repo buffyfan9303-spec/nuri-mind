@@ -342,7 +342,7 @@ function Console() {
           {/* 정밀검사 상세 💎 게이팅 토글 (운영자) */}
           <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/10 p-4">
             <div className="min-w-0 pr-3">
-              <p className="text-[14px] font-semibold text-white">💎 정밀검사 상세 게이팅</p>
+              <p className="text-[14px] font-semibold text-white">💎 두뇌 측정 상세 게이팅</p>
               <p className="mt-0.5 break-keep text-[11px] font-medium text-white/60">
                 켜면 기억·집중·처리속도·공간 상세분석이 💎{PRECISION_DIA_COST}로 잠겨요 (IQ 정밀은 별도)
               </p>

@@ -696,7 +696,7 @@ export default function Home() {
                 {premium
                   ? l({ ko: `남은 기간 D-${premiumDaysLeft}`, en: `D-${premiumDaysLeft} left`, ja: `残りD-${premiumDaysLeft}` })
                   : l({
-                      ko: `운세·정밀검사 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
+                      ko: `운세·두뇌 측정 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
                       en: `Unlimited fortune & tests · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
                       ja: `運勢・検査無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
                     })}

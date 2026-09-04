@@ -305,7 +305,7 @@ export default function Profile() {
               {isPremium(s.premiumUntil)
                 ? l({ ko: '눌러서 구독 관리', en: 'Manage subscription', ja: '購読を管理' })
                 : l({
-                    ko: `운세·정밀검사 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
+                    ko: `운세·두뇌 측정 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
                     en: `Unlimited · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
                     ja: `無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
                   })}
