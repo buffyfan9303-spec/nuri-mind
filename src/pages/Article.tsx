@@ -119,7 +119,7 @@ export default function Article() {
           onClick={done ? undefined : onFinish}
           disabled={done}
           whileTap={done ? undefined : { scale: 0.97 }}
-          className={`mt-4 w-full rounded-2xl py-3.5 text-[15px] font-semibold transition-colors${
+          className={`mt-4 w-full rounded-2xl py-3.5 text-[15px] font-semibold transition-colors ${
             done ? 'bg-mind-100 text-mind-700' : 'bg-mind-600 text-white shadow-duo active:translate-y-0.5'
           }`}
         >

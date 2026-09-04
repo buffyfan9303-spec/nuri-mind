@@ -81,7 +81,7 @@ export default function League() {
             className={`mx-auto max-w-md px-5`}
           >
             <p
-              className={`rounded-2xl px-4 py-3.5 text-center text-[15px] font-semibold${
+              className={`rounded-2xl px-4 py-3.5 text-center text-[15px] font-semibold ${
                 leagueMsg === 'up' ? 'bg-mind-100 text-mind-700' : leagueMsg === 'down' ? 'bg-red-50 text-red-500' : 'bg-sky2-100 text-sky2-600'
               }`}
             >
@@ -150,7 +150,7 @@ export default function League() {
                   }`}
                 >
                   <span
-                    className={`w-7 text-center text-[16px] font-semibold${
+                    className={`w-7 text-center text-[16px] font-semibold ${
                       i === 0 ? 'text-amber-500' : i === 1 ? 'text-gray-400' : i === 2 ? 'text-amber-700' : 'text-ink-faint'
                     }`}
                   >

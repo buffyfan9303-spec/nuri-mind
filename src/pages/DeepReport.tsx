@@ -178,7 +178,7 @@ export default function DeepReport() {
                   <button
                     key={id}
                     onClick={() => nav(`/test/${id}`)}
-                    className={`rounded-full px-2.5 py-1.5 text-[12px] font-semibold${on ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-faint'}`}
+                    className={`rounded-full px-2.5 py-1.5 text-[12px] font-semibold ${on ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-faint'}`}
                   >
                     {on ? '✓' : meta.emoji} {t(`test.${id}.short`)}
                   </button>
@@ -314,7 +314,7 @@ export default function DeepReport() {
             <button
               onClick={regen}
               disabled={!canRegen}
-              className={`text-[12px] font-semibold${canRegen ? 'text-mind-600' : 'text-ink-faint/60'}`}
+              className={`text-[12px] font-semibold ${canRegen ? 'text-mind-600' : 'text-ink-faint/60'}`}
             >
               {canRegen
                 ? `🔄 ${l({ ko: '리포트 다시 생성', en: 'Regenerate report', ja: 'レポート再生成' })}`

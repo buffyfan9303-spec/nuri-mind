@@ -65,7 +65,7 @@ export default function Trend({ testId }: { testId: TestId }) {
         <span className="text-[12px] font-medium text-ink-faint">
           {new Date(series[0].at).toLocaleDateString()} → {new Date(series[series.length - 1].at).toLocaleDateString()}
         </span>
-        <span className={`text-[13px] font-semibold${delta === 0 ? 'text-ink-faint' : up ? 'text-mind-700' : 'text-amber-600'}`}>
+        <span className={`text-[13px] font-semibold ${delta === 0 ? 'text-ink-faint' : up ? 'text-mind-700' : 'text-amber-600'}`}>
           {delta === 0 ? t('trend.same') : t(up ? 'trend.up' : 'trend.down', { p: Math.abs(delta) })}
         </span>
       </div>

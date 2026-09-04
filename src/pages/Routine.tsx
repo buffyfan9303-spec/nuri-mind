@@ -87,7 +87,7 @@ export default function Routine() {
                 >
                   {checked ? '✓' : t('routine.day', { n: i + 1 })}
                 </span>
-                <span className={`break-keep text-[14px] font-bold leading-snug${checked ? 'text-ink-faint line-through' : 'text-ink'}`}>
+                <span className={`break-keep text-[14px] font-bold leading-snug ${checked ? 'text-ink-faint line-through' : 'text-ink'}`}>
                   {l(d)}
                 </span>
               </motion.button>

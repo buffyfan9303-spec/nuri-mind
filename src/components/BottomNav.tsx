@@ -84,7 +84,7 @@ export default function BottomNav() {
                   {tab.icon}
                 </motion.span>
                 <span
-                  className={`mt-px text-[11px] font-semibold leading-tight transition-colors${
+                  className={`mt-px text-[11px] font-semibold leading-tight transition-colors ${
                     active ? 'text-mind-700' : 'text-ink-faint'
                   }`}
                 >

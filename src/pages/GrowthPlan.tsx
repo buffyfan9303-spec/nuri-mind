@@ -253,7 +253,7 @@ export default function GrowthPlan() {
                       aria-pressed={done}
                     >
                       <span
-                        className={`mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 text-[13px] font-medium leading-none transition-colors${
+                        className={`mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 text-[13px] font-medium leading-none transition-colors ${
                           done ? 'border-mind-500 bg-mind-500 text-white' : 'border-line bg-surface text-transparent'
                         }`}
                       >
@@ -261,7 +261,7 @@ export default function GrowthPlan() {
                       </span>
                       <span className="min-w-0 flex-1">
                         <span
-                          className={`block break-keep text-[14px] font-bold leading-relaxed${done ? 'text-ink-faint line-through' : 'text-ink'}`}
+                          className={`block break-keep text-[14px] font-bold leading-relaxed ${done ? 'text-ink-faint line-through' : 'text-ink'}`}
                         >
                           {l(tk.title)}
                         </span>

@@ -52,7 +52,7 @@ export default function DailyExtras() {
           >
             {challengeDone && <span className="text-[13px] text-white">✓</span>}
           </span>
-          <span className={`min-w-0 flex-1 break-keep text-[14px] font-bold leading-snug${challengeDone ? 'text-ink-faint line-through' : 'text-ink'}`}>
+          <span className={`min-w-0 flex-1 break-keep text-[14px] font-bold leading-snug ${challengeDone ? 'text-ink-faint line-through' : 'text-ink'}`}>
             {l(challenge)}
           </span>
         </motion.button>

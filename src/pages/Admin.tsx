@@ -138,7 +138,7 @@ function Console() {
             <button
               key={tb.key}
               onClick={() => setTab(tb.key)}
-              className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-[13px] font-semibold transition-colors${
+              className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-[13px] font-semibold transition-colors ${
                 tab === tb.key ? 'bg-[#1ab394] text-white' : 'bg-white/10 text-white/70'
               }`}
             >

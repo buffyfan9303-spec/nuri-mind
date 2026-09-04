@@ -181,7 +181,7 @@ export default function Invite() {
         </div>
       )}
       {msg && (
-        <p className={`mt-2.5 text-center text-[14px] font-semibold${msg.ok ? 'text-mind-700' : 'text-red-500'}`}>
+        <p className={`mt-2.5 text-center text-[14px] font-semibold ${msg.ok ? 'text-mind-700' : 'text-red-500'}`}>
           {msg.text}
         </p>
       )}

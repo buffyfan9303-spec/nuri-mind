@@ -229,7 +229,7 @@ export default function Mailbox() {
                             </button>
                           )}
                           {!it.claimed && it.expires_at && (
-                            <span className={`ml-auto shrink-0 text-[11px] font-semibold${expDays(it.expires_at) <= 3 ? 'text-red-400' : 'text-ink-faint'}`}>
+                            <span className={`ml-auto shrink-0 text-[11px] font-semibold ${expDays(it.expires_at) <= 3 ? 'text-red-400' : 'text-ink-faint'}`}>
                               ⏳ D-{Math.max(0, expDays(it.expires_at))}
                             </span>
                           )}

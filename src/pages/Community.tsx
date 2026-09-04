@@ -407,7 +407,7 @@ export default function Community() {
             <button
               key={s}
               onClick={() => setSort(s)}
-              className={`flex-1 rounded-xl py-2 text-[13px] font-semibold transition-colors${
+              className={`flex-1 rounded-xl py-2 text-[13px] font-semibold transition-colors ${
                 sort === s ? 'bg-surface text-mind-700 shadow-card' : 'text-ink-faint'
               }`}
             >
@@ -483,7 +483,7 @@ export default function Community() {
                         <motion.button
                           whileTap={{ scale: 0.97 }}
                           onClick={() => onLike(p)}
-                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors${
+                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors ${
                             p.liked ? 'bg-red-50 text-red-500' : 'bg-surface2 text-ink-sub'
                           }`}
                         >
@@ -495,7 +495,7 @@ export default function Community() {
                         <motion.button
                           whileTap={{ scale: 0.97 }}
                           onClick={() => toggleComments(p.id)}
-                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors${
+                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors ${
                             openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-sub'
                           }`}
                         >

@@ -264,7 +264,7 @@ export default function Rewards() {
                     {new Date(e.at).toLocaleDateString()} {new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
-                <span className={`shrink-0 text-[15px] font-semibold${e.amount >= 0 ? 'text-mind-600' : 'text-red-400'}`}>
+                <span className={`shrink-0 text-[15px] font-semibold ${e.amount >= 0 ? 'text-mind-600' : 'text-red-400'}`}>
                   {e.amount >= 0 ? '+' : ''}
                   {e.amount.toLocaleString()}P
                 </span>

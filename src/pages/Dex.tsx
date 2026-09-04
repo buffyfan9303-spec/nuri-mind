@@ -106,10 +106,10 @@ export default function Dex() {
                         background: has ? `${p.grad[0]}14` : 'rgb(var(--surface-2))',
                       }}
                     >
-                      <span className={`text-[24px] leading-none${has ? '' : 'opacity-25 grayscale'}`}>
+                      <span className={`text-[24px] leading-none ${has ? '' : 'opacity-25 grayscale'}`}>
                         {has ? p.emoji : '❓'}
                       </span>
-                      <span className={`max-w-full truncate px-1 text-[11px] font-semibold${has ? 'text-ink' : 'text-ink-faint'}`}>
+                      <span className={`max-w-full truncate px-1 text-[11px] font-semibold ${has ? 'text-ink' : 'text-ink-faint'}`}>
                         {has ? l(p.name) : '???'}
                       </span>
                     </motion.button>

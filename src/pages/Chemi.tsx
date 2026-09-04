@@ -62,8 +62,8 @@ export default function Chemi() {
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border-2"
             style={{ borderColor: sel ? '#F25C8E' : 'rgb(var(--line))', background: sel ? '#F25C8E14' : 'rgb(var(--surface-2))' }}
           >
-            <span className={`text-[24px] leading-none${sel ? '' : 'opacity-70'}`}>{p.emoji}</span>
-            <span className={`text-[11px] font-semibold${sel ? 'text-[#C2456B]' : 'text-ink-faint'}`}>{l(p.name)}</span>
+            <span className={`text-[24px] leading-none ${sel ? '' : 'opacity-70'}`}>{p.emoji}</span>
+            <span className={`text-[11px] font-semibold ${sel ? 'text-[#C2456B]' : 'text-ink-faint'}`}>{l(p.name)}</span>
           </motion.button>
         )
       })}

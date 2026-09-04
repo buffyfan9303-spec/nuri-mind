@@ -552,7 +552,7 @@ export default function Profile() {
               onClick={() => setResetAck((v) => !v)}
               className="mt-4 flex w-full items-start gap-2.5 rounded-2xl bg-red-50 p-3.5 text-left"
             >
-              <span className={`mt-px shrink-0 text-[15px]${resetAck ? 'text-red-500' : 'text-red-300'}`}>
+              <span className={`mt-px shrink-0 text-[15px] ${resetAck ? 'text-red-500' : 'text-red-300'}`}>
                 {resetAck ? '☑' : '☐'}
               </span>
               <span className="break-keep text-[12px] font-medium leading-relaxed text-red-500">

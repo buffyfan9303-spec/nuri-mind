@@ -356,8 +356,8 @@ export default function Home() {
             <div className="mt-3 space-y-2">
               {quests.map((q) => (
                 <div key={q.key} className="flex items-center gap-2.5">
-                  <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px]${q.done ? 'bg-mind-500 text-white' : 'bg-surface2'}`}>{q.done ? '✓' : q.emoji}</span>
-                  <span className={`flex-1 break-keep text-[13px] font-medium${q.done ? 'text-ink-faint line-through' : 'text-ink'}`}>{q.label}</span>
+                  <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] ${q.done ? 'bg-mind-500 text-white' : 'bg-surface2'}`}>{q.done ? '✓' : q.emoji}</span>
+                  <span className={`flex-1 break-keep text-[13px] font-medium ${q.done ? 'text-ink-faint line-through' : 'text-ink'}`}>{q.label}</span>
                   {!q.done && (
                     <button onClick={q.go} className="shrink-0 rounded-full bg-surface2 px-2.5 py-1 text-[11px] font-semibold text-mind-700">{l({ ko: '하기', en: 'Go', ja: 'やる' })} ›</button>
                   )}
@@ -471,7 +471,7 @@ export default function Home() {
                       key={z.zo}
                       onClick={() => setZPick(i2)}
                       aria-label={z.zo}
-                      className={`rounded-full px-2.5 py-2 text-[17px] leading-none transition-colors${zPick === i2 ? 'bg-white/90' : 'bg-white/15'}`}
+                      className={`rounded-full px-2.5 py-2 text-[17px] leading-none transition-colors ${zPick === i2 ? 'bg-white/90' : 'bg-white/15'}`}
                     >
                       {z.emoji}
                     </button>

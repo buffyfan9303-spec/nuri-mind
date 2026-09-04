@@ -200,7 +200,7 @@ export default function Onboarding() {
             placeholder={t('onboard.nickPh')}
             maxLength={12}
             autoFocus
-            className={`mt-2 w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-[16px] font-semibold outline-none${
+            className={`mt-2 w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-[16px] font-semibold outline-none ${
               nickErr ? 'border-red-300 focus:border-red-400' : 'border-line focus:border-mind-400'
             }`}
           />
