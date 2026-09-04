@@ -434,10 +434,11 @@ export default function Community() {
             className="pointer-events-none fixed inset-x-0 top-14 z-30 flex justify-center"
           >
             <motion.div
-              animate={refreshing ? { rotate: 360 } : { rotate: pulling * 4 }}
+              /* y를 framer 값으로 넘긴다 — style.transform으로 주면 framer가 rotate를 쓰며 통째로 덮어써
+                 당김 거리만큼 따라 내려오는 움직임이 사라진다(제자리에서 회전만 한다). */
+              animate={refreshing ? { rotate: 360, y: 8 } : { rotate: pulling * 4, y: pulling - 12 }}
               transition={refreshing ? { repeat: Infinity, duration: 0.8, ease: 'linear' } : { duration: 0 }}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-[20px] shadow-pop"
-              style={{ transform: `translateY(${refreshing ? 8 : pulling - 12}px)` }}
             >
               {refreshing ? '🐢' : pulling > 50 ? '🐰' : '🐢'}
             </motion.div>

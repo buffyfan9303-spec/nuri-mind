@@ -192,13 +192,13 @@ export default function TestResult() {
         iq: result.iq,
         scoreChip:
           result.mq != null
-            ? `MQ ${result.mq}`
+            ? `${t('result.mqLabel')} ${result.mq}`
             : result.fq != null
-              ? `FQ ${result.fq}`
+              ? `${t('result.fqLabel')} ${result.fq}`
               : result.sq != null
-                ? `SQ ${result.sq}`
+                ? `${t('result.sqLabel')} ${result.sq}`
                 : result.xq != null
-                  ? `XQ ${result.xq}`
+                  ? `${t('result.xqLabel')} ${result.xq}`
                   : undefined,
         appName: t('app.name'),
       })
@@ -325,27 +325,27 @@ export default function TestResult() {
             )}
             {result.testId === 'memory' && result.mq !== undefined && (
               <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-semibold text-white">
-                MQ {result.mq}
+                {t('result.mqLabel')} {result.mq}
               </span>
             )}
             {result.testId === 'focus' && result.fq !== undefined && (
               <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-semibold text-white">
-                FQ {result.fq}
+                {t('result.fqLabel')} {result.fq}
               </span>
             )}
             {result.testId === 'speed' && result.sq !== undefined && (
               <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-semibold text-white">
-                SQ {result.sq}
+                {t('result.sqLabel')} {result.sq}
               </span>
             )}
             {result.testId === 'spatial' && result.xq !== undefined && (
               <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-semibold text-white">
-                XQ {result.xq}
+                {t('result.xqLabel')} {result.xq}
               </span>
             )}
             {result.testId === 'switch' && result.wq !== undefined && (
               <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-semibold text-white">
-                WQ {result.wq}
+                {t('result.wqLabel')} {result.wq}
               </span>
             )}
           </div>

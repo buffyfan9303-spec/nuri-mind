@@ -185,9 +185,13 @@ h1, h2, h3, h4 {
      framer-motion이 스프링을 매 프레임 인라인 style로 쓰는데, CSS 전이가 그 값을 다시 0.16초에 걸쳐
      따라가면 스프링이 저역통과 필터를 통과한 것처럼 뭉개진다(누름이 늦게 들어가고 늦게 빠진다).
      이 층이 실제로 움직이는 건 filter 하나뿐이다. */
-  button:not(:disabled),
-  a[href],
-  [role='button']:not([aria-disabled='true']) {
+  /* ⚠️ :where()로 명시도를 0으로 낮춘다.
+     transition은 **단축 속성**이라 transition-property까지 filter로 덮어쓴다. 그런데
+     button:not(:disabled)는 명시도 (0,1,1)이라 Tailwind의 .transition-colors(0,1,0)와
+     .jelly-chip(0,1,0)을 이겨버렸다 — 데스크톱에서만 젤리칩의 탄성 눌림, 설정 토글의 색 전환,
+     active:translate-y 눌림이 통째로 사라졌다(터치에선 이 미디어 쿼리가 안 맞아 멀쩡했다).
+     :where()면 자기 전이를 선언한 요소가 이긴다. */
+  :where(button:not(:disabled), a[href], [role='button']:not([aria-disabled='true'])) {
     transition: filter 0.16s ease-out;
   }
   button:not(:disabled):hover,

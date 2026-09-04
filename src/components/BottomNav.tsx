@@ -4,6 +4,7 @@ import { motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { useT } from '../i18n/useT'
 import { haptic } from '../lib/haptic'
+import { prefetchRoute } from '../lib/prefetch'
 
 const TABS = [
   { to: '/', icon: '🏠', key: 'nav.home' },
@@ -37,10 +38,21 @@ export default function BottomNav() {
   const [hidden, setHidden] = useState(false)
   const last = useRef(0)
   const acc = useRef(0)
+  /**
+   * 라우트가 막 바뀐 직후의 첫 스크롤 이벤트는 사용자가 만든 게 아니다 —
+   * App의 스크롤 복원(뒤로가기)이나 맨 위로 이동이다. JUMP(200px)만으로는 부족하다:
+   * 복원 거리가 100px쯤이면 점프로 안 잡히는데 HIDE_AFTER(48)는 넘어 내비가 저 혼자 숨는다.
+   */
+  const justNavigated = useRef(true)
 
   useMotionValueEvent(scrollY, 'change', (y) => {
     const dy = y - last.current
     last.current = y
+    if (justNavigated.current) {
+      justNavigated.current = false
+      acc.current = 0
+      return
+    }
     /**
      * 한 번에 크게 튄 이동은 손가락이 만든 게 아니다 — 뒤로가기 스크롤 복원(App의 scrollMemo),
      * 앵커 이동, scrollTo가 만든 점프다. 사용자의 의사가 아니므로 위치만 맞추고 아무 판단도 하지 않는다.
@@ -65,6 +77,7 @@ export default function BottomNav() {
     setHidden(false)
     acc.current = 0
     last.current = window.scrollY
+    justNavigated.current = true
   }, [loc.pathname])
 
   return (
@@ -77,7 +90,14 @@ export default function BottomNav() {
           {TABS.map((tab) => {
             const active = tab.to === '/' ? loc.pathname === '/' : loc.pathname.startsWith(tab.to)
             return (
-              <NavLink key={tab.to} to={tab.to} onClick={() => haptic(6)} className="flex w-[60px] flex-col items-center py-0.5">
+              <NavLink
+                key={tab.to}
+                to={tab.to}
+                // 손가락이 닿는 순간 그 화면의 코드를 받기 시작한다(클릭보다 100ms 이상 이르다)
+                onPointerDown={() => prefetchRoute(tab.to)}
+                onClick={() => haptic(6)}
+                className="flex w-[60px] flex-col items-center py-0.5"
+              >
                 <motion.span
                   animate={
                     active

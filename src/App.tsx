@@ -141,9 +141,10 @@ export default function App() {
         location.pathname.startsWith('/admin')))
 
   useEffect(() => {
+    // PUSH·POP 모두 '나가는 화면이 사라진 뒤'로 미룬다.
+    // 여기서 바로 scrollTo(0,0)을 하면 아직 화면에 남아 exit 중인 이전 페이지가 위로 튄다.
     const remembered = navType === 'POP' ? scrollMemo.get(location.pathname) : undefined
-    if (remembered === undefined) window.scrollTo(0, 0)
-    else restoreY.current = remembered
+    restoreY.current = remembered ?? 0
     // 오버레이가 정리 함수 없이 사라진 경로 전환(딥링크·뒤로가기)에서 잠금이 남으면 앱 전체 스크롤이 죽는다
     sweepScrollLocks()
     pageView(location.pathname)
@@ -176,8 +177,12 @@ export default function App() {
         initial={false}
         onExitComplete={() => {
           if (restoreY.current === null) return
-          window.scrollTo(0, restoreY.current)
+          const y = restoreY.current
           restoreY.current = null
+          // 한 프레임 미룬다 — onExitComplete 시점엔 새 페이지가 아직 배치되지 않아
+          // 문서 높이가 '나가는 화면' 기준이다. 그 상태로 800px를 요청하면 브라우저가
+          // 문서 끝으로 잘라 엉뚱한 곳에 서거나 아예 움직이지 않는다.
+          requestAnimationFrame(() => window.scrollTo(0, y))
         }}
       >
         <motion.div
