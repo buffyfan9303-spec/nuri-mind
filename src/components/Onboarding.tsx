@@ -12,6 +12,7 @@ import { sfx } from '../lib/sound'
 import { LEGAL_EFFECTIVE } from '../data/legal'
 import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange } from '../lib/auth'
 import { moderateText } from '../lib/moderation'
+import { humanizeError } from '../lib/dbError'
 import LegalSheet from './LegalSheet'
 
 /**
@@ -39,6 +40,7 @@ const STARTERS = ['penguin', 'koala', 'cat', 'dolphin', 'hamster', 'owl', 'meerk
 
 export default function Onboarding() {
   const t = useT()
+  const lang = useStore((s) => s.lang)
   const completeOnboarding = useStore((s) => s.completeOnboarding)
   const redeemCode = useStore((s) => s.redeemCode)
   const [draft0] = useState(loadDraft)
@@ -95,7 +97,8 @@ export default function Onboarding() {
     const h = new URLSearchParams(window.location.hash.slice(1))
     const err = q.get('error_description') || h.get('error_description') || q.get('error') || h.get('error')
     if (err) {
-      setOauthErr(decodeURIComponent(err).slice(0, 90))
+      // 영어 원문('provider is not enabled')이 가입 첫 화면에 뜨면 신뢰가 깎인다 — 사람 말로 옮긴다
+      setOauthErr(humanizeError(decodeURIComponent(err), lang))
       window.history.replaceState({}, '', window.location.pathname)
       setTimeout(() => setOauthErr(''), 6000)
     }
@@ -148,7 +151,7 @@ export default function Onboarding() {
         </motion.div>
 
         {oauthErr && (
-          <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-medium text-red-500">
+          <motion.p role="alert" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-medium text-red-500">
             {t('onboard.kakao')} 실패: {oauthErr}
           </motion.p>
         )}
@@ -204,7 +207,11 @@ export default function Onboarding() {
               nickErr ? 'border-red-300 focus:border-red-400' : 'border-line focus:border-mind-400'
             }`}
           />
-          {nickErr && <p className="mt-1.5 px-1 text-[12px] font-medium text-red-500">{nickErr}</p>}
+          {nickErr && (
+            <p role="alert" className="mt-1.5 px-1 text-[12px] font-medium text-red-500">
+              {nickErr}
+            </p>
+          )}
         </div>
 
         {/* 시작 캐릭터 */}

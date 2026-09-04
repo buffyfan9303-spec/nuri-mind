@@ -38,6 +38,10 @@ interface Props {
   disabled?: boolean
   full?: boolean
   className?: string
+  /** 서버 응답을 기다리는 중 — 눌리지 않고, 글자 자리에 스피너가 돈다(폭은 그대로) */
+  busy?: boolean
+  /** 방금 실패함 — 한 번 흔들어 '아무 일도 없었다'와 구분한다 */
+  error?: boolean
 }
 
 /** 듀오링고식 3D 프레스 버튼 — 아랫면 그림자가 눌리며 들어가는 촉감 */
@@ -49,6 +53,8 @@ export default function Button({
   disabled,
   full = true,
   className = '',
+  busy = false,
+  error = false,
 }: Props) {
   const c = COLORS[color]
   // 본문 100%(16px) 기준에 맞춘 버튼 스케일 — 듀오링고식 3D 프레스는 유지하되 두께만 슬림하게
@@ -61,7 +67,7 @@ export default function Button({
   const idRef = useRef(0)
   const [bursts, setBursts] = useState<number[]>([])
   const handleClick = () => {
-    if (disabled) return
+    if (disabled || busy) return
     haptic(7)
     const id = ++idRef.current
     setBursts((b) => [...b, id])
@@ -71,20 +77,27 @@ export default function Button({
   return (
     <motion.button
       type="button"
-      disabled={disabled}
+      disabled={disabled || busy}
+      aria-busy={busy || undefined}
       onClick={handleClick}
-      whileTap={disabled ? undefined : { y: 3, boxShadow: `0 0px 0 ${c.sh}` }}
+      whileTap={disabled || busy ? undefined : { y: 3, boxShadow: `0 0px 0 ${c.sh}` }}
       /**
        * 호버: 2px 들리고 아랫면 그림자가 3→5px로 자란다(들린 만큼 바닥과 멀어진 것) + 자기 색 글로우.
        * 물체가 커지는 게 아니라 '떠오르는' 것으로 읽혀야 눌렀을 때의 내려앉음과 짝이 맞는다.
        * 터치 기기에서는 끈다 — 탭 뒤 호버가 눌어붙어 버튼 하나만 계속 떠 있는 것처럼 보인다.
        */
-      whileHover={canHover && !disabled ? { y: -2, boxShadow: `0 5px 0 ${c.sh}, 0 10px 22px -8px ${c.sh}` } : undefined}
+      whileHover={canHover && !disabled && !busy ? { y: -2, boxShadow: `0 5px 0 ${c.sh}, 0 10px 22px -8px ${c.sh}` } : undefined}
       transition={SPRING.flick}
-      className={`relative ${full ? 'w-full' : ''} ${pad} whitespace-nowrap rounded-2xl font-extrabold tracking-wide select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
+      className={`relative ${full ? 'w-full' : ''} ${pad} ${error ? 'shake' : ''} whitespace-nowrap rounded-2xl font-extrabold tracking-wide select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
       style={{ background: c.bg, color: c.fg, boxShadow: `0 3px 0 ${c.sh}`, border: c.border ?? 'none' }}
     >
-      {children}
+      {/* 글자를 지우지 않고 투명하게만 둔다 — 지우면 버튼 폭이 줄어 옆 버튼까지 밀린다 */}
+      <span className={busy ? 'invisible' : undefined}>{children}</span>
+      {busy && (
+        <span className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" />
+        </span>
+      )}
       {bursts.map((id) => (
         <span key={id} className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
           {SPARKS.map((sp, i) => (

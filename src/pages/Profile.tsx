@@ -17,6 +17,7 @@ import { enablePush, disablePush, pushSupported, pushConfigured, pushPermission 
 import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
 import { leaveAccount } from '../lib/economy'
 import { moderateText } from '../lib/moderation'
+import { humanizeError } from '../lib/dbError'
 import { useStore, OPERATOR_NICKS, isPremium, PREMIUM_KRW } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 
@@ -97,7 +98,7 @@ export default function Profile() {
     const h = new URLSearchParams(window.location.hash.slice(1))
     const err = q.get('error_description') || h.get('error_description') || q.get('error') || h.get('error')
     if (!err) return
-    setOauthErr(decodeURIComponent(err).slice(0, 90))
+    setOauthErr(humanizeError(decodeURIComponent(err), s.lang))
     window.history.replaceState({}, '', window.location.pathname)
     const id = setTimeout(() => setOauthErr(''), 6000)
     return () => clearTimeout(id)
@@ -127,6 +128,7 @@ export default function Profile() {
       <main className="mx-auto max-w-md px-5">
         {oauthErr && (
           <motion.p
+            role="alert"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-3 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-medium text-red-500"
@@ -171,7 +173,9 @@ export default function Profile() {
               </div>
             ) : nickErr ? (
               <div className="w-full">
-                <p className="text-[12px] font-medium text-red-500">{nickErr}</p>
+                <p role="alert" className="text-[12px] font-medium text-red-500">
+                  {nickErr}
+                </p>
               </div>
             ) : (
               <h2 className="flex items-center gap-2 text-[20px] font-extrabold tracking-tight">

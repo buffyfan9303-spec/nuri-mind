@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useSkeletonGate } from '../hooks/useSkeletonGate'
+import LoadErrorCard from '../components/surfaces/LoadErrorCard'
+import { toast } from '../lib/toast'
+import { humanizeError } from '../lib/dbError'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '../components/Button'
@@ -50,6 +53,7 @@ export default function Community() {
   const deletePost = useStore((s) => s.deletePost)
   const commentsMap = useStore((s) => s.comments)
   const hiddenPosts = useStore((s) => s.hiddenPosts)
+  const lang = useStore((s) => s.lang)
   const addComment = useStore((s) => s.addComment)
   const reportPost = useStore((s) => s.reportPost)
   const blockUser = useStore((s) => s.blockUser)
@@ -68,12 +72,21 @@ export default function Community() {
   const [commentText, setCommentText] = useState('')
   const [serverComments, setServerComments] = useState<Record<string, CommunityComment[]>>({})
 
+  /** 상단 리워드 배너 + 전역 토스트를 함께 — 호출부(수십 곳)는 그대로 flash()를 쓴다 */
   const flash = (msg: string) => {
     setReward(msg)
     setTimeout(() => setReward(''), 2400)
+    toast.ok(msg)
   }
 
   const [server, setServer] = useState<boolean | null>(null)
+  /**
+   * server=false 하나로는 '서버를 안 쓰는 모드'와 '요청이 실패한 것'을 구분할 수 없었다.
+   * 실패를 빈 목록으로 보여주면 사용자는 글이 없는 줄 알거나 자기 글이 사라졌다고 믿는다.
+   */
+  const [loadErr, setLoadErr] = useState<string | null>(null)
+  /** 삭제 유예 중인 글 — 화면에서만 빠져 있고 아직 지우지 않았다(되돌리기 창) */
+  const [pendingDelete, setPendingDelete] = useState<string[]>([])
   const showLoading = useSkeletonGate(server === null)
   const [serverPosts, setServerPosts] = useState<CommunityPost[]>([])
   const [newCount, setNewCount] = useState(0)
@@ -86,9 +99,11 @@ export default function Community() {
     try {
       setServerPosts(await fetchPosts(deviceId))
       setServer(true)
+      setLoadErr(null)
       setNewCount(0)
-    } catch {
+    } catch (e) {
       setServer(false)
+      setLoadErr(humanizeError(e, lang))
     }
   }
 
@@ -182,10 +197,12 @@ export default function Community() {
 
   /** 숨김 제외 + 주제 필터 + 정렬 */
   const posts = useMemo(() => {
-    let list = raw.filter((p) => !hiddenPosts.includes(p.id) && !blockedNicks.includes(p.nick))
+    let list = raw.filter(
+      (p) => !hiddenPosts.includes(p.id) && !blockedNicks.includes(p.nick) && !pendingDelete.includes(p.id),
+    )
     if (filter !== 'all') list = list.filter((p) => p.badge && EMOJI_TEST[p.badge] === filter)
     return [...list].sort((a, b) => (sort === 'hot' ? b.likes - a.likes || b.at - a.at : b.at - a.at))
-  }, [raw, filter, sort, hiddenPosts, blockedNicks])
+  }, [raw, filter, sort, hiddenPosts, blockedNicks, pendingDelete])
 
   const submit = async () => {
     if (!text.trim()) return
@@ -288,17 +305,58 @@ export default function Community() {
     }
   }
 
-  const onDelete = async (p: CommunityPost) => {
-    if (server) {
-      setServerPosts((prev) => prev.filter((x) => x.id !== p.id))
-      try {
-        await removePost(p.id, deviceId)
-      } catch {
-        reload()
+  /**
+   * 삭제 되돌리기 — 화면에서는 즉시 사라지되 **실제 삭제는 3초 미룬다**.
+   * 서버 글은 지우고 나면 되살릴 수 없다(본문·좋아요·댓글이 함께 사라진다).
+   * 되돌리기를 만드는 유일한 방법은 '아직 지우지 않는 것'이다.
+   * 화면을 떠나면 유예분을 즉시 확정한다 — 지웠다고 본 글이 살아 돌아오면 안 된다.
+   */
+  const undoTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
+  const commitRef = useRef<Map<string, () => void>>(new Map())
+  useEffect(() => {
+    const timers = undoTimers.current
+    const commits = commitRef.current
+    return () => {
+      for (const [id, timer] of timers) {
+        clearTimeout(timer)
+        commits.get(id)?.()
       }
-    } else {
-      deletePost(p.id)
+      timers.clear()
+      commits.clear()
     }
+  }, [])
+
+  const onDelete = (p: CommunityPost) => {
+    const onServer = server === true
+    setPendingDelete((cur) => [...cur, p.id])
+
+    const commit = () => {
+      undoTimers.current.delete(p.id)
+      commitRef.current.delete(p.id)
+      if (onServer) {
+        setServerPosts((prev) => prev.filter((x) => x.id !== p.id))
+        removePost(p.id, deviceId).catch((e) => {
+          toast.err(humanizeError(e, lang))
+          reload()
+        })
+      } else {
+        deletePost(p.id)
+      }
+      setPendingDelete((cur) => cur.filter((id) => id !== p.id))
+    }
+    commitRef.current.set(p.id, commit)
+    undoTimers.current.set(p.id, setTimeout(commit, 3000))
+
+    toast.info(l({ ko: '글을 삭제했어요', en: 'Post deleted', ja: '投稿を削除しました' }), {
+      label: l({ ko: '되돌리기', en: 'Undo', ja: '元に戻す' }),
+      run: () => {
+        const timer = undoTimers.current.get(p.id)
+        if (timer) clearTimeout(timer)
+        undoTimers.current.delete(p.id)
+        commitRef.current.delete(p.id)
+        setPendingDelete((cur) => cur.filter((id) => id !== p.id))
+      },
+    })
   }
 
   const onShare = async (p: CommunityPost) => {
@@ -424,6 +482,20 @@ export default function Community() {
 
         {/* 피드 */}
         <div className="mt-3.5 space-y-2.5">
+          {/* 실패는 목록을 '대체'하지 않는다 — 이 기기에 남은 글이 커뮤니티 전체로 보이는 게 진짜 문제였다 */}
+          {loadErr && (
+            <LoadErrorCard
+              compact
+              what={l({ ko: '커뮤니티 글', en: 'community posts', ja: 'コミュニティの投稿' })}
+              hint={l({
+                ko: '지금 보이는 건 이 기기에 저장된 글이에요. 다른 사람 글은 아직 못 받았어요.',
+                en: 'You are seeing posts saved on this device. Others have not loaded yet.',
+                ja: '表示中はこの端末に保存された投稿です。他の人の投稿はまだ取得できていません。',
+              })}
+              reason={loadErr}
+              onRetry={reload}
+            />
+          )}
           {server === null ? (
             showLoading && <p className="py-10 text-center text-3xl">🧠</p>
           ) : posts.length === 0 ? (

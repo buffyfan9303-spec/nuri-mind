@@ -8,6 +8,7 @@ import { useStore, isPremium, PREMIUM_KRW } from '../store/useStore'
 import { track } from '../lib/analytics'
 import { useT, useL } from '../i18n/useT'
 import { localDay } from '../lib/date'
+import { toast } from '../lib/toast'
 import { buildFocuses, isTaskDone, pickFocusIds } from '../lib/growth'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { sfx } from '../lib/sound'
@@ -39,7 +40,6 @@ export default function GrowthPlan() {
   const { fire } = useRewardAnimation()
   const premium = isPremium(premiumUntil)
   const todayKey = localDay()
-  const [toast, setToast] = useState('')
 
   const focuses = useMemo(() => buildFocuses(growthFocusIds, results), [growthFocusIds, results])
 
@@ -72,11 +72,18 @@ export default function GrowthPlan() {
   }, [growthDone])
 
   const onToggle = (id: string) => {
+    const wasDone = isTaskDone(growthDone[id], allTasks.find((tk) => tk.id === id)?.cadence ?? 'daily', todayKey)
     const got = toggleTask(id)
     if (got > 0) {
       fire('coin')
-      setToast(l({ ko: `+${got}P 적립!`, en: `+${got}P earned!`, ja: `+${got}P 獲得！` }))
-      setTimeout(() => setToast(''), 1800)
+      toast.ok(l({ ko: `+${got}P 적립!`, en: `+${got}P earned!`, ja: `+${got}P 獲得！` }))
+    } else if (wasDone) {
+      // 체크 해제는 실수로 누르기 쉽다(체크와 같은 자리). 되돌려도 포인트 재지급은 없으니 안전하다
+      sfx.tap()
+      toast.info(l({ ko: '체크를 해제했어요', en: 'Unchecked', ja: 'チェックを外しました' }), {
+        label: l({ ko: '되돌리기', en: 'Undo', ja: '元に戻す' }),
+        run: () => toggleTask(id),
+      })
     } else sfx.tap()
   }
 
@@ -218,16 +225,6 @@ export default function GrowthPlan() {
             />
           </div>
         </motion.div>
-
-        {toast && (
-          <motion.p
-            initial={{ opacity: 0, y: 8, scale: 0.9, x: '-50%' }}
-            animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
-            className="fixed bottom-40 left-1/2 z-50 rounded-full bg-mind-600 px-4 py-2 text-[13px] font-semibold text-white shadow-pop"
-          >
-            🌱 {toast}
-          </motion.p>
-        )}
 
         {/* 포커스별 투두 */}
         {focuses.map((f, i) => (

@@ -11,6 +11,7 @@ import RouteFallback from './components/RouteFallback'
 import NotFound from './pages/NotFound'
 import { SentryErrorBoundary } from './lib/sentry'
 import InstallPrompt from './components/InstallPrompt'
+import Toast from './components/Toast'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
 import { pageView } from './lib/analytics'
@@ -202,6 +203,8 @@ export default function App() {
       {!hideNav && <BottomNav />}
       <ReConsent />
       <InstallPrompt />
+      {/* 토스트는 라우트 밖 — 화면을 옮겨도 방금 한 행동의 결과가 살아 있어야 한다 */}
+      <Toast />
     </div>
     </MotionConfig>
   )

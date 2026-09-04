@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useSkeletonGate } from '../hooks/useSkeletonGate'
+import LoadErrorCard from '../components/surfaces/LoadErrorCard'
+import { toast } from '../lib/toast'
+import { humanizeError } from '../lib/dbError'
 import { motion } from 'framer-motion'
 import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
@@ -38,13 +41,23 @@ export default function Mailbox() {
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null)
   const [uid, setUid] = useState<string | null>(null)
   const [msg, setMsg] = useState('')
+  /** 서버가 우편을 못 준 것 — '받은 우편이 없어요'와 다른 상태다 */
+  const [loadErr, setLoadErr] = useState<string | null>(null)
+  const lang = useStore((s) => s.lang)
 
   const load = async () => {
     setLoading(true)
-    const u = await getAuthUser()
-    setLoggedIn(!!u)
-    setUid(u?.id ?? null)
-    setMail(u ? await fetchMail() : [])
+    try {
+      const u = await getAuthUser()
+      setLoggedIn(!!u)
+      setUid(u?.id ?? null)
+      setMail(u ? await fetchMail() : [])
+      setLoadErr(null)
+    } catch (e) {
+      // 예전엔 이 실패가 빈 배열과 구분되지 않아 '받은 우편이 없어요'로 보였다.
+      // 운영자 지급·결제 다이아를 기다리는 사용자에겐 정반대의 뜻이다.
+      setLoadErr(humanizeError(e, lang))
+    }
     setLoading(false)
   }
   useEffect(() => {
@@ -54,9 +67,11 @@ export default function Mailbox() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  /** 상단 배너 + 전역 토스트(스크린리더 알림·햅틱 포함) */
   const flash = (t: string) => {
     setMsg(t)
     setTimeout(() => setMsg(''), 2200)
+    toast.ok(t)
   }
 
   const onLogin = async () => {
@@ -153,6 +168,10 @@ export default function Mailbox() {
           showLoading && (
             <p className="mt-16 text-center text-[14px] font-bold text-ink-faint">{l({ ko: '불러오는 중…', en: 'Loading…', ja: '読み込み中…' })}</p>
           )
+        ) : loadErr ? (
+          <div className="mt-6">
+            <LoadErrorCard what={l({ ko: '우편', en: 'mail', ja: '郵便' })} reason={loadErr} onRetry={load} />
+          </div>
         ) : !authReady() || loggedIn === false ? (
           <Card className="mt-6 text-center">
             <div className="text-[28px]">📭</div>
