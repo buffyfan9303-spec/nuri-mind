@@ -20,8 +20,8 @@ export const TEST_DESC_KEY = (id: TestId): string => `test.${id}.desc`
 export const TERMS = {
   sectionQuick: { ko: '1분 테스트', en: '1-min tests', ja: '1分テスト' },
   sectionDeep: { ko: '심층 심리검사', en: 'In-depth tests', ja: '深層心理検査' },
-  sectionPrecision: { ko: '정밀검사', en: 'Precision tests', ja: '精密検査' },
-  badgeMeasured: { ko: '실측', en: 'Measured', ja: '実測' },
+  sectionPrecision: { ko: '두뇌 능력 측정', en: 'Precision tests', ja: '精密検査' },
+  badgeMeasured: { ko: '직접 측정', en: 'Measured', ja: '実測' },
   badgeFreeToday: { ko: '오늘 무료', en: 'Free today', ja: '今日無料' },
   badgePremium: { ko: '프리미엄', en: 'Premium', ja: 'プレミアム' },
   viewAll: { ko: '전체', en: 'All', ja: '全て' },

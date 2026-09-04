@@ -19,6 +19,8 @@ const HIDE_AFTER = 48
 const SHOW_AFTER = 24
 /** 최상단 근처에서는 항상 보인다 */
 const TOP_ZONE = 80
+/** 이보다 큰 한 번의 이동은 손가락이 아니라 프로그램이 옮긴 것(복원·앵커·scrollTo) */
+const JUMP = 200
 
 /**
  * 플로팅 둥근 하단 내비 — 활성 탭 원형 강조 / 아래 콘텐츠 비침 방지 페이드.
@@ -39,6 +41,15 @@ export default function BottomNav() {
   useMotionValueEvent(scrollY, 'change', (y) => {
     const dy = y - last.current
     last.current = y
+    /**
+     * 한 번에 크게 튄 이동은 손가락이 만든 게 아니다 — 뒤로가기 스크롤 복원(App의 scrollMemo),
+     * 앵커 이동, scrollTo가 만든 점프다. 사용자의 의사가 아니므로 위치만 맞추고 아무 판단도 하지 않는다.
+     * 이게 없으면 목록으로 '뒤로' 돌아온 순간 dy가 수백 px로 잡혀 내비가 곧바로 숨는다.
+     */
+    if (Math.abs(dy) > JUMP) {
+      acc.current = 0
+      return
+    }
     if (y < TOP_ZONE) {
       acc.current = 0
       if (hidden) setHidden(false)

@@ -225,8 +225,11 @@ ins.adsbygoogle[data-ad-status='unfilled'] {
    촉각 피드백(부드러움의 핵심)까지 통째로 사라짐. '동작 줄이기' 켠 폰에선 앱이 뻣뻣해짐.
    수정: 무한 장식 애니메이션 + 스무스 스크롤만 끄고, 0.1~0.2s 미세 인터랙션은 유지(네이티브 느낌 보존). */
 @media (prefers-reduced-motion: reduce) {
-  /* 시머는 무한 반복이라 동작 줄이기에서 반드시 정지 */
-  .skeleton { animation: none !important; }
+  /* 시머는 무한 반복이라 동작 줄이기에서 반드시 정지.
+     ⚠️ 애니메이션은 .skeleton이 아니라 .skeleton::after에서 돈다 — 부모만 끄면 시머는 계속 흐른다.
+     '동작 줄이기'를 켠 사용자에게 화면에서 유일하게 계속 움직이는 물체가 남는 셈이라 오히려 더 눈에 띈다. */
+  .skeleton,
+  .skeleton::after { animation: none !important; }
 
   .floaty,
   .sparkle,

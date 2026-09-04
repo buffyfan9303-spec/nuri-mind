@@ -62,11 +62,11 @@ test.describe('16가지 성격유형', () => {
       // '1/12' 자체가 MBTI_QUICK.length 단언 — 문항을 빼거나 더하면 여기서 바로 깨진다
       await expect(page.getByText(`${i + 1}/12`, { exact: true })).toBeVisible()
       // advance()의 `step + 1 < total` 경계가 밀리면 11문항에서 조기 종료된다 → 마지막 클릭 전엔 결과가 없어야 한다
-      await expect(page.getByRole('heading', { name: '네 가지 축' })).toHaveCount(0)
+      await expect(page.getByRole('heading', { name: '나를 이루는 네 가지' })).toHaveCount(0)
       await page.getByRole('button', { name: QUICK_FIRST[i], exact: true }).click()
     }
 
-    await expect(page.getByRole('heading', { name: '네 가지 축' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '나를 이루는 네 가지' })).toBeVisible()
     // 결과 화면으로 완전히 교체됐는지 — 문항 UI가 남아 있으면 done 분기가 안 탄 것
     await expect(page.getByText('12/12', { exact: true })).toHaveCount(0)
   })
@@ -161,7 +161,7 @@ test.describe('16가지 성격유형', () => {
     for (const label of QUICK_FIRST) {
       await page.getByRole('button', { name: label, exact: true }).click()
     }
-    await expect(page.getByRole('heading', { name: '네 가지 축' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '나를 이루는 네 가지' })).toBeVisible()
     await expectNoTrademark(page)
   })
 })

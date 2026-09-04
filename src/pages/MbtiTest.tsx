@@ -114,7 +114,7 @@ export default function MbtiTest() {
           {/* 4축 게이지 */}
           <Card className="mt-3.5 !p-5">
             <h2 className="text-[15px] font-semibold">
-              {l({ ko: '네 가지 축', en: 'Your four axes', ja: '4つの軸' })}
+              {l({ ko: '나를 이루는 네 가지', en: 'Your four axes', ja: '4つの軸' })}
             </h2>
             <div className="mt-3 space-y-3">
               {AXES.map(([a, b]) => (
@@ -148,7 +148,7 @@ export default function MbtiTest() {
           </Card>
 
           <Card className="mt-3.5 !p-5">
-            <h2 className="text-[15px] font-semibold">{l({ ko: '강점', en: 'Strengths', ja: '強み' })}</h2>
+            <h2 className="text-[15px] font-semibold">{l({ ko: '잘하는 것', en: 'Strengths', ja: '強み' })}</h2>
             <ul className="mt-2 space-y-1.5">
               {type.strengths.map((x, i) => (
                 <li key={i} className="break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
@@ -157,7 +157,7 @@ export default function MbtiTest() {
               ))}
             </ul>
             <h2 className="mt-4 text-[15px] font-semibold">
-              {l({ ko: '살펴볼 점', en: 'Watch-outs', ja: '注意点' })}
+              {l({ ko: '조심할 점', en: 'Watch-outs', ja: '注意点' })}
             </h2>
             <ul className="mt-2 space-y-1.5">
               {type.watch.map((x, i) => (
@@ -171,7 +171,7 @@ export default function MbtiTest() {
           <div className="mt-4 space-y-2.5">
             {!deep && (
               <Button color="mind" onClick={() => nav('/mbti/deep', { replace: true })}>
-                🔬 {l({ ko: '24문항 심층으로 더 정확히', en: 'Go deeper — 24 items', ja: '24問の詳細版へ' })}
+                🔬 {l({ ko: '24문항으로 더 정확하게', en: 'Go deeper — 24 items', ja: '24問の詳細版へ' })}
               </Button>
             )}
             <Button
@@ -188,7 +188,7 @@ export default function MbtiTest() {
 
           <p className="mt-5 break-keep px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
             ⓘ {l({
-              ko: '유형론은 나를 탐색하는 재미있는 도구예요. 사람을 16칸에 가두는 진단이 아니고, 임상 척도 검사와는 성격이 달라요.',
+              ko: '나를 알아가는 재미있는 도구예요. 사람을 16칸에 가두는 진단은 아니고, 병원에서 쓰는 검사와도 달라요.',
               en: 'Type theory is a fun lens for self-exploration — not a diagnosis, and different from clinical scales.',
               ja: 'タイプ論は自己探索の楽しい道具です。診断ではなく、臨床尺度とは性質が異なります。',
             })}
@@ -204,7 +204,7 @@ export default function MbtiTest() {
     <div className="bg-dots min-h-dvh pb-24">
       <TopBar
         back="/"
-        title={deep ? l({ ko: '심층 유형검사', en: 'Deep type test', ja: '詳細タイプ検査' }) : l({ ko: '빠른 유형검사', en: 'Quick type test', ja: 'クイックタイプ' })}
+        title={deep ? l({ ko: '자세히 보는 유형검사', en: 'Deep type test', ja: '詳細タイプ検査' }) : l({ ko: '빠른 유형검사', en: 'Quick type test', ja: 'クイックタイプ' })}
       />
       <main className="mx-auto max-w-md px-5">
         <div className="mt-3 flex items-center gap-2.5">
