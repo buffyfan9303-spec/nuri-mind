@@ -8,6 +8,7 @@
  * Provider 미설정 시 signInWithKakao()는 에러를 반환하고, 호출부가 안내 메시지를 보여줍니다.
  */
 import { supabase } from './supabase'
+import { isNativeApp, NATIVE_AUTH_CALLBACK } from './platform'
 
 /**
  * 로그아웃 뒤 다음 카카오 로그인에서 계정을 다시 고르게 하는 표식.
@@ -49,9 +50,21 @@ export async function signInWithKakao(chooseAccount = false): Promise<{ ok: bool
   } catch {
     /* 저장소 불가 — 인자로 받은 값만 따른다 */
   }
+  const queryParams = reauth ? { prompt: 'login' } : undefined
+  if (isNativeApp()) {
+    // 앱: WebView 안에서 카카오 로그인을 띄우지 않는다 — 외부 브라우저 → kr.nuri.mind://auth-callback 딥링크로 복귀(lib/native.ts)
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: { redirectTo: NATIVE_AUTH_CALLBACK, scopes: 'profile_nickname', skipBrowserRedirect: true, queryParams },
+    })
+    if (error || !data.url) return { ok: false, error: error?.message ?? 'no_auth_url' }
+    const { openOAuthInBrowser } = await import('./native')
+    await openOAuthInBrowser(data.url)
+    return { ok: true }
+  }
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'kakao',
-    options: { redirectTo, scopes: 'profile_nickname', ...(reauth ? { queryParams: { prompt: 'login' } } : {}) },
+    options: { redirectTo, scopes: 'profile_nickname', queryParams },
   })
   return error ? { ok: false, error: error.message } : { ok: true }
 }

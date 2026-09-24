@@ -8,6 +8,7 @@ import { loadKakao } from './lib/kakao'
 import { initSentry, SentryErrorBoundary } from './lib/sentry'
 import { registerSW, initInstallPrompt } from './lib/pwa'
 import { useStore } from './store/useStore'
+import { isNativeApp } from './lib/platform'
 
 // 에러 모니터링 — VITE_SENTRY_DSN 설정 시에만 (미설정이면 no-op)
 initSentry()
@@ -19,6 +20,8 @@ initInstallPrompt()
 loadAnalytics()
 // 카카오 공유 SDK — VITE_KAKAO_KEY 설정 시에만 (미설정이면 no-op)
 loadKakao()
+// 스토어 앱(Capacitor)일 때만 — 뒤로가기·OAuth 딥링크·상태바. 웹 번들엔 실리지 않는다(동적 import)
+if (isNativeApp()) void import('./lib/native').then((m) => m.initNative())
 // 탭 간 동기화 — 다른 탭이 저장소를 갱신하면 이 탭의 스냅샷을 최신으로 맞춘다.
 // 없으면 오래 열어둔 탭이 나중에 쓰기를 할 때 그 사이 쌓인 포인트·기록을 통째로 되돌린다.
 window.addEventListener('storage', (e) => {
