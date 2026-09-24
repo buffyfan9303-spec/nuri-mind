@@ -394,7 +394,7 @@ export default {
   'daily.challenge': 'Today\'s challenge',
   'daily.capFull': 'Daily free-earning cap reached! See you tomorrow 💤',
   'spin.title': 'Random Box',
-  'spin.sub': '1 free daily + 1 ad bonus',
+  'spin.sub': '1 free spin daily',
   'spin.open': '🎁 Open box',
   'spin.adOpen': '📺 Watch ad for one more',
   'spin.win': 'Won +{p}P!',

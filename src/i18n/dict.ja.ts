@@ -394,7 +394,7 @@ export default {
   'daily.challenge': '今日のチャレンジ',
   'daily.capFull': '本日の無料獲得上限に到達！また明日 💤',
   'spin.title': 'ランダムボックス',
-  'spin.sub': '毎日無料1回＋広告ボーナス1回',
+  'spin.sub': '毎日無料1回',
   'spin.open': '🎁 ボックスを開ける',
   'spin.adOpen': '📺 広告を見てもう1回',
   'spin.win': '+{p}P 当選！',

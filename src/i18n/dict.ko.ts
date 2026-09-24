@@ -398,7 +398,7 @@ export default {
   'daily.challenge': '오늘의 챌린지',
   'daily.capFull': '오늘 무료 적립 한도를 모두 채웠어요! 내일 또 만나요 💤',
   'spin.title': '랜덤박스',
-  'spin.sub': '매일 무료 1회 + 광고 보너스 1회',
+  'spin.sub': '매일 무료 1회',
   'spin.open': '🎁 박스 열기',
   'spin.adOpen': '📺 광고 보고 한 번 더',
   'spin.win': '+{p}P 당첨!',
