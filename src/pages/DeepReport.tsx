@@ -11,6 +11,7 @@ import { track } from '../lib/analytics'
 import { useT, useL } from '../i18n/useT'
 import { SECTION_EMOJI, buildPayload, fetchDeepReport, type DeepReport as Report } from '../lib/deepReport'
 import { burst } from '../lib/confetti'
+import { summarizePersonas } from '../lib/selfSummary'
 import Emoji, { EmojiText } from '../components/Emoji'
 
 /**
@@ -78,19 +79,10 @@ export default function DeepReport() {
   const [failed, setFailed] = useState(false)
 
   /** 정적 폴백/티저 — 페르소나 조합(LLM 없이도 의미 있는 요약) */
-  const staticCore = useMemo(() => {
-    // 같은 페르소나가 여러 검사에 걸릴 수 있어 문구가 중복되므로 dedupe 후 슬라이스
-    const ps = latest.map((r) => PERSONAS[r.persona]).filter(Boolean)
-    const uniq = (arr: string[], n: number) => [...new Set(arr)].slice(0, n)
-    const strengths = uniq(ps.flatMap((p) => p!.strengths.slice(0, 1)).map((x) => l(x)), 3)
-    const risks = uniq(ps.flatMap((p) => p!.risks.slice(0, 1)).map((x) => l(x)), 2)
-    if (!strengths.length) return ''
-    return l({
-      ko: `${doneDeep.length}개 검사가 공통으로 가리키는 건 이런 모습이에요. ${strengths.join(', ')}. 동시에 ${risks.join(', ')} 같은 면도 함께 보여요. 강점과 약한 면은 대개 같은 성향의 앞뒷면이라, 하나만 떼어 고치기보다 둘을 같이 이해할 때 훨씬 다루기 쉬워요.`,
-      en: `Across ${doneDeep.length} tests, a consistent picture emerges — ${strengths.join(', ')}. Alongside it: ${risks.join(', ')}. Strengths and vulnerabilities are usually two sides of one trait, so understanding both together works better than fixing one alone.`,
-      ja: `${doneDeep.length}件の検査が共通して示すのは — ${strengths.join('、')}。同時に${risks.join('、')}という面も見えます。強みと弱さは同じ傾向の表裏であることが多く、両方をまとめて理解するほうがうまく扱えます。`,
-    })
-  }, [latest, doneDeep.length, l])
+  const staticCore = useMemo(
+    () => summarizePersonas(latest.map((r) => PERSONAS[r.persona]).filter(Boolean), doneDeep.length, l).core,
+    [latest, doneDeep.length, l],
+  )
 
   /** 프리미엄 + 완주 + 캐시 없음 → 자동 생성 1회.
    *  ⚠️ loading을 deps에 넣으면 setLoading(true)가 이펙트를 재실행시키고 cleanup이 즉시
