@@ -22,7 +22,7 @@
  *    새 기기 복원도 보류됨 — 소비 미반영 잔액을 복원하는 사고 방지).
  */
 import { supabase } from './supabase'
-import { onAuthChange } from './auth'
+import { clearKakaoReauth, onAuthChange, signOut } from './auth'
 
 const OUTBOX_KEY = 'nuri-mind-econ-outbox-v1'
 /** 이 기기가 마지막으로 동기화를 완료한 계정 uid — 첫 동기화/계정 전환 판별 */
@@ -342,6 +342,19 @@ export function leaveAccount(): void {
 }
 
 /**
+ * 로그아웃의 단일 진입점 — 세션 제거와 계정 경계(leaveAccount)를 항상 한 쌍으로 적용한다.
+ * 호출부마다 둘을 따로 부르면 한쪽이 빠진다(실제로 온보딩의 '다른 계정으로 로그인'이 signOut만 불러,
+ * 직전 계정의 지갑·검사기록이 게스트 프로필에 그대로 남았다).
+ */
+export async function logoutAccount(): Promise<void> {
+  try {
+    await signOut()
+  } finally {
+    leaveAccount()
+  }
+}
+
+/**
  * 계정 전환이 아직 반영되지 않은 상태인가 — 다이아 수령처럼 "받는 즉시 로컬에만 남는" 동작을
  * 이 구간에서 하면 직후의 프로필 스왑에 덮여 소멸한다. 그 창에서는 수령을 막는다.
  */
@@ -376,7 +389,10 @@ export function initEconomySync(hooks: SyncHooks): void {
   // (마커==uid·아웃박스 빈 상태면 RPC 0회의 값싼 경로라 반복 호출 무해)
   onAuthChange((uid) => {
     currentUid = uid
-    if (uid) setTimeout(() => void syncAccount(hooks), 0)
+    if (uid) {
+      clearKakaoReauth() // 새 세션이 섰다 — 다음 로그인부터는 다시 자동 로그인 허용
+      setTimeout(() => void syncAccount(hooks), 0)
+    }
   })
   window.addEventListener('online', () => void syncAccount(hooks))
   document.addEventListener('visibilitychange', () => {
