@@ -19,7 +19,7 @@ export const COMPANY = {
  * 문의 전자우편 — 비어 있으면 화면에서 문의 줄을 통째로 숨긴다.
  * TODO(운영자): 공개할 문의 주소를 여기 한 곳에 넣으면 푸터·온보딩·소개 페이지에 표시된다.
  */
-export const CONTACT_EMAIL = ''
+export const CONTACT_EMAIL = 'buffyfan9303@gmail.com'
 
 /**
  * 통신판매업 신고번호 — 다이아·프리미엄(유료 결제)을 파는 이상 전자상거래법 제12·13조에 따라 신고·표시 의무가 있다.
