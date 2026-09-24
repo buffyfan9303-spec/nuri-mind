@@ -53,6 +53,18 @@ export default function SpeedRun() {
     nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
+  /** 중단 확인 창이 떠 있던 시간은 소요시간에서 뺀다 — 창을 열었다 '계속하기'를 누르면 그 시간만큼 점수가 깎였다 */
+  const pausedAtRef = useRef(0)
+  const openQuit = () => {
+    pausedAtRef.current = Date.now()
+    setQuitOpen(true)
+  }
+  const closeQuit = () => {
+    if (!quitOpen) return
+    if (phase === 'run') startRef.current += Date.now() - pausedAtRef.current
+    setQuitOpen(false)
+  }
+
   const tap = (d: number) => {
     if (phase !== 'run' || finishedRef.current) return
     const i = idxRef.current
@@ -93,7 +105,7 @@ export default function SpeedRun() {
     <div className="flex min-h-dvh flex-col">
       {/* 헤더 */}
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setQuitOpen(true)} className="text-2xl font-bold text-ink-faint" aria-label="quit">
+        <motion.button whileTap={{ scale: 0.97 }} onClick={openQuit} className="text-2xl font-bold text-ink-faint" aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}>
           ✕
         </motion.button>
         <div className="flex-1">
@@ -134,7 +146,9 @@ export default function SpeedRun() {
             <div className="flex flex-1 flex-col items-center justify-center">
               <p className="text-[13px] font-semibold text-ink-faint">{l({ ko: '이 기호의 숫자는?', en: 'Which digit?', ja: 'この記号の数字は？' })}</p>
               <div className="relative mt-3 flex h-32 w-32 items-center justify-center rounded-3xl border-2 shadow-card" style={{ borderColor: accent, background: 'rgb(var(--surface))' }}>
-                <AnimatePresence mode="wait">
+                {/* popLayout: 다음 기호가 바로 뜬다 — wait이면 이전 기호가 사라지는 0.1초 동안 이미 다음 문항에 답이
+                    들어가는데(idxRef) 화면엔 아직 이전 기호가 보여, 빠르게 누르는 사람일수록 안 본 기호에 답했다 */}
+                <AnimatePresence mode="popLayout">
                   <motion.span
                     key={idx}
                     initial={{ scale: 0.6, opacity: 0 }}
@@ -178,19 +192,19 @@ export default function SpeedRun() {
       </main>
 
       {/* 중단 확인 */}
-      <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
+      <Modal open={quitOpen} onClose={closeQuit}>
         <div className="text-center">
           <div className="text-4xl">🥺</div>
-          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 그만둘까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
+          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
           <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">
-            <Button color="iq" onClick={() => setQuitOpen(false)}>
-              {l({ ko: '계속할게요', en: 'Keep going', ja: '続ける' })}
+            <Button color="iq" onClick={closeQuit}>
+              {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
             <Button color="white" onClick={() => nav('/test/speed', { replace: true })}>
-              {l({ ko: '그만두기', en: 'Quit', ja: 'やめる' })}
+              {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>
         </div>

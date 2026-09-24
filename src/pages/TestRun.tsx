@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Button from '../components/Button'
 import { Modal, ProgressBar } from '../components/ui'
 import { FigCell, FoldStrip, MatrixGrid } from '../components/Fig'
@@ -99,6 +99,18 @@ export default function TestRun() {
   const startRef = useRef(Date.now())
   const finishedRef = useRef(false)
   const advancingRef = useRef(false)
+  /** 현재 문항 번호 — 나가는 중인 이전 카드(AnimatePresence exit)의 낡은 onClick이 새 문항에 답을 넣지 못하게 대조한다 */
+  const idxRef = useRef(idx)
+  idxRef.current = idx
+  /** 중단 확인 창이 열려 있으면 IQ 타이머를 멈춘다(창을 읽는 동안 시간이 깎이지 않게) */
+  const quitOpenRef = useRef(quitOpen)
+  quitOpenRef.current = quitOpen
+  /** 자동 진행 타이머 — 언마운트(중단) 후에 finish()가 돌아 결과가 저장·이동되는 것을 막는다 */
+  const timersRef = useRef<number[]>([])
+  const later = (fn: () => void, ms: number) => {
+    timersRef.current.push(window.setTimeout(fn, ms))
+  }
+  useEffect(() => () => timersRef.current.forEach((h) => window.clearTimeout(h)), [])
 
   const isAgree = AGREE_TESTS.includes(testId)
   const likertBase = isAgree ? 1 : 0
@@ -153,12 +165,12 @@ export default function TestRun() {
 
   const flash = (msg: string) => {
     setBubble(msg)
-    setTimeout(() => setBubble(null), 1500)
+    later(() => setBubble((b) => (b === msg ? null : b)), 1500)
   }
 
   /* 리커트: 선택 즉시 팝 → 자동 진행 (듀오링고 플로우) */
   const pickLikert = (v: number) => {
-    if (advancingRef.current || finishedRef.current) return
+    if (idx !== idxRef.current || advancingRef.current || finishedRef.current) return
     advancingRef.current = true
     setSel(v)
     sfx.tap()
@@ -166,12 +178,13 @@ export default function TestRun() {
     const item = likertItems[idx]
     const map = { ...answers, [item.id]: v }
     setAnswers(map)
-    setTimeout(() => advance(map), 280)
+    later(() => advance(map), 280)
   }
 
   /* IQ: 선택 → 확인 버튼으로 확정 (오답 방지) */
   const pickIq = (optId: string) => {
-    if (finishedRef.current) return
+    // 보기 id(a~d)는 문항마다 겹친다 — 나가는 카드를 누르면 다음 문항에 같은 보기가 미리 골라져 있었다
+    if (idx !== idxRef.current || finishedRef.current) return
     setSel(optId)
     sfx.tap()
     haptic(7)
@@ -194,10 +207,8 @@ export default function TestRun() {
     const map = { ...answers, [item.id]: null }
     setAnswers(map)
     flash(t('run.timeover'))
-    setTimeout(() => advance(map), 350)
+    later(() => advance(map), 350)
   }
-  const idxRef = useRef(idx)
-  idxRef.current = idx
   useEffect(() => {
     if (!isIq) return
     setTimeLeft(iqItems[idx] ? iqTimeFor(iqItems[idx].difficulty) : 45)
@@ -208,6 +219,7 @@ export default function TestRun() {
           clearInterval(iv)
           return prev
         }
+        if (quitOpenRef.current) return prev
         if (prev <= 1) {
           clearInterval(iv)
           timeoutRef.current()
@@ -222,7 +234,8 @@ export default function TestRun() {
 
   const item: LikertItem | IqItem | undefined = isIq ? iqItems[idx] : likertItems[idx]
   const ratio = useMemo(() => idx / total, [idx, total])
-  if (!item) return null
+  // 문항뱅크가 없는 id(오타·구링크·정밀검사 id)면 빈 화면 대신 소개 화면으로 — 소개가 알 수 없는 id는 홈으로 보낸다
+  if (!item) return <Navigate to={tm ? `/test/${testId}` : '/'} replace />
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -232,7 +245,7 @@ export default function TestRun() {
           whileTap={{ scale: 0.97 }}
           onClick={() => setQuitOpen(true)}
           className="text-2xl font-bold text-ink-faint"
-          aria-label="quit"
+          aria-label={t('run.quitYes')}
         >
           ✕
         </motion.button>
@@ -292,7 +305,8 @@ export default function TestRun() {
             key={idx}
             initial={{ x: 70, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -70, opacity: 0 }}
+            // 나갈 때는 짧게(popIn과 같은 규칙) — mode="wait"라 exit 시간이 그대로 문항 사이 빈 시간이 된다
+            exit={{ x: -70, opacity: 0, transition: SPRING.snap }}
             transition={SPRING.ui}
           >
             {!isIq ? (
@@ -426,7 +440,7 @@ function IqQuestion({
                 boxShadow: active ? 'none' : '0 2px 0 #EDF1EE',
               }}
             >
-              <span className="sr-only">option {i + 1}</span>
+              <span className="sr-only">{l({ ko: `보기 ${i + 1}`, en: `Option ${i + 1}`, ja: `選択肢 ${i + 1}` })}</span>
               {o.fig ? (
                 <FigCell fig={o.fig} className="h-full w-full" />
               ) : (

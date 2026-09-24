@@ -19,7 +19,8 @@ const NICK = '테스트누리'
 const NICK_PH = '닉네임을 입력해 주세요'
 const START = '시작하고 100P 받기'
 /** 동의 체크박스의 접근명 = t('onboard.terms') + ' ' + t('onboard.agreeReq'). 본문 '이용약관' 링크와 반드시 exact로 구분한다 */
-const AGREE = '이용약관 (필수)'
+// 동의 칸은 role=checkbox — 이름에 약관 두 문서가 다 들어간다(스크린리더가 무엇에 동의하는지 알 수 있게)
+const AGREE = '이용약관 · 개인정보처리방침 (필수)'
 
 /** persist가 실제로 기록한 상태 — dev 뒷문이 없는 프로덕션에선 저장소가 유일한 관측점이다 */
 async function persisted(page: Page): Promise<Record<string, unknown>> {
@@ -56,7 +57,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     await page.getByPlaceholder(NICK_PH).fill(NICK)
     await expect(start).toBeDisabled()
 
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
     await expect(start).toBeEnabled()
 
     // 공백만 남기면 다시 잠겨야 한다 — 게이트가 trim이 아닌 length로 새면 '   ' 닉네임이 통과한다
@@ -70,7 +71,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
 
     await page.getByPlaceholder(NICK_PH).fill(NICK)
     await page.getByRole('button', { name: '🐧', exact: true }).click() // STARTERS의 penguin
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
     await page.getByRole('button', { name: START }).click()
 
     // 온보딩은 라우팅이 아니라 게이트 해제로 빠져나온다 — 주소는 그대로 '/'
@@ -96,7 +97,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     const nick = page.getByPlaceholder(NICK_PH)
     await nick.fill(NICK)
     await page.getByRole('button', { name: '🐧', exact: true }).click()
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
 
     await page.getByRole('button', { name: '이용약관', exact: true }).click()
 
@@ -119,7 +120,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
 
     // 회귀 ③: 필수 동의 약관을 읽고 왔더니 폼이 비어 있는 문제. 셋 다 살아있어야 한다.
     await expect(nick).toHaveValue(NICK)
-    await expect(page.getByRole('button', { name: AGREE, exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('checkbox', { name: AGREE, exact: true })).toHaveAttribute('aria-checked', 'true')
     await expect(page.getByRole('button', { name: START })).toBeEnabled()
     await expect(page).toHaveURL('/')
   })
@@ -136,13 +137,13 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
 
     await page.getByPlaceholder(NICK_PH).fill(NICK)
     await page.getByRole('button', { name: '🐧', exact: true }).click()
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
 
     await page.reload()
     await waitForApp(page)
 
     await expect(page.getByPlaceholder(NICK_PH)).toHaveValue(NICK)
-    await expect(page.getByRole('button', { name: AGREE, exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('checkbox', { name: AGREE, exact: true })).toHaveAttribute('aria-checked', 'true')
 
     // 캐릭터는 선택 상태가 인라인 색으로만 표시돼 DOM 이름이 없다 — 가입까지 밀어
     // '저장된 아바타'로 확인한다(초안에서 picked만 빠지는 회귀를 이 단언만 잡는다).
@@ -162,7 +163,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     // moderation.ts BANNED 목록의 실제 단어. 닉네임도 커뮤니티 표시 문자열이라
     // 전광판·댓글과 같은 필터를 통과해야 우회 경로가 안 생긴다.
     await page.getByPlaceholder(NICK_PH).fill('병신')
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
 
     const start = page.getByRole('button', { name: START })
     // 형식 게이트(닉+동의)는 통과한다 — 실제 차단은 moderateText가 하므로 눌러봐야 검증된다

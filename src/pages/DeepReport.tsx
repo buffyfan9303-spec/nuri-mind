@@ -85,7 +85,7 @@ export default function DeepReport() {
     const risks = uniq(ps.flatMap((p) => p!.risks.slice(0, 1)).map((x) => l(x)), 2)
     if (!strengths.length) return ''
     return l({
-      ko: `${doneDeep.length}개 검사가 공통으로 가리키는 건 이런 모습이에요. ${strengths.join(', ')}. 동시에 ${risks.join(', ')} 같은 면도 함께 보입니다. 강점과 취약함은 대개 같은 성향의 앞뒷면이라, 하나만 떼어 고치기보다 둘을 같이 이해할 때 훨씬 잘 다뤄집니다.`,
+      ko: `${doneDeep.length}개 검사가 공통으로 가리키는 건 이런 모습이에요. ${strengths.join(', ')}. 동시에 ${risks.join(', ')} 같은 면도 함께 보여요. 강점과 약한 면은 대개 같은 성향의 앞뒷면이라, 하나만 떼어 고치기보다 둘을 같이 이해할 때 훨씬 다루기 쉬워요.`,
       en: `Across ${doneDeep.length} tests, a consistent picture emerges — ${strengths.join(', ')}. Alongside it: ${risks.join(', ')}. Strengths and vulnerabilities are usually two sides of one trait, so understanding both together works better than fixing one alone.`,
       ja: `${doneDeep.length}件の検査が共通して示すのは — ${strengths.join('、')}。同時に${risks.join('、')}という面も見えます。強みと弱さは同じ傾向の表裏であることが多く、両方をまとめて理解するほうがうまく扱えます。`,
     })
@@ -395,7 +395,7 @@ export default function DeepReport() {
 
         <p className="mt-5 break-keep px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
           ⓘ {l({
-            ko: '이 리포트는 자기 이해를 돕는 참고 자료이며, 의학적 진단을 대신하지 않습니다.',
+            ko: '이 리포트는 나를 이해하는 데 참고하는 자료예요. 의학적 진단을 대신하지는 않아요.',
             en: 'This report supports self-understanding and does not replace medical diagnosis.',
             ja: 'このレポートは自己理解の参考であり、医学的診断に代わるものではありません。',
           })}

@@ -36,7 +36,8 @@ export default function MemoryRun() {
   const [block, setBlock] = useState(0) // 0=정방향, 1=역방향
   const [trialIdx, setTrialIdx] = useState(0)
   const [seq, setSeq] = useState<number[]>([])
-  const [shown, setShown] = useState<number | null>(null)
+  /** 지금 점멸 중인 숫자와 그 자리(i) — 자리를 key로 써야 다시 렌더돼도 같은 숫자가 새로 튀어나오지 않는다 */
+  const [shown, setShown] = useState<{ d: number; i: number } | null>(null)
   const [entered, setEntered] = useState<number[]>([])
   const [phase, setPhase] = useState<Phase>('ready')
   const [verdict, setVerdict] = useState<boolean | null>(null)
@@ -74,19 +75,26 @@ export default function MemoryRun() {
   }, [])
 
   // 준비(ready) → 제시(show). 역방향 첫 시행은 안내가 길도록 더 천천히.
+  // 중단 확인 창이 떠 있으면 넘어가지 않는다(창 뒤에서 숫자가 지나가 버리지 않게)
   useEffect(() => {
-    if (phase !== 'ready' || seq.length === 0) return
+    if (phase !== 'ready' || seq.length === 0 || quitOpen) return
     const lead = block === 1 && trialIdx === 0 ? 1900 : 1100
     const t = setTimeout(() => setPhase('show'), lead)
     return () => clearTimeout(t)
-  }, [phase, seq, block, trialIdx])
+  }, [phase, seq, block, trialIdx, quitOpen])
 
-  // 제시(show) — 숫자를 하나씩 0.8s 간격으로 점멸, 끝나면 회상(recall)
+  // 제시(show) — 숫자를 하나씩 0.8s 간격으로 점멸, 끝나면 회상(recall).
+  // 중단 확인 창이 열리면 멈추고, 닫히면 수열을 처음부터 다시 보여 준다(창 뒤에서 놓친 숫자를 틀린 답으로 세지 않게)
   useEffect(() => {
     if (phase !== 'show' || seq.length === 0) return
+    if (quitOpen) {
+      setShown(null)
+      return
+    }
     let i = 0
-    setShown(seq[0])
-    const blank0 = setTimeout(() => setShown(null), 600)
+    setShown({ d: seq[0], i: 0 })
+    // 숫자를 지우는 타이머도 모두 보관해 해제 — 재시작 직후 이전 타이머가 첫 숫자를 일찍 지우지 않게
+    const blanks = [window.setTimeout(() => setShown(null), 600)]
     const iv = setInterval(() => {
       i++
       if (i >= seq.length) {
@@ -95,14 +103,14 @@ export default function MemoryRun() {
         setPhase('recall')
         return
       }
-      setShown(seq[i])
-      setTimeout(() => setShown(null), 600)
+      setShown({ d: seq[i], i })
+      blanks.push(window.setTimeout(() => setShown(null), 600))
     }, 800)
     return () => {
       clearInterval(iv)
-      clearTimeout(blank0)
+      blanks.forEach((h) => window.clearTimeout(h))
     }
-  }, [phase, seq])
+  }, [phase, seq, quitOpen])
 
   const tapKey = (d: number) => {
     if (phase !== 'recall' || entered.length >= seq.length) return
@@ -156,7 +164,7 @@ export default function MemoryRun() {
           whileTap={{ scale: 0.97 }}
           onClick={() => setQuitOpen(true)}
           className="text-2xl font-bold text-ink-faint"
-          aria-label="quit"
+          aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}
         >
           ✕
         </motion.button>
@@ -186,7 +194,9 @@ export default function MemoryRun() {
               key="ready"
               initial={{ opacity: 0, scale: 0.94 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
+              // 즉시 사라진다 — 제시 타이머는 phase가 바뀐 순간 돌기 시작하는데, mode="wait"라 이 exit와
+              // 제시 화면의 페이드인이 끝날 때까지 첫 숫자가 거의 보이지 않았다(첫 자리만 노출 시간이 짧음)
+              exit={{ opacity: 0, transition: { duration: 0 } }}
               className="flex flex-1 flex-col items-center justify-center text-center"
             >
               <motion.div
@@ -211,8 +221,7 @@ export default function MemoryRun() {
           {phase === 'show' && (
             <motion.div
               key="show"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={false}
               exit={{ opacity: 0 }}
               className="flex flex-1 flex-col items-center justify-center"
             >
@@ -220,7 +229,7 @@ export default function MemoryRun() {
                 <AnimatePresence mode="wait">
                   {shown !== null ? (
                     <motion.span
-                      key={`${shown}-${Math.random()}`}
+                      key={`d-${shown.i}`}
                       initial={{ scale: 0.5, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0.7, opacity: 0 }}
@@ -228,7 +237,7 @@ export default function MemoryRun() {
                       className="text-[28px] font-extrabold leading-none"
                       style={{ color: accent }}
                     >
-                      {shown}
+                      {shown.d}
                     </motion.span>
                   ) : (
                     <motion.span key="dot" className="text-[28px] text-ink-faint">
@@ -314,6 +323,7 @@ export default function MemoryRun() {
                       whileTap={{ scale: 0.97 }}
                       onClick={backspace}
                       disabled={entered.length === 0}
+                      aria-label={l({ ko: '지우기', en: 'Delete', ja: '削除' })}
                       className="flex h-14 flex-1 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[20px] font-extrabold text-ink-sub disabled:opacity-40"
                     >
                       ⌫
@@ -340,16 +350,16 @@ export default function MemoryRun() {
       <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
         <div className="text-center">
           <div className="text-4xl">🥺</div>
-          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 그만둘까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
+          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
           <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">
             <Button color="iq" onClick={() => setQuitOpen(false)}>
-              {l({ ko: '계속할게요', en: 'Keep going', ja: '続ける' })}
+              {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
             <Button color="white" onClick={() => nav('/test/memory', { replace: true })}>
-              {l({ ko: '그만두기', en: 'Quit', ja: 'やめる' })}
+              {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>
         </div>

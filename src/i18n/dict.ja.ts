@@ -142,7 +142,7 @@ export default {
   'intro.ego.c1': '正解はありません。本心で選んで',
   'intro.ego.c2': 'いい人のフリは妥当性フィルターに掛かります 🕵️',
   'intro.ego.c3': '辛口の指摘は成長の材料です',
-  'intro.iq.c1': '1問あたり45秒の制限あり ⏱️',
+  'intro.iq.c1': '1問あたり45〜75秒の制限あり ⏱️',
   'intro.iq.c2': '当て推量でも減点なし。諦めないで！',
   'intro.iq.c3': '静かな場所で一気に集中！',
   'intro.memory.basis': '自己報告アンケートではなく、数字を見てそのまま（または逆順で）辿る実際の認知課題です。臨床知能検査（ウェクスラー）の数唱（Digit Span）方式で、情報を一時的に保持し操作する「ワーキングメモリ」容量を直接測定します。',
@@ -167,7 +167,7 @@ export default {
   'intro.switch.c3': '邪魔のない静かな場所で一気に！',
   'intro.questions': '問',
   'intro.minutes': '所要時間',
-  'intro.timed': '1問45秒',
+  'intro.timed': '1問45〜75秒',
 
   'run.quitTitle': '検査を中断しますか？',
   'run.quitDesc': 'これまでの回答が消えます。あと少しなのに！',

@@ -42,7 +42,13 @@ export default function TestResult() {
   const results = useStore((s) => s.results)
   const result = results.find((r) => r.id === rid)
 
-  const state = (location.state ?? {}) as { fresh?: boolean; reward?: number }
+  // '방금 끝낸 검사' 표시는 첫 진입에서 한 번만 읽고 히스토리에선 지운다 —
+  // 남겨 두면 새로고침·도감 갔다가 뒤로가기마다 결과 준비 게이트·축하·'+P 받았어요'가 다시 떴다
+  const [state] = useState(() => (location.state ?? {}) as { fresh?: boolean; reward?: number })
+  useEffect(() => {
+    if (location.state) nav(location.pathname, { replace: true, state: null })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [gate, setGate] = useState(Boolean(state.fresh))
   const [copied, setCopied] = useState(false)
   const [shareMsg, setShareMsg] = useState('')
@@ -164,7 +170,9 @@ export default function TestResult() {
     try {
       if (navigator.share) await navigator.share({ text, url: window.location.origin })
       else throw new Error()
-    } catch {
+    } catch (e) {
+      // 공유 시트를 닫은 것(취소)은 실패가 아니다 — 클립보드를 덮어쓰거나 공유 보상을 주지 않는다
+      if (e instanceof DOMException && e.name === 'AbortError') return
       try {
         await navigator.clipboard.writeText(`${text} ${window.location.origin}`)
         setCopied(true)
@@ -199,13 +207,16 @@ export default function TestResult() {
                 ? `${t('result.sqLabel')} ${result.sq}`
                 : result.xq != null
                   ? `${t('result.xqLabel')} ${result.xq}`
-                  : undefined,
+                  : result.wq != null
+                    ? `${t('result.wqLabel')} ${result.wq}`
+                    : undefined,
         appName: t('app.name'),
       })
       const how = await shareCardBlob(
         blob,
         t('result.shareText', { test: t(`test.${result.testId}.name`), persona: l(persona.name), p: topPercent }),
       )
+      if (how === 'cancelled') return // 취소는 공유가 아니다 — 보상 없음
       if (how === 'downloaded') {
         setShareMsg(t('share.saved'))
         setTimeout(() => setShareMsg(''), 2200)
@@ -276,7 +287,8 @@ export default function TestResult() {
             <motion.div
               initial={{ scale: 0 }}
               animate={gate ? {} : { scale: 1, rotate: [0, -8, 6, 0] }}
-              transition={{ ...SPRING.sheet, delay: 0.25 }}
+              // 스프링은 첫·끝 키프레임만 보간한다(0→0) — 흔들기는 키프레임 트윈으로 따로 줘야 실제로 움직인다
+              transition={{ ...SPRING.sheet, delay: 0.25, rotate: { duration: 0.5, delay: 0.25, ease: 'easeOut' } }}
               className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 text-6xl shadow-pop"
             >
               {persona.emoji}
@@ -722,7 +734,7 @@ export default function TestResult() {
                 </p>
                 <div className="mx-auto mt-4 max-w-[260px]">
                   <Button color="iq" size="lg" onClick={tryUnlockIqResult}>
-                    {l({ ko: `${IQ_DIA_COST}개로 전체 결과 보기`, en: `Unlock for ${IQ_DIA_COST}`, ja: `${IQ_DIA_COST}個で全結果` })}
+                    {l({ ko: `다이아 ${IQ_DIA_COST}개로 전체 결과 보기`, en: `Unlock for ${IQ_DIA_COST}`, ja: `${IQ_DIA_COST}個で全結果` })}
                   </Button>
                 </div>
                 <p className="mt-2 text-[11px] font-medium text-ink-faint">

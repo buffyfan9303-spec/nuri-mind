@@ -50,7 +50,7 @@ const ARCHETYPES: Record<'calm' | 'driven' | 'critic' | 'grow', Arch> = {
     emoji: '🥀',
     name: { ko: '자기비판적 완벽주의형', en: 'Self-critical perfectionist', ja: '自己批判的完璧主義型' },
     desc: {
-      ko: '기준은 높은데 자신을 받아들이는 힘은 약한 조합입니다. "더 잘해야 해"와 "난 부족해"가 동시에 작동해 가장 쉽게 지치는 패턴이에요. 당신 잘못이 아니라, 균형이 한쪽으로 기운 것뿐이에요.',
+      ko: '기준은 높은데 자신을 받아들이는 힘은 약한 조합이에요. "더 잘해야 해"와 "난 부족해"가 동시에 작동해 가장 쉽게 지치는 패턴이에요. 당신 잘못이 아니라, 균형이 한쪽으로 기운 것뿐이에요.',
       en: 'High standards but a weak ability to accept yourself. "I must do better" and "I\'m not enough" run at once — the easiest pattern to burn out. It\'s not your fault; the balance has just tipped one way.',
       ja: '基準は高いが自分を受け入れる力は弱い組み合わせ。「もっと上手く」と「自分は足りない」が同時に働き最も疲れやすい。あなたのせいでなく、均衡が片方に傾いただけです。',
     },

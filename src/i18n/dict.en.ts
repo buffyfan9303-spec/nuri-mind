@@ -142,7 +142,7 @@ export default {
   'intro.ego.c1': 'No right answers. Pick your true instinct',
   'intro.ego.c2': 'Fake niceness gets caught by validity filters 🕵️',
   'intro.ego.c3': 'The blunt critique is fuel for growth',
-  'intro.iq.c1': '45 seconds per question ⏱️',
+  'intro.iq.c1': '45–75 seconds per question ⏱️',
   'intro.iq.c2': 'No penalty for guessing. Never give up!',
   'intro.iq.c3': 'Find a quiet place, focus in one sitting',
   'intro.memory.basis': 'Not a self-report survey — a real cognitive task where you recall digits forward (and backward). Modeled on the clinical Digit Span (Wechsler), it directly measures the "working memory" capacity that briefly holds and manipulates information.',
@@ -167,7 +167,7 @@ export default {
   'intro.switch.c3': 'A quiet, distraction-free place, one sitting',
   'intro.questions': 'items',
   'intro.minutes': 'est. time',
-  'intro.timed': '45s / question',
+  'intro.timed': '45–75s / question',
 
   'run.quitTitle': 'Quit this test?',
   'run.quitDesc': 'Your answers so far will be lost. You\'re so close!',

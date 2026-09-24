@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -30,6 +30,8 @@ export default function QuickTest() {
   const [done, setDone] = useState(false)
   const [copied, setCopied] = useState(false)
   const [saved, setSaved] = useState(false)
+  /** 이미 답한 문항 번호 — 연타나 나가는 중인 이전 카드(낡은 onClick)가 같은 문항을 두 번 세지 못하게 */
+  const answeredRef = useRef(-1)
 
   const winner = useMemo(() => {
     if (!test) return null
@@ -55,6 +57,8 @@ export default function QuickTest() {
   if (!test) return <Navigate to="/" replace />
 
   const pick = (to: string) => {
+    if (answeredRef.current >= step) return
+    answeredRef.current = step
     sfx.tap()
     setTally((prev) => ({ ...prev, [to]: (prev[to] || 0) + 1 }))
     if (step + 1 < test.questions.length) setStep(step + 1)
@@ -149,9 +153,12 @@ export default function QuickTest() {
   }
 
   const reset = () => {
+    answeredRef.current = -1
     setTally({})
     setStep(0)
     setDone(false)
+    // 긴 결과 화면 아래쪽에서 눌렀으므로 첫 문항이 화면 밖에 걸리지 않게 맨 위로
+    window.scrollTo(0, 0)
   }
 
   // ── 결과 ──
@@ -192,7 +199,8 @@ export default function QuickTest() {
               <motion.div
                 initial={{ scale: 0.5, y: 8 }}
                 animate={{ scale: 1, y: 0, rotate: [0, -8, 6, 0] }}
-                transition={SPRING.sheet}
+                // 스프링은 첫·끝 키프레임만 보간한다(0→0) — 흔들기는 키프레임 트윈으로 따로 줘야 실제로 움직인다
+                transition={{ ...SPRING.sheet, rotate: { duration: 0.5, ease: 'easeOut' } }}
                 className="relative drop-shadow-[0_6px_14px_rgba(0,0,0,0.18)]"
               >
                 <span className="floaty block">
@@ -296,7 +304,7 @@ export default function QuickTest() {
             key={step}
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -24 }}
+            exit={{ opacity: 0, x: -24, transition: SPRING.snap }}
             transition={SPRING.ui}
           >
             <h1 className="mt-6 break-keep text-[20px] font-extrabold leading-snug tracking-tight">{l(q.text)}</h1>

@@ -27,11 +27,18 @@ export default function TestIntro() {
         <div className="mt-3 flex items-start gap-2.5 rounded-3xl bg-surface2 px-4 py-3">
           <span className="text-[20px] leading-none">🧠</span>
           <p className="min-w-0 flex-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
-            {l({
-              ko: '정답은 없어요. 지금의 나를 솔직하게 고르면 그게 가장 정확한 결과예요.',
-              en: 'There are no right answers — the honest one is the most accurate.',
-              ja: '正解はありません。今の自分に正直に選ぶのが一番正確です。',
-            })}
+            {/* 정밀검사(IQ·인지과제)는 정답이 있다 — '정답은 없어요'를 띄우면 안내가 검사와 정반대가 된다 */}
+            {tm.precision
+              ? l({
+                  ko: '정답이 있는 검사예요. 조용한 곳에서 집중할 수 있을 때 시작하면 실력이 그대로 나와요.',
+                  en: 'This one has right answers — start somewhere quiet, when you can focus.',
+                  ja: '正解のある検査です。静かな場所で集中できる時に始めましょう。',
+                })
+              : l({
+                  ko: '정답은 없어요. 지금의 나를 솔직하게 고르면 그게 가장 정확한 결과예요.',
+                  en: 'There are no right answers — the honest one is the most accurate.',
+                  ja: '正解はありません。今の自分に正直に選ぶのが一番正確です。',
+                })}
           </p>
         </div>
         <motion.div
@@ -175,7 +182,7 @@ export default function TestIntro() {
               <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '어떤 검사인가요?', en: 'What is this focus test?', ja: '精密集中力検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
-                  ko: '설문이 아니라 직접 반응하는 인지과제예요. 초록불이 뜨면 최대한 빠르게 탭하고, 빨간불엔 누르지 않고 참아요. 빠르고 정확한 반응(처리속도)·끝까지 놓치지 않는 집중지속·충동을 참는 억제력을 한 번에 재서, 100을 기준으로 한 집중 지수(FQ)로 알려드려요. 약 3분.',
+                  ko: '설문이 아니라 직접 반응하는 문제예요. 초록불이 뜨면 최대한 빨리 누르고, 빨간불이 뜨면 누르지 않고 참아요. 얼마나 빠르고 정확한지, 끝까지 놓치지 않는지, 누르고 싶은 걸 잘 참는지를 한 번에 봐요. 100을 평균으로 한 점수로 알려드리고, 약 3분 걸려요.',
                   en: 'Not a survey — a task where you actually react. Tap as fast as you can when the light turns green, and hold (don’t tap) on red. It measures fast accurate responses (processing speed), staying on task (sustained attention), and impulse control at once — giving a Focus Quotient (FQ) centered on 100. About 3 minutes.',
                   ja: 'アンケートではなく、実際に反応する認知課題です。緑が出たら最速でタップ、赤は押さずに我慢。速く正確な反応（処理速度）・最後まで取りこぼさない持続的注意・衝動を抑える力を一度に測り、100を基準にした集中指数(FQ)でお伝えします。約3分。',
                 })}
@@ -194,7 +201,7 @@ export default function TestIntro() {
               <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '어떤 검사인가요?', en: 'What is this speed test?', ja: '精密処理速度検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
-                  ko: '설문이 아니라 직접 손이 반응하는 인지과제예요. 위에 뜬 기호↔숫자 대응표를 보고, 나오는 기호에 맞는 숫자를 최대한 빠르고 정확하게 눌러 40개를 풀어요. 웩슬러 지능검사의 기호쓰기 방식으로 정보 처리속도를 재서, 100을 기준으로 한 처리속도 지수(SQ)로 알려드려요. 약 1~2분.',
+                  ko: '설문이 아니라 직접 손으로 반응하는 문제예요. 위에 있는 기호-숫자 표를 보고, 나오는 기호에 맞는 숫자를 최대한 빠르고 정확하게 눌러 40개를 풀어요. 보고 판단해서 손이 나가기까지 얼마나 빠른지 재요. 100을 평균으로 한 점수로 알려드리고, 1~2분이면 끝나요.',
                   en: 'Not a survey — a task where your hands react. Read the symbol↔digit key shown above and press the matching digit for each symbol as fast and accurately as you can, over 40 items. Modeled on the WAIS Digit-Symbol Coding, it measures processing speed as a Speed Quotient (SQ) centered on 100. About 1–2 minutes.',
                   ja: 'アンケートではなく、手が反応する認知課題です。上の記号↔数字対応表を見て、出てくる記号に合う数字を最速・正確に押し、40問を解きます。ウェクスラー知能検査の符号方式で処理速度を測り、100を基準にした処理速度指数(SQ)でお伝えします。約1〜2分。',
                 })}
@@ -213,7 +220,7 @@ export default function TestIntro() {
               <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '어떤 검사인가요?', en: 'What is this spatial test?', ja: '精密空間知覚検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
-                  ko: '설문이 아니라 머릿속에서 도형을 돌려보는 인지과제예요. 회전하거나 뒤집힌 글자가 나오면, 머릿속에서 똑바로 세워 "정상"인지 좌우가 뒤집힌 "거울상"인지 20문항을 판별해요. Shepard의 심적 회전 방식으로 공간 지각력을 재서, 100을 기준으로 한 공간 지수(XQ)로 알려드려요. 약 3분.',
+                  ko: '설문이 아니라 머릿속으로 글자를 돌려 보는 문제예요. 돌아가거나 뒤집힌 글자가 나오면 머릿속에서 똑바로 세워 보고, 원래 모양("정상")인지 좌우가 뒤집힌 모양("거울상")인지 20문항을 골라요. 100을 평균으로 한 점수로 알려드리고, 약 3분 걸려요.',
                   en: 'Not a survey — a task where you rotate shapes in your head. When a rotated or flipped letter appears, mentally upright it and judge across 20 items whether it is "normal" or a left-right "mirror image". Using Shepard\'s mental rotation, it measures spatial ability as a Spatial Quotient (XQ) centered on 100. About 3 minutes.',
                   ja: 'アンケートではなく、頭の中で図形を回す認知課題です。回転・反転した文字が出たら、頭の中でまっすぐ起こして「正常」か左右反転の「鏡像」かを20問判別します。Shepardの心的回転方式で空間能力を測り、100を基準にした空間指数(XQ)でお伝えします。約3分。',
                 })}
@@ -232,7 +239,7 @@ export default function TestIntro() {
               <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '어떤 검사인가요?', en: 'What is this switching test?', ja: '精密注意切替検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
                 {l({
-                  ko: '설문이 아니라 규칙이 계속 바뀌는 과제를 처리하는 인지과제예요. 신호가 "크기"면 숫자가 5보다 큰지, "홀짝"이면 홀수인지 짝수인지 빠르게 갈아타며 32문항을 판단해요. 과제 전환(Task-switching) 방식으로 집행기능·인지 유연성을 재서, 100을 기준으로 한 전환 지수(WQ)로 알려드려요. 약 2~3분.',
+                  ko: '설문이 아니라 규칙이 계속 바뀌는 문제예요. 신호가 "크기"면 숫자가 5보다 큰지, "홀짝"이면 홀수인지 짝수인지를 빠르게 바꿔 가며 32문항을 판단해요. 상황이 바뀔 때 머리를 얼마나 빨리 전환하는지 봐요. 100을 평균으로 한 점수로 알려드리고, 2~3분 걸려요.',
                   en: 'Not a survey — a task where the rule keeps changing. When the cue is "size" judge if the number is over 5; when it\'s "odd/even" judge parity — swapping fast across 32 items. Using Task-switching, it measures executive function and cognitive flexibility as a Switching Quotient (WQ) centered on 100. About 2–3 minutes.',
                   ja: 'アンケートではなく、ルールが変わり続ける課題を処理する認知課題です。合図が「大きさ」なら5より大きいか、「偶奇」なら奇数か偶数かを素早く切り替えて32問判断します。課題切替（Task-switching）方式で実行機能・認知的柔軟性を測り、100を基準にした切替指数(WQ)でお伝えします。約2〜3分。',
                 })}

@@ -180,6 +180,8 @@ export default function MbtiTest() {
                 setTally({})
                 setStep(0)
                 setDone(false)
+                // 긴 결과지 아래쪽에서 눌렀으므로 첫 문항이 화면 밖에 걸리지 않게 맨 위로
+                window.scrollTo(0, 0)
               }}
             >
               🔄 {l({ ko: '다시 하기', en: 'Retake', ja: 'もう一度' })}

@@ -181,6 +181,8 @@ export default function Home() {
       const tasks = g.buildFocuses(s.growthFocusIds, s.results).flatMap((f) => f.tasks)
       const left = tasks.filter((tk) => !g.isTaskDone(s.growthDone[tk.id], tk.cadence, todayStr())).length
       setGrowth({ total: tasks.length, left })
+    }).catch(() => {
+      // 청크 로드 실패(재배포 후 구 해시·오프라인) — 배너만 숨기고 unhandled rejection은 막는다
     })
     return () => {
       alive = false
@@ -202,7 +204,7 @@ export default function Home() {
             whileTap={{ scale: 0.97 }}
             onClick={() => nav('/mail')}
             className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface2 text-[16px] shadow-card"
-            aria-label="mailbox"
+            aria-label={l({ ko: '우편함', en: 'Mailbox', ja: 'メールボックス' })}
           >
             📬
             {unreadMail > 0 && (
@@ -623,7 +625,7 @@ export default function Home() {
             <IconBadge emoji="🧩" tone="frost" size={40} radius={13} wiggle />
             <div className="min-w-0 flex-1">
               <h3 className="text-[14px] font-semibold leading-tight text-white">{l({ ko: '종합 인지 프로필 보기', en: 'View cognitive profile', ja: '総合認知プロフィール' })}</h3>
-              <p className="mt-0.5 truncate text-[11px] font-medium text-white/85">{l({ ko: 'IQ·기억·집중·처리속도·공간 레이더', en: 'IQ·memory·focus·speed·spatial radar', ja: 'IQ·記憶·集中·速度·空間レーダー' })}</p>
+              <p className="mt-0.5 truncate text-[11px] font-medium text-white/85">{l({ ko: 'IQ·기억·집중·처리속도·공간·전환 레이더', en: 'IQ·memory·focus·speed·spatial·switching radar', ja: 'IQ·記憶·集中·速度·空間·切替レーダー' })}</p>
             </div>
             <span className="text-white/80">›</span>
           </Card>
@@ -670,7 +672,7 @@ export default function Home() {
                   {l({ ko: 'AI 종합 심층 리포트', en: 'AI deep report', ja: 'AI総合レポート' })}
                 </h3>
                 <p className="mt-0.5 break-keep text-[12px] font-medium text-white/85">
-                  {l({ ko: '심층검사 전 종목 완주! 나를 하나로 읽어드려요', en: 'All deep tests done — read as one person', ja: '深層検査完走！一つに読み解きます' })}
+                  {l({ ko: '심층검사를 모두 마쳤어요. 결과를 한데 모아 읽어 드려요', en: 'All deep tests done — read as one person', ja: '深層検査完走！一つに読み解きます' })}
                 </p>
               </div>
               <span className="shrink-0 text-[15px] text-white/80">›</span>
@@ -750,7 +752,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.28 }}
+                    transition={SPRING.snap}
                     className="mt-0.5 flex items-center gap-1 truncate text-[13px] font-medium text-ink-faint"
                   >
                     {magIdx === 0 && (

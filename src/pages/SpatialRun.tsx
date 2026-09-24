@@ -86,6 +86,19 @@ export default function SpatialRun() {
     nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
+  /** 중단 확인 창이 떠 있던 시간은 반응시간에서 뺀다 — 창을 열었다 '계속하기'를 누르면 그 시간이 통째로 RT에 더해졌다 */
+  const pausedAtRef = useRef(0)
+  const openQuit = () => {
+    pausedAtRef.current = Date.now()
+    setQuitOpen(true)
+  }
+  const closeQuit = () => {
+    if (!quitOpen) return
+    // 창이 떠 있는 동안 다음 자극이 시작됐으면(onset > pausedAt) 창을 닫은 지금부터 잰다
+    onsetRef.current += Date.now() - Math.max(pausedAtRef.current, onsetRef.current)
+    setQuitOpen(false)
+  }
+
   const answer = (saysMirror: boolean) => {
     if (phase !== 'stim' || lockRef.current) return
     lockRef.current = true
@@ -102,7 +115,7 @@ export default function SpatialRun() {
     <div className="flex min-h-dvh flex-col">
       {/* 헤더 */}
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setQuitOpen(true)} className="text-2xl font-bold text-ink-faint" aria-label="quit">
+        <motion.button whileTap={{ scale: 0.97 }} onClick={openQuit} className="text-2xl font-bold text-ink-faint" aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}>
           ✕
         </motion.button>
         <div className="flex-1">
@@ -164,19 +177,19 @@ export default function SpatialRun() {
       </main>
 
       {/* 중단 확인 */}
-      <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
+      <Modal open={quitOpen} onClose={closeQuit}>
         <div className="text-center">
           <div className="text-4xl">🥺</div>
-          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 그만둘까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
+          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
           <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">
-            <Button color="iq" onClick={() => setQuitOpen(false)}>
-              {l({ ko: '계속할게요', en: 'Keep going', ja: '続ける' })}
+            <Button color="iq" onClick={closeQuit}>
+              {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
             <Button color="white" onClick={() => nav('/test/spatial', { replace: true })}>
-              {l({ ko: '그만두기', en: 'Quit', ja: 'やめる' })}
+              {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>
         </div>
