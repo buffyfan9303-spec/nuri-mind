@@ -864,7 +864,8 @@ function ProfileForm({
 
       <Card className="mt-4">
         <div className="flex items-center justify-between gap-2">
-          <p className="break-keep text-[12px] font-bold leading-relaxed text-ink-sub">{t('fortune.otherHint')}</p>
+          {/* 일본어는 띄어쓰기가 없어 break-keep만 두면 문장 전체가 한 덩어리 → 버튼을 화면 밖으로 민다 */}
+          <p className="min-w-0 break-keep break-words text-[12px] font-bold leading-relaxed text-ink-sub">{t('fortune.otherHint')}</p>
           <button type="button" onClick={clearForOther} className="min-h-[44px] shrink-0 rounded-xl px-2 text-[13px] font-extrabold text-mind-700">
             {t('fortune.otherPerson')}
           </button>

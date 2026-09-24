@@ -280,23 +280,23 @@ export default function Home() {
             운세 칸 아이콘은 입력한 생일의 띠(없으면 🔮) ── */}
         <div className="mt-3 grid grid-cols-2 gap-2.5">
           {/* 등장('톡', 지연 포함)은 바깥 칸이, 누름은 안쪽 버튼이 — 한 요소에 두면 등장 지연이 누름 복귀에도 붙는다 */}
-          <motion.div className="flex" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...SPRING.pop, delay: 0.06 }}>
+          <motion.div className="flex min-w-0" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...SPRING.pop, delay: 0.06 }}>
             <motion.button
               whileTap={tapPop}
               transition={SPRING.press}
               onClick={() => nav('/me')}
-              className="flex h-[64px] flex-1 items-center gap-2.5 rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#8B95F6] px-3.5 text-left shadow-card"
+              className="flex h-[64px] min-w-0 flex-1 items-center gap-2.5 rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#8B95F6] px-3.5 text-left shadow-card"
             >
               <IconBadge emoji="🪞" tone="frost" size={36} radius={12} />
               <span className="min-w-0 flex-1 truncate text-[16px] font-extrabold leading-none text-white">{l({ ko: '나에 관하여', en: 'About me', ja: '私について' })}</span>
             </motion.button>
           </motion.div>
-          <motion.div className="flex" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...SPRING.pop, delay: 0.1 }}>
+          <motion.div className="flex min-w-0" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...SPRING.pop, delay: 0.1 }}>
             <motion.button
               whileTap={tapPop}
               transition={SPRING.press}
               onClick={() => nav('/fortune')}
-              className="flex h-[64px] flex-1 items-center gap-2.5 rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] px-3.5 text-left shadow-card"
+              className="flex h-[64px] min-w-0 flex-1 items-center gap-2.5 rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] px-3.5 text-left shadow-card"
             >
               <IconBadge emoji={fx?.zodiacEmoji ?? '🔮'} tone="frost" size={36} radius={12} />
               <span className="min-w-0 flex-1 truncate text-[16px] font-extrabold leading-none text-white">{t('fortune.title')}</span>
