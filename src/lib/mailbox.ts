@@ -61,6 +61,8 @@ export async function claimAllMail(): Promise<number | null> {
 /** 안 받은 우편 개수(홈 배지용). 비로그인·미배포·실패면 0 — 배지 하나 때문에 홈이 깨지면 안 된다. */
 export async function unreadMailCount(): Promise<number> {
   try {
+    // 비로그인이면 부르지 않는다 — my_mail은 로그인 전용 RPC(anon 실행권 회수)라 매 홈 방문마다 401이 콘솔에 찍혔다
+    if (!supabase || !(await supabase.auth.getSession()).data.session) return 0
     const m = await fetchMail()
     return m.filter((x) => !x.claimed).length
   } catch {
