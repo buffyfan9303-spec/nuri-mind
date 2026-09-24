@@ -251,17 +251,31 @@ export async function createPost(
   })
 }
 
-/** 좋아요 토글 → 새 liked 상태 반환 (서버 카운트 RPC 증감) */
-export async function toggleLike(postId: string): Promise<boolean> {
+/**
+ * 좋아요 토글 → 서버가 확정한 { liked, likes }.
+ * set_like는 기기 소유 토큰(로컬 난수)으로 '누가 눌렀는지'를 해시로 기록해 글마다 1번만 센다
+ * (supabase/post-likes-2026-09.sql — IP당 글마다 3번·시간당 60번 상한도 서버가 건다).
+ * 토큰을 못 만드는 환경(저장소 불가)이거나 SQL 적용 전이면 옛 bump_like로 떨어진다(서버가 IP당 1번으로 제한).
+ */
+export async function toggleLike(postId: string, deviceId: string): Promise<{ liked: boolean; likes: number | null }> {
   if (!supabase) throw new Error('supabase-not-configured')
   const liked = likedSet()
   const willLike = !liked.has(postId)
-  const { error } = await supabase.rpc('bump_like', { pid: postId, delta: willLike ? 1 : -1 })
-  if (error) throw error
-  if (willLike) liked.add(postId)
+  const token = ownerToken(deviceId)
+  let result: { liked: boolean; likes: number | null } = { liked: willLike, likes: null }
+  const res = token ? await supabase.rpc('set_like', { pid: postId, did: token, want: willLike }) : null
+  if (res && !res.error && res.data && typeof res.data === 'object') {
+    const d = res.data as { liked?: unknown; likes?: unknown }
+    result = { liked: d.liked === true, likes: typeof d.likes === 'number' ? d.likes : null }
+  } else {
+    if (res?.error && res.error.code !== 'PGRST202') throw res.error
+    const { error } = await supabase.rpc('bump_like', { pid: postId, delta: willLike ? 1 : -1 })
+    if (error) throw error
+  }
+  if (result.liked) liked.add(postId)
   else liked.delete(postId)
   saveLiked(liked)
-  return willLike
+  return result
 }
 
 /** 내 글 삭제 — 목록에서 '내 것'으로 판정될 때 기억한 비밀(토큰 또는 이전 글이면 deviceId)을 보낸다 */

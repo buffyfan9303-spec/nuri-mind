@@ -28,15 +28,18 @@ export default function About() {
     path: '/about',
   })
 
+  // 항목 이름만 번역한다 — 값(상호·주소·업태)은 사업자등록증의 공식 표기라 원문 그대로 둔다
   const rows: [string, string][] = [
-    ['상호', COMPANY.name],
-    ['대표자', COMPANY.ceo],
-    ['사업자등록번호', `${COMPANY.bizNo} (${COMPANY.taxType})`],
-    ['사업장 소재지', COMPANY.address],
-    ['업태 / 종목', `${COMPANY.bizType} / ${COMPANY.bizItems}`],
-    ['개업일', COMPANY.openedAt.replace(/-/g, '.')],
-    ...(MAIL_ORDER_NO ? ([['통신판매업 신고번호', MAIL_ORDER_NO]] as [string, string][]) : []),
-    ...(CONTACT_PHONE ? ([['전화', CONTACT_PHONE]] as [string, string][]) : []),
+    [l({ ko: '상호', en: 'Company', ja: '商号' }), COMPANY.name],
+    [l({ ko: '대표자', en: 'CEO', ja: '代表者' }), COMPANY.ceo],
+    [l({ ko: '사업자등록번호', en: 'Business reg. no.', ja: '事業者登録番号' }), `${COMPANY.bizNo} (${COMPANY.taxType})`],
+    [l({ ko: '사업장 소재지', en: 'Address', ja: '所在地' }), COMPANY.address],
+    [l({ ko: '업태 / 종목', en: 'Business type', ja: '業態 / 種目' }), `${COMPANY.bizType} / ${COMPANY.bizItems}`],
+    [l({ ko: '개업일', en: 'Founded', ja: '開業日' }), COMPANY.openedAt.replace(/-/g, '.')],
+    ...(MAIL_ORDER_NO
+      ? ([[l({ ko: '통신판매업 신고번호', en: 'Mail-order reg. no.', ja: '通信販売業届出番号' }), MAIL_ORDER_NO]] as [string, string][])
+      : []),
+    ...(CONTACT_PHONE ? ([[l({ ko: '전화', en: 'Phone', ja: '電話' }), CONTACT_PHONE]] as [string, string][]) : []),
   ]
 
   return (

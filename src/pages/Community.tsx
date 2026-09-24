@@ -344,7 +344,11 @@ export default function Community() {
         prev.map((x) => (x.id === p.id ? { ...x, liked: !x.liked, likes: x.likes + (x.liked ? -1 : 1) } : x)),
       )
       try {
-        await toggleLike(p.id)
+        // 서버가 확정한 값으로 맞춘다 — 이미 눌렀던 기록이 있거나 상한에 걸리면 낙관적 표시와 다를 수 있다
+        const r = await toggleLike(p.id, deviceId)
+        setServerPosts((prev) =>
+          prev.map((x) => (x.id === p.id ? { ...x, liked: r.liked, likes: r.likes ?? x.likes } : x)),
+        )
       } catch {
         reload()
       }

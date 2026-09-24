@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import { seedOnboarded } from './helpers'
+import { LEGAL_VERSION } from '../src/data/legal'
 
 /**
  * 접근성 자동 검사(axe-core) — 화면 낭독기·키보드 사용자가 막히는 '치명(critical)·심각(serious)' 위반만 게이트로 건다.
@@ -13,7 +14,7 @@ const ROUTES = ['/', '/tests', '/profile', '/about', '/magazine', '/fortune', '/
 
 for (const route of ROUTES) {
   test(`접근성: ${route} — 치명·심각 위반 없음`, async ({ page }) => {
-    await seedOnboarded(page)
+    await seedOnboarded(page, { consent: { v: LEGAL_VERSION, at: new Date().toISOString() } })
     await page.goto(route)
     await page.waitForLoadState('networkidle')
     const { violations } = await new AxeBuilder({ page })
