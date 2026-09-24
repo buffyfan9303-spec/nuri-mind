@@ -51,7 +51,8 @@ export default {
         dk: { light: '#F4EAEF', DEFAULT: '#A23E63', deep: '#7C2D49' },
       },
       fontFamily: {
-        sans: ['Nunito', 'Pretendard', 'Noto Sans JP', 'system-ui', 'sans-serif'],
+        // Nunito(라틴·숫자, 한글 글리프 없음) → 나눔스퀘어라운드(한글, public/fonts 자체 호스팅) → Noto Sans JP(가나·한자) → 시스템
+        sans: ['Nunito', 'NanumSquareRound', 'Noto Sans JP', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         duo: '0 4px 0 0 rgba(0,0,0,0.12)',

@@ -8,6 +8,7 @@ import { useDialogFocus } from '../hooks/useDialogFocus'
 import { useSkeletonGate } from '../hooks/useSkeletonGate'
 import { haptic } from '../lib/haptic'
 import { LEGAL_EFFECTIVE } from '../data/legal'
+import { COMPANY } from '../data/company'
 
 /**
  * 약관·개인정보 본문 시트 — 온보딩에서 라우트 이동 대신 이걸 띄운다.
@@ -82,7 +83,8 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
             aria-label={t(doc === 'terms' ? 'legal.terms' : 'legal.privacy')}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
+            // 퇴장은 snap — sheet(바운스)는 들어올 때 손맛이고, 닫을 땐 빨리 비켜야 한다(Modal과 동일)
+            exit={{ y: '100%', transition: SPRING.snap }}
             transition={SPRING.sheet}
             drag="y"
             dragListener={false}
@@ -99,16 +101,16 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
             >
               <div className="min-w-0">
                 <span className="mx-auto mb-2 block h-1 w-9 rounded-full bg-line" aria-hidden="true" />
-                <h2 className="truncate text-[16px] font-semibold">
+                <h2 className="truncate text-[16px] font-extrabold">
                   {t(doc === 'terms' ? 'legal.terms' : 'legal.privacy')}
                 </h2>
-                <p className="mt-0.5 text-[11px] font-medium text-ink-faint">{LEGAL_EFFECTIVE} 시행 · 엔에이치홀딩스</p>
+                <p className="mt-0.5 text-[11px] font-bold text-ink-faint">{LEGAL_EFFECTIVE} 시행 · {COMPANY.name}</p>
               </div>
               <button
                 onClick={onClose}
                 onPointerDown={(e) => e.stopPropagation()}
                 aria-label={t('common.close')}
-                className="-mr-2 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full text-[15px] font-semibold text-ink-faint"
+                className="-mr-2 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full text-[15px] font-extrabold text-ink-faint"
               >
                 ✕
               </button>
@@ -124,14 +126,14 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
                   </div>
                 )
               ) : (
-                <p className="whitespace-pre-line text-[13px] font-medium leading-relaxed text-ink">{body}</p>
+                <p className="whitespace-pre-line text-[13px] font-bold leading-relaxed text-ink">{body}</p>
               )}
             </div>
 
             <div className="shrink-0 border-t border-line p-4">
               <button
                 onClick={onClose}
-                className="w-full rounded-2xl bg-mind-500 py-3.5 text-[15px] font-semibold text-white transition-transform active:translate-y-[2px]"
+                className="w-full rounded-2xl bg-mind-500 py-3.5 text-[15px] font-extrabold text-white transition-transform active:translate-y-[2px]"
               >
                 {t('common.close')}
               </button>

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
 import { Card, Chip, TopBar } from '../components/ui'
 import { JellyChip } from '../components/ScrollChips'
 import { ARTICLES } from '../data/magazine'
@@ -9,13 +8,20 @@ import { testMeta } from '../data/tests'
 import type { L } from '../data/types'
 import { useT, useL } from '../i18n/useT'
 import { useStore } from '../store/useStore'
+import { usePageMeta } from '../hooks/usePageMeta'
+import Footer from '../components/Footer'
+import Emoji from '../components/Emoji'
 
 export default function Magazine() {
   const t = useT()
   const l = useL()
-  const nav = useNavigate()
   const readArticles = useStore((s) => s.readArticles)
   const [tag, setTag] = useState<string | null>(null)
+  usePageMeta({
+    title: '심리 매거진 — 집중력·번아웃·자존감·애착 심리 읽을거리 | 누리 마인드',
+    description: `집중력·번아웃·애착·도파민·회복탄력성·자존감·사회불안·수면·완벽주의·감정 조절을 다룬 심리 매거진 ${ARTICLES.length}편. 짧게 읽고 오늘 바로 해 볼 수 있는 팁까지.`,
+    path: '/magazine',
+  })
 
   const FALLBACK = ['#4FA882', '#6E9FDC', '#F25C8E', '#8B7CF6', '#12A5C2', '#FFB020']
   const tags = useMemo(() => {
@@ -34,7 +40,7 @@ export default function Magazine() {
     <div className="min-h-dvh pb-36">
       <TopBar back="/" title={t('mag.title')} />
       <main className="mx-auto max-w-md px-5">
-        <p className="px-1 text-[14px] font-medium leading-relaxed text-ink-sub">{t('mag.sub')}</p>
+        <p className="text-[14px] font-bold leading-relaxed text-ink-sub">{t('mag.sub')}</p>
 
         {/* 태그 필터 (젤리 칩) */}
         <div className="no-scrollbar -mx-5 mt-3 flex snap-x gap-3 overflow-x-auto px-5 pb-3 pt-1 [overscroll-behavior-x:contain]">
@@ -57,22 +63,22 @@ export default function Magazine() {
                 className="[content-visibility:auto] [contain-intrinsic-size:auto_150px]"
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ ...SPRING.ui, delay: 0.05 * i }}
+                transition={{ ...SPRING.ui, delay: Math.min(0.05 * i, 0.25) }}
               >
-                <Card onClick={() => nav(`/magazine/${a.id}`)} className="flex items-center gap-3.5 !p-4">
-                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-mind-50 text-[28px]">
-                    {a.emoji}
+                <Card href={`/magazine/${a.id}`} className="flex items-center gap-3.5 !p-4">
+                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-mind-50">
+                    <Emoji e={a.emoji} size={30} />
                     {read && (
-                      <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-mind-600 text-[11px] font-semibold text-white shadow-card">✓</span>
+                      <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-mind-600 text-[11px] font-extrabold text-white shadow-card">✓</span>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
                       <Chip tone="mind">{l(a.tag)}</Chip>
-                      <span className="text-[11px] font-medium text-ink-faint">📖 {t('mag.read', { n: a.readMin })}</span>
+                      <span className="text-[11px] font-bold text-ink-faint"><Emoji e="📖" inline />{t('mag.read', { n: a.readMin })}</span>
                     </div>
-                    <h3 className="mt-1.5 break-keep text-[15px] font-semibold leading-snug">{l(a.title)}</h3>
-                    <p className="mt-1 line-clamp-2 break-keep text-[12px] font-medium leading-relaxed text-ink-faint">{l(a.summary)}</p>
+                    <h3 className="mt-1.5 break-keep text-[15px] font-extrabold leading-snug">{l(a.title)}</h3>
+                    <p className="mt-1 line-clamp-2 break-keep text-[12px] font-bold leading-relaxed text-ink-faint">{l(a.summary)}</p>
                   </div>
                   <span className="shrink-0 self-center text-lg text-ink-faint">›</span>
                 </Card>
@@ -81,7 +87,8 @@ export default function Magazine() {
           })}
         </div>
 
-        <p className="mt-6 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">{t('mag.hint')}</p>
+        <p className="mt-6 px-2 text-center text-[12px] font-bold leading-relaxed text-ink-faint">{t('mag.hint')}</p>
+        <Footer />
       </main>
     </div>
   )

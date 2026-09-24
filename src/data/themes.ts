@@ -12,7 +12,7 @@ export const DAILY_THEMES: L[] = [
   { ko: '내 동물상에게 해주고 싶은 말', en: 'What you\'d tell your animal self', ja: '自分のどうぶつに言いたい言葉' },
   { ko: '오늘 가장 고마웠던 사람', en: 'Who you\'re grateful for today', ja: '今日一番ありがたかった人' },
   { ko: '나를 웃게 한 사소한 것', en: 'A little thing that made you smile', ja: '笑顔にしてくれた小さなこと' },
-  { ko: '요즘 빠져있는 도파민 한 가지', en: 'Your current dopamine obsession', ja: '今ハマっているドーパミン一つ' },
+  { ko: '요즘 빠져 있는 도파민 한 가지', en: 'Your current dopamine obsession', ja: '今ハマっているドーパミン一つ' },
   { ko: '스트레스 풀리는 나만의 방법', en: 'Your go-to way to de-stress', ja: 'ストレス解消の自分流' },
   { ko: '오늘의 기분을 한 단어로', en: 'Today\'s mood in one word', ja: '今日の気分を一言で' },
   { ko: '최근 깨달은 나에 대한 사실', en: 'Something you recently realized about yourself', ja: '最近気づいた自分のこと' },

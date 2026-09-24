@@ -17,6 +17,8 @@ export interface QuickTest {
   id: string
   emoji: string
   title: L
+  /** 칩 한 줄 약칭 — 홈 격자 칸은 라벨이 한 줄이어야 아이콘 위치가 칸마다 같다 */
+  short: L
   desc: L
   grad: [string, string]
   funnel?: TestId // 결과에서 유도할 깊은 검사
@@ -29,6 +31,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'lovestyle',
     emoji: '💘',
     title: { ko: '연애 스타일', en: 'Love Style', ja: '恋愛スタイル' },
+    short: { ko: '연애', en: 'Love', ja: '恋愛' },
     desc: { ko: '4문항으로 보는 내 연애 본능', en: 'Your love instinct in 4 Qs', ja: '4問でわかる恋愛本能' },
     grad: ['#F25C8E', '#FF8AAE'],
     funnel: 'love',
@@ -81,6 +84,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'stress',
     emoji: '🌋',
     title: { ko: '스트레스 유형', en: 'Stress Type', ja: 'ストレスタイプ' },
+    short: { ko: '스트레스', en: 'Stress', ja: 'ストレス' },
     desc: { ko: '나는 스트레스를 어떻게 푸나?', en: 'How do you release stress?', ja: 'ストレスの解放法は？' },
     grad: ['#8B7CF6', '#B3A6FF'],
     funnel: 'burnout',
@@ -133,6 +137,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'sleep',
     emoji: '🌙',
     title: { ko: '수면 성향', en: 'Sleep Type', ja: '睡眠タイプ' },
+    short: { ko: '수면', en: 'Sleep', ja: '睡眠' },
     desc: { ko: '내 진짜 수면 동물은?', en: 'Your true sleep animal?', ja: '本当の睡眠どうぶつは？' },
     grad: ['#6E7BF2', '#9AA6FF'],
     funnel: 'dopamine',
@@ -177,7 +182,7 @@ export const QUICK_TESTS: QuickTest[] = [
     results: [
       { key: 'rooster', emoji: '🐓', name: { ko: '아침형 닭', en: 'Morning Rooster', ja: '朝型ニワトリ' }, tag: { ko: '새벽을 지배한다', en: 'Owns the dawn', ja: '朝を制す' }, desc: { ko: '생체시계가 아침에 최적화된 타입. 규칙적이고 생산적이지만, 저녁 약속엔 배터리가 빨리 닳아요.', en: 'Your clock peaks in the morning — regular and productive, but evenings drain you fast.', ja: '朝に最適化された体内時計。夜は電池切れ早め。' } },
       { key: 'owl', emoji: '🦉', name: { ko: '올빼미', en: 'Night Owl', ja: 'フクロウ' }, tag: { ko: '밤에 살아난다', en: 'Alive at night', ja: '夜に蘇る' }, desc: { ko: '밤에 집중력이 솟는 타입. 창의적이지만 사회의 아침 스케줄과 늘 시차 전쟁 중. 빛 관리가 핵심이에요.', en: 'You spark at night — creative, but always jet-lagged vs society. Manage light.', ja: '夜に冴える型。社会の朝とずれ続ける。光管理が鍵。' } },
-      { key: 'faint', emoji: '💤', name: { ko: '기절형', en: 'Insta-Sleeper', ja: '気絶型' }, tag: { ko: '눕는 순간 끝', en: 'Lights out instantly', ja: '横になれば終了' }, desc: { ko: '어디서든 빨리 잠드는 복 받은 타입. 다만 너무 쉽게 곯아떨어진다면 만성 수면부족 신호일 수도 있어요.', en: 'You sleep anywhere fast — lucky! But too-instant sleep can signal chronic deprivation.', ja: 'どこでも即寝の幸運型。即落ちすぎは寝不足のサインかも。' } },
+      { key: 'faint', emoji: '💤', name: { ko: '기절형', en: 'Insta-Sleeper', ja: '気絶型' }, tag: { ko: '눕는 순간 끝', en: 'Lights out instantly', ja: '横になれば終了' }, desc: { ko: '어디서든 빨리 잠드는 복 받은 타입. 다만 너무 쉽게 곯아떨어진다면 만성 수면 부족 신호일 수도 있어요.', en: 'You sleep anywhere fast — lucky! But too-instant sleep can signal chronic deprivation.', ja: 'どこでも即寝の幸運型。即落ちすぎは寝不足のサインかも。' } },
       { key: 'insomnia', emoji: '🌙', name: { ko: '불면 달', en: 'Restless Moon', ja: '不眠の月' }, tag: { ko: '몸은 피곤한데 잠은 안 와', en: 'Tired but wired', ja: '疲れてるのに眠れない' }, desc: { ko: '생각이 많아 잠들기 힘든 타입. 불안·각성이 높을 수 있어요. 자기 전 화면 끄기와 호흡이 도움 됩니다.', en: 'Your busy mind blocks sleep — likely high arousal. Screen-off + breathing help.', ja: '考えが多く眠れない型。就寝前の画面オフと呼吸を。' } },
     ],
   },
@@ -185,6 +190,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'color',
     emoji: '🎨',
     title: { ko: '색채 심리', en: 'Color Psychology', ja: '色彩心理' },
+    short: { ko: '색채', en: 'Color', ja: '色彩' },
     desc: { ko: '끌리는 색으로 보는 내 마음', en: 'Your mind via the color you love', ja: '惹かれる色でわかる心' },
     grad: ['#FF8A4C', '#FFC04C'],
     funnel: 'ego',
@@ -237,6 +243,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'energy',
     emoji: '🔋',
     title: { ko: '에너지 타입', en: 'Energy Type', ja: 'エネルギータイプ' },
+    short: { ko: '에너지', en: 'Energy', ja: 'エネルギー' },
     desc: { ko: 'MBTI가 못 잡는 진짜 내향·외향', en: 'Your true intro/extra beyond MBTI', ja: 'MBTIを超える内向·外向' },
     grad: ['#10B981', '#5BD9A8'],
     funnel: 'ego',
@@ -289,6 +296,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'friend',
     emoji: '🧑‍🤝‍🧑',
     title: { ko: '친구 유형', en: 'Friend Type', ja: '友達タイプ' },
+    short: { ko: '친구', en: 'Friend', ja: '友達' },
     desc: { ko: '모임에서 나는 어떤 친구?', en: 'What kind of friend are you?', ja: '集まりでどんな友達？' },
     grad: ['#12A5C2', '#5BD0E0'],
     funnel: 'ego',
@@ -332,7 +340,7 @@ export const QUICK_TESTS: QuickTest[] = [
     ],
     results: [
       { key: 'leader', emoji: '👑', name: { ko: '리더형', en: 'The Leader', ja: 'リーダー型' }, tag: { ko: '모임은 내가 굴린다', en: 'I run the crew', ja: '集まりは私が回す' }, desc: { ko: '계획하고 이끄는 든든한 중심. 결단력이 강점이에요. 가끔은 친구들에게 키를 넘겨주면 더 편해져요.', en: 'A dependable center who plans and leads — decisive. Hand over the wheel sometimes to relax.', ja: '計画し導く頼れる中心。決断力が強み。時々友達に主導権を渡すと楽。' } },
-      { key: 'mood', emoji: '🎉', name: { ko: '분위기메이커', en: 'Mood Maker', ja: 'ムードメーカー' }, tag: { ko: '내가 있으면 텐션 업', en: 'I bring the energy', ja: '私がいれば盛り上がる' }, desc: { ko: '어디서나 분위기를 밝히는 에너지원. 함께 있으면 즐거워요. 가끔은 내 진짜 기분도 솔직히 나눠보세요.', en: 'The energy that lights up any room — fun to be with. Share your real feelings sometimes too.', ja: 'どこでも場を明るくするエネルギー源。たまには本音も共有を。' } },
+      { key: 'mood', emoji: '🎉', name: { ko: '분위기 메이커', en: 'Mood Maker', ja: 'ムードメーカー' }, tag: { ko: '내가 있으면 텐션 업', en: 'I bring the energy', ja: '私がいれば盛り上がる' }, desc: { ko: '어디서나 분위기를 밝히는 에너지원. 함께 있으면 즐거워요. 가끔은 내 진짜 기분도 솔직히 나눠보세요.', en: 'The energy that lights up any room — fun to be with. Share your real feelings sometimes too.', ja: 'どこでも場を明るくするエネルギー源。たまには本音も共有を。' } },
       { key: 'helper', emoji: '🫂', name: { ko: '상담사형', en: 'The Listener', ja: '相談役型' }, tag: { ko: '고민은 나한테', en: 'Bring me your worries', ja: '悩みは私に' }, desc: { ko: '잘 들어주고 챙기는 따뜻한 친구. 공감력이 최고예요. 남 챙기느라 내 마음을 미루지 않도록 해요.', en: 'A warm friend who listens and cares — top empathy. Don\'t put your own needs last.', ja: 'よく聞き気遣う温かい友達。共感力抜群。自分の心も後回しにしないで。' } },
       { key: 'chill', emoji: '🐢', name: { ko: '마이페이스', en: 'Easygoing', ja: 'マイペース' }, tag: { ko: '편한 거리감이 좋아', en: 'I like comfy distance', ja: '心地よい距離が好き' }, desc: { ko: '무리하지 않는 편안한 친구. 함께 있어도 부담이 없어요. 가끔 먼저 다가가면 관계가 더 깊어져요.', en: 'A relaxed, low-pressure friend. Reach out first now and then to go deeper.', ja: '無理しない気楽な友達。たまに自分から近づくと深まる。' } },
     ],
@@ -341,6 +349,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'lovecell',
     emoji: '💘',
     title: { ko: '연애세포', en: 'Love Cells', ja: '恋愛細胞' },
+    short: { ko: '연애세포', en: 'Love cells', ja: '恋愛細胞' },
     desc: { ko: '내 연애세포는 지금 몇 살?', en: 'How alive are your love cells?', ja: '恋愛細胞は今元気？' },
     grad: ['#F25C8E', '#FF9EC0'],
     funnel: 'love',
@@ -393,6 +402,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'soulmate',
     emoji: '💞',
     title: { ko: '소울메이트', en: 'Soulmate', ja: 'ソウルメイト' },
+    short: { ko: '소울메이트', en: 'Soulmate', ja: 'ソウルメイト' },
     desc: { ko: '나랑 찰떡인 짝꿍은?', en: 'Who\'s your perfect match?', ja: 'ピッタリの相手は？' },
     grad: ['#F25C8E', '#C58BF2'],
     funnel: 'love',
@@ -445,6 +455,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'stressanimal',
     emoji: '🐯',
     title: { ko: '스트레스 동물', en: 'Stress Animal', ja: 'ストレス動物' },
+    short: { ko: '동물', en: 'Animal', ja: '動物' },
     desc: { ko: '스트레스 받으면 변하는 내 동물', en: 'The animal you turn into', ja: 'ストレスで変わる動物' },
     grad: ['#FF6F61', '#FFA28C'],
     funnel: 'burnout',
@@ -462,7 +473,7 @@ export const QUICK_TESTS: QuickTest[] = [
         text: { ko: '누가 말 걸면?', en: 'If someone talks to you?', ja: '話しかけられると？' },
         options: [
           { text: { ko: '나도 모르게 톡 쏨', en: 'Snap back', ja: 'つい刺々しく' }, to: 'tiger' },
-          { text: { ko: '"괜찮아"하고 회피', en: '"I\'m fine," dodge', ja: '「大丈夫」と回避' }, to: 'turtle' },
+          { text: { ko: '"괜찮아" 하고 회피', en: '"I\'m fine," dodge', ja: '「大丈夫」と回避' }, to: 'turtle' },
           { text: { ko: '같이 먹자고 함', en: 'Let\'s eat', ja: '一緒に食べよ' }, to: 'hamster' },
           { text: { ko: '건드리면 가시 세움', en: 'Quills go up', ja: 'トゲを立てる' }, to: 'hedgehog' },
         ],
@@ -500,6 +511,11 @@ export const QUICK_TESTS: QuickTest[] = [
       "ko": "나의 꽃",
       "en": "Your Flower",
       "ja": "あなたの花"
+    },
+    "short": {
+      "ko": "꽃",
+      "en": "Flower",
+      "ja": "花"
     },
     "desc": {
       "ko": "4문항으로 보는 내 마음을 닮은 꽃",

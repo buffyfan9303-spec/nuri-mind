@@ -131,6 +131,14 @@ function pushEntry(layer: Layer) {
   }
 }
 
+/**
+ * 지금 열려 있는 오버레이 수 — 안드로이드 하드웨어 뒤로가기(lib/native.ts)가
+ * '오버레이 닫기'와 '앱 종료'를 가르는 근거. 열린 게 있으면 history.back()이 이 스택을 통해 한 겹만 닫는다.
+ */
+export function openLayerCount(): number {
+  return entries.filter((e) => e.live).length
+}
+
 /** 오버레이 한 겹을 연다. @returns disposer — 프로그램적으로 닫을 때 호출하면 history를 균형 있게 정리 */
 export function pushLayer(close: CloseFn): () => void {
   init()

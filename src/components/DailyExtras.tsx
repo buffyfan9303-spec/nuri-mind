@@ -6,6 +6,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
 import { localDay } from '../lib/date'
+import Emoji from './Emoji'
 
 // ⚠️ UTC 금지 — 스토어 날짜키(lib/date)와 동일 소스여야 KST 00~09시에 게이트가 어긋나지 않는다
 const todayStr = () => localDay()
@@ -27,16 +28,16 @@ export default function DailyExtras() {
     <Card className="!p-5">
       {/* 오늘의 한 줄 */}
       <div className="flex items-start gap-2.5">
-        <span className="text-[20px]">✨</span>
+        <Emoji e="✨" size={20} />
         <div className="min-w-0">
-          <p className="text-[12px] font-semibold tracking-wide text-mind-600">{t('daily.line')}</p>
+          <p className="text-[12px] font-extrabold tracking-wide text-mind-600">{t('daily.line')}</p>
           <p className="mt-1 break-keep text-[15px] font-bold leading-relaxed text-ink">{l(line)}</p>
         </div>
       </div>
 
       {/* 오늘의 챌린지 */}
       <div className="mt-4 border-t border-line pt-4">
-        <p className="text-[13px] font-semibold">{t('daily.challenge')}</p>
+        <p className="text-[13px] font-extrabold">{t('daily.challenge')}</p>
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={() => {
@@ -64,14 +65,14 @@ export default function DailyExtras() {
         onClick={() => nav('/fortune')}
         className="mt-4 flex w-full items-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#6B4FB8] to-[#A88BF2] px-3.5 py-3 text-left"
       >
-        <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ repeat: Infinity, duration: 2.6 }} className="text-[20px] leading-none">
-          🔮
+        <motion.span animate={{ rotate: [0, -10, 10, 0] }} transition={{ repeat: Infinity, duration: 2.6 }} className="leading-none">
+          <Emoji e="🔮" size={20} className="align-top" />
         </motion.span>
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-semibold leading-tight text-white">{t('fortune.homeTitle')}</p>
-          <p className="mt-0.5 break-keep text-[11px] font-medium text-white/85">{t('fortune.homeSub')}</p>
+          <p className="text-[13px] font-extrabold leading-tight text-white">{t('fortune.homeTitle')}</p>
+          <p className="mt-0.5 break-keep text-[11px] font-bold text-white/85">{t('fortune.homeSub')}</p>
         </div>
-        <span className="shrink-0 text-[16px] font-semibold text-white/90">›</span>
+        <span className="shrink-0 text-[16px] font-extrabold text-white/90">›</span>
       </motion.button>
     </Card>
   )

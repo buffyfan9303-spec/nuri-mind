@@ -30,6 +30,21 @@ export interface FortuneAiPayload {
   luckyTime: string
   lang: string
   date: string
+  /** 사주팔자 — 예: '갑진년 병인월 갑진일 갑자시'(시각 모르면 시주 생략) */
+  pillars?: string
+  /** 'm' | 'f' | '' */
+  gender?: string
+  /** 만 나이 */
+  age?: number
+  /** 일간 강약: strong | balanced | weak */
+  strength?: string
+  /** 도움 되는 오행(억부) — 예: '수,목' */
+  favorable?: string
+  /** 오늘 일진의 십신(내 일간 기준) — 예: '정재' */
+  todayTenGod?: string
+  /** 오늘 일진 — 예: '임술' */
+  todayIlju?: string
+  // 이름은 보내지 않는다 — 풀이에 필요 없고, 가족·친구 이름을 외부 LLM에 넘길 이유가 없다
 }
 
 /**

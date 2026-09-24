@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── 글꼴: 나눔스퀘어라운드(한글) 자체 호스팅 ─────────────────────────────
+   듀오링고식 '둥글고 굵은' 활자의 한글 짝. © NAVER Corp., SIL OFL 1.1 — public/fonts/LICENSE-NanumSquareRound.txt.
+   · 굵기는 두 벌만 둔다: 700(본문·보조) / 800(제목·버튼·칩 라벨·숫자). 그 밖의 굵기를 요청하면
+     브라우저가 가장 가까운 700/800으로 맞춘다 — 그래서 UI에 medium/semibold를 쓰지 않는다(smoke ⑨).
+   · unicode-range를 한글·CJK 문장부호로 좁혔다 — 라틴·숫자는 앞선 Nunito가 그리고,
+     한글이 없는 화면(영어·일본어 UI)은 이 파일을 아예 받지 않는다.
+   · swap: 글꼴이 늦어도 글자는 즉시 보인다(시스템 글꼴 → 교체). 800은 index.html에서 preload. */
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('/fonts/NanumSquareRoundB.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1100-11FF, U+3000-303F, U+3130-318F, U+A960-A97F, U+AC00-D7A3, U+D7B0-D7FF;
+}
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('/fonts/NanumSquareRoundEB.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1100-11FF, U+3000-303F, U+3130-318F, U+A960-A97F, U+AC00-D7A3, U+D7B0-D7FF;
+}
+
 /* ── 시맨틱 컬러 토큰 (RGB 트리플렛 → bg-surface/90 같은 투명도 지원) ── */
 :root {
   --bg: 250 252 249;
@@ -11,6 +35,8 @@
   --text-sub: 107 117 110;
   --text-faint: 154 165 158;
   --line: 234 239 236;
+  /* 3D 카드 아랫면(ledge) — 테두리보다 한 단계 짙게. 듀오링고식 답안 카드·스탯 타일이 '눌리는 물체'로 읽히게 */
+  --ledge: 220 228 223;
 }
 /* ── 다크모드 (눈이 편한 소프트 차콜 — GitHub Dark Dimmed / Material 3 기준, 순수 검정 회피) ──
    배경은 #000이 아닌 부드러운 청록빛 차콜, 표면은 elevation으로 한 단계씩 밝게,
@@ -23,6 +49,7 @@
   --text-sub: 154 164 160; /* #9AA4A0 */
   --text-faint: 110 119 114; /* #6E7772 */
   --line: 58 66 74; /* #3A424A — soft border */
+  --ledge: 28 33 39; /* 표면보다 어둡게 — 다크에서도 아랫면이 그림자로 읽힌다 */
   color-scheme: dark;
 }
 /* 다크 카드 입체감 — 부드러운 elevation(표면 명도차) + 은은한 그림자(과한 검정 회피) */
@@ -63,6 +90,8 @@ body {
   @apply bg-cream text-ink font-sans antialiased;
   overscroll-behavior-y: none;
   font-size: 16px;
+  /* 듀오링고식: 본문도 굵게(700). 가는 글자는 UI에서 쓰지 않는다 — 강조는 800으로 한 단계만 올린다 */
+  font-weight: 700;
   line-height: 1.65;
   letter-spacing: 0;
   /* 한국어 타이포: 어절(단어) 단위로만 줄바꿈 — 단어 중간에서 끊기는 현상 차단 */
@@ -113,27 +142,39 @@ h1, h2, h3, h4 {
 }
 .sparkle { animation: sparkle 2.4s ease-in-out infinite; }
 
-/* 듀오링고식 '젤리 칩' — 자연스러운 입체감: 상단 광택(inset) + 얇은 컬러 바닥 모서리 + 부드러운 그림자로 그라운딩.
-   --edge(브랜드색 어둡게)를 칩별 인라인 스타일로 주입. :active 시 살짝 가라앉고 눌리는 젤리 탄성. */
+/* 듀오링고식 '젤리 칩' — 상단 광택(inset) + 컬러 바닥 모서리(3px) + 부드러운 그림자로 그라운딩.
+   --edge(브랜드색 어둡게)를 칩별 인라인 스타일로 주입.
+   누름(:active): 크기를 줄이지 않고 바닥 모서리 깊이(3px)만큼 **그대로 내려앉는다** — 모서리는 0으로 접힌다.
+   전이 시간은 상태별로 다르다(들어가는 상태의 transition이 적용된다):
+     · 누를 때 0.06s — 손가락이 닿자마자 바닥. 누름이 느리면 '안 눌렸나?'가 된다.
+     · 뗄 때 0.32s 오버슈트 곡선 — 튀어 올라와 살짝 넘쳤다가 제자리(lib/motion SPRING.press와 같은 느낌). */
 .jelly-chip {
   box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.55),
     0 3px 0 0 var(--edge),
     0 8px 13px -5px rgba(31, 41, 48, 0.30);
-  transition: transform 0.13s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.13s ease-out;
+  transition: transform 0.32s cubic-bezier(0.34, 1.8, 0.5, 1), box-shadow 0.2s ease-out;
 }
 .jelly-chip:active {
-  transform: translateY(2px) scale(0.985);
+  transform: translateY(3px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 1px 0 0 var(--edge),
-    0 3px 6px -3px rgba(31, 41, 48, 0.26);
+    0 0 0 0 var(--edge),
+    0 2px 4px -2px rgba(31, 41, 48, 0.24);
+  transition-duration: 0.06s;
+  transition-timing-function: ease-out;
 }
 .dark .jelly-chip {
   box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.45),
     0 3px 0 0 var(--edge),
     0 8px 14px -5px rgba(0, 0, 0, 0.5);
+}
+.dark .jelly-chip:active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 0 0 0 var(--edge),
+    0 2px 4px -2px rgba(0, 0, 0, 0.45);
 }
 
 @keyframes shake {

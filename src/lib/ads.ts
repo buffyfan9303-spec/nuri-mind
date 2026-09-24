@@ -5,6 +5,8 @@
  * APK(예정): Capacitor + AdMob — isNative() 분기에 전면/배너/보상형 연결
  *   - @capacitor-community/admob 설치 후 아래 TODO 지점에 구현
  */
+import { isNativeApp } from './platform'
+
 // 공개 ID(클라이언트 노출 정상) — 진짜 값 박아 Vercel env 없이도 동작.
 // ⚠️ env에 'XXXX'/'0000' 같은 플레이스홀더가 들어가도 무시하고 진짜 값을 쓴다(광고 안뜨는 사고 방지).
 const realOr = (env: string | undefined, real: string): string =>
@@ -14,6 +16,9 @@ export const ADSENSE_SLOT_BANNER: string | undefined = realOr(import.meta.env.VI
 export const ADSENSE_SLOT_RECT: string | undefined = realOr(import.meta.env.VITE_ADSENSE_SLOT_RECT, '2729646243')
 
 export function adsEnabled(): boolean {
+  // ⚠️ 스토어 앱(WebView)에서는 AdSense를 띄우지 않는다 — AdSense는 웹 전용이고, 앱 WebView 안 노출은
+  //    AdSense 정책 위반(무효 트래픽)으로 계정이 막힐 수 있다. 앱 광고는 AdMob 연동 후 isNative() 분기로.
+  if (isNativeApp()) return false
   return Boolean(ADSENSE_CLIENT)
 }
 
@@ -36,14 +41,15 @@ export function loadAdSenseScript(): void {
 }
 
 export function isNative(): boolean {
-  // TODO(APK): Capacitor.isNativePlatform() 으로 교체
-  return false
+  return isNativeApp()
 }
 
 /** 전면 광고 트리거 — 검사 완료 → 결과 사이 (AdGate 컴포넌트가 웹 폴백 처리) */
 export async function showInterstitial(): Promise<void> {
   if (isNative()) {
-    // TODO(APK): AdMob.showInterstitial()
+    // TODO(APK): @capacitor-community/admob 설치 후 AdMob.showInterstitial()
+    //   iOS는 광고 추적 전 ATT 동의(AdMob.trackingAuthorizationStatus/requestTrackingAuthorization)가 먼저다
+    //   — Apple 5.1.2(i). docs/STORE.md '광고(AdMob)' 참고. 연동 전까지 앱에서는 광고가 없다.
   }
 }
 

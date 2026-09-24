@@ -201,7 +201,7 @@ export const MBTI_DEEP: MbtiDeepItem[] = [
   D('E', '생각은 말로 꺼내야 정리된다', 'I think best out loud', '考えは口に出すと整理される'),
   D('I', '사람이 많은 자리는 즐거워도 진이 빠진다', 'Crowds drain me even when fun', '人が多い場は楽しくても消耗する'),
   D('I', '혼자 있는 시간이 반드시 필요하다', 'I truly need alone time', '一人の時間が必ず要る'),
-  D('I', '깊은 대화 한 명이 얕은 대화 열 명보다 좋다', 'One deep talk beats ten shallow ones', '深い会話一人の方がいい'),
+  D('I', '한 명과 깊게 나누는 대화가 열 명과의 얕은 대화보다 좋다', 'One deep talk beats ten shallow ones', '深い会話一人の方がいい'),
   // S/N
   D('S', '경험해 본 방식이 가장 믿음직하다', 'Proven methods feel safest', '経験した方法が一番信頼できる'),
   D('S', '세부 사항이 눈에 잘 들어온다', 'I notice details easily', '細部がよく目に入る'),

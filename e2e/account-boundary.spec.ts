@@ -58,7 +58,8 @@ test('전체 초기화 — 2차 확인 전에는 버튼이 잠기고, 확인 후
 
   // 시드가 실제로 하이드레이트됐는지 먼저 못 박는다. 무과금 상태면 2차 확인 자체가 렌더되지 않아
   // 아래 disabled 검증이 "없는 버튼은 늘 통과"로 무력화된다.
-  await expect(page.getByText(`🧪 ${DEEP_TEST_IDS.length}`)).toBeVisible()
+  // 🧪 아이콘은 SVG(글자 아님) — 검사 수 칸을 data-testid로 잡고 값은 정확히 못 박는다
+  await expect(page.getByTestId('profile-results')).toHaveText(String(DEEP_TEST_IDS.length))
   // 마커도 같은 이유로 '있었음'을 먼저 못 박는다 — 키 이름이 바뀌면 아래 "지워졌다"가 공허하게 통과한다
   await expect.poll(() => page.evaluate((k) => localStorage.getItem(k), SYNC_UID_KEY)).toBe(PREV_UID)
 
@@ -146,6 +147,10 @@ const PUBLIC_ROUTES = [
   // 목록만 보면 `/magazine`은 열리는데 본문 URL은 전부 막히는 회귀를 놓친다.
   { path: '/magazine/adhd-focus', marker: '집중력이 약한 게 아니라, 뇌가 다른 거예요' },
   { path: '/legal/terms', marker: '시행 · 엔에이치홀딩스' },
+  // 소개 페이지 — 광고 심사가 운영 주체·문의처를 확인하는 자리라 가입 없이 열려야 한다
+  { path: '/about', marker: '누리 마인드를 소개합니다' },
+  // 검사 소개(척도 근거·주의 사항)는 공개, 진행(/run)은 가입 후 — 아래 별도 테스트
+  { path: '/test/selfesteem', marker: '세계에서 가장 많이 쓰는 자존감 척도' },
 ] as const
 
 for (const { path, marker } of PUBLIC_ROUTES) {
@@ -189,3 +194,11 @@ for (const { path, marker } of PRIVATE_ROUTES) {
     await expect(page.getByText(marker).first()).toBeVisible()
   })
 }
+
+test('검사 소개는 공개지만 검사 진행(/run)은 가입 게이트에 막힌다 — 공개 정규식이 /test/:id/run까지 넓어지지 않게', async ({ page }) => {
+  await seedStore(page, { onboarded: false, lang: 'ko' })
+  await page.goto('/test/selfesteem/run')
+  await waitForApp(page)
+  await expect(page.getByRole('heading', { level: 1, name: '누리 마인드에 오신 걸 환영해요' })).toBeVisible()
+  await expect(page).toHaveURL(/\/test\/selfesteem\/run$/)
+})

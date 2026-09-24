@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import Button from './Button'
 import { Card, Modal } from './ui'
@@ -8,6 +8,7 @@ import { useT, useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { localDay } from '../lib/date'
 import { sfx } from '../lib/sound'
+import Emoji, { EmojiText } from './Emoji'
 
 // ⚠️ UTC(toISOString)는 KST 하루 경계를 오전 9시로 밀어 스토어(lib/date)와 어긋난다
 const todayStr = () => localDay()
@@ -19,8 +20,8 @@ export function DailyCapMeter() {
   const freeAmount = useStore((s) => s.freeAmount)
   const used = freeDate === todayStr() ? freeAmount : 0
   return (
-    <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3 text-[13px] font-semibold text-white">
-      <span>⚡ {t('daily.cap')}</span>
+    <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3 text-[13px] font-extrabold text-white">
+      <span><Emoji e="⚡" inline />{t('daily.cap')}</span>
       <span className="rounded-full bg-white/25 px-2.5 py-0.5">
         {t('daily.unlimited')} · {used}P
       </span>
@@ -37,6 +38,9 @@ export function DailySpin() {
 
   const [opening, setOpening] = useState(false)
   const [reward, setReward] = useState<{ rolled: number; granted: number } | null>(null)
+  // 여는 연출 타이머 — 1.1초 안에 다른 탭으로 가면 폭죽·코인음이 엉뚱한 화면에서 터졌다(언마운트 시 정리)
+  const openTimer = useRef<ReturnType<typeof setTimeout>>()
+  useEffect(() => () => clearTimeout(openTimer.current), [])
 
   const freeUsed = lastSpinDate === todayStr()
   const allDone = freeUsed
@@ -48,7 +52,8 @@ export function DailySpin() {
     setOpening(true)
     setReward(null)
     sfx.tap()
-    setTimeout(() => {
+    clearTimeout(openTimer.current)
+    openTimer.current = setTimeout(() => {
       setOpening(false)
       setReward(res)
       burst()
@@ -62,28 +67,28 @@ export function DailySpin() {
         <motion.div
           animate={allDone ? {} : { rotate: [0, -6, 6, 0] }}
           transition={{ repeat: Infinity, duration: 2.2, repeatDelay: 1.2 }}
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-adhd-light text-3xl"
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-adhd-light"
         >
-          🎁
+          <Emoji e="🎁" size={30} />
         </motion.div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[16px] font-semibold">{t('spin.title')}</h3>
-          <p className="mt-0.5 text-[13px] font-medium text-ink-faint">{t('spin.sub')}</p>
+          <h3 className="text-[16px] font-extrabold">{t('spin.title')}</h3>
+          <p className="mt-0.5 text-[13px] font-bold text-ink-faint">{t('spin.sub')}</p>
         </div>
       </div>
 
       <div className="mt-3.5 space-y-2.5">
         {capLeft <= 0 && !allDone ? (
           <p className="rounded-2xl bg-surface2 py-3.5 text-center text-[14px] font-bold text-ink-sub">
-            {t('daily.capFull')}
+            <EmojiText text={t('daily.capFull')} />
           </p>
         ) : allDone ? (
-          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-semibold text-mind-700">
-            {t('spin.done')}
+          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-extrabold text-mind-700">
+            <EmojiText text={t('spin.done')} />
           </p>
         ) : (
           <Button color="adhd" onClick={() => doSpin(false)}>
-            {t('spin.open')}
+            <EmojiText text={t('spin.open')} />
           </Button>
         )}
       </div>
@@ -95,21 +100,21 @@ export function DailySpin() {
             <motion.div
               animate={{ rotate: [0, -14, 14, -10, 10, 0], scale: [1, 1.1, 1] }}
               transition={{ duration: 1.05 }}
-              className="text-7xl"
+              className="leading-none"
             >
-              🎁
+              <Emoji e="🎁" size={72} className="align-top" />
             </motion.div>
           ) : (
             reward && (
               <>
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -8, 6, 0] }} className="text-7xl">
-                  🪙
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -8, 6, 0] }} className="leading-none">
+                  <Emoji e="🪙" size={72} className="align-top" />
                 </motion.div>
                 <h3 className="mt-3 text-[24px] font-extrabold text-mind-700">
                   {t('spin.win', { p: reward.rolled })}
                 </h3>
                 {reward.granted < reward.rolled && (
-                  <p className="mt-1 text-[13px] font-medium text-amber-600">
+                  <p className="mt-1 text-[13px] font-bold text-amber-600">
                     {t('spin.capped', { p: reward.granted })}
                   </p>
                 )}
@@ -159,27 +164,27 @@ export function DailyQuiz() {
   return (
     <Card className="!p-5">
       <div className="flex items-center gap-3.5">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-iq-light text-3xl">🧠</div>
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-iq-light"><Emoji e="🧠" size={30} /></div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[16px] font-semibold">{t('quiz.title')}</h3>
-          <p className="mt-0.5 text-[13px] font-medium text-ink-faint">{t('quiz.sub')}</p>
+          <h3 className="text-[16px] font-extrabold">{t('quiz.title')}</h3>
+          <p className="mt-0.5 text-[13px] font-bold text-ink-faint">{t('quiz.sub')}</p>
         </div>
       </div>
       <div className="mt-3.5">
         {done && !open ? (
-          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-semibold text-mind-700">
-            {t('quiz.done')}
+          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-extrabold text-mind-700">
+            <EmojiText text={t('quiz.done')} />
           </p>
         ) : (
           <Button color="iq" onClick={() => setOpen(true)}>
-            {t('quiz.open')}
+            <EmojiText text={t('quiz.open')} />
           </Button>
         )}
       </div>
 
       <Modal open={open} onClose={answered ? () => setOpen(false) : undefined}>
         <div>
-          <h3 className="text-[17px] font-semibold leading-[1.6]">{l(item.q)}</h3>
+          <h3 className="text-[17px] font-extrabold leading-[1.6]">{l(item.q)}</h3>
           <div className="mt-4 space-y-2.5">
             {item.options.map((op, i) => {
               const isAnswer = i === item.answer
@@ -191,11 +196,12 @@ export function DailyQuiz() {
                   onClick={() => pick(i)}
                   className="w-full rounded-2xl border-2 px-4 py-3.5 text-left text-[15px] font-bold leading-relaxed"
                   style={{
-                    borderColor: show ? (isAnswer ? '#4FA882' : isPicked ? '#EF4444' : '#E3EAE5') : '#E3EAE5',
+                    // 라인 토큰 — 고정 #E3EAE5는 다크모드에서 보기 테두리만 밝게 떠 보였다
+                    borderColor: show ? (isAnswer ? '#4FA882' : isPicked ? '#EF4444' : 'rgb(var(--line))') : 'rgb(var(--line))',
                     background: show ? (isAnswer ? '#4FA8821A' : isPicked ? '#EF44441A' : 'rgb(var(--surface))') : 'rgb(var(--surface))',
                   }}
                 >
-                  {show && isAnswer ? '✅ ' : show && isPicked ? '❌ ' : ''}
+                  <EmojiText text={show && isAnswer ? '✅ ' : show && isPicked ? '❌ ' : ''} />
                   {l(op)}
                 </button>
               )
@@ -204,15 +210,15 @@ export function DailyQuiz() {
 
           {answered && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
-              <p className="text-center text-[16px] font-semibold">
+              <p className="text-center text-[16px] font-extrabold">
                 {picked === item.answer
                   ? granted > 0
                     ? t('quiz.correct', { p: granted })
                     : t('quiz.correctCap')
                   : t('quiz.wrong', { a: l(item.options[item.answer]) })}
               </p>
-              <p className="mt-2 rounded-2xl bg-surface2 px-4 py-3 text-[14px] font-medium leading-relaxed text-ink-sub">
-                💡 {l(item.fact)}
+              <p className="mt-2 rounded-2xl bg-surface2 px-4 py-3 text-[14px] font-bold leading-relaxed text-ink-sub">
+                <Emoji e="💡" inline />{l(item.fact)}
               </p>
               <div className="mt-4">
                 <Button color="mind" onClick={() => setOpen(false)}>

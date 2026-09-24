@@ -7,6 +7,7 @@ import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, nextResetMs, weekKeyOf } f
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 export default function League() {
   const t = useT()
@@ -77,11 +78,12 @@ export default function League() {
           <motion.div
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className={`mx-auto max-w-md px-5`}
+            exit={{ opacity: 0, y: -16 }}
+            transition={SPRING.ui}
+            className="mx-auto max-w-md px-5"
           >
             <p
-              className={`rounded-2xl px-4 py-3.5 text-center text-[15px] font-semibold ${
+              className={`rounded-2xl px-4 py-3.5 text-center text-[15px] font-extrabold ${
                 leagueMsg === 'up' ? 'bg-mind-100 text-mind-700' : leagueMsg === 'down' ? 'bg-red-50 text-red-500' : 'bg-sky2-100 text-sky2-600'
               }`}
             >
@@ -106,20 +108,20 @@ export default function League() {
                 key={i}
                 animate={i === leagueTier ? { scale: [1, 1.25, 1.12], y: [0, -4, 0] } : { scale: 0.95 }}
                 transition={{ duration: 0.5 }}
-                className={`text-3xl ${i === leagueTier ? '' : 'opacity-40 grayscale'}`}
+                className={`flex ${i === leagueTier ? '' : 'opacity-40 grayscale'}`}
               >
-                {tr.emoji}
+                <Emoji e={tr.emoji} size={30} />
               </motion.span>
             ))}
           </div>
           <h1 className="mt-2 text-[24px] font-extrabold tracking-tight text-white">{l(tier.name)}</h1>
-          <p className="mt-1 text-[13px] font-medium leading-relaxed text-white/90">{t('league.sub')}</p>
+          <p className="mt-1 text-[13px] font-bold leading-relaxed text-white/90">{t('league.sub')}</p>
           <div className="mt-3 flex items-center justify-center gap-2">
-            <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-semibold text-white">
-              {t('league.myWeek')} 🪙 {my.toLocaleString()}P
+            <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
+              {t('league.myWeek')} <Emoji e="🪙" inline />{my.toLocaleString()}P
             </span>
-            <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-semibold text-white">
-              ⏳ {t('league.reset', { d: dLeft, h: hLeft })}
+            <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
+              <Emoji e="⏳" inline />{t('league.reset', { d: dLeft, h: hLeft })}
             </span>
           </div>
         </motion.div>
@@ -132,13 +134,13 @@ export default function League() {
             return (
               <div key={r.me ? 'me' : r.name}>
                 {i === 0 && inPromo && (
-                  <p className="px-3 pb-1.5 pt-1 text-[12px] font-semibold tracking-wide text-mind-600">
-                    {t('league.promo')}
+                  <p className="px-3 pb-1.5 pt-1 text-[12px] font-extrabold tracking-wide text-mind-600">
+                    <EmojiText text={t('league.promo')} />
                   </p>
                 )}
                 {i === rows.length - 3 && inDemo && (
-                  <p className="px-3 pb-1.5 pt-3 text-[12px] font-semibold tracking-wide text-red-400">
-                    {t('league.demo')}
+                  <p className="px-3 pb-1.5 pt-3 text-[12px] font-extrabold tracking-wide text-red-400">
+                    <EmojiText text={t('league.demo')} />
                   </p>
                 )}
                 <motion.div
@@ -149,27 +151,33 @@ export default function League() {
                     r.me ? 'bg-mind-50 dark:bg-surface2 ring-2 ring-mind-400' : inPromo ? 'bg-surface2' : inDemo ? 'bg-red-50/60 dark:bg-red-950/40' : ''
                   }`}
                 >
+                  {/* 1~3위는 메달(듀오링고 리더보드), 나머지는 순위 숫자 — 메달도 스크린리더엔 숫자로 읽힌다 */}
                   <span
-                    className={`w-7 text-center text-[16px] font-semibold ${
-                      i === 0 ? 'text-amber-500' : i === 1 ? 'text-gray-400' : i === 2 ? 'text-amber-700' : 'text-ink-faint'
-                    }`}
+                    className={`flex w-7 justify-center text-center text-[16px] font-extrabold ${r.me ? 'text-mind-700' : 'text-ink-faint'}`}
                   >
-                    {i + 1}
+                    {i < 3 ? (
+                      <>
+                        <Emoji e={['🥇', '🥈', '🥉'][i]} size={24} />
+                        <span className="sr-only">{i + 1}</span>
+                      </>
+                    ) : (
+                      i + 1
+                    )}
                   </span>
-                  <span className="text-2xl">{r.emoji}</span>
-                  <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">
+                  <Emoji e={r.emoji} size={24} />
+                  <span className={`min-w-0 flex-1 truncate text-[15px] font-extrabold ${r.me ? 'text-mind-700' : ''}`}>
                     {r.name}
                     {r.me && <Chip tone="mind"> {t('league.me')}</Chip>}
                   </span>
-                  <span className="text-[15px] font-semibold text-ink-sub">{r.points.toLocaleString()}P</span>
+                  <span className={`text-[15px] font-extrabold ${r.me ? 'text-mind-700' : 'text-ink-sub'}`}>{r.points.toLocaleString()}P</span>
                 </motion.div>
               </div>
             )
           })}
         </Card>
 
-        <p className="mt-3 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
-          🏆 {t('league.sub')} · 현재 {rank}위
+        <p className="mt-3 text-center text-[12px] font-bold leading-relaxed text-ink-faint">
+          <Emoji e="🏆" inline />{t('league.sub')} · {l({ ko: `현재 ${rank}위`, en: `Now #${rank}`, ja: `現在${rank}位` })}
         </p>
       </main>
     </div>

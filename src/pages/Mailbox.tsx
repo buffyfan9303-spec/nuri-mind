@@ -1,18 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSkeletonGate } from '../hooks/useSkeletonGate'
 import LoadErrorCard from '../components/surfaces/LoadErrorCard'
 import { toast } from '../lib/toast'
 import { humanizeError } from '../lib/dbError'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { SPRING } from '../lib/motion'
 import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { authReady, getAuthUser, onAuthChange, signInWithKakao } from '../lib/auth'
+import AppleLoginButton from '../components/AppleLoginButton'
 import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem, confirmMailDelivery } from '../lib/mailbox'
 import { isAccountSwitchPending } from '../lib/economy'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 /** 만료까지 남은 일수(올림). */
 function expDays(iso: string): number {
@@ -45,6 +48,10 @@ export default function Mailbox() {
   const [loadErr, setLoadErr] = useState<string | null>(null)
   /** 수령 왕복 중 — 다이아가 걸린 버튼이라 두 번 눌리면 '받았는데 안 들어왔다'가 된다 */
   const [claiming, setClaiming] = useState<number | 'all' | null>(null)
+  /** 청약철회 왕복 중 — 두 번 눌리면 두 번째가 'not_found'로 떨어져 성공 직후 '환불 대상이 아니에요'가 떴다 */
+  const [cancelling, setCancelling] = useState<number | null>(null)
+  const msgTimer = useRef<ReturnType<typeof setTimeout>>()
+  useEffect(() => () => clearTimeout(msgTimer.current), [])
   const lang = useStore((s) => s.lang)
 
   const load = async () => {
@@ -72,7 +79,9 @@ export default function Mailbox() {
   /** 상단 배너 + 전역 토스트(스크린리더 알림·햅틱 포함) */
   const flash = (t: string) => {
     setMsg(t)
-    setTimeout(() => setMsg(''), 2200)
+    // 앞 타이머가 새 메시지를 일찍 지우지 않게 매번 갈아 끼운다
+    clearTimeout(msgTimer.current)
+    msgTimer.current = setTimeout(() => setMsg(''), 2200)
     toast.ok(t)
   }
 
@@ -145,12 +154,21 @@ export default function Mailbox() {
   }
 
   const onCancel = async (it: MailItem) => {
+    if (cancelling !== null || claiming !== null) return
+    // 되돌릴 수 없는 결제 취소라 한 번 더 묻는다
+    if (!window.confirm(l({ ko: '이 결제를 청약철회(환불)할까요?', en: 'Refund this purchase?', ja: 'この購入を返金しますか？' }))) return
+    setCancelling(it.id)
     const r = await cancelPurchase(it.id)
+    setCancelling(null)
     if (r === 'refunded') {
       setMail((m) => m.filter((x) => x.id !== it.id))
       flash(l({ ko: '청약철회(환불) 처리됐어요', en: 'Refund processed', ja: '返金処理しました' }))
     } else if (r === 'already_claimed') {
-      flash(l({ ko: '이미 수령해 청약철회할 수 없어요', en: 'Already received — cannot refund', ja: '受取済みのため返金不可' }))
+      flash(l({ ko: '이미 받은 우편이라 청약철회할 수 없어요', en: 'Already received — cannot refund', ja: '受取済みのため返金不可' }))
+      sfx.err()
+    } else if (r === 'unavailable') {
+      // 네트워크·서버 오류를 '환불 대상이 아니에요'로 뭉뚱그리면 환불 가능한 결제를 포기하게 된다
+      flash(l({ ko: '환불 요청에 실패했어요. 네트워크 확인 후 다시 시도해 주세요.', en: 'Refund request failed. Check your connection and retry.', ja: '返金リクエストに失敗。接続を確認して再試行してください。' }))
       sfx.err()
     } else {
       flash(l({ ko: '환불 대상이 아니에요', en: 'Not refundable', ja: '返金対象外' }))
@@ -165,7 +183,7 @@ export default function Mailbox() {
       <TopBar back="/" title={l({ ko: '우편함', en: 'Mailbox', ja: '郵便箱' })} />
       <main className="mx-auto max-w-md px-5">
         {msg && (
-          <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-3 rounded-2xl bg-mind-100 py-2.5 text-center text-[14px] font-semibold text-mind-700">
+          <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-3 rounded-2xl bg-mind-100 py-2.5 text-center text-[14px] font-extrabold text-mind-700">
             {msg}
           </motion.p>
         )}
@@ -180,19 +198,20 @@ export default function Mailbox() {
           </div>
         ) : !authReady() || loggedIn === false ? (
           <Card className="mt-6 text-center">
-            <div className="text-[28px]">📭</div>
-            <h2 className="mt-2 break-keep text-[17px] font-semibold">{l({ ko: '카카오로 로그인하면 우편을 받아요', en: 'Log in with Kakao to get mail', ja: 'カカオログインで郵便を受取' })}</h2>
-            <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">
+            <div className="leading-none"><Emoji e="📭" size={28} className="align-top" /></div>
+            <h2 className="mt-2 break-keep text-[17px] font-extrabold">{l({ ko: '카카오로 로그인하면 우편을 받아요', en: 'Log in with Kakao to get mail', ja: 'カカオログインで郵便を受取' })}</h2>
+            <p className="mt-1.5 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
               {l({ ko: '지금은 이 기기에만 저장돼요. 카카오 계정으로 로그인하면 운영자 지급·결제 다이아·개인 우편을 어느 기기에서나 받을 수 있어요.', en: "You're using this device locally. Log in with Kakao to claim operator gifts, purchased diamonds, and personal mail on any device.", ja: '今はこの端末のみ。カカオでログインすると、運営者ギフト・購入ダイヤ・個人郵便をどの端末でも受取れます。' })}
             </p>
-            <button onClick={onLogin} className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[#FEE500] py-3 text-[15px] font-semibold text-[#191919] shadow-card transition-transform active:translate-y-[2px]">
+            <button onClick={onLogin} className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[#FEE500] py-3 text-[15px] font-extrabold text-[#191919] shadow-card transition-transform active:translate-y-[2px]">
               {l({ ko: '카카오로 로그인', en: 'Log in with Kakao', ja: 'カカオでログイン' })}
             </button>
+            <AppleLoginButton className="mt-2" />
           </Card>
         ) : mail.length === 0 ? (
           <Card className="mt-6 text-center">
-            <div className="text-[28px]">📭</div>
-            <h2 className="mt-2 text-[16px] font-semibold">{l({ ko: '받은 우편이 없어요', en: 'No mail yet', ja: '郵便はありません' })}</h2>
+            <div className="leading-none"><Emoji e="📭" size={28} className="align-top" /></div>
+            <h2 className="mt-2 text-[16px] font-extrabold">{l({ ko: '받은 우편이 없어요', en: 'No mail yet', ja: '郵便はありません' })}</h2>
           </Card>
         ) : (
           <>
@@ -204,6 +223,8 @@ export default function Mailbox() {
               </div>
             )}
             <div className="mt-4 space-y-2.5">
+              {/* 환불로 빠지는 우편이 뚝 사라지고 아래 카드가 순간이동하지 않게 — 나가며 줄어들고 형제는 미끄러져 올라온다 */}
+              <AnimatePresence initial={false}>
               {mail.map((it) => {
                 const refundable = it.kind === 'purchase' && it.refundable && !it.claimed
                 // 서버 문자열이 깨졌으면 클라에서 재구성(폰트 깨짐 방지)
@@ -219,59 +240,71 @@ export default function Mailbox() {
                 const sender = isMojibake(it.sender) ? l({ ko: '운영자', en: 'Operator', ja: '運営' }) : it.sender
                 const body = isMojibake(it.body) ? null : it.body
                 return (
-                  <Card key={it.id} className={`!p-4 ${it.claimed ? 'opacity-60' : ''}`}>
+                  <motion.div
+                    key={it.id}
+                    layout="position"
+                    exit={{ opacity: 0, scale: 0.98, transition: SPRING.snap }}
+                    transition={SPRING.ui}
+                  >
+                  <Card className={`!p-4 ${it.claimed ? 'opacity-60' : ''}`}>
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-iq-light text-[20px]">
-                        {it.kind === 'purchase' ? '🧾' : it.kind === 'personal' ? '✉️' : it.kind === 'system' ? '📢' : '🎁'}
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-iq-light">
+                        <Emoji e={it.kind === 'purchase' ? '🧾' : it.kind === 'personal' ? '✉️' : it.kind === 'system' ? '📢' : '🎁'} size={20} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="truncate text-[15px] font-semibold leading-tight">{title}</p>
-                          <span className="shrink-0 text-[11px] font-medium text-ink-faint">{sender}</span>
+                          <p className="truncate text-[15px] font-extrabold leading-tight">{title}</p>
+                          <span className="shrink-0 text-[11px] font-bold text-ink-faint">{sender}</span>
                         </div>
-                        {body && <p className="mt-1 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{body}</p>}
+                        {body && <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">{body}</p>}
                         {(it.amount > 0 || it.points > 0) && (
-                          <p className="mt-1.5 text-[13px] font-semibold text-mind-700">
-                            {it.amount > 0 && `💎 ${it.amount}`}
+                          <p className="mt-1.5 text-[13px] font-extrabold text-mind-700">
+                            {it.amount > 0 && <EmojiText text={`💎 ${it.amount}`} />}
                             {it.amount > 0 && it.points > 0 && ' · '}
-                            {it.points > 0 && `🪙 ${it.points}`}
+                            {it.points > 0 && <EmojiText text={`🪙 ${it.points}`} />}
                           </p>
                         )}
                         <div className="mt-2.5 flex items-center gap-2">
                           {!it.claimed ? (
                             <button
                               onClick={() => onClaim(it)}
-                              disabled={claiming !== null}
-                              className="rounded-full bg-[#6E7BF2] px-4 py-1.5 text-[13px] font-semibold text-white disabled:opacity-50"
+                              disabled={claiming !== null || cancelling !== null}
+                              className="rounded-full bg-[#6E7BF2] px-4 py-1.5 text-[13px] font-extrabold text-white disabled:opacity-50"
                             >
                               {l({ ko: '받기', en: 'Claim', ja: '受取' })}
                             </button>
                           ) : (
-                            <span className="rounded-full bg-line px-3 py-1.5 text-[12px] font-semibold text-ink-faint">
-                              ✅ {l({ ko: '수령 완료', en: 'Received', ja: '受取済み' })}
+                            <span className="rounded-full bg-line px-3 py-1.5 text-[12px] font-extrabold text-ink-faint">
+                              <Emoji e="✅" inline />{l({ ko: '수령 완료', en: 'Received', ja: '受取済み' })}
                               {it.kind === 'purchase' && ` · ${l({ ko: '환불 불가', en: 'no refund', ja: '返金不可' })}`}
                             </span>
                           )}
                           {refundable && (
-                            <button onClick={() => onCancel(it)} className="rounded-full border-2 border-line px-3 py-1.5 text-[12px] font-semibold text-ink-sub">
+                            <button
+                              onClick={() => onCancel(it)}
+                              disabled={claiming !== null || cancelling !== null}
+                              className="rounded-full border-2 border-line px-3 py-1.5 text-[12px] font-extrabold text-ink-sub disabled:opacity-50"
+                            >
                               {l({ ko: '청약철회(환불)', en: 'Refund', ja: '返金' })}
                             </button>
                           )}
                           {!it.claimed && it.expires_at && (
-                            <span className={`ml-auto shrink-0 text-[11px] font-semibold ${expDays(it.expires_at) <= 3 ? 'text-red-400' : 'text-ink-faint'}`}>
-                              ⏳ D-{Math.max(0, expDays(it.expires_at))}
+                            <span className={`ml-auto shrink-0 text-[11px] font-extrabold ${expDays(it.expires_at) <= 3 ? 'text-red-400' : 'text-ink-faint'}`}>
+                              <Emoji e="⏳" inline />D-{Math.max(0, expDays(it.expires_at))}
                             </span>
                           )}
                         </div>
                       </div>
                     </div>
                   </Card>
+                  </motion.div>
                 )
               })}
+              </AnimatePresence>
             </div>
-            <p className="mt-4 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
+            <p className="mt-4 px-2 text-center text-[11px] font-bold leading-relaxed text-ink-faint">
               {l({
-                ko: 'ⓘ 유료 결제 다이아는 우편함에서 "받기" 전까지만 청약철회(환불)할 수 있어요. 받기를 누르면 콘텐츠 사용 개시로 간주되어 환불이 제한됩니다.',
+                ko: 'ⓘ 유료 결제 다이아는 우편함에서 "받기" 전까지만 청약철회(환불)할 수 있어요. 받기를 누르면 콘텐츠를 쓰기 시작한 것으로 보아 환불이 제한돼요.',
                 en: 'ⓘ Purchased diamonds can be refunded only before you tap "Claim". Claiming counts as using the content, after which refunds are restricted.',
                 ja: 'ⓘ 購入ダイヤは「受取」前のみ返金可能。受取はコンテンツ使用開始とみなされ返金が制限されます。',
               })}

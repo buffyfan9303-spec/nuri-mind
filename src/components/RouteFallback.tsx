@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import Button from './Button'
 import { useL } from '../i18n/useT'
+import Emoji from './Emoji'
 
 /**
  * 라우트 단위 에러 폴백 — 홀덤의 2단 폴백(전역/인라인) 중 '인라인' 쪽을 이식.
@@ -20,13 +21,11 @@ export default function RouteFallback({ onReset }: { onReset: () => void }) {
   const l = useL()
   return (
     <main role="alert" className="mx-auto flex min-h-[70dvh] max-w-md flex-col items-center justify-center px-6 text-center">
-      <div className="text-5xl" aria-hidden="true">
-        😵
-      </div>
+      <div className="leading-none"><Emoji e="😵" size={48} className="align-top" /></div>
       <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
         {l({ ko: '이 화면을 불러오지 못했어요', en: "This screen couldn't load", ja: 'この画面を読み込めませんでした' })}
       </h1>
-      <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+      <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
         {l({
           ko: '네트워크가 잠깐 끊겼거나 앱이 새 버전으로 바뀌었을 수 있어요. 다시 시도하면 대부분 해결돼요.',
           en: 'The network may have dropped, or the app was just updated. Trying again usually fixes it.',

@@ -8,6 +8,7 @@ import { PERSONAS } from '../i18n/animalTranslations'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import type { L } from '../data/types'
+import Emoji from '../components/Emoji'
 
 /** 자기 3부작 — 자존감(가치)·완벽주의(기준)·자기효능감(능력 믿음) */
 const TRIO = ['selfesteem', 'perfect', 'efficacy'] as const
@@ -50,7 +51,7 @@ const ARCHETYPES: Record<'calm' | 'driven' | 'critic' | 'grow', Arch> = {
     emoji: '🥀',
     name: { ko: '자기비판적 완벽주의형', en: 'Self-critical perfectionist', ja: '自己批判的完璧主義型' },
     desc: {
-      ko: '기준은 높은데 자신을 받아들이는 힘은 약한 조합입니다. "더 잘해야 해"와 "난 부족해"가 동시에 작동해 가장 쉽게 지치는 패턴이에요. 당신 잘못이 아니라, 균형이 한쪽으로 기운 것뿐이에요.',
+      ko: '기준은 높은데 자신을 받아들이는 힘은 약한 조합이에요. "더 잘해야 해"와 "난 부족해"가 동시에 작동해 가장 쉽게 지치는 패턴이에요. 당신 잘못이 아니라, 균형이 한쪽으로 기운 것뿐이에요.',
       en: 'High standards but a weak ability to accept yourself. "I must do better" and "I\'m not enough" run at once — the easiest pattern to burn out. It\'s not your fault; the balance has just tipped one way.',
       ja: '基準は高いが自分を受け入れる力は弱い組み合わせ。「もっと上手く」と「自分は足りない」が同時に働き最も疲れやすい。あなたのせいでなく、均衡が片方に傾いただけです。',
     },
@@ -102,9 +103,9 @@ export default function SelfReport() {
       <div className="min-h-dvh pb-36">
         <TopBar back="/" title={l({ ko: '통합 자기 리포트', en: 'Self report', ja: '統合セルフレポート' })} />
         <main className="mx-auto max-w-md px-5 pt-8 text-center">
-          <div className="text-6xl">🪞</div>
+          <div className="leading-none"><Emoji e="🪞" size={60} className="align-top" /></div>
           <h1 className="mt-4 text-[20px] font-extrabold tracking-tight">{l({ ko: '자기 3부작을 완성하면 열려요', en: 'Finish the self-trio to unlock', ja: 'セルフ3部作で解放' })}</h1>
-          <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+          <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
             {l({ ko: '자존감·완벽주의·자기효능감을 모두 마치면, 셋을 종합한 나만의 통합 리포트를 드려요.', en: 'Finish self-esteem, perfectionism, and self-efficacy to get a combined report.', ja: '自尊心・完璧主義・自己効力感を全て終えると統合レポートが出ます。' })}
           </p>
           <div className="mt-6 space-y-2.5 text-left">
@@ -116,9 +117,9 @@ export default function SelfReport() {
                   onClick={() => !done && nav(`/test/${id}`)}
                   className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3.5 ${done ? 'border-mind-200 bg-mind-50 dark:border-mind-600/50 dark:bg-mind-500/10' : 'border-line bg-surface'}`}
                 >
-                  <span className="text-[20px]">{done ? '✅' : '⬜'}</span>
-                  <span className="flex-1 break-keep text-[14px] font-semibold">{t(`test.${id}.name`)}</span>
-                  {!done && <span className="text-[13px] font-semibold text-mind-600">{l({ ko: '하기 ›', en: 'Go ›', ja: 'やる ›' })}</span>}
+                  <Emoji e={done ? '✅' : '⬜'} size={20} />
+                  <span className="flex-1 break-keep text-[14px] font-extrabold">{t(`test.${id}.name`)}</span>
+                  {!done && <span className="text-[13px] font-extrabold text-mind-600">{l({ ko: '하기 ›', en: 'Go ›', ja: 'やる ›' })}</span>}
                 </button>
               )
             })}
@@ -145,8 +146,8 @@ export default function SelfReport() {
             return (
               <div key={r.testId} className="flex flex-col items-center rounded-2xl bg-surface2 p-3 text-center">
                 <span className="text-[24px] leading-none">{p?.emoji ?? '•'}</span>
-                <span className="mt-1.5 break-keep text-[11px] font-semibold text-ink-sub">{l(AX_LABEL[r.testId])}</span>
-                <span className="mt-1 break-keep text-[11px] font-medium text-ink-faint">{t(`band.${r.testId}.${r.band}`)}</span>
+                <span className="mt-1.5 break-keep text-[11px] font-extrabold text-ink-sub">{l(AX_LABEL[r.testId])}</span>
+                <span className="mt-1 break-keep text-[11px] font-bold text-ink-faint">{t(`band.${r.testId}.${r.band}`)}</span>
               </div>
             )
           })}
@@ -155,27 +156,27 @@ export default function SelfReport() {
         {/* 통합 유형 */}
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING.sheet, delay: 0.08 }}>
           <Card className="mt-4 !bg-gradient-to-br !from-[#6E7BF2] !to-[#A88BF2] !p-6 text-center text-white">
-            <p className="text-[12px] font-semibold text-white/80">{l({ ko: '나의 자기 인식 유형', en: 'Your self-profile', ja: 'あなたの自己認識タイプ' })}</p>
-            <p className="mt-2 text-[28px] leading-none">{arch.emoji}</p>
+            <p className="text-[12px] font-extrabold text-white/80">{l({ ko: '나의 자기 인식 유형', en: 'Your self-profile', ja: 'あなたの自己認識タイプ' })}</p>
+            <p className="mt-2 leading-none"><Emoji e={arch.emoji} size={28} className="align-top" /></p>
             <h1 className="mt-2 text-[20px] font-extrabold tracking-tight">{l(arch.name)}</h1>
-            <p className="mt-3 break-keep text-[14px] font-medium leading-relaxed text-white/95">{l(arch.desc)}</p>
+            <p className="mt-3 break-keep text-[14px] font-bold leading-relaxed text-white/95">{l(arch.desc)}</p>
           </Card>
         </motion.div>
 
         {/* 처방 */}
         <Card className="mt-3 !p-5">
-          <p className="text-[14px] font-semibold">💡 {l({ ko: '나를 위한 한 걸음', en: 'A step for you', ja: 'あなたへの一歩' })}</p>
+          <p className="text-[14px] font-extrabold"><Emoji e="💡" inline />{l({ ko: '나를 위한 한 걸음', en: 'A step for you', ja: 'あなたへの一歩' })}</p>
           <div className="mt-3 space-y-2.5">
             {arch.tips.map((tip, i) => (
               <div key={i} className="flex items-start gap-2.5">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-mind-100 text-[11px] font-semibold text-mind-700">{i + 1}</span>
-                <span className="break-keep text-[13px] font-medium text-ink-sub">{l(tip)}</span>
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-mind-100 text-[11px] font-extrabold text-mind-700">{i + 1}</span>
+                <span className="break-keep text-[13px] font-bold text-ink-sub">{l(tip)}</span>
               </div>
             ))}
           </div>
         </Card>
 
-        <p className="mt-4 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
+        <p className="mt-4 px-2 text-center text-[11px] font-bold leading-relaxed text-ink-faint">
           {l({ ko: '본 리포트는 심리 참고용이며 의학적 진단이 아니에요.', en: 'For self-reflection only — not a medical diagnosis.', ja: '心理参考用で医学的診断ではありません。' })}
         </p>
         <div className="mt-4">

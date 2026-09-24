@@ -10,8 +10,10 @@
  *  ⑥ 16유형 심층 문항의 극별 균형(불균형 시 채점 편향)
  *  ⑦ 엣지 함수가 공용 모듈(_shared)을 올바르게 참조하는가 · 사본이 남아 원본을 가리지 않는가
  *  ⑧ 모션이 lib/motion 프리셋을 우회하고 스프링을 하드코딩하지 않는가
- *  ⑨ 타이포 정책 — ≤17px에 extrabold/tracking-tight 금지, 크기는 10단계 스케일만
+ *  ⑨ 타이포 정책(듀오링고식) — UI 굵기는 bold/extrabold(+큰 숫자 black)만, 긴 본문은 bold, 크기는 10단계 스케일만
  *  ⑩ 제목·버튼·라벨에 장식 이모지 접두 없음(스탯 타일·뱃지의 내용 이모지는 대상 아님)
+ *  ⑪ 만세력(사주팔자·음력·절기)이 공표 기준값과 맞는가 — scripts/saju-check.mjs
+ *  ⑫ 아이콘 이모지마다 Fluent SVG 파일이 있는가(동기화 누락·파일 누락) — scripts/emoji-sync.mjs
  *
  * 실행: npm run smoke   (실패 시 exit 1 — 배포 전 게이트로 사용)
  */
@@ -78,8 +80,22 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   check(`sitemap 띠 URL(${smZodiac.length})`, orphan.length === 0 && smZodiac.length === 12, orphan.join(', '))
 
   // 공개 라우트 화이트리스트가 sitemap 경로를 실제로 열어주는지
-  const pub = read('src/App.tsx').match(/PUBLIC_ROUTES = ([^\n]+)/)?.[1] ?? ''
+  const pub = read('src/App.tsx').match(/PUBLIC_ROUTES = ([^\r\n]+)/)?.[1] ?? ''
   check('공개 라우트에 zodiac·magazine 포함', pub.includes('zodiac') && pub.includes('magazine'), pub)
+
+  // sitemap의 모든 주소가 가입 없이 열리는가 — 비공개 주소를 실으면 크롤러는 전부 같은 가입 화면을 받는다(얇은 중복 페이지)
+  const lit = pub.match(/^\/(.+)\/([a-z]*)$/)
+  const re = lit ? new RegExp(lit[1], lit[2]) : null
+  const paths = [...sm.matchAll(/<loc>https:\/\/www\.nurimind\.co\.kr([^<]*)<\/loc>/g)].map((m) => m[1] || '/')
+  const gated = re ? paths.filter((p) => p !== '/' && !re.test(p)) : ['PUBLIC_ROUTES 정규식 파싱 실패']
+  check(`sitemap URL 전부 공개(${paths.length})`, gated.length === 0, gated.join(', '))
+
+  // 매거진·검사 소개 URL이 실제 데이터에 있는가(오타 URL = 크롤러가 받는 리다이렉트)
+  const artIds = [...read('src/data/magazine.ts').matchAll(/^\s{4}id: '([a-z-]+)'/gm)].map((m) => m[1])
+  const testIds = [...read('src/data/tests.ts').matchAll(/^\s{4}id: '([a-z]+)'/gm)].map((m) => m[1])
+  const badArt = [...sm.matchAll(/\/magazine\/([a-z-]+)</g)].map((m) => m[1]).filter((id) => !artIds.includes(id))
+  const badTest = [...sm.matchAll(/\/test\/([a-z]+)</g)].map((m) => m[1]).filter((id) => !testIds.includes(id))
+  check('sitemap 매거진·검사 URL ↔ 데이터', badArt.length === 0 && badTest.length === 0, [...badArt, ...badTest].join(', '))
 }
 
 /* ⑥ 16유형 심층 문항 극별 균형 */
@@ -126,31 +142,49 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   check('모션 프리셋 사용(하드코딩 스프링 0)', bad.length === 0, bad.slice(0, 5).join(', '))
 }
 
-/* ⑨ 타이포 정책 — 크기별 굵기·자간이 규칙을 지키는가 */
+/* ⑨ 타이포 정책 — 굵기·자간·크기가 규칙을 지키는가 (듀오링고식) */
 {
-  // AI 티의 실체는 '규칙 없음'이었다: extrabold 523개가 13px 캡션까지, 반픽셀 크기 42종, 13px에 tracking-tight.
-  // 정책(Apple §15): ≤17px는 semibold 이하·자간 0 / ≥20px만 extrabold·음수 자간. 크기는 10단계 스케일.
+  // 이력: 처음엔 '규칙 없음'(extrabold 523개가 13px 캡션까지, 반픽셀 크기 42종)이 문제였고,
+  // 이를 Apple식(≤17px는 semibold 이하)으로 묶었다. 그런데 운영자 판단(2026-09): 가늘고 얇은 글자는
+  // 이 앱의 캐릭터(둥근 칩·3D 버튼)와 따로 논다 → 듀오링고처럼 **모든 UI 글자를 굵게** 간다.
+  // 규칙이 없던 시절로 돌아가는 게 아니라 '굵은 쪽으로 옮긴 두 단계 체계'다:
+  //   · 700(bold)   = 본문·보조 문구·설명     · 800(extrabold) = 제목·버튼·칩 라벨·강조 숫자
+  //   · 900(black)  = 20px 이상의 큰 숫자(Nunito 900)에만
+  //   · 100~600(thin/extralight/light/normal/medium/semibold)은 금지 — 글꼴(나눔스퀘어라운드·Nunito)을
+  //     700/800만 받으므로 적어 봤자 700으로 뭉개져 '적힌 것과 보이는 것'이 달라진다.
+  //   · 여러 줄 본문(leading-relaxed/loose)은 800 금지 — 문단 전체가 800이면 강조가 사라진다.
+  //   · tracking-tight는 20px 이상 제목·숫자에만(작은 한글에 음수 자간은 자모가 붙는다). 크기는 10단계 스케일.
   const SCALE = new Set([11, 12, 13, 14, 15, 16, 17, 20, 24, 28])
+  const THIN = /(?:^|[\s:])font-(thin|extralight|light|normal|medium|semibold)(?=\s|$)/
   const bad = []
   const walk = (dir) => {
     for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
       const rel = `${dir}/${e.name}`
       if (e.isDirectory()) walk(rel)
       else if (/\.tsx$/.test(e.name)) {
-        for (const m of read(rel).matchAll(/className=(?:"([^"]*)"|\{`([^`]*)`\})/g)) {
+        const src = read(rel)
+        // 가는 굵기는 className 문자열·조건식 어디에 있든 막는다(삼항 안의 'font-medium'도 포함)
+        for (const m of src.matchAll(/['"`]([^'"`\n]*)['"`]/g)) {
+          const t = THIN.exec(m[1])
+          if (t) bad.push(`${rel}: font-${t[1]}(700 미만 금지)`)
+        }
+        const w = src.match(/fontWeight[:=]\s*\{?\s*['"]?([1-6]00)\b/)
+        if (w) bad.push(`${rel}: fontWeight ${w[1]}(700 미만 금지)`)
+        for (const m of src.matchAll(/className=(?:"([^"]*)"|\{`([^`]*)`\})/g)) {
           const cls = m[1] ?? m[2] ?? ''
           const sz = cls.match(/text-\[(\d+(?:\.\d+)?)px\]/)
           if (!sz) continue
           const px = parseFloat(sz[1])
           if (!SCALE.has(px)) bad.push(`${rel}: text-[${px}px] 스케일 외`)
-          if (px <= 17 && /font-(extrabold|black)/.test(cls)) bad.push(`${rel}: ${px}px에 extrabold`)
-          if (px <= 17 && /tracking-tight/.test(cls)) bad.push(`${rel}: ${px}px에 tracking-tight`)
+          if (px < 20 && /font-black/.test(cls)) bad.push(`${rel}: ${px}px에 black(20px 이상 숫자 전용)`)
+          if (px <= 17 && /tracking-tight/.test(cls)) bad.push(`${rel}: ${px}px에 tracking-tight`)
+          if (px <= 17 && /font-extrabold/.test(cls) && /leading-(relaxed|loose)/.test(cls)) bad.push(`${rel}: ${px}px 문단에 extrabold`)
         }
       }
     }
   }
   walk('src')
-  check('타이포 정책(굵기·자간·스케일)', bad.length === 0, bad.slice(0, 4).join(' · '))
+  check('타이포 정책(듀오링고 굵기·자간·스케일)', bad.length === 0, bad.slice(0, 4).join(' · '))
 }
 
 /* ⑩ 이모지 접두 — 제목·버튼·라벨 속성에 장식 이모지가 붙어 있는가 */
@@ -217,6 +251,56 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   check('className 보간 앞 공백(클래스 붙임 없음)', glued.length === 0, glued.slice(0, 4).join(' | '))
 }
 
+
+/* ⑪ 만세력 — 일진·음력(KASI 공표 설날·추석·윤달)·절기 시각·사주팔자 규칙 */
+{
+  const { runSajuCheck } = await import('./saju-check.mjs')
+  const { passes, fails: bad } = await runSajuCheck()
+  check(`만세력 기준값(${passes.length + bad.length}건)`, bad.length === 0, bad.slice(0, 3).join(' · '))
+}
+
+/* ⑫ 아이콘 이모지 — 쓰는 이모지마다 Fluent SVG 파일이 실제로 있는가 (scripts/emoji-sync.mjs)
+   목록(emojiManifest)에 없는 이모지는 <Emoji>가 기기 글꼴로 그린다 — 화면은 안 깨지지만 기기마다 다른 그림이 되돌아온다.
+   코드에 새 이모지를 적고 동기화를 잊으면 여기서 잡는다. 목록에 있는데 파일이 없으면 404 → 글꼴 폴백이라 역시 잡는다. */
+{
+  const man = read('src/data/emojiManifest.ts')
+  const dir = man.match(/EMOJI_DIR = '\/([^']+)'/)?.[1] ?? ''
+  const codes = (man.match(/EMOJI_CODES = '([^']*)'/)?.[1] ?? '').split(' ').filter(Boolean)
+  const table = new Map(codes.map((t) => (t.includes('=') ? t.split('=') : [t, t])))
+  const noFile = [...table].filter(([, f]) => !existsSync(join(ROOT, 'public', dir, `${f}.svg`))).map(([c]) => c)
+  const codeOf = (e) => [...e].map((c) => c.codePointAt(0)).filter((cp) => cp !== 0xfe0f && cp !== 0xfe0e).map((cp) => cp.toString(16)).join('-')
+  const RE = /\p{Regional_Indicator}{2}|[#*0-9]️?⃣|\p{Extended_Pictographic}(?:️|\p{Emoji_Modifier})?(?:‍\p{Extended_Pictographic}(?:️|\p{Emoji_Modifier})?)*/gu
+  // 아이콘 자리(문자열 리터럴): <Emoji e="…"> · IconBadge/JellyChip/SectionHead emoji="…" · StatTile icon="…" · 데이터의 emoji/icon/e 필드
+  const ICON = /(?:\be="|\bemoji="|\bicon="|\bemoji: ?'|\bicon: ?'|\be: ?')([^"']+)["']/g
+  const unsynced = new Set()
+  let iconCount = 0
+  const walk = (d) => {
+    for (const e of readdirSync(join(ROOT, d), { withFileTypes: true })) {
+      const rel = `${d}/${e.name}`
+      if (e.isDirectory()) walk(rel)
+      else if (/\.(ts|tsx)$/.test(e.name) && rel !== 'src/data/emojiManifest.ts') {
+        for (const m of read(rel).matchAll(ICON)) {
+          for (const g of m[1].matchAll(RE)) {
+            const c = codeOf(g[0])
+            if (['a9', 'ae', '2122'].includes(c)) continue
+            iconCount++
+            if (!table.has(c)) unsynced.add(`${g[0]}(${c}) ${rel}`)
+          }
+        }
+      }
+    }
+  }
+  walk('src')
+  check(
+    `아이콘 이모지 SVG(${table.size}종 · 아이콘 자리 ${iconCount}곳)`,
+    iconCount > 100 && noFile.length === 0 && unsynced.size === 0 && existsSync(join(ROOT, 'public/emoji/LICENSE-fluentui-emoji.txt')),
+    [
+      noFile.length && `목록엔 있는데 파일 없음: ${noFile.slice(0, 5).join(', ')}`,
+      unsynced.size && `동기화 안 됨(node scripts/emoji-sync.mjs): ${[...unsynced].slice(0, 5).join(' · ')}`,
+      !existsSync(join(ROOT, 'public/emoji/LICENSE-fluentui-emoji.txt')) && '라이선스 파일 없음',
+    ].filter(Boolean).join(' / '),
+  )
+}
 
 /* 결과 */
 console.log(`\n✅ 통과 ${ok.length}`)

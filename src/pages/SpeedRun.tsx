@@ -9,6 +9,7 @@ import { mulberry32 } from '../lib/random'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 /** 기호 9종 → 숫자 1~9 대응 (index 0 → 1) */
 const SYMBOLS = ['🔺', '🟢', '🟦', '🔶', '⭐', '❤️', '➕', '🟣', '🌙']
@@ -53,6 +54,18 @@ export default function SpeedRun() {
     nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
+  /** 중단 확인 창이 떠 있던 시간은 소요시간에서 뺀다 — 창을 열었다 '계속하기'를 누르면 그 시간만큼 점수가 깎였다 */
+  const pausedAtRef = useRef(0)
+  const openQuit = () => {
+    pausedAtRef.current = Date.now()
+    setQuitOpen(true)
+  }
+  const closeQuit = () => {
+    if (!quitOpen) return
+    if (phase === 'run') startRef.current += Date.now() - pausedAtRef.current
+    setQuitOpen(false)
+  }
+
   const tap = (d: number) => {
     if (phase !== 'run' || finishedRef.current) return
     const i = idxRef.current
@@ -93,7 +106,7 @@ export default function SpeedRun() {
     <div className="flex min-h-dvh flex-col">
       {/* 헤더 */}
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setQuitOpen(true)} className="text-2xl font-bold text-ink-faint" aria-label="quit">
+        <motion.button whileTap={{ scale: 0.97 }} onClick={openQuit} className="text-2xl font-bold text-ink-faint" aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}>
           ✕
         </motion.button>
         <div className="flex-1">
@@ -107,11 +120,11 @@ export default function SpeedRun() {
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5">
         {phase === 'ready' ? (
           <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="text-[28px] leading-none">
-              ⚡
+            <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="leading-none">
+              <Emoji e="⚡" size={28} className="align-top" />
             </motion.div>
             <h2 className="mt-4 text-[20px] font-extrabold">{l({ ko: '대응표를 외워두세요', en: 'Learn the key', ja: '対応表を覚えて' })}</h2>
-            <p className="mt-1.5 break-keep text-[13px] font-medium text-ink-sub">
+            <p className="mt-1.5 break-keep text-[13px] font-bold text-ink-sub">
               {l({ ko: '기호에 맞는 숫자를 최대한 빠르고 정확하게 누르면 돼요. 표는 계속 위에 보여요.', en: 'Press the digit matching each symbol, fast and accurate. The key stays at the top.', ja: '記号に合う数字を最速・正確に。表はずっと上に表示されます。' })}
             </p>
             <div className="mt-5 w-full">
@@ -132,9 +145,11 @@ export default function SpeedRun() {
 
             {/* 현재 기호 */}
             <div className="flex flex-1 flex-col items-center justify-center">
-              <p className="text-[13px] font-semibold text-ink-faint">{l({ ko: '이 기호의 숫자는?', en: 'Which digit?', ja: 'この記号の数字は？' })}</p>
+              <p className="text-[13px] font-extrabold text-ink-faint">{l({ ko: '이 기호의 숫자는?', en: 'Which digit?', ja: 'この記号の数字は？' })}</p>
               <div className="relative mt-3 flex h-32 w-32 items-center justify-center rounded-3xl border-2 shadow-card" style={{ borderColor: accent, background: 'rgb(var(--surface))' }}>
-                <AnimatePresence mode="wait">
+                {/* popLayout: 다음 기호가 바로 뜬다 — wait이면 이전 기호가 사라지는 0.1초 동안 이미 다음 문항에 답이
+                    들어가는데(idxRef) 화면엔 아직 이전 기호가 보여, 빠르게 누르는 사람일수록 안 본 기호에 답했다 */}
+                <AnimatePresence mode="popLayout">
                   <motion.span
                     key={idx}
                     initial={{ scale: 0.6, opacity: 0 }}
@@ -152,9 +167,9 @@ export default function SpeedRun() {
                     initial={{ opacity: 1, y: 0 }}
                     animate={{ opacity: 0, y: -18 }}
                     transition={{ duration: 0.4 }}
-                    className="absolute -top-2 text-[20px]"
+                    className="absolute -top-2 leading-none"
                   >
-                    {flash.ok ? '✅' : '❌'}
+                    <Emoji e={flash.ok ? '✅' : '❌'} size={20} className="align-top" />
                   </motion.span>
                 )}
               </div>
@@ -178,19 +193,19 @@ export default function SpeedRun() {
       </main>
 
       {/* 중단 확인 */}
-      <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
+      <Modal open={quitOpen} onClose={closeQuit}>
         <div className="text-center">
-          <div className="text-4xl">🥺</div>
-          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 그만둘까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
-          <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">
+          <div className="leading-none"><Emoji e="🥺" size={36} className="align-top" /></div>
+          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
+          <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">
-            <Button color="iq" onClick={() => setQuitOpen(false)}>
-              {l({ ko: '계속할게요', en: 'Keep going', ja: '続ける' })}
+            <Button color="iq" onClick={closeQuit}>
+              {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
             <Button color="white" onClick={() => nav('/test/speed', { replace: true })}>
-              {l({ ko: '그만두기', en: 'Quit', ja: 'やめる' })}
+              {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>
         </div>

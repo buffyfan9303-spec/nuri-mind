@@ -49,8 +49,13 @@ export function useDialogFocus(open: boolean, ref: RefObject<HTMLElement | null>
     return () => {
       cancelAnimationFrame(raf)
       document.removeEventListener('keydown', onKey)
+      // ⚠️ 먼저 다이얼로그 안의 포커스를 명시적으로 푼다. iOS Safari는 버튼을 탭해도 포커스를 주지 않아
+      //    opener가 body가 되고, body.focus()는 아무 일도 안 한다 → 퇴장 애니메이션 동안 textarea가 포커스를 쥔 채
+      //    남아 글쓰기 시트를 닫아도 키보드가 떠 있었다(커뮤니티). blur가 키보드를 내리는 유일하게 확실한 방법이다.
+      const active = document.activeElement as HTMLElement | null
+      if (active && root.contains(active)) active.blur()
       // 열기 전 요소가 아직 문서에 있을 때만 — 사라졌으면 억지로 옮기지 않는다
-      if (opener && document.contains(opener)) opener.focus({ preventScroll: true })
+      if (opener && opener !== document.body && document.contains(opener)) opener.focus({ preventScroll: true })
     }
   }, [open, ref])
 }

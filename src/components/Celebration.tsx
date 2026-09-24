@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { haptic } from '../lib/haptic'
+import Emoji from './Emoji'
 
 /**
  * 풀스크린 축하 오버레이 — 리그 승급·등급 상승 등 큰 성취의 순간(듀오링고식 테이크오버).
@@ -73,10 +74,12 @@ export default function Celebration({
               <motion.div
                 initial={{ scale: 0, rotate: -18 }}
                 animate={{ scale: 1, rotate: [0, -10, 8, 0] }}
-                transition={{ ...SPRING.sheet, delay: 0.16 }}
-                className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 text-6xl shadow-pop"
+                // ⚠️ 스프링은 키프레임 2개만 쓴다(처음·끝) — rotate [0,-10,8,0]에 SPRING.sheet를 그대로 주면
+                // 0→0이라 흔들림이 통째로 사라진다. rotate만 키프레임 트윈으로 따로 돌린다.
+                transition={{ ...SPRING.sheet, delay: 0.16, rotate: { duration: 0.6, ease: 'easeInOut', delay: 0.16 } }}
+                className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 shadow-pop"
               >
-                {emoji}
+                <Emoji e={emoji} size={64} />
               </motion.div>
             </div>
             <motion.h2
@@ -101,9 +104,9 @@ export default function Celebration({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.1 }}
-              className="mt-5 text-[12px] font-medium text-white/70"
+              className="mt-5 font-bold text-white/70 leading-none"
             >
-              👆
+              <Emoji e="👆" size={12} className="align-top" />
             </motion.p>
           </motion.div>
         </motion.div>

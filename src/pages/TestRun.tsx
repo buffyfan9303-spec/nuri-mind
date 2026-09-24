@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Button from '../components/Button'
-import { Modal, ProgressBar } from '../components/ui'
+import { AnswerCard, LessonHeader, Modal } from '../components/ui'
 import { FigCell, FoldStrip, MatrixGrid } from '../components/Fig'
 import { ADHD_ITEMS } from '../data/adhd'
 import { EGO_ITEMS } from '../data/ego'
@@ -26,6 +26,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx, startAmbient, stopAmbient } from '../lib/sound'
 import { haptic } from '../lib/haptic'
+import Emoji from '../components/Emoji'
 
 /**
  * IQ 문항별 제한시간 — 난이도 차등(문헌 기반).
@@ -99,6 +100,18 @@ export default function TestRun() {
   const startRef = useRef(Date.now())
   const finishedRef = useRef(false)
   const advancingRef = useRef(false)
+  /** 현재 문항 번호 — 나가는 중인 이전 카드(AnimatePresence exit)의 낡은 onClick이 새 문항에 답을 넣지 못하게 대조한다 */
+  const idxRef = useRef(idx)
+  idxRef.current = idx
+  /** 중단 확인 창이 열려 있으면 IQ 타이머를 멈춘다(창을 읽는 동안 시간이 깎이지 않게) */
+  const quitOpenRef = useRef(quitOpen)
+  quitOpenRef.current = quitOpen
+  /** 자동 진행 타이머 — 언마운트(중단) 후에 finish()가 돌아 결과가 저장·이동되는 것을 막는다 */
+  const timersRef = useRef<number[]>([])
+  const later = (fn: () => void, ms: number) => {
+    timersRef.current.push(window.setTimeout(fn, ms))
+  }
+  useEffect(() => () => timersRef.current.forEach((h) => window.clearTimeout(h)), [])
 
   const isAgree = AGREE_TESTS.includes(testId)
   const likertBase = isAgree ? 1 : 0
@@ -153,12 +166,12 @@ export default function TestRun() {
 
   const flash = (msg: string) => {
     setBubble(msg)
-    setTimeout(() => setBubble(null), 1500)
+    later(() => setBubble((b) => (b === msg ? null : b)), 1500)
   }
 
   /* 리커트: 선택 즉시 팝 → 자동 진행 (듀오링고 플로우) */
   const pickLikert = (v: number) => {
-    if (advancingRef.current || finishedRef.current) return
+    if (idx !== idxRef.current || advancingRef.current || finishedRef.current) return
     advancingRef.current = true
     setSel(v)
     sfx.tap()
@@ -166,12 +179,13 @@ export default function TestRun() {
     const item = likertItems[idx]
     const map = { ...answers, [item.id]: v }
     setAnswers(map)
-    setTimeout(() => advance(map), 280)
+    later(() => advance(map), 280)
   }
 
   /* IQ: 선택 → 확인 버튼으로 확정 (오답 방지) */
   const pickIq = (optId: string) => {
-    if (finishedRef.current) return
+    // 보기 id(a~d)는 문항마다 겹친다 — 나가는 카드를 누르면 다음 문항에 같은 보기가 미리 골라져 있었다
+    if (idx !== idxRef.current || finishedRef.current) return
     setSel(optId)
     sfx.tap()
     haptic(7)
@@ -194,10 +208,8 @@ export default function TestRun() {
     const map = { ...answers, [item.id]: null }
     setAnswers(map)
     flash(t('run.timeover'))
-    setTimeout(() => advance(map), 350)
+    later(() => advance(map), 350)
   }
-  const idxRef = useRef(idx)
-  idxRef.current = idx
   useEffect(() => {
     if (!isIq) return
     setTimeLeft(iqItems[idx] ? iqTimeFor(iqItems[idx].difficulty) : 45)
@@ -208,6 +220,7 @@ export default function TestRun() {
           clearInterval(iv)
           return prev
         }
+        if (quitOpenRef.current) return prev
         if (prev <= 1) {
           clearInterval(iv)
           timeoutRef.current()
@@ -222,54 +235,50 @@ export default function TestRun() {
 
   const item: LikertItem | IqItem | undefined = isIq ? iqItems[idx] : likertItems[idx]
   const ratio = useMemo(() => idx / total, [idx, total])
-  if (!item) return null
+  // 문항뱅크가 없는 id(오타·구링크·정밀검사 id)면 빈 화면 대신 소개 화면으로 — 소개가 알 수 없는 id는 홈으로 보낸다
+  if (!item) return <Navigate to={tm ? `/test/${testId}` : '/'} replace />
 
   return (
     <div className="flex min-h-dvh flex-col">
-      {/* 헤더: 중단 X + 진행바 + (IQ) 타이머 */}
-      <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={() => setQuitOpen(true)}
-          className="text-2xl font-bold text-ink-faint"
-          aria-label="quit"
-        >
-          ✕
-        </motion.button>
-        <div className="flex-1">
-          <ProgressBar value={ratio} color={tm.gradFrom} />
-        </div>
-        {isIq ? (
-          <div className="relative h-10 w-10">
-            <svg viewBox="0 0 40 40" className="h-10 w-10 -rotate-90">
-              <circle cx="20" cy="20" r="16" fill="none" stroke="#E7EDE9" strokeWidth="5" />
-              <circle
-                cx="20"
-                cy="20"
-                r="16"
-                fill="none"
-                stroke={timeLeft <= 10 ? '#EF4444' : tm.gradFrom}
-                strokeWidth="5"
-                strokeLinecap="round"
-                strokeDasharray={2 * Math.PI * 16}
-                strokeDashoffset={2 * Math.PI * 16 * (1 - timeLeft / iqTimeFor((item as IqItem).difficulty))}
-                style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
-              />
-            </svg>
-            <span
-              className={`absolute inset-0 flex items-center justify-center text-xs font-extrabold ${
-                timeLeft <= 10 ? 'text-red-500' : 'text-ink-sub'
-              }`}
-            >
-              {timeLeft}
+      {/* 헤더: 중단 X + 진행바 + (IQ) 타이머 — 듀오링고 레슨 머리(LessonHeader) */}
+      <LessonHeader
+        value={ratio}
+        color={tm.gradFrom}
+        onClose={() => setQuitOpen(true)}
+        closeLabel={t('run.quitYes')}
+        right={
+          isIq ? (
+            <div className="relative h-10 w-10">
+              <svg viewBox="0 0 40 40" className="h-10 w-10 -rotate-90">
+                <circle cx="20" cy="20" r="16" fill="none" stroke="#E7EDE9" strokeWidth="5" />
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="16"
+                  fill="none"
+                  stroke={timeLeft <= 10 ? '#EF4444' : tm.gradFrom}
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 16}
+                  strokeDashoffset={2 * Math.PI * 16 * (1 - timeLeft / iqTimeFor((item as IqItem).difficulty))}
+                  style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
+                />
+              </svg>
+              <span
+                className={`absolute inset-0 flex items-center justify-center text-xs font-extrabold ${
+                  timeLeft <= 10 ? 'text-red-500' : 'text-ink-sub'
+                }`}
+              >
+                {timeLeft}
+              </span>
+            </div>
+          ) : (
+            <span className="text-sm font-extrabold text-ink-faint">
+              {idx + 1}/{total}
             </span>
-          </div>
-        ) : (
-          <span className="text-sm font-extrabold text-ink-faint">
-            {idx + 1}/{total}
-          </span>
-        )}
-      </div>
+          )
+        }
+      />
 
       {/* 응원 버블 */}
       <AnimatePresence>
@@ -292,12 +301,13 @@ export default function TestRun() {
             key={idx}
             initial={{ x: 70, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -70, opacity: 0 }}
+            // 나갈 때는 짧게(popIn과 같은 규칙) — mode="wait"라 exit 시간이 그대로 문항 사이 빈 시간이 된다
+            exit={{ x: -70, opacity: 0, transition: SPRING.snap }}
             transition={SPRING.ui}
           >
             {!isIq ? (
               <>
-                <p className="mt-8 text-[13px] font-semibold" style={{ color: tm.gradFrom }}>
+                <p className="mt-5 text-[13px] font-extrabold" style={{ color: tm.gradFrom }}>
                   Q{idx + 1}
                 </p>
                 <h1 className="mt-2.5 text-[20px] font-extrabold leading-[1.6] tracking-tight">
@@ -308,30 +318,24 @@ export default function TestRun() {
                     const v = likertBase + i
                     const active = sel === v
                     return (
-                      <motion.button
+                      <AnswerCard
                         key={i}
                         onClick={() => pickLikert(v)}
-                        whileTap={{ scale: 0.97 }}
-                        animate={active ? { scale: [1, 1.06, 0.98, 1] } : { scale: 1 }}
-                        transition={active ? { duration: 0.34, ease: [0.34, 1.4, 0.5, 1] } : SPRING.flick}
-                        className="flex w-full items-center justify-between rounded-2xl border-2 bg-surface px-5 py-4 text-left text-[17px] font-bold leading-tight"
-                        style={{
-                          borderColor: active ? tm.gradFrom : '#E3EAE5',
-                          background: active ? `${tm.gradFrom}1A` : 'rgb(var(--surface))',
-                          boxShadow: active ? 'none' : '0 2px 0 #EDF1EE',
-                        }}
+                        selected={active}
+                        accent={tm.gradFrom}
+                        className="flex items-center justify-between px-5 py-4 text-left text-[17px] font-bold leading-tight"
                       >
                         {label}
-                        <span className="ml-3 flex shrink-0 gap-1">
+                        <span className="ml-3 flex shrink-0 gap-1" aria-hidden="true">
                           {Array.from({ length: 5 }).map((_, d) => (
                             <span
                               key={d}
                               className="h-1.5 w-1.5 rounded-full"
-                              style={{ background: d <= i ? tm.gradFrom : '#E3EAE5' }}
+                              style={{ background: d <= i ? tm.gradFrom : 'rgb(var(--line))' }}
                             />
                           ))}
                         </span>
-                      </motion.button>
+                      </AnswerCard>
                     )
                   })}
                 </div>
@@ -357,9 +361,9 @@ export default function TestRun() {
       {/* 중단 확인 */}
       <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
         <div className="text-center">
-          <div className="text-4xl">🥺</div>
+          <div className="leading-none"><Emoji e="🥺" size={36} className="align-top" /></div>
           <h3 className="mt-2 text-lg font-extrabold">{t('run.quitTitle')}</h3>
-          <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">{t('run.quitDesc')}</p>
+          <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">{t('run.quitDesc')}</p>
           <div className="mt-5 space-y-2.5">
             <Button color="mind" onClick={() => setQuitOpen(false)}>
               {t('run.quitNo')}
@@ -402,7 +406,7 @@ function IqQuestion({
           </div>
         )}
         {item.kind === 'verbal' && (
-          <div className="whitespace-pre-line rounded-2xl border-2 border-line bg-surface px-5 py-6 text-[17px] font-semibold leading-tight">
+          <div className="whitespace-pre-line rounded-2xl border-2 border-line bg-surface px-5 py-6 text-[17px] font-extrabold leading-tight">
             {l(item.prompt)}
           </div>
         )}
@@ -412,21 +416,14 @@ function IqQuestion({
         {item.options.map((o, i) => {
           const active = sel === o.id
           return (
-            <motion.button
+            <AnswerCard
               key={o.id}
               onClick={() => onPick(o.id)}
-              whileTap={{ scale: 0.97 }}
-              animate={active ? { scale: [1, 1.05, 1] } : { scale: 1 }}
-              className={`rounded-2xl border-2 bg-surface ${
-                o.fig ? 'aspect-square p-2' : 'px-4 py-4'
-              } font-extrabold`}
-              style={{
-                borderColor: active ? accent : '#E3EAE5',
-                background: active ? `${accent}14` : 'rgb(var(--surface))',
-                boxShadow: active ? 'none' : '0 2px 0 #EDF1EE',
-              }}
+              selected={active}
+              accent={accent}
+              className={`${o.fig ? 'aspect-square p-2' : 'px-4 py-4'} font-extrabold`}
             >
-              <span className="sr-only">option {i + 1}</span>
+              <span className="sr-only">{l({ ko: `보기 ${i + 1}`, en: `Option ${i + 1}`, ja: `選択肢 ${i + 1}` })}</span>
               {o.fig ? (
                 <FigCell fig={o.fig} className="h-full w-full" />
               ) : (
@@ -434,7 +431,7 @@ function IqQuestion({
                   {l(o.text)}
                 </span>
               )}
-            </motion.button>
+            </AnswerCard>
           )
         })}
       </div>

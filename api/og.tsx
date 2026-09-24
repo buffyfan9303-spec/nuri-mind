@@ -17,11 +17,16 @@ const EMOJI: Record<string, string> = {
 export default function handler(req: Request) {
   const { searchParams } = new URL(req.url)
   const tid = searchParams.get('t') || ''
-  const eParam = searchParams.get('e') // 퀵 대결: 이모지 직접 전달(한글 결과명은 메타에만)
+  // 퀵 대결: 이모지 직접 전달(한글 결과명은 메타에만).
+  // 글자 수 제한 — 안 자르면 우리 도메인 OG 이미지에 임의 문구를 168px로 찍어 주는 셈이다(사칭 공유 카드).
+  const eRaw = searchParams.get('e')
+  const eParam = eRaw ? Array.from(eRaw).slice(0, 8).join('') : null
   const name = eParam ? 'QUIZ' : NAME[tid] || 'Psych'
   const emoji = eParam || EMOJI[tid] || '🧠'
-  const pRaw = Number(searchParams.get('p'))
-  const top = Number.isFinite(pRaw) ? Math.max(0.5, Math.round((100 - pRaw) * 10) / 10) : null
+  // p가 없으면(퀵 대결) Number(null)=0 → 'TOP 100%'가 찍혔다. 없음은 없음으로, 범위는 0~100으로.
+  const pStr = searchParams.get('p')
+  const pRaw = pStr == null || pStr.trim() === '' ? NaN : Number(pStr)
+  const top = Number.isFinite(pRaw) ? Math.max(0.5, Math.round((100 - Math.min(100, Math.max(0, pRaw))) * 10) / 10) : null
 
   return new ImageResponse(
     (

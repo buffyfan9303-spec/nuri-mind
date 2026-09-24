@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -11,6 +11,7 @@ import { FREEZE_MAX, isPremium, PREMIUM_KRW, useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 export default function Shop() {
   const t = useT()
@@ -26,6 +27,9 @@ export default function Shop() {
   const premium = isPremium(premiumUntil)
   const [confirm, setConfirm] = useState<ShopItem | null>(null)
   const [requested, setRequested] = useState(false)
+  // 안내 배너 타이머 — 연달아 교환하면 앞 타이머가 새 배너를 일찍 지웠고, 화면을 떠나도 남아 있었다
+  const reqTimer = useRef<ReturnType<typeof setTimeout>>()
+  useEffect(() => () => clearTimeout(reqTimer.current), [])
 
   const doRedeem = () => {
     if (!confirm) return
@@ -34,7 +38,8 @@ export default function Shop() {
     if (ok) {
       fire('coin')
       setRequested(true)
-      setTimeout(() => setRequested(false), 2200)
+      clearTimeout(reqTimer.current)
+      reqTimer.current = setTimeout(() => setRequested(false), 2200)
     } else {
       sfx.err()
     }
@@ -45,7 +50,7 @@ export default function Shop() {
     <div className="min-h-dvh pb-36">
       <TopBar title={t('shop.title')} />
       <main className="mx-auto max-w-md px-5">
-        <p className="px-1 text-[15px] font-medium leading-relaxed text-ink-sub">{t('shop.sub')}</p>
+        <p className="text-[15px] font-bold leading-relaxed text-ink-sub">{t('shop.sub')}</p>
 
         {/* 프리미엄 구독 CTA */}
         <button
@@ -55,12 +60,12 @@ export default function Shop() {
         >
           <IconBadge emoji="✨" tone="frost" size={42} radius={13} wiggle />
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15px] font-semibold text-white">
+            <h3 className="text-[15px] font-extrabold text-white">
               {premium
                 ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
                 : l({ ko: '광고 제거 · 프리미엄', en: 'Remove ads · Premium', ja: '広告除去・プレミアム' })}
             </h3>
-            <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">
+            <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
               {premium
                 ? l({ ko: '혜택 이용 중 · 눌러서 관리', en: 'Active · tap to manage', ja: '利用中・管理する' })
                 : l({
@@ -79,7 +84,7 @@ export default function Shop() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-3 rounded-2xl bg-mind-100 px-4 py-3 text-center text-sm font-extrabold text-mind-700"
           >
-            ✅ {t('shop.requested')}
+            <Emoji e="✅" inline />{t('shop.requested')}
           </motion.p>
         )}
 
@@ -96,14 +101,12 @@ export default function Shop() {
                 transition={{ ...SPRING.ui, delay: 0.04 * i }}
               >
                 <Card className="flex items-center gap-3 !p-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-mind-50 text-[24px]">
-                    {item.emoji}
-                  </div>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-mind-50"><Emoji e={item.emoji} size={24} /></div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="break-keep text-[15px] font-semibold leading-tight">{l(item.name)}</h3>
-                    <p className="mt-0.5 whitespace-nowrap text-[13px] font-semibold text-mind-700 dark:text-mind-300">
-                      🪙 {item.cost.toLocaleString()}P
-                      {isFreeze && freezes > 0 && <span className="ml-1.5 text-[12px] text-sky2-600">❄️×{freezes}</span>}
+                    <h3 className="break-keep text-[15px] font-extrabold leading-tight">{l(item.name)}</h3>
+                    <p className="mt-0.5 whitespace-nowrap text-[13px] font-extrabold text-mind-700 dark:text-mind-300">
+                      <Emoji e="🪙" inline />{item.cost.toLocaleString()}P
+                      {isFreeze && freezes > 0 && <span className="ml-1.5 text-[12px] text-sky2-600"><Emoji e="❄️" inline />×{freezes}</span>}
                     </p>
                   </div>
                   <div className="w-[64px] shrink-0">
@@ -115,7 +118,7 @@ export default function Shop() {
                       className="!px-2 whitespace-nowrap"
                     >
                       {maxed
-                        ? l({ ko: '보유중', en: 'Owned', ja: '保有中' })
+                        ? l({ ko: '보유 중', en: 'Owned', ja: '保有中' })
                         : afford
                           ? l({ ko: '교환', en: 'Redeem', ja: '交換' })
                           : l({ ko: '부족', en: 'Short', ja: '不足' })}
@@ -133,17 +136,17 @@ export default function Shop() {
               {redemptions.map((rd) => (
                 <div key={rd.id} className="flex items-center justify-between border-b border-line px-3 py-3 last:border-0">
                   <div className="flex min-w-0 items-center gap-2.5">
-                    <span className="text-xl">{rd.emoji}</span>
+                    <Emoji e={rd.emoji} size={20} />
                     <div className="min-w-0">
                       <p className="truncate text-[14px] font-bold">{rd.itemName}</p>
-                      <p className="mt-0.5 text-[12px] font-medium text-ink-faint">
+                      <p className="mt-0.5 text-[12px] font-bold text-ink-faint">
                         {new Date(rd.at).toLocaleDateString()} · {rd.cost.toLocaleString()}P
                       </p>
                     </div>
                   </div>
-                  {rd.status === 'pending' && <Chip tone="amber">⏳ {t('shop.st.pending')}</Chip>}
-                  {rd.status === 'approved' && <Chip tone="mind">✅ {t('shop.st.approved')}</Chip>}
-                  {rd.status === 'rejected' && <Chip tone="red">↩️ {t('shop.st.rejected')}</Chip>}
+                  {rd.status === 'pending' && <Chip tone="amber"><Emoji e="⏳" inline />{t('shop.st.pending')}</Chip>}
+                  {rd.status === 'approved' && <Chip tone="mind"><Emoji e="✅" inline />{t('shop.st.approved')}</Chip>}
+                  {rd.status === 'rejected' && <Chip tone="red"><Emoji e="↩️" inline />{t('shop.st.rejected')}</Chip>}
                 </div>
               ))}
             </Card>
@@ -155,9 +158,9 @@ export default function Shop() {
       <Modal open={Boolean(confirm)} onClose={() => setConfirm(null)}>
         {confirm && (
           <div className="text-center">
-            <div className="text-5xl">{confirm.emoji}</div>
+            <div className="leading-none"><Emoji e={confirm.emoji} size={48} className="align-top" /></div>
             <h3 className="mt-3 text-lg font-extrabold">{t('shop.confirmTitle', { name: l(confirm.name) })}</h3>
-            <p className="mt-1.5 text-sm font-medium leading-relaxed text-ink-sub">
+            <p className="mt-1.5 text-sm font-bold leading-relaxed text-ink-sub">
               {t('shop.confirmDesc', { cost: confirm.cost.toLocaleString() })}
             </p>
             <div className="mt-5 space-y-2.5">

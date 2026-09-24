@@ -13,7 +13,7 @@ export const SELFESTEEM_ITEMS: LikertItem[] = [
     en: 'I feel I am a person of worth, at least equal to others',
     ja: '私は少なくとも他人と同じくらい価値ある人間だと感じる' } },
   { id: 'se02', sub: 'POS', text: {
-    ko: '나는 좋은 장점을 꽤 많이 가지고 있다',
+    ko: '나는 장점을 꽤 많이 가지고 있다',
     en: 'I feel that I have a number of good qualities',
     ja: '私には良い長所がかなりあると思う' } },
   { id: 'se03', sub: 'POS', text: {

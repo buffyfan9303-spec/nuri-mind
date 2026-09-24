@@ -8,6 +8,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 export default function Routine() {
   const { id } = useParams<{ id: string }>()
@@ -44,12 +45,12 @@ export default function Routine() {
           className="rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-5 text-white shadow-pop"
         >
           <div className="flex items-center gap-3">
-            <span className="text-[28px]">{routine.emoji}</span>
+            <Emoji e={routine.emoji} size={28} />
             <div className="min-w-0 flex-1">
-              <h1 className="text-[17px] font-semibold leading-tight">{l(routine.title)}</h1>
-              <p className="mt-0.5 text-[13px] font-medium text-white/85">{t('routine.sub')}</p>
+              <h1 className="text-[17px] font-extrabold leading-tight">{l(routine.title)}</h1>
+              <p className="mt-0.5 text-[13px] font-bold text-white/85">{t('routine.sub')}</p>
             </div>
-            <span className="shrink-0 text-[17px] font-semibold">{done.length}/7</span>
+            <span className="shrink-0 text-[17px] font-extrabold">{done.length}/7</span>
           </div>
           <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/25">
             <motion.div
@@ -60,8 +61,8 @@ export default function Routine() {
             />
           </div>
           {complete && (
-            <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-3 text-center text-[14px] font-semibold">
-              🎉 {t('routine.done')}
+            <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={SPRING.flick} className="mt-3 text-center text-[14px] font-extrabold">
+              <Emoji e="🎉" inline />{t('routine.done')}
             </motion.p>
           )}
         </motion.div>
@@ -75,14 +76,15 @@ export default function Routine() {
                 key={i}
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.04 }}
+                transition={{ ...SPRING.ui, delay: i * 0.04 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onToggle(i)}
+                aria-pressed={checked}
                 className="flex w-full items-center gap-3.5 rounded-2xl border-2 bg-surface px-4 py-3.5 text-left transition-colors"
                 style={{ borderColor: checked ? '#4FA882' : 'rgb(var(--line))' }}
               >
                 <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold"
                   style={{ background: checked ? '#4FA882' : 'rgb(var(--surface-2))', color: checked ? '#fff' : 'rgb(var(--text-faint))' }}
                 >
                   {checked ? '✓' : t('routine.day', { n: i + 1 })}
@@ -95,7 +97,7 @@ export default function Routine() {
           })}
         </div>
 
-        <p className="mt-6 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">{t('routine.hint')}</p>
+        <p className="mt-6 px-2 text-center text-[12px] font-bold leading-relaxed text-ink-faint"><EmojiText text={t('routine.hint')} /></p>
       </main>
     </div>
   )

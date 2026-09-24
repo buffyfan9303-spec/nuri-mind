@@ -9,12 +9,19 @@ import { SPRING } from '../../lib/motion'
 export function ProgressBar({ value, color = '#4FA882' }: { value: number; color?: string }) {
   const pct = Math.min(100, Math.max(0, (Number.isFinite(value) ? value : 0) * 100))
   return (
-    <div className="h-3.5 w-full overflow-hidden rounded-full bg-line">
+    <div
+      className="h-3.5 w-full overflow-hidden rounded-full bg-line"
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(pct)}
+    >
       <motion.div
         className="relative h-full overflow-hidden rounded-full"
         initial={false}
         animate={{ width: `${pct}%` }}
-        transition={SPRING.ui}
+        // 진행바는 gauge 프리셋이 정본(motion.ts: '오버슈트가 의미를 왜곡하는 곳 — 진행바')
+        transition={SPRING.gauge}
         style={{ background: color, minWidth: pct > 0 ? '0.875rem' : 0 }}
       >
         <span className="pointer-events-none absolute inset-x-1.5 top-[3px] block h-1 rounded-full bg-surface/40" />

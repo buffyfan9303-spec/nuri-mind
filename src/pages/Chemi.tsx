@@ -10,6 +10,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 const VALID = new Set(LOVE_ANIMALS.map((a) => a.key))
 
@@ -46,7 +47,9 @@ export default function Chemi() {
     }
   }
 
-  const Picker = ({ value, onPick }: { value: string | null; onPick: (k: string) => void }) => (
+  // 컴포넌트(<Picker />)가 아니라 함수로 부른다 — 렌더마다 새 컴포넌트 타입이 되어 고를 때마다 격자가 통째로
+  // 다시 마운트됐다(누름 모션이 끊기고 키보드 포커스가 사라진다)
+  const picker = (value: string | null, onPick: (k: string) => void) => (
     <div className="grid grid-cols-4 gap-2">
       {LOVE_ANIMALS.map((a) => {
         const p = PERSONAS[a.key]
@@ -59,11 +62,12 @@ export default function Chemi() {
               onPick(a.key)
               sfx.tap()
             }}
+            aria-pressed={sel}
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border-2"
             style={{ borderColor: sel ? '#F25C8E' : 'rgb(var(--line))', background: sel ? '#F25C8E14' : 'rgb(var(--surface-2))' }}
           >
-            <span className={`text-[24px] leading-none ${sel ? '' : 'opacity-70'}`}>{p.emoji}</span>
-            <span className={`text-[11px] font-semibold ${sel ? 'text-[#C2456B]' : 'text-ink-faint'}`}>{l(p.name)}</span>
+            <Emoji e={p.emoji} size={26} className={sel ? '' : 'opacity-70'} />
+            <span className={`text-[11px] font-extrabold ${sel ? 'text-[#C2456B]' : 'text-ink-faint'}`}>{l(p.name)}</span>
           </motion.button>
         )
       })}
@@ -74,25 +78,25 @@ export default function Chemi() {
     <div className="min-h-dvh pb-36">
       <TopBar back="/profile" title={t('chemi.title')} />
       <main className="mx-auto max-w-md px-5">
-        <p className="px-1 text-[14px] font-medium leading-relaxed text-ink-sub">
+        <p className="text-[14px] font-bold leading-relaxed text-ink-sub">
           {shared && theirs && PERSONAS[theirs] ? t('chemi.subFriend', { a: l(PERSONAS[theirs].name) }) : t('chemi.sub')}
         </p>
 
         {/* 나 */}
-        <h2 className="mt-5 px-1 text-[15px] font-semibold">{t('chemi.me')}</h2>
+        <h2 className="mt-5 text-[15px] font-extrabold">{t('chemi.me')}</h2>
         <div className="mt-2.5">
-          <Picker value={mine} onPick={setMine} />
+          {picker(mine, setMine)}
         </div>
         {!myLove && (
-          <button onClick={() => nav('/test/love')} className="mt-2 px-1 text-[12px] font-semibold text-mind-600">
+          <button onClick={() => nav('/test/love')} className="mt-2 px-1 text-[12px] font-extrabold text-mind-600">
             {t('chemi.takeLove')} ›
           </button>
         )}
 
         {/* 친구 */}
-        <h2 className="mt-5 px-1 text-[15px] font-semibold">{t('chemi.friend')}</h2>
+        <h2 className="mt-5 text-[15px] font-extrabold">{t('chemi.friend')}</h2>
         <div className="mt-2.5">
-          <Picker value={theirs} onPick={setTheirs} />
+          {picker(theirs, setTheirs)}
         </div>
 
         {/* 궁합 결과 */}
@@ -105,11 +109,11 @@ export default function Chemi() {
             className="mt-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#F25C8E] to-[#FF8AAE] p-6 text-center text-white shadow-pop"
           >
             <div className="flex items-center justify-center gap-2 text-[28px]">
-              <span>{PERSONAS[mine]?.emoji ?? '🐾'}</span>
-              <motion.span animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 1.6 }} className="text-[24px]">
-                ❤️
+              <Emoji e={PERSONAS[mine]?.emoji ?? '🐾'} size={30} />
+              <motion.span animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 1.6 }} className="leading-none">
+                <Emoji e="❤️" size={24} className="align-top" />
               </motion.span>
-              <span>{PERSONAS[theirs]?.emoji ?? '🐾'}</span>
+              <Emoji e={PERSONAS[theirs]?.emoji ?? '🐾'} size={30} />
             </div>
             <div className="mt-3 text-[28px] font-extrabold leading-none">{chemi.score}%</div>
             <div className="mx-auto mt-3 h-2.5 max-w-[220px] overflow-hidden rounded-full bg-white/30">
@@ -121,20 +125,20 @@ export default function Chemi() {
               />
             </div>
             <h3 className="mt-4 text-[20px] font-extrabold tracking-tight">{l(chemi.title)}</h3>
-            <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-white/95">{l(chemi.desc)}</p>
+            <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-white/95">{l(chemi.desc)}</p>
           </motion.div>
         )}
 
         {/* 공유 */}
         {copied && (
-          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">{t('common.copied')}</p>
+          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">{t('common.copied')}</p>
         )}
         <div className="mt-4">
           <Button color="love" disabled={!mine} onClick={share}>
             {t('chemi.invite')}
           </Button>
         </div>
-        <p className="mt-3 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">{t('chemi.hint')}</p>
+        <p className="mt-3 px-2 text-center text-[12px] font-bold leading-relaxed text-ink-faint">{t('chemi.hint')}</p>
       </main>
     </div>
   )

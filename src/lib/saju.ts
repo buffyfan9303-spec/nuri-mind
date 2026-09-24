@@ -1,11 +1,17 @@
 /**
- * 사주(일주)·음양오행 결정론적 계산 — '오늘의 운세'용. 점술 단정이 아닌 '재미로 보는 오늘의 기운'.
+ * 사주팔자·음양오행 결정론적 계산 — '오늘의 운세'용. 점술 단정이 아닌 '재미로 보는 오늘의 기운'.
+ * 만세력(년·월·일·시주, 음력, 절기)은 ./manse.ts — 출처와 검증(scripts/saju-check.mjs)은 그 파일 머리말 참조.
  * 일주(60갑자) 공식은 3개 독립 권위자료로 교차검증(2019-01-27=갑자, 2000-01-01=무오, 2026-06-17=임술).
  */
 import { FORTUNE_TEMPLATES, BIRTH_FLOWERS, COMPAT_TEMPLATES, SHORT_LINES, YEAR_LINES, MONTH_LINES, type FortuneTemplate, type BirthFlower, type CompatTemplate } from '../data/fortune'
 import type { L } from '../data/types'
 import { buildDetail, type FortuneDetail } from '../data/fortuneDetail'
-export type { FortuneDetail }
+import {
+  chartOf, dayChart, dayIndex, pillarKo, pillarIndex, strengthOf, elementCount, tenGod, TEN_GOD_GROUP, SHENG, KE,
+  STEM_EL, BRANCH_EL, stemHap, stemChung, branchHap, branchChung, branchSamhap,
+  type Chart, type El, type TenGod, type StrengthInfo, type ElementCount,
+} from './manse'
+export type { FortuneDetail, Chart }
 
 const STEMS = [
   { ko: '갑', el: '목', ym: '양' }, { ko: '을', el: '목', ym: '음' },
@@ -24,8 +30,6 @@ const BRANCHES = [
   { ko: '술', el: '토', zo: '개', emoji: '🐶' }, { ko: '해', el: '수', zo: '돼지', emoji: '🐷' },
 ] as const
 
-const SHENG: Record<string, string> = { 목: '화', 화: '토', 토: '금', 금: '수', 수: '목' }
-const KE: Record<string, string> = { 목: '토', 토: '수', 수: '화', 화: '금', 금: '목' }
 const COLOR_KO: Record<string, string> = { 목: '초록', 화: '빨강', 토: '노랑', 금: '흰색', 수: '남색' }
 const COLOR_HEX: Record<string, string> = { 목: '#36B37E', 화: '#FF5630', 토: '#FFAB00', 금: '#C7CDD6', 수: '#2B4C7E' }
 const GRAD: Record<string, [string, string]> = {
@@ -36,23 +40,24 @@ const DIR_KO: Record<string, string> = { 목: '동', 화: '남', 토: '중앙', 
 const NUMS: Record<string, [number, number]> = { 목: [3, 8], 화: [2, 7], 토: [5, 10], 금: [4, 9], 수: [1, 6] }
 
 const clamp = (n: number, a: number, b: number) => Math.min(b, Math.max(a, n))
+type YMD = { y: number; m: number; d: number }
+export type Gender = 'm' | 'f' | ''
 
 /** 그레고리력 Y/M/D → 60갑자 일주 인덱스(0=갑자 … 59=계해). */
 export function dayPillarIndex(y: number, m: number, d: number): number {
-  const a = Math.floor((14 - m) / 12)
-  const yy = y + 4800 - a
-  const mm = m + 12 * a - 3
-  const jdn = d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045
-  return ((jdn - 11) % 60 + 60) % 60
+  return dayIndex(y, m, d)
 }
 
 function relation(me: string, today: string): string {
   if (me === today) return '비화'
-  if (SHENG[today] === me) return '생받음'
-  if (SHENG[me] === today) return '생해줌'
-  if (KE[today] === me) return '극받음'
+  if (SHENG[today as El] === me) return '생받음'
+  if (SHENG[me as El] === today) return '생해줌'
+  if (KE[today as El] === me) return '극받음'
   return '극해줌'
 }
+
+/** 생년월일만 있을 때의 사주 — 시각 모름(정오 기준으로 년·월주 판정) */
+const chartOfDate = (b: YMD): Chart => chartOf(b, { kind: 'unknown' })
 
 export interface Saju {
   iljuKo: string
@@ -64,14 +69,16 @@ export interface Saju {
   birthFlower: BirthFlower
 }
 
-/** 생년월일 → 일주·일간 오행·띠·탄생화 (시각 불필요). */
-export function sajuOf(y: number, m: number, d: number): Saju {
-  const idx = dayPillarIndex(y, m, d)
-  const stem = STEMS[idx % 10]
-  const branch = BRANCHES[idx % 12]
-  const zo = BRANCHES[(((y - 4) % 12) + 12) % 12]
+/**
+ * 생년월일 → 일주·일간 오행·띠·탄생화.
+ * 띠는 사주 기준(입춘에 바뀜) — 예전엔 양력 1월 1일에 바꿔 1~2월 초 생일의 띠가 한 해 앞섰다.
+ */
+export function sajuOf(y: number, m: number, d: number, chart?: Chart): Saju {
+  const c = chart ?? chartOfDate({ y, m, d })
+  const stem = STEMS[c.day.stem]
+  const zo = BRANCHES[c.year.branch]
   return {
-    iljuKo: stem.ko + branch.ko,
+    iljuKo: pillarKo(c.day),
     ilganKo: stem.ko,
     ilganEl: stem.el,
     ilganYm: stem.ym,
@@ -82,6 +89,12 @@ export function sajuOf(y: number, m: number, d: number): Saju {
 }
 
 const BASE: Record<string, number> = { 생받음: 85, 극해줌: 78, 비화: 70, 생해줌: 62, 극받음: 52 }
+
+export type PillarPos = 'year' | 'month' | 'day' | 'hour'
+export interface BranchRel {
+  pos: PillarPos
+  kind: 'hap' | 'samhap' | 'chung'
+}
 
 export interface DailyFortune {
   relation: string
@@ -97,39 +110,107 @@ export interface DailyFortune {
   luckyNumber: number
   luckyDir: string
   grad: [string, string]
+  /** 오늘 일진 천간의 십신(내 일간 기준) */
+  tenGod: TenGod
+  /** 오늘 천간 ↔ 내 일간 합·충 */
+  stemRel: 'hap' | 'chung' | null
+  /** 오늘 지지 ↔ 내 사주 지지 합·충 */
+  branchRels: BranchRel[]
+  /** 오늘 기운(천간·지지)이 내게 필요한 오행인가 */
+  favorableToday: boolean
+  /** 행운 요소를 고른 오행 */
+  luckyEl: string
 }
 
-/** 출생 일간 오행 vs 오늘 일주 오행 → 오늘의 기운(결정론적: 같은 입력=같은 결과). */
-export function fortuneOf(birth: { y: number; m: number; d: number }, today: { y: number; m: number; d: number }): DailyFortune {
-  const birthIdx = dayPillarIndex(birth.y, birth.m, birth.d)
-  const birthEl = STEMS[birthIdx % 10].el
+/** 결정론적 흔들림 −r…+r */
+const jitter = (a: number, b: number, r: number) => ((((a + b) % (2 * r + 1)) + 2 * r + 1) % (2 * r + 1)) - r
+
+/**
+ * 오늘의 기운 — 결정론적(같은 입력=같은 결과).
+ *  · 바탕 점수: 내 일간 오행 vs 오늘 일진 천간 오행(생·극 5관계)
+ *  · 보정: 오늘 오행이 내게 필요한 기운(억부)인가, 천간합·충, 지지 육합·삼합·충(일지=가까운 사람 자리)
+ *  · 분야: 재성일→금전, 식상일→금전 소폭(식상생재), 비겁일→금전 주의, 인성일→건강, 편관일→건강 주의,
+ *          애정은 전통 해석대로 남성=재성·여성=관성이 들어오는 날 가산(성별을 모르면 가산 없음)
+ * chart를 주면 시주까지 반영한 전체 사주로, 없으면 생년월일만으로(시각 모름) 계산한다.
+ */
+export function fortuneOf(birth: YMD, today: YMD, opts: { chart?: Chart; gender?: Gender } = {}): DailyFortune {
+  const c = opts.chart ?? chartOfDate(birth)
+  const st = strengthOf(c)
+  const birthIdx = pillarIndex(c.day)
+  const birthEl = STEM_EL[c.day.stem]
   const todayIdx = dayPillarIndex(today.y, today.m, today.d)
-  const todayStem = STEMS[todayIdx % 10]
-  const todayEl = todayStem.el
+  const tStem = todayIdx % 10
+  const tBranch = todayIdx % 12
+  const todayEl = STEM_EL[tStem]
   const rel = relation(birthEl, todayEl)
-  const base = BASE[rel]
-  const seed = birthIdx
-  const sc = (a: number, b: number) => clamp(base + ((((todayIdx * a + seed * b) % 15) + 15) % 15 - 7), 1, 99)
+  const tg = tenGod(c.day.stem, tStem)
+  const grp = TEN_GOD_GROUP[tg]
+
+  const stemRel = stemHap(c.day.stem, tStem) ? 'hap' : stemChung(c.day.stem, tStem) ? 'chung' : null
+  const natal: [PillarPos, number | null][] = [['year', c.year.branch], ['month', c.month.branch], ['day', c.day.branch], ['hour', c.hour?.branch ?? null]]
+  const branchRels: BranchRel[] = []
+  for (const [pos, b] of natal) {
+    if (b === null) continue
+    if (branchChung(b, tBranch)) branchRels.push({ pos, kind: 'chung' })
+    else if (branchHap(b, tBranch)) branchRels.push({ pos, kind: 'hap' })
+    else if (branchSamhap(b, tBranch)) branchRels.push({ pos, kind: 'samhap' })
+  }
+  const dayRel = branchRels.find((r) => r.pos === 'day')?.kind
+  const stemFav = st.favorable.includes(todayEl)
+  const branchFav = st.favorable.includes(BRANCH_EL[tBranch])
+
+  let mod = (stemFav ? 5 : -2) + (branchFav ? 3 : -1)
+  if (stemRel === 'hap') mod += 3
+  if (stemRel === 'chung') mod -= 4
+  for (const r of branchRels) {
+    const w = r.pos === 'day' ? 1 : 0.5
+    mod += Math.round((r.kind === 'hap' ? 4 : r.kind === 'samhap' ? 2 : -5) * w)
+  }
+  const base = BASE[rel] + mod
+  const seed = birthIdx * 12 + (c.hour?.branch ?? 12)
+  const g = opts.gender ?? ''
+  const loveBonus = (g === 'm' && grp === '재성') || (g === 'f' && grp === '관성') ? 6 : 0
+  const love = base + loveBonus + (dayRel === 'hap' ? 4 : dayRel === 'chung' ? -4 : 0) + jitter(todayIdx * 3, seed * 2, 5)
+  const money = base + (grp === '재성' ? 6 : grp === '식상' ? 3 : grp === '비겁' ? -3 : 0) + jitter(todayIdx * 5, seed * 4, 5)
+  const health = base + (grp === '인성' ? 4 : tg === '편관' ? -5 : 0) + (dayRel === 'chung' ? -3 : 0) + jitter(todayIdx * 11, seed * 8, 5)
+
+  // 행운 오행 — 오늘 기운이 내게 필요한 것이면 그 흐름을 타고, 나를 누르는 날(관살)이면 통관(인성)으로,
+  // 아니면 내게 가장 필요한 오행으로
+  const genMe = (Object.keys(SHENG) as El[]).find((k) => SHENG[k] === birthEl)!
+  const luckyEl: El = stemFav ? todayEl : KE[todayEl] === birthEl ? genMe : st.favorable[0]
+
   return {
     relation: rel,
     template: FORTUNE_TEMPLATES[rel],
-    overall: clamp(base + ((((todayIdx * 7 + seed) % 15) + 15) % 15 - 7), 1, 99),
-    love: sc(3, 2),
-    money: sc(5, 4),
-    health: sc(11, 8),
-    todayIljuKo: todayStem.ko + BRANCHES[todayIdx % 12].ko,
+    overall: clamp(base + jitter(todayIdx * 7, seed, 5), 5, 98),
+    love: clamp(love, 5, 98),
+    money: clamp(money, 5, 98),
+    health: clamp(health, 5, 98),
+    todayIljuKo: STEMS[tStem].ko + BRANCHES[tBranch].ko,
     todayEl,
-    luckyColorKo: COLOR_KO[todayEl],
-    luckyColorHex: COLOR_HEX[todayEl],
-    luckyNumber: NUMS[todayEl][todayIdx % 2],
-    luckyDir: DIR_KO[todayEl],
+    luckyColorKo: COLOR_KO[luckyEl],
+    luckyColorHex: COLOR_HEX[luckyEl],
+    luckyNumber: NUMS[luckyEl][todayIdx % 2],
+    luckyDir: DIR_KO[luckyEl],
     grad: GRAD[todayEl],
+    tenGod: tg,
+    stemRel,
+    branchRels,
+    favorableToday: stemFav || branchFav,
+    luckyEl,
   }
 }
 
+/** 사주 원국 요약 — 오행 분포·일간 강약 */
+export function analysisOf(c: Chart): { elements: ElementCount; strength: StrengthInfo } {
+  return { elements: elementCount(c), strength: strengthOf(c) }
+}
+
 /** 오늘의 '상세 운세'(유료/광고 해제 영역) — 결정론적. */
-export function detailOf(birth: { y: number; m: number; d: number }, today: { y: number; m: number; d: number }): FortuneDetail {
-  return buildDetail(dayPillarIndex(birth.y, birth.m, birth.d), dayPillarIndex(today.y, today.m, today.d))
+export function detailOf(birth: YMD, today: YMD, chart?: Chart): FortuneDetail {
+  const c = chart ?? chartOfDate(birth)
+  // 같은 일주라도 태어난 시가 다르면 다른 풀이가 나오도록 시지를 섞는다
+  return buildDetail(pillarIndex(c.day) + (c.hour ? c.hour.branch * 60 : 0), dayPillarIndex(today.y, today.m, today.d))
 }
 
 export interface Compat {
@@ -175,37 +256,36 @@ export interface WeekDay {
 const WD = ['일', '월', '화', '수', '목', '금', '토']
 
 /** 오늘부터 7일 총운 추이. */
-export function weekOf(birth: { y: number; m: number; d: number }, today: { y: number; m: number; d: number }): WeekDay[] {
+export function weekOf(birth: YMD, today: YMD, opts: { chart?: Chart; gender?: Gender } = {}): WeekDay[] {
+  const c = opts.chart ?? chartOfDate(birth)
   const out: WeekDay[] = []
   for (let i = 0; i < 7; i++) {
     const dt = new Date(today.y, today.m - 1, today.d + i)
     const day = { y: dt.getFullYear(), m: dt.getMonth() + 1, d: dt.getDate() }
-    const f = fortuneOf(birth, day)
+    const f = fortuneOf(birth, day, { chart: c, gender: opts.gender })
     out.push({ ...day, weekdayKo: WD[dt.getDay()], overall: f.overall, relation: f.relation, isToday: i === 0 })
   }
   return out
 }
 
-/** 올해의 운 — 출생 일간 오행 vs 올해 천간 오행. */
-export function yearOf(birth: { y: number; m: number; d: number }, year: number): { relation: string; line: L; el: string } {
-  const bi = dayPillarIndex(birth.y, birth.m, birth.d)
-  const birthEl = STEMS[bi % 10].el
+/** 올해의 운 — 출생 일간 오행 vs 올해 세운(歲運) 천간 오행. */
+export function yearOf(birth: YMD, year: number, chart?: Chart): { relation: string; line: L; el: string } {
+  const c = chart ?? chartOfDate(birth)
+  const birthEl = STEM_EL[c.day.stem]
   const yearStemEl = STEMS[(((year - 4) % 10) + 10) % 10].el
   const rel = relation(birthEl, yearStemEl)
   return { relation: rel, line: YEAR_LINES[rel], el: yearStemEl }
 }
 
-/** 이달의 운 — 출생 일간 오행 vs 이달 월간(月干) 오행. 월간은 五虎遁(연간→월간) 규칙 근사. */
-export function monthOf(birth: { y: number; m: number; d: number }, year: number, month: number): { relation: string; line: L; el: string; overall: number } {
-  const bi = dayPillarIndex(birth.y, birth.m, birth.d)
-  const birthEl = STEMS[bi % 10].el
-  // 월지: 1월→인(2) … 11월→자(0) … 12월→축(1)  ≈ (month+1)%12
-  const monthBranchIdx = (month + 1) % 12
-  const ord = (monthBranchIdx - 2 + 12) % 12 // 인(寅)월=0 기준 순번
-  const yearStemIdx = (((year - 4) % 10) + 10) % 10
-  // 五虎遁: 인월 월간 = (연간%5)*2 + 2(병), 이후 월마다 +1
-  const monthStemIdx = ((yearStemIdx % 5) * 2 + 2 + ord) % 10
-  const monthEl = STEMS[monthStemIdx].el
+/**
+ * 이달의 운 — 출생 일간 오행 vs 이달 월건(月建) 천간 오행.
+ * 월건은 그 달 15일 정오의 절기 월로 본다(절입일은 매달 4~8일이라 달의 대부분이 이 월건).
+ */
+export function monthOf(birth: YMD, year: number, month: number, chart?: Chart): { relation: string; line: L; el: string; overall: number } {
+  const c = chart ?? chartOfDate(birth)
+  const bi = pillarIndex(c.day)
+  const birthEl = STEM_EL[c.day.stem]
+  const monthEl = STEM_EL[dayChart({ y: year, m: month, d: 15 }).month.stem]
   const rel = relation(birthEl, monthEl)
   const base = BASE[rel]
   const k = year * 12 + month

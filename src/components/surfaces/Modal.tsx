@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useDragControls, type PanInfo } from 'framer-motion'
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { lockScroll, unlockScroll } from '../../lib/scrollLock'
 import { useBackClose } from '../../lib/backstack'
 import { useDialogFocus } from '../../hooks/useDialogFocus'
@@ -17,6 +17,13 @@ import { SPRING } from '../../lib/motion'
  *  · 아니면 SPRING.sheet로 제자리 복귀 — 스프링이라 도중에 다시 잡아 되돌릴 수 있다(중단 가능)
  * 닫을 수 없는 모달(onClose 없음)은 손잡이도, 뒤로가기 등록도 없다 — 게이트는 게이트여야 한다.
  */
+const EXIT = {
+  exit: (flung: boolean) =>
+    flung
+      ? { y: '100%', opacity: 0, transition: SPRING.snap }
+      : { y: 90, opacity: 0, scale: 0.96, transition: SPRING.snap },
+}
+
 export function Modal({
   open,
   onClose,
@@ -29,6 +36,26 @@ export function Modal({
   const controls = useDragControls()
   const panelRef = useRef<HTMLDivElement>(null)
   const closable = !!onClose
+  /** 끌어내려 닫았는가 — 그땐 손을 놓은 자리에서 계속 아래로 빠져야 한다(90px 지점으로 되올라가며 사라지면 '튕김'으로 보인다) */
+  const [flung, setFlung] = useState(false)
+  useEffect(() => {
+    if (open) setFlung(false)
+  }, [open])
+  const titleId = useId()
+
+  // 스크린리더용 이름 — 본문의 첫 제목(h1~h3)을 aria-labelledby로 잇는다.
+  // 없으면 '대화상자'로만 읽혀 무엇을 묻는 창인지 알 수 없다. 내용이 바뀌는 모달(상자 여는 중 → 결과)이 있어 매 렌더 갱신.
+  useEffect(() => {
+    const panel = panelRef.current
+    if (!open || !panel) return
+    const h = panel.querySelector<HTMLElement>('h1, h2, h3')
+    if (!h) {
+      panel.removeAttribute('aria-labelledby')
+      return
+    }
+    if (!h.id) h.id = titleId
+    panel.setAttribute('aria-labelledby', h.id)
+  })
 
   // ESC로 닫기 — 키보드 사용자가 모달에 갇히지 않게(열려 있을 때만 구독)
   useEffect(() => {
@@ -56,12 +83,13 @@ export function Modal({
     if (!onClose) return
     if (info.offset.y > 120 || info.velocity.y > 600) {
       haptic(6)
+      setFlung(true)
       onClose()
     }
   }
 
   return (
-    <AnimatePresence>
+    <AnimatePresence custom={flung}>
       {open && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -74,7 +102,11 @@ export function Modal({
             ref={panelRef}
             initial={{ y: 90, opacity: 0, scale: 0.96 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 90, opacity: 0 }}
+            // 나갈 때는 들어온 길 그대로(scale 포함) — 짧은 snap으로. sheet(바운스)로 빠지면 닫힘이 굼뜨게 느껴진다.
+            // 끌어내려 닫았으면 놓은 자리에서 끝까지 내려간다(custom=flung — 퇴장 중인 자식에도 최신 값이 전달된다)
+            custom={flung}
+            variants={EXIT}
+            exit="exit"
             transition={SPRING.sheet}
             drag={closable ? 'y' : false}
             dragListener={false}
@@ -90,9 +122,10 @@ export function Modal({
           >
             {closable && (
               // 손잡이 — 여기서 시작한 손짓만 드래그가 된다(본문 스크롤과 분리). 44px 히트영역, 표시는 4px.
+              // (예전 h-6은 24px뿐이었다 — 위 패딩까지 끌어올려 44px로 넓히고 본문 시작 위치는 그대로 둔다)
               <div
                 onPointerDown={(e) => controls.start(e)}
-                className="-mt-3 mb-2 flex h-6 cursor-grab touch-none items-center justify-center active:cursor-grabbing sm:hidden"
+                className="-mt-6 flex h-11 cursor-grab touch-none items-center justify-center active:cursor-grabbing sm:hidden"
                 aria-hidden="true"
               >
                 <span className="h-1 w-9 rounded-full bg-line" />

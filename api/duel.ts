@@ -14,7 +14,8 @@ function decode(r: string): Decoded | null {
     const arr = JSON.parse(json)
     if (!Array.isArray(arr)) return null
     if (arr[0] === 'Q') {
-      return { quick: true, nm: String(arr[3] ?? ''), e: String(arr[4] ?? ''), n: String(arr[5] ?? '') }
+      // 결과명·이모지 길이 제한 — 링크를 손으로 만들어 공유 카드에 임의 장문을 싣지 못하게
+      return { quick: true, nm: String(arr[3] ?? '').slice(0, 40), e: Array.from(String(arr[4] ?? '')).slice(0, 8).join(''), n: String(arr[5] ?? '') }
     }
     return { quick: false, t: String(arr[0] ?? ''), p: String(arr[1] ?? ''), n: String(arr[3] ?? '') }
   } catch {

@@ -3,6 +3,7 @@ import { ADSENSE_CLIENT, ADSENSE_SLOT_BANNER, ADSENSE_SLOT_RECT, adsEnabled, loa
 import { useStore, isPremium } from '../store/useStore'
 import { useNavigate } from 'react-router-dom'
 import { useT, useL } from '../i18n/useT'
+import Emoji from './Emoji'
 
 /**
  * 수익화 광고 슬롯.
@@ -53,10 +54,10 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
         isRect ? 'h-[250px]' : 'h-[64px]'
       }`}
     >
-      <span className="rounded-md bg-surface2 px-2 py-1 text-[11px] font-semibold tracking-widest text-ink-faint">
+      <span className="rounded-md bg-surface2 px-2 py-1 text-[11px] font-extrabold tracking-widest text-ink-faint">
         {t('ad.label')}
       </span>
-      <span className="text-[13px] font-medium text-ink-faint">{t('ad.placeholder')}</span>
+      <span className="text-[13px] font-bold text-ink-faint">{t('ad.placeholder')}</span>
     </div>
   )
 
@@ -65,8 +66,8 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
     return (
       <div>
         {adEl}
-        <button onClick={() => nav('/premium')} className="mx-auto mt-1.5 block text-[11px] font-semibold text-mind-500">
-          ✨ {l({ ko: '광고 없이 이용하기 · 프리미엄', en: 'Remove ads · Premium', ja: '広告なしで利用・プレミアム' })}
+        <button onClick={() => nav('/premium')} className="mx-auto mt-1.5 block text-[11px] font-extrabold text-mind-500">
+          <Emoji e="✨" inline />{l({ ko: '광고 없이 이용하기 · 프리미엄', en: 'Remove ads · Premium', ja: '広告なしで利用・プレミアム' })}
         </button>
       </div>
     )

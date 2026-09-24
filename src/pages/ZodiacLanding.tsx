@@ -1,10 +1,12 @@
 import { useEffect, useMemo } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { SPRING } from '../lib/motion'
 import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
 import Footer from '../components/Footer'
 import { zodiacTodayLines } from '../lib/saju'
+import Emoji from '../components/Emoji'
 
 /**
  * 띠별 오늘의 운세 SEO 랜딩 — /zodiac/:slug (12지).
@@ -87,7 +89,7 @@ export default function ZodiacLanding() {
     document.title = `오늘의 ${page.ko}띠 운세 (${dateLabel}) | 누리 마인드`
     md?.setAttribute(
       'content',
-      `${dateLabel} ${page.ko}띠 운세 — 음양오행으로 보는 오늘의 기운과 ${page.ko}띠 성격·출생년도. 생년월일을 넣으면 사주(일주) 기반 상세 운세까지 무료.`,
+      `${dateLabel} ${page.ko}띠 운세 — 음양오행으로 보는 오늘의 기운과 ${page.ko}띠 성격·출생 연도. 생년월일을 넣으면 사주(일주) 기반 상세 운세까지 무료.`,
     )
     cl?.setAttribute('href', `${SITE}/zodiac/${page.slug}`)
     return () => {
@@ -105,62 +107,62 @@ export default function ZodiacLanding() {
       <TopBar back="/fortune" title={`${page.ko}띠 운세`} />
       <main className="mx-auto max-w-md px-5">
         {/* 히어로 */}
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="mt-6 text-center">
-          <p className="text-[28px] leading-none">{page.emoji}</p>
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={SPRING.ui} className="mt-6 text-center">
+          <p className="leading-none"><Emoji e={page.emoji} size={28} className="align-top" /></p>
           <h1 className="mt-3 break-keep text-[20px] font-extrabold leading-tight">오늘의 {page.ko}띠 운세</h1>
-          <p className="mt-1.5 text-[13px] font-medium text-ink-faint">{dateLabel} · 음양오행 기준</p>
+          <p className="mt-1.5 text-[13px] font-bold text-ink-faint">{dateLabel} · 음양오행 기준</p>
         </motion.div>
 
         {/* 오늘의 기운(매일 갱신) */}
         <Card className="mt-5 !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-5 text-white">
-          {rel && <p className="text-[13px] font-semibold text-white/85">{rel.title}</p>}
-          <p className="mt-1.5 break-keep text-[16px] font-semibold leading-relaxed">{line.line.ko}</p>
-          {rel && <p className="mt-2 break-keep text-[12px] font-medium leading-relaxed text-white/85">{rel.desc}</p>}
+          {rel && <p className="text-[13px] font-extrabold text-white/85">{rel.title}</p>}
+          <p className="mt-1.5 break-keep text-[16px] font-bold leading-relaxed">{line.line.ko}</p>
+          {rel && <p className="mt-2 break-keep text-[12px] font-bold leading-relaxed text-white/85">{rel.desc}</p>}
         </Card>
 
         {/* 정확한 운세 CTA */}
         <div className="mt-3.5 grid grid-cols-2 gap-2.5">
           <Button color="mind" onClick={() => nav('/fortune')}>
-            🔮 내 사주로 정확히
+            <Emoji e="🔮" inline />내 사주로 정확히
           </Button>
           <Button color="white" onClick={() => nav('/compat')}>
-            💞 생일 궁합 보기
+            <Emoji e="💞" inline />생일 궁합 보기
           </Button>
         </div>
 
         {/* 띠 소개(정적 콘텐츠) */}
         <Card className="mt-4 !p-5">
-          <h2 className="text-[15px] font-semibold">
-            {page.emoji} {page.ko}띠는 어떤 사람?
+          <h2 className="text-[15px] font-extrabold">
+            <Emoji e={page.emoji} inline />{page.ko}띠는 어떤 사람?
           </h2>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {page.traits.map((tr) => (
-              <span key={tr} className="rounded-full bg-mind-50 px-2.5 py-1 text-[12px] font-semibold text-mind-700">
+              <span key={tr} className="rounded-full bg-mind-50 px-2.5 py-1 text-[12px] font-extrabold text-mind-700">
                 #{tr}
               </span>
             ))}
           </div>
-          <p className="mt-3 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">{page.intro}</p>
-          <p className="mt-3 break-keep text-[12px] font-medium leading-relaxed text-ink-faint">
-            {page.ko}띠 출생년도: {years.join(' · ')}년
+          <p className="mt-3 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">{page.intro}</p>
+          <p className="mt-3 break-keep text-[12px] font-bold leading-relaxed text-ink-faint">
+            {page.ko}띠 출생 연도: {years.join(' · ')}년
           </p>
-          <p className="mt-2 text-[11px] font-medium leading-relaxed text-ink-faint">
+          <p className="mt-2 text-[11px] font-bold leading-relaxed text-ink-faint">
             ⓘ 띠 성격과 운세는 전통 통설을 재미로 정리한 참고 콘텐츠로, 과학적 사실이 아닙니다.
           </p>
         </Card>
 
         {/* 심리검사 퍼널 — 재미 콘텐츠 → 본업(검사) 연결 */}
         <Card onClick={() => nav('/')} className="mt-3.5 flex items-center gap-3 !p-4">
-          <span className="text-[24px]">🧠</span>
+          <Emoji e="🧠" size={24} />
           <div className="min-w-0 flex-1">
-            <h3 className="text-[14px] font-semibold">성격이 궁금하면 심리검사로</h3>
-            <p className="mt-0.5 break-keep text-[12px] font-medium text-ink-faint">자존감·애착·번아웃 등 공개 척도 기반 12종 무료</p>
+            <h3 className="text-[14px] font-extrabold">성격이 궁금하면 심리검사로</h3>
+            <p className="mt-0.5 break-keep text-[12px] font-bold text-ink-faint">자존감·애착·번아웃 등 공개 척도 기반 12종 무료</p>
           </div>
           <span className="shrink-0 text-[15px] text-ink-faint">›</span>
         </Card>
 
         {/* 12지 내부 링크 */}
-        <h2 className="mt-6 px-1 text-[14px] font-semibold">다른 띠 오늘의 운세</h2>
+        <h2 className="mt-6 text-[14px] font-extrabold">다른 띠 오늘의 운세</h2>
         <div className="mt-2 grid grid-cols-4 gap-2">
           {ZODIAC_PAGES.map((z) => (
             <button
@@ -168,8 +170,8 @@ export default function ZodiacLanding() {
               onClick={() => nav(`/zodiac/${z.slug}`)}
               className={`rounded-2xl border-2 py-2 text-center ${z.slug === page.slug ? 'border-mind-400 bg-mind-50 text-mind-800 dark:bg-mind-500/20 dark:text-mind-100' : 'border-line bg-surface'}`}
             >
-              <span className="text-[20px]">{z.emoji}</span>
-              <p className="text-[11px] font-semibold">{z.ko}띠</p>
+              <Emoji e={z.emoji} size={20} />
+              <p className="text-[11px] font-extrabold">{z.ko}띠</p>
             </button>
           ))}
         </div>

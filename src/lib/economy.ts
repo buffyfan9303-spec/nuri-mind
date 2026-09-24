@@ -22,7 +22,7 @@
  *    새 기기 복원도 보류됨 — 소비 미반영 잔액을 복원하는 사고 방지).
  */
 import { supabase } from './supabase'
-import { onAuthChange } from './auth'
+import { clearKakaoReauth, onAuthChange, signOut } from './auth'
 
 const OUTBOX_KEY = 'nuri-mind-econ-outbox-v1'
 /** 이 기기가 마지막으로 동기화를 완료한 계정 uid — 첫 동기화/계정 전환 판별 */
@@ -342,6 +342,45 @@ export function leaveAccount(): void {
 }
 
 /**
+ * 로그아웃의 단일 진입점 — 세션 제거와 계정 경계(leaveAccount)를 항상 한 쌍으로 적용한다.
+ * 호출부마다 둘을 따로 부르면 한쪽이 빠진다(실제로 온보딩의 '다른 계정으로 로그인'이 signOut만 불러,
+ * 직전 계정의 지갑·검사기록이 게스트 프로필에 그대로 남았다).
+ */
+export async function logoutAccount(): Promise<void> {
+  try {
+    await signOut()
+  } finally {
+    leaveAccount()
+  }
+}
+
+/**
+ * 계정 삭제(스토어 필수) — 서버(엣지 함수 delete-account)가 auth 사용자와 연결 데이터를 지운 뒤,
+ * 이 기기에서도 그 계정의 흔적(보관 프로필)을 지우고 게스트로 돌아간다.
+ * 서버 삭제가 실패하면 로컬은 건드리지 않는다(지워졌다고 믿게 만들지 않는다).
+ */
+export async function deleteAccount(): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'supabase_not_configured' }
+  const { data: sess } = await supabase.auth.getSession()
+  const uid = sess.session?.user?.id
+  if (!uid) return { ok: false, error: 'not_logged_in' }
+  const { error } = await supabase.functions.invoke('delete-account', { method: 'POST' })
+  if (error) return { ok: false, error: error.message }
+  leaveAccount() // 게스트 프로필로 경계 — 이때 계정 스냅샷이 보관되므로 바로 아래에서 지운다
+  try {
+    localStorage.removeItem(`nuri-mind-acct-${uid}`)
+  } catch {
+    /* ignore */
+  }
+  try {
+    await supabase.auth.signOut({ scope: 'local' }) // 서버 사용자는 이미 없다 — 로컬 세션만 정리
+  } catch {
+    /* ignore */
+  }
+  return { ok: true }
+}
+
+/**
  * 계정 전환이 아직 반영되지 않은 상태인가 — 다이아 수령처럼 "받는 즉시 로컬에만 남는" 동작을
  * 이 구간에서 하면 직후의 프로필 스왑에 덮여 소멸한다. 그 창에서는 수령을 막는다.
  */
@@ -376,7 +415,10 @@ export function initEconomySync(hooks: SyncHooks): void {
   // (마커==uid·아웃박스 빈 상태면 RPC 0회의 값싼 경로라 반복 호출 무해)
   onAuthChange((uid) => {
     currentUid = uid
-    if (uid) setTimeout(() => void syncAccount(hooks), 0)
+    if (uid) {
+      clearKakaoReauth() // 새 세션이 섰다 — 다음 로그인부터는 다시 자동 로그인 허용
+      setTimeout(() => void syncAccount(hooks), 0)
+    }
   })
   window.addEventListener('online', () => void syncAccount(hooks))
   document.addEventListener('visibilitychange', () => {

@@ -44,24 +44,30 @@ function urlBase64ToUint8Array(base64: string): Uint8Array {
 export async function enablePush(): Promise<boolean> {
   if (!pushSupported() || !pushConfigured() || !supabase) return false
   // SW 미등록(localhost 개발 등)이면 serviceWorker.ready가 영원히 pending — 먼저 등록 여부 확인
-  if (!(await navigator.serviceWorker.getRegistration())) return false
-  const perm = await Notification.requestPermission()
-  if (perm !== 'granted') return false
-  const reg = await navigator.serviceWorker.ready
-  const existing = await reg.pushManager.getSubscription()
-  const sub =
-    existing ??
-    (await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC!) as BufferSource,
-    }))
-  const json = sub.toJSON()
-  const { error } = await supabase.rpc('save_push_subscription', {
-    p_endpoint: json.endpoint,
-    p_p256dh: json.keys?.p256dh ?? '',
-    p_auth: json.keys?.auth ?? '',
-  })
-  return !error
+  // 구독(subscribe)은 거부될 수 있다(푸시 서비스 차단 브라우저·네트워크·키 불일치) — 던지면 토글 핸들러의
+  // 미처리 거부가 되어 스위치가 아무 반응 없이 멈춘다. 실패는 false로 돌려 '꺼짐'으로 정직하게 보인다.
+  try {
+    if (!(await navigator.serviceWorker.getRegistration())) return false
+    const perm = await Notification.requestPermission()
+    if (perm !== 'granted') return false
+    const reg = await navigator.serviceWorker.ready
+    const existing = await reg.pushManager.getSubscription()
+    const sub =
+      existing ??
+      (await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC!) as BufferSource,
+      }))
+    const json = sub.toJSON()
+    const { error } = await supabase.rpc('save_push_subscription', {
+      p_endpoint: json.endpoint,
+      p_p256dh: json.keys?.p256dh ?? '',
+      p_auth: json.keys?.auth ?? '',
+    })
+    return !error
+  } catch {
+    return false
+  }
 }
 
 /** 알림 끄기 — 로컬 구독 해제(서버 만료분은 엣지가 410으로 자동 정리). */

@@ -15,6 +15,8 @@ import Toast from './components/Toast'
 import Home from './pages/Home'
 import { useStore } from './store/useStore'
 import { pageView } from './lib/analytics'
+import { SURVEYS_ENABLED } from './data/features'
+import ComingSoon from './components/ComingSoon'
 
 /** 라우트별 코드 스플리팅 — 첫 로딩엔 홈만 받고 나머지는 진입 시 로드 */
 const TestIntro = lazyWithReload(() => import('./pages/TestIntro'))
@@ -55,6 +57,10 @@ const SelfReport = lazyWithReload(() => import('./pages/SelfReport'))
 const DeepReport = lazyWithReload(() => import('./pages/DeepReport'))
 const GrowthPlan = lazyWithReload(() => import('./pages/GrowthPlan'))
 const MbtiTest = lazyWithReload(() => import('./pages/MbtiTest'))
+const About = lazyWithReload(() => import('./pages/About'))
+const AboutMe = lazyWithReload(() => import('./pages/AboutMe'))
+const AccountDeletion = lazyWithReload(() => import('./pages/AccountDeletion'))
+const AllTests = lazyWithReload(() => import('./pages/AllTests'))
 
 /**
  * 라우트 표 — <Routes> 렌더와 온보딩 전 '아는 주소인가' 판정(matchRoutes)이 같은 표를 본다.
@@ -73,8 +79,15 @@ const ROUTES = [
   { path: '/mail', element: <Mailbox /> },
   { path: '/result/:rid', element: <TestResult /> },
   { path: '/rewards', element: <Rewards /> },
-  { path: '/rewards/survey/:id', element: <SurveyTake /> },
-  { path: '/rewards/create', element: <SurveyCreate /> },
+  // 설문은 운영 중인 게 없어 꺼 둠(data/features.ts) — 옛 링크로 들어와도 '준비 중'만 보인다(광고 없음)
+  {
+    path: '/rewards/survey/:id',
+    element: SURVEYS_ENABLED ? <SurveyTake /> : <ComingSoon title={{ ko: '리워드 설문', en: 'Reward surveys', ja: 'リワードアンケート' }} />,
+  },
+  {
+    path: '/rewards/create',
+    element: SURVEYS_ENABLED ? <SurveyCreate /> : <ComingSoon title={{ ko: '설문 만들기', en: 'Create a survey', ja: 'アンケート作成' }} />,
+  },
   { path: '/community', element: <Community /> },
   { path: '/dex', element: <Dex /> },
   { path: '/chemi', element: <Chemi /> },
@@ -98,12 +111,20 @@ const ROUTES = [
   { path: '/deep-report', element: <DeepReport /> },
   { path: '/growth', element: <GrowthPlan /> },
   { path: '/mbti/:mode', element: <MbtiTest /> },
+  { path: '/about', element: <About /> },
+  { path: '/account-deletion', element: <AccountDeletion /> },
+  { path: '/me', element: <AboutMe /> },
+  { path: '/tests', element: <AllTests /> },
   { path: '/admin', element: <Admin /> },
   { path: '/profile', element: <Profile /> },
 ]
 
-/** 가입 없이 볼 수 있는 공개 경로(SEO·공유 유입) — sitemap 등재 경로와 일치시킬 것 */
-const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs)(\/|$)/
+/**
+ * 가입 없이 볼 수 있는 공개 경로(SEO·공유 유입) — sitemap 등재 경로와 일치시킬 것.
+ * 검사 소개(/test/:id)는 공개, 검사 진행(/test/:id/run)은 가입 후 — 소개 화면은 척도 근거·주의 사항이 담긴
+ * 읽을거리라 크롤러·광고 심사가 볼 수 있어야 하고, 예전엔 sitemap의 /test/* 가 전부 같은 가입 화면을 돌려줬다.
+ */
+const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs|about|account-deletion)(\/|$)|^\/test\/[^/]+\/?$/
 
 /**
  * 뒤로가기 스크롤 기억(홀덤에서 이식) — 경로별 마지막 scrollY. 모듈 스코프라 라우트 전환에도 살고, 새로고침이면 비운다.
@@ -136,8 +157,9 @@ export default function App() {
     !onboarded ||
     (known &&
       (location.pathname.endsWith('/run') ||
-        location.pathname.startsWith('/rewards/survey') ||
-        location.pathname.startsWith('/rewards/create') ||
+        // 설문이 꺼져 있으면 '준비 중' 화면이라 내비를 남겨 둔다(막다른 화면이 되지 않게)
+        (SURVEYS_ENABLED && location.pathname.startsWith('/rewards/survey')) ||
+        (SURVEYS_ENABLED && location.pathname.startsWith('/rewards/create')) ||
         location.pathname.startsWith('/admin')))
 
   useEffect(() => {

@@ -22,7 +22,7 @@ export const DAILY_LINES: L[] = [
 /** 오늘의 챌린지 */
 export const DAILY_CHALLENGES: L[] = [
   { ko: '오늘 알림 3개를 꺼보기', en: 'Turn off 3 notifications today', ja: '今日、通知を3つオフに' },
-  { ko: '물 한 잔 마시고 3번 깊게 숨쉬기', en: 'Drink water, breathe deep 3 times', ja: '水を一杯、深呼吸3回' },
+  { ko: '물 한 잔 마시고 3번 깊게 숨 쉬기', en: 'Drink water, breathe deep 3 times', ja: '水を一杯、深呼吸3回' },
   { ko: '고마운 사람에게 한 줄 보내기', en: 'Text one line to someone you appreciate', ja: '感謝する人へ一言送る' },
   { ko: '할 일 딱 1개만 끝까지 마치기', en: 'Finish exactly one task to the end', ja: 'やること1つだけ最後まで' },
   { ko: '10분 산책하며 휴대폰 안 보기', en: '10-min walk, no phone', ja: '10分散歩、スマホは見ない' },

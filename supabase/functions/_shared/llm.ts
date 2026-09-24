@@ -11,8 +11,9 @@
  *   LLM_PROVIDER=anthropic|google      → 둘 다 넣었을 때 강제 지정(미지정 시 Anthropic 우선)
  *
  * 세 함수가 ../_shared/llm.ts 로 직접 참조한다 — Supabase CLI가 함수 밖 의존까지 번들해 준다.
- * (MCP deploy_edge_function은 폴더 단위 업로드라 이 경로를 못 따라간다. 배포는 CLI로 할 것:
- *  npx supabase functions deploy <name> --project-ref xdcglyavndiwbbaryocx)
+ * 배포는 CLI 권장: npx supabase functions deploy <name> --project-ref xdcglyavndiwbbaryocx
+ * (MCP deploy_edge_function으로 올릴 땐 files에 'functions/<name>/index.ts'와 'functions/_shared/llm.ts'를
+ *  함께 넣고 entrypoint_path='functions/<name>/index.ts'로 — 상대 경로 ../_shared/llm.ts가 그대로 풀린다.)
  */
 
 export type Provider = 'anthropic' | 'google'
@@ -33,7 +34,7 @@ export interface LlmOptions {
 export interface LlmResult {
   ok: boolean
   text?: string
-  /** no_key | upstream | truncated | refusal | empty — 원인마다 대응이 달라 뭉뚱그리지 않는다 */
+  /** no_key | upstream | truncated | refusal | empty | network | timeout — 원인마다 대응이 달라 뭉뚱그리지 않는다 */
   error?: string
   detail?: string
   provider?: Provider
@@ -62,6 +63,23 @@ export function resolveProvider(): { provider: Provider; key: string; model: str
   return null
 }
 
+/**
+ * 상류 호출 제한 시간. 엣지 런타임의 벽시계 한도(150초)보다 짧게 잡아야 한다 —
+ * 런타임이 먼저 끊으면 CORS 헤더 없는 504가 나가 클라가 원인을 'network'로밖에 못 본다.
+ */
+const LLM_TIMEOUT_MS = 110_000
+
+/**
+ * 클라가 보낸 값을 프롬프트에 넣기 전 문자열로 강제하고 길이를 자른다.
+ * anon 키로 누구나 호출할 수 있어서, 자르지 않으면 수 MB 본문이 그대로 유료 입력 토큰이 된다.
+ * 줄바꿈도 공백으로 접는다 — 필드 하나가 줄을 바꿔 가짜 지시문 줄을 만들지 못하게.
+ */
+export function clip(v: unknown, max: number): string {
+  if (v == null) return ''
+  const s = typeof v === 'string' ? v : typeof v === 'number' || typeof v === 'boolean' ? String(v) : ''
+  return s.replace(/[\r\n]+/g, ' ').slice(0, max)
+}
+
 async function callAnthropic(
   key: string,
   model: string,
@@ -84,6 +102,7 @@ async function callAnthropic(
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(LLM_TIMEOUT_MS),
   })
   if (!resp.ok) {
     // 상류 오류 본문을 그대로 넘긴다 — 키 오타/크레딧 소진/모델명 오류를 구분할 유일한 단서.
@@ -126,6 +145,7 @@ async function callGoogle(
       contents: [{ role: 'user', parts: [{ text: user }] }],
       generationConfig,
     }),
+    signal: AbortSignal.timeout(LLM_TIMEOUT_MS),
   })
   if (!resp.ok) {
     const why = await resp.text().catch(() => '')
@@ -160,7 +180,9 @@ export async function callLlm(system: string, user: string, opt: LlmOptions): Pr
       ? await callGoogle(r.key, r.model, system, user, opt)
       : await callAnthropic(r.key, r.model, system, user, opt)
   } catch (e) {
-    return { ok: false, error: 'network', detail: String(e).slice(0, 200), provider: r.provider, model: r.model }
+    // 제한 시간 초과는 네트워크 단절과 대응이 다르다(재시도보다 effort/토큰 조정) — 따로 구분
+    const timedOut = (e as { name?: string })?.name === 'TimeoutError'
+    return { ok: false, error: timedOut ? 'timeout' : 'network', detail: String(e).slice(0, 200), provider: r.provider, model: r.model }
   }
 }
 

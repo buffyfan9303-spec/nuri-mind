@@ -1,19 +1,24 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { SPRING } from '../lib/motion'
-import { motion } from 'framer-motion'
+import { MotionConfig, motion } from 'framer-motion'
 import Button from './Button'
 import Avatar from './Avatar'
 import { PERSONA_VISUAL } from '../i18n/personaVisual'
 import type { Avatar as AvatarT } from '../data/types'
 import { useStore } from '../store/useStore'
-import { useT } from '../i18n/useT'
+import { useT, useL } from '../i18n/useT'
+import { Link } from 'react-router-dom'
 import { celebrate } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { LEGAL_EFFECTIVE } from '../data/legal'
-import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange } from '../lib/auth'
+import { authReady, signInWithKakao, getAuthUser, onAuthChange } from '../lib/auth'
+import { logoutAccount } from '../lib/economy'
 import { moderateText } from '../lib/moderation'
 import { humanizeError } from '../lib/dbError'
 import LegalSheet from './LegalSheet'
+import BizInfo from './BizInfo'
+import Emoji from './Emoji'
+import AppleLoginButton from './AppleLoginButton'
 
 /**
  * 온보딩 입력 초안 — 이 화면은 두 정상 동선에서 통째로 언마운트된다.
@@ -39,6 +44,7 @@ const loadDraft = (): Draft => {
 const STARTERS = ['penguin', 'koala', 'cat', 'dolphin', 'hamster', 'owl', 'meerkat', 'collie']
 
 export default function Onboarding() {
+  const lx = useL()
   const t = useT()
   const lang = useStore((s) => s.lang)
   const completeOnboarding = useStore((s) => s.completeOnboarding)
@@ -51,6 +57,8 @@ export default function Onboarding() {
   const [nickErr, setNickErr] = useState('')
   // 약관은 시트로 — 라우트 이동은 이 화면을 언마운트해 입력을 통째로 날린다
   const [legal, setLegal] = useState<'terms' | 'privacy' | null>(null)
+  // label↔input 연결 — 없으면 스크린리더가 입력칸을 이름 없이('편집 가능한 텍스트') 읽는다
+  const nickId = useId()
 
   // 초대 코드 캡처 — URL에서 한 번 읽어 보관하고 주소창은 정리한다
   useEffect(() => {
@@ -141,18 +149,22 @@ export default function Onboarding() {
   }
 
   return (
+    // 온보딩은 App의 <MotionConfig reducedMotion="user"> **바깥**에서 렌더된다(가입 전 분기가 먼저 return) —
+    // 여기서 직접 감싸지 않으면 '동작 줄이기'를 켠 사용자에게도 로고가 무한히 흔들린다(가입 첫 화면에서만).
+    <MotionConfig reducedMotion="user">
     <div className="bg-dots min-h-dvh">
       <main className="mx-auto flex min-h-dvh max-w-md flex-col px-6 pb-10 pt-12">
         {/* 환영 */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={SPRING.ui} className="text-center">
           <motion.img src="/icon.svg" alt="" className="mx-auto h-20 w-20 rounded-3xl shadow-pop" animate={{ rotate: [0, -6, 6, 0] }} transition={{ repeat: Infinity, duration: 3 }} />
           <h1 className="mt-5 break-keep text-[24px] font-extrabold leading-tight tracking-tight">{t('onboard.welcome')}</h1>
-          <p className="mt-2.5 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">{t('onboard.sub')}</p>
+          <p className="mt-2.5 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">{t('onboard.sub')}</p>
         </motion.div>
 
         {oauthErr && (
-          <motion.p role="alert" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-medium text-red-500">
-            {t('onboard.kakao')} 실패: {oauthErr}
+          <motion.p role="alert" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-bold text-red-500">
+            {/* '카카오로 3초 만에 시작 실패: …'는 버튼 문구에 '실패'를 붙인 꼴이라 어색했다 */}
+            {lang === 'ko' ? '카카오 로그인 실패' : lang === 'ja' ? 'カカオログイン失敗' : 'Kakao sign-in failed'}: {oauthErr}
           </motion.p>
         )}
 
@@ -160,16 +172,21 @@ export default function Onboarding() {
         {authReady() && (
           <div className="mt-7">
             {kakaoNick ? (
-              <div className="rounded-2xl bg-[#FEE500]/90 py-3.5 text-center text-[14px] font-semibold text-[#3A1D1D]">
-                💬 {t('onboard.kakaoReady', { nick: kakaoNick })}
+              <div className="rounded-2xl bg-[#FEE500]/90 py-3.5 text-center text-[14px] font-extrabold text-[#3A1D1D]">
+                <Emoji e="💬" inline />{t('onboard.kakaoReady', { nick: kakaoNick })}
                 {/* 다른 계정으로 붙었을 때 빠져나갈 길 — 온보딩 게이트 탓에 Profile에 못 가므로 여기 필요 */}
                 <button
                   onClick={async () => {
-                    await signOut()
+                    // ⚠️ signOut만 부르면 직전 계정의 지갑·검사기록이 게스트 프로필에 남는다 → 경계까지 한 쌍으로.
+                    // 그리고 버튼 이름대로 곧장 카카오 로그인 화면(계정 선택)으로 보낸다 — 로그아웃만 하고 멈추면
+                    // 다시 '카카오로 시작'을 눌러도 카카오 세션 때문에 같은 계정으로 돌아왔다.
+                    await logoutAccount()
                     setKakaoNick(null)
                     setNick('')
+                    const r = await signInWithKakao(true)
+                    if (!r.ok) alert(t('auth.needSetup'))
                   }}
-                  className="mt-1.5 block w-full text-[12px] font-medium text-[#3A1D1D]/60 underline"
+                  className="mt-1.5 block w-full text-[12px] font-bold text-[#3A1D1D]/60 underline"
                 >
                   {t('onboard.otherAccount')}
                 </button>
@@ -178,14 +195,15 @@ export default function Onboarding() {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={doKakao}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-4 text-[16px] font-semibold text-[#3A1D1D] shadow-card"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-4 text-[16px] font-extrabold text-[#3A1D1D] shadow-card"
               >
                 {t('onboard.kakao')}
               </motion.button>
             )}
+            {!kakaoNick && <AppleLoginButton className="mt-2.5" />}
             <div className="my-5 flex items-center gap-3">
               <div className="h-px flex-1 bg-line" />
-              <span className="shrink-0 text-[12px] font-medium text-ink-faint">{t('onboard.or')}</span>
+              <span className="shrink-0 text-[12px] font-bold text-ink-faint">{t('onboard.or')}</span>
               <div className="h-px flex-1 bg-line" />
             </div>
           </div>
@@ -193,8 +211,11 @@ export default function Onboarding() {
 
         {/* 닉네임 */}
         <div className={authReady() ? '' : 'mt-8'}>
-          <label className="px-1 text-[14px] font-semibold">{t('onboard.nickLabel')}</label>
+          <label htmlFor={nickId} className="text-[14px] font-extrabold">
+            {t('onboard.nickLabel')}
+          </label>
           <input
+            id={nickId}
             value={nick}
             onChange={(e) => {
               setNick(e.target.value)
@@ -203,12 +224,12 @@ export default function Onboarding() {
             placeholder={t('onboard.nickPh')}
             maxLength={12}
             autoFocus
-            className={`mt-2 w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-[16px] font-semibold outline-none ${
+            className={`mt-2 w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-[16px] font-extrabold outline-none ${
               nickErr ? 'border-red-300 focus:border-red-400' : 'border-line focus:border-mind-400'
             }`}
           />
           {nickErr && (
-            <p role="alert" className="mt-1.5 px-1 text-[12px] font-medium text-red-500">
+            <p role="alert" className="mt-1.5 text-[12px] font-bold text-red-500">
               {nickErr}
             </p>
           )}
@@ -216,7 +237,7 @@ export default function Onboarding() {
 
         {/* 시작 캐릭터 */}
         <div className="mt-6">
-          <p className="px-1 text-[14px] font-semibold">{t('onboard.pickLabel')}</p>
+          <p className="text-[14px] font-extrabold">{t('onboard.pickLabel')}</p>
           <div className="mt-2.5 grid grid-cols-4 gap-2.5">
             {STARTERS.map((key) => {
               const p = PERSONA_VISUAL[key]
@@ -225,27 +246,29 @@ export default function Onboarding() {
                 <motion.button
                   key={key}
                   whileTap={{ scale: 0.97 }}
+                  aria-pressed={sel}
                   onClick={() => {
                     setPicked(sel ? null : key)
                     sfx.tap()
                   }}
-                  className="flex aspect-square items-center justify-center rounded-2xl border-2 text-[28px]"
+                  className="flex aspect-square items-center justify-center rounded-2xl border-2"
                   style={{ borderColor: sel ? '#4FA882' : 'rgb(var(--line))', background: sel ? '#4FA88216' : 'rgb(var(--surface))' }}
                 >
-                  {p.emoji}
+                  {/* 글자가 없는 버튼 — 이모지가 곧 이름이라 대체 텍스트로 남긴다(버튼 이름 '🐧') */}
+                  <Emoji e={p.emoji} size={32} label={p.emoji} />
                 </motion.button>
               )
             })}
           </div>
-          <p className="mt-2 px-1 text-[12px] font-medium text-ink-faint">{t('onboard.pickHint')}</p>
+          <p className="mt-2 text-[12px] font-bold text-ink-faint">{t('onboard.pickHint')}</p>
         </div>
 
         <div className="flex-1" />
 
         {/* 가입 선물 + 시작 */}
         <div className="mt-8">
-          <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-50 py-2.5 text-[14px] font-semibold text-mind-700">
-            🎁 {t('onboard.bonus')}
+          <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-50 py-2.5 text-[14px] font-extrabold text-mind-700">
+            <Emoji e="🎁" inline />{t('onboard.bonus')}
           </div>
           {/* 필수 약관 동의 체크 (실서비스/스토어 심사 대비) */}
           <div className="mb-3 flex items-start gap-2.5 rounded-2xl border-2 border-line bg-surface px-3.5 py-3">
@@ -255,14 +278,17 @@ export default function Onboarding() {
                 setAgreed((v) => !v)
                 sfx.tap()
               }}
-              aria-pressed={agreed}
-              aria-label={t('onboard.terms') + ' ' + t('onboard.agreeReq')}
-              className="mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 transition-colors"
+              // 동의 체크는 토글 버튼이 아니라 체크박스로 읽혀야 한다. 이름도 약관+개인정보 둘 다
+              role="checkbox"
+              aria-checked={agreed}
+              aria-label={`${t('onboard.agreePre')}${t('onboard.terms')} · ${t('onboard.privacy')}${t('onboard.agreeSuf')} ${t('onboard.agreeReq')}`}
+              // 보이는 칸은 22px — before로 사방 11px 넓혀 44px 히트영역(레이아웃은 그대로)
+              className="relative mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 transition-colors before:absolute before:-inset-[11px] before:content-['']"
               style={{ borderColor: agreed ? '#4FA882' : 'rgb(var(--line))', background: agreed ? '#4FA882' : 'rgb(var(--surface))' }}
             >
-              {agreed && <span className="text-[13px] font-medium leading-none text-white">✓</span>}
+              {agreed && <span className="text-[13px] font-bold leading-none text-white">✓</span>}
             </button>
-            <p className="break-keep text-left text-[12px] font-medium leading-relaxed text-ink-sub">
+            <p className="break-keep text-left text-[12px] font-bold leading-relaxed text-ink-sub">
               {t('onboard.agreePre')}
               <button type="button" onClick={() => setLegal('terms')} className="font-extrabold text-mind-700 underline underline-offset-2">
                 {t('onboard.terms')}
@@ -277,19 +303,21 @@ export default function Onboarding() {
           <Button color="mind" size="lg" disabled={!nick.trim() || !agreed} onClick={start}>
             {t('onboard.start')}
           </Button>
-          <p className="mt-2.5 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
+          <p className="mt-2.5 px-2 text-center text-[11px] font-bold leading-relaxed text-ink-faint">
             {t('onboard.effective', { date: LEGAL_EFFECTIVE })} · {t('onboard.note')}
           </p>
 
+          {/* 가입 없이 읽을 수 있는 공개 페이지 — 첫 화면이 가입 폼뿐이면 검색엔진·광고 심사가
+              '콘텐츠 없는 사이트'로 본다. 진짜 <a href>라 크롤러가 따라간다(버튼은 못 따라간다). */}
+          <nav aria-label={lx({ ko: '둘러보기', en: 'Browse', ja: '閲覧' })} className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[13px] font-extrabold text-mind-700">
+            <Link to="/about" className="py-1.5">{lx({ ko: '서비스 소개', en: 'About', ja: 'サービス紹介' })}</Link>
+            <Link to="/magazine" className="py-1.5">{lx({ ko: '심리 매거진', en: 'Magazine', ja: 'マガジン' })}</Link>
+            <Link to="/zodiac/rat" className="py-1.5">{lx({ ko: '띠별 오늘의 운세', en: 'Zodiac fortune', ja: '干支別運勢' })}</Link>
+          </nav>
+
           {/* 사업자 정보 — 가입 전 첫 화면에서 확인 가능해야 함(카카오 비즈 심사·전자상거래 표시 의무) */}
-          <div className="mt-5 border-t border-line pt-4 text-center">
-            <p className="text-[11px] font-medium leading-relaxed text-ink-faint">
-              엔에이치홀딩스 · 대표 김윤혜 · 사업자등록번호 525-20-02937
-              <br />
-              경기도 남양주시 진건읍 사릉로372번길 25, 201동 1403호
-              <br />
-              문의 buffyfan9303@gmail.com · © {new Date().getFullYear()} NURI MIND
-            </p>
+          <div className="mt-4 border-t border-line pt-4 text-center">
+            <BizInfo />
           </div>
         </div>
       </main>
@@ -301,9 +329,10 @@ export default function Onboarding() {
       {(picked || nick) && (
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="pointer-events-none fixed right-5 top-5 flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 shadow-card">
           <Avatar avatar={picked ? { kind: 'animal', persona: picked } : null} size={26} emojiScale={0.5} />
-          <span className="max-w-[90px] truncate text-[13px] font-semibold">{nick || '친구'}</span>
+          <span className="max-w-[90px] truncate text-[13px] font-extrabold">{nick || '친구'}</span>
         </motion.div>
       )}
     </div>
+    </MotionConfig>
   )
 }

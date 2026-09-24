@@ -6,6 +6,7 @@ import { useT } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { ensureReferralCodeServer, referralCountServer, referralReady, redeemReferralServer } from '../lib/referral'
+import Emoji, { EmojiText } from './Emoji'
 
 // 누적 초대 보너스 — 신규 유입 LTV로 정당화(일일 상한과 별개). 서버 연동 시 자동 지급.
 // 최상위(10명+)엔 다이아(유료 재화)까지 얹어 강력한 바이럴 후크.
@@ -111,22 +112,22 @@ export default function Invite() {
   return (
     <Card className="!p-5">
       <div className="flex items-center gap-3.5">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-ego-light text-3xl">🤝</div>
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-ego-light"><Emoji e="🤝" size={30} /></div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[16px] font-semibold">{t('invite.title')}</h3>
-          <p className="mt-0.5 text-[13px] font-medium leading-relaxed text-ink-faint">{t('invite.sub')}</p>
+          <h3 className="text-[16px] font-extrabold">{t('invite.title')}</h3>
+          <p className="mt-0.5 text-[13px] font-bold leading-relaxed text-ink-faint">{t('invite.sub')}</p>
         </div>
       </div>
 
       {/* 내 코드 */}
       <div className="mt-4 flex items-center gap-2">
         <div className="flex-1 rounded-2xl border-2 border-dashed border-mind-300 bg-mind-50 px-4 py-3 text-center">
-          <p className="text-[11px] font-semibold tracking-widest text-mind-600">{t('invite.myCode')}</p>
+          <p className="text-[11px] font-extrabold tracking-widest text-mind-600">{t('invite.myCode')}</p>
           <p className="text-[20px] font-extrabold tracking-[0.15em] text-mind-800">{referralCode}</p>
         </div>
         <div className="flex w-[104px] flex-col gap-2">
           <Button color="white" size="sm" onClick={copy}>
-            {copied ? '✅' : `📋 ${t('invite.copy')}`}
+            <EmojiText text={copied ? '✅' : `📋 ${t('invite.copy')}`} />
           </Button>
           <Button color="mind" size="sm" onClick={share}>
             {t('common.share')}
@@ -136,7 +137,7 @@ export default function Invite() {
 
       {/* 마일스톤 */}
       <div className="mt-4">
-        <p className="text-[13px] font-semibold text-ink-sub">🏁 {t('invite.ms')}</p>
+        <p className="text-[13px] font-extrabold text-ink-sub"><Emoji e="🏁" inline />{t('invite.ms')}</p>
         <div className="mt-2 grid grid-cols-4 gap-1.5">
           {MILESTONES.map((m) => {
             const hit = shownCount >= m.n
@@ -145,24 +146,25 @@ export default function Invite() {
                 key={m.n}
                 className="rounded-2xl border-2 py-2 text-center"
                 style={{
-                  borderColor: hit ? '#4FA882' : '#E3EAE5',
+                  // 라인 토큰 — 고정 #E3EAE5는 다크모드에서 어두운 카드 위에 밝은 테두리로 떠 있었다
+                  borderColor: hit ? '#4FA882' : 'rgb(var(--line))',
                   background: hit ? '#4FA8821A' : 'rgb(var(--surface))',
                 }}
               >
-                <p className="text-[11px] font-semibold">{hit ? '🎉' : '👥'}{m.n}명</p>
-                <p className="mt-0.5 text-[11px] font-semibold text-mind-700">+{m.p.toLocaleString()}P</p>
-                {m.d && <p className="text-[11px] font-semibold text-[#6E7BF2]">+💎{m.d}</p>}
+                <p className="text-[11px] font-extrabold"><Emoji e={hit ? '🎉' : '👥'} inline />{m.n}명</p>
+                <p className="mt-0.5 text-[11px] font-extrabold text-mind-700">+{m.p.toLocaleString()}P</p>
+                {m.d && <p className="text-[11px] font-extrabold text-[#6E7BF2]">+<Emoji e="💎" inline />{m.d}</p>}
               </div>
             )
           })}
         </div>
-        <p className="mt-1.5 text-[11px] font-medium text-ink-faint">ⓘ {t('invite.msNote')}</p>
+        <p className="mt-1.5 text-[11px] font-bold text-ink-faint">ⓘ {t('invite.msNote')}</p>
       </div>
 
       {/* 친구 코드 입력 */}
       {!referredBy && (
         <div className="mt-4">
-          <p className="text-[13px] font-semibold text-ink-sub">{t('invite.enterTitle')}</p>
+          <p className="text-[13px] font-extrabold text-ink-sub">{t('invite.enterTitle')}</p>
           <div className="mt-2 flex gap-2">
             <input
               value={input}
@@ -171,8 +173,9 @@ export default function Invite() {
                 setMsg(null)
               }}
               placeholder={t('invite.ph')}
+              aria-label={t('invite.enterTitle')}
               maxLength={11}
-              className="min-w-0 flex-1 rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-semibold outline-none focus:border-mind-400"
+              className="min-w-0 flex-1 rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-extrabold outline-none focus:border-mind-400"
             />
             <Button color="mind" size="sm" full={false} disabled={input.length < 9} onClick={submit}>
               {t('invite.submit')}
@@ -181,7 +184,7 @@ export default function Invite() {
         </div>
       )}
       {msg && (
-        <p className={`mt-2.5 text-center text-[14px] font-semibold ${msg.ok ? 'text-mind-700' : 'text-red-500'}`}>
+        <p className={`mt-2.5 text-center text-[14px] font-extrabold ${msg.ok ? 'text-mind-700' : 'text-red-500'}`}>
           {msg.text}
         </p>
       )}

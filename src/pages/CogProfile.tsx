@@ -9,8 +9,9 @@ import { useL } from '../i18n/useT'
 import { makeCogCard, shareCardBlob } from '../lib/shareCard'
 import { sfx } from '../lib/sound'
 import type { TestResult } from '../data/types'
+import Emoji from '../components/Emoji'
 
-/** 정밀검사 5종 → 인지 영역 5축 */
+/** 정밀검사 6종 → 인지 영역 6축 */
 const METRICS: {
   id: string
   label: { ko: string; en: string; ja: string }
@@ -20,11 +21,11 @@ const METRICS: {
   get: (r: TestResult) => number | undefined
 }[] = [
   { id: 'iq', label: { ko: '추론(IQ)', en: 'Reasoning', ja: '推論(IQ)' }, emoji: '🧩', color: '#6E7BF2', route: '/test/iq', get: (r) => r.iq },
-  { id: 'memory', label: { ko: '작업기억', en: 'Memory', ja: '作業記憶' }, emoji: '🧠', color: '#5B6CF0', route: '/test/memory', get: (r) => r.mq },
+  { id: 'memory', label: { ko: '기억력', en: 'Memory', ja: '作業記憶' }, emoji: '🧠', color: '#5B6CF0', route: '/test/memory', get: (r) => r.mq },
   { id: 'focus', label: { ko: '집중력', en: 'Focus', ja: '集中力' }, emoji: '👁️', color: '#14B8A6', route: '/test/focus', get: (r) => r.fq },
   { id: 'speed', label: { ko: '처리속도', en: 'Speed', ja: '処理速度' }, emoji: '⚡', color: '#8B5CF6', route: '/test/speed', get: (r) => r.sq },
   { id: 'spatial', label: { ko: '공간지각', en: 'Spatial', ja: '空間知覚' }, emoji: '🧭', color: '#3B82F6', route: '/test/spatial', get: (r) => r.xq },
-  { id: 'switch', label: { ko: '주의전환', en: 'Switching', ja: '注意切替' }, emoji: '🔀', color: '#0EA5E9', route: '/test/switch', get: (r) => r.wq },
+  { id: 'switch', label: { ko: '주의전환', en: 'Switching', ja: '注意切替' }, emoji: '🤹', color: '#0EA5E9', route: '/test/switch', get: (r) => r.wq },
 ]
 
 const CX = 150
@@ -38,6 +39,12 @@ const norm = (v: number | null) => (v == null ? 0 : Math.max(0.05, Math.min(1, (
 
 /** 축 개수 단일 소스 — 하드코딩 5는 6축 추가 후 '6/5' 오표기를 냈다 */
 const TOTAL_METRICS = METRICS.length
+
+/** 받침 유무로 '이에요/예요'를 고른다 — 「작업기억」예요·「집중력」예요 같은 조사 오류 방지. 한글이 아니면(IQ 등) 받침 없음으로 읽는다 */
+const ieyo = (word: string) => {
+  const c = word.replace(/\(.*\)$/, '').trim().slice(-1).charCodeAt(0)
+  return c >= 0xac00 && c <= 0xd7a3 && (c - 0xac00) % 28 !== 0 ? '이에요' : '예요'
+}
 
 export default function CogProfile() {
   const l = useL()
@@ -103,6 +110,8 @@ export default function CogProfile() {
       ? { ko: '영역 간 균형이 고른 올라운더형이에요.', en: 'a well-balanced all-rounder.', ja: 'バランスの取れたオールラウンダーです。' }
       : { ko: '강약이 뚜렷해 강점을 살리는 전략이 유리해요.', en: 'with clear peaks — lean into your strengths.', ja: '強弱が明確で、強みを活かす戦略が有利です。' }
   const showComment = doneCount >= 2 && strongest >= 0 && weakest >= 0 && lvl != null
+  // 점수가 모두 같으면 최고·최저가 같은 영역으로 잡혀 '가장 강한 곳 = 약한 곳'이라는 문장이 나온다
+  const flat = strongest === weakest
 
   const [shareMsg, setShareMsg] = useState('')
   const shareProfile = async () => {
@@ -117,6 +126,7 @@ export default function CogProfile() {
         ctaSub: l({ ko: '누리 마인드에서 무료로 확인 →', en: 'Find out free at NURI MIND →', ja: 'ヌリマインドの精密検査で無料確認 →' }),
       })
       const how = await shareCardBlob(blob, l({ ko: '내 인지 프로필을 확인해보세요!', en: 'Check out my cognitive profile!', ja: '私の認知プロフィール！' }), 'nuri-cog-profile.png')
+      if (how === 'cancelled') return // 공유 시트를 닫은 것 — 성공음을 내지 않는다
       if (how === 'downloaded') {
         setShareMsg(l({ ko: '카드를 저장했어요', en: 'Card saved', ja: 'カードを保存しました' }))
         setTimeout(() => setShareMsg(''), 2200)
@@ -140,7 +150,7 @@ export default function CogProfile() {
         >
           <div className="text-[28px] leading-none">🧩</div>
           <h1 className="mt-2 text-[20px] font-extrabold tracking-tight">{l({ ko: '종합 인지 프로필', en: 'Cognitive Profile', ja: '総合認知プロフィール' })}</h1>
-          <p className="mt-1.5 text-[13px] font-medium text-white/85">
+          <p className="mt-1.5 text-[13px] font-bold text-white/85">
             {avg != null
               ? l({ ko: `두뇌 측정 ${doneCount}/${TOTAL_METRICS} · 종합 ${avg}`, en: `${doneCount}/${TOTAL_METRICS} tests · avg ${avg}`, ja: `精密検査 ${doneCount}/${TOTAL_METRICS}・総合 ${avg}` })
               : l({ ko: '두뇌 측정을 하면 내 머리 지도가 그려져요', en: 'Take precision tests to map your mind', ja: '精密検査を解くと認知地図が描かれます' })}
@@ -195,15 +205,21 @@ export default function CogProfile() {
         {/* AI 종합 코멘트 */}
         {showComment && lvl && (
           <Card className="mt-4">
-            <h2 className="flex items-center gap-2 text-[15px] font-semibold">{l({ ko: 'AI 종합 코멘트', en: 'AI summary', ja: 'AI総合コメント' })}</h2>
-            <p className="mt-2 break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">
-              {l({
-                ko: `가장 강한 영역은 「${METRICS[strongest].label.ko}」, 상대적으로 약한 영역은 「${METRICS[weakest].label.ko}」예요. 전반적으로 ${lvl.ko} 인지 프로필이고, ${balanceTxt.ko}`,
-                en: `Your strongest area is ${METRICS[strongest].label.en}, while ${METRICS[weakest].label.en} has the most room to grow. Overall it's ${lvl.en} cognitive profile — ${balanceTxt.en}`,
-                ja: `最も強い領域は「${METRICS[strongest].label.ja}」、相対的に弱いのは「${METRICS[weakest].label.ja}」です。全体的に${lvl.ja}認知プロフィールで、${balanceTxt.ja}`,
-              })}
+            <h2 className="flex items-center gap-2 text-[15px] font-extrabold">{l({ ko: 'AI 종합 코멘트', en: 'AI summary', ja: 'AI総合コメント' })}</h2>
+            <p className="mt-2 break-keep text-[14px] font-bold leading-[1.85] text-ink-sub">
+              {flat
+                ? l({
+                    ko: `측정한 영역의 점수가 모두 같아요. 전반적으로 ${lvl.ko} 인지 프로필이고, ${balanceTxt.ko}`,
+                    en: `All measured areas scored the same. Overall it's ${lvl.en} cognitive profile — ${balanceTxt.en}`,
+                    ja: `測定した領域のスコアがすべて同じです。全体的に${lvl.ja}認知プロフィールで、${balanceTxt.ja}`,
+                  })
+                : l({
+                    ko: `가장 강한 영역은 「${METRICS[strongest].label.ko}」, 상대적으로 약한 영역은 「${METRICS[weakest].label.ko}」${ieyo(METRICS[weakest].label.ko)}. 전반적으로 ${lvl.ko} 인지 프로필이고, ${balanceTxt.ko}`,
+                    en: `Your strongest area is ${METRICS[strongest].label.en}, while ${METRICS[weakest].label.en} has the most room to grow. Overall it's ${lvl.en} cognitive profile — ${balanceTxt.en}`,
+                    ja: `最も強い領域は「${METRICS[strongest].label.ja}」、相対的に弱いのは「${METRICS[weakest].label.ja}」です。全体的に${lvl.ja}認知プロフィールで、${balanceTxt.ja}`,
+                  })}
             </p>
-            <p className="mt-2 text-[11px] font-medium text-ink-faint">{l({ ko: '※ 측정 지수를 규칙 기반으로 요약한 참고용 코멘트예요.', en: '※ A rule-based summary of your measured scores, for reference.', ja: '※ 測定指数をルールベースで要約した参考コメントです。' })}</p>
+            <p className="mt-2 text-[11px] font-bold text-ink-faint">{l({ ko: '※ 측정 지수를 규칙 기반으로 요약한 참고용 코멘트예요.', en: '※ A rule-based summary of your measured scores, for reference.', ja: '※ 測定指数をルールベースで要約した参考コメントです。' })}</p>
           </Card>
         )}
 
@@ -211,16 +227,16 @@ export default function CogProfile() {
         <div className="mt-4 space-y-2.5">
           {METRICS.map((m, i) => {
             const s = scores[i]
-            const isStrong = i === strongest && s != null && doneCount >= 2
+            const isStrong = i === strongest && s != null && doneCount >= 2 && !flat
             return (
               <Card key={m.id} className="flex items-center gap-3 !p-3.5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-[20px]" style={{ background: `${m.color}1A` }}>
-                  {m.emoji}
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl" style={{ background: `${m.color}1A` }}>
+                  <Emoji e={m.emoji} size={22} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[14px] font-semibold leading-tight">
+                  <p className="text-[14px] font-extrabold leading-tight">
                     {l(m.label)}
-                    {isStrong && <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-600">{l({ ko: '최강', en: 'Top', ja: '最強' })}</span>}
+                    {isStrong && <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[11px] font-extrabold text-amber-600">{l({ ko: '최강', en: 'Top', ja: '最強' })}</span>}
                   </p>
                   <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-line">
                     <motion.div
@@ -234,11 +250,11 @@ export default function CogProfile() {
                   </div>
                 </div>
                 {s != null ? (
-                  <span className="shrink-0 text-[17px] font-semibold" style={{ color: m.color }}>
+                  <span className="shrink-0 text-[17px] font-extrabold" style={{ color: m.color }}>
                     {s}
                   </span>
                 ) : (
-                  <button onClick={() => nav(m.route)} className="shrink-0 rounded-full px-3 py-1.5 text-[12px] font-semibold text-white" style={{ background: m.color }}>
+                  <button onClick={() => nav(m.route)} className="shrink-0 rounded-full px-3 py-1.5 text-[12px] font-extrabold text-white" style={{ background: m.color }}>
                     {l({ ko: '검사', en: 'Take', ja: '検査' })}
                   </button>
                 )}
@@ -253,12 +269,12 @@ export default function CogProfile() {
             <Button color="iq" onClick={shareProfile}>
               {l({ ko: '인지 프로필 카드 공유', en: 'Share profile card', ja: 'プロフィールカードを共有' })}
             </Button>
-            {shareMsg && <p className="mt-2 text-center text-[13px] font-semibold text-mind-700">✅ {shareMsg}</p>}
+            {shareMsg && <p className="mt-2 text-center text-[13px] font-extrabold text-mind-700">✅ {shareMsg}</p>}
           </div>
         )}
 
         {doneCount < TOTAL_METRICS && (
-          <p className="mt-3 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
+          <p className="mt-3 px-2 text-center text-[12px] font-bold leading-relaxed text-ink-faint">
             {l({ ko: `${TOTAL_METRICS - doneCount}종을 더 하면 머리 지도가 완성돼요.`, en: `Take ${TOTAL_METRICS - doneCount} more precision tests to complete your map.`, ja: `あと${TOTAL_METRICS - doneCount}種でマップが完成します。` })}
           </p>
         )}

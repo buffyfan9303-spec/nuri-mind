@@ -19,7 +19,9 @@ const NICK = '테스트누리'
 const NICK_PH = '닉네임을 입력해 주세요'
 const START = '시작하고 100P 받기'
 /** 동의 체크박스의 접근명 = t('onboard.terms') + ' ' + t('onboard.agreeReq'). 본문 '이용약관' 링크와 반드시 exact로 구분한다 */
-const AGREE = '이용약관 (필수)'
+// 동의 칸은 role=checkbox — 이름에 약관 두 문서가 다 들어간다(스크린리더가 무엇에 동의하는지 알 수 있게)
+// 만 14세 이상 확인도 같은 칸에 들어 있다 — 체크 한 번이 '나이 확인 + 두 문서 동의'라는 걸 이름으로 드러낸다
+const AGREE = '만 14세 이상이며, 이용약관 · 개인정보처리방침에 동의합니다 (필수)'
 
 /** persist가 실제로 기록한 상태 — dev 뒷문이 없는 프로덕션에선 저장소가 유일한 관측점이다 */
 async function persisted(page: Page): Promise<Record<string, unknown>> {
@@ -56,7 +58,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     await page.getByPlaceholder(NICK_PH).fill(NICK)
     await expect(start).toBeDisabled()
 
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
     await expect(start).toBeEnabled()
 
     // 공백만 남기면 다시 잠겨야 한다 — 게이트가 trim이 아닌 length로 새면 '   ' 닉네임이 통과한다
@@ -70,14 +72,15 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
 
     await page.getByPlaceholder(NICK_PH).fill(NICK)
     await page.getByRole('button', { name: '🐧', exact: true }).click() // STARTERS의 penguin
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
     await page.getByRole('button', { name: START }).click()
 
     // 온보딩은 라우팅이 아니라 게이트 해제로 빠져나온다 — 주소는 그대로 '/'
     await expect(page).toHaveURL('/')
 
     // 홈 자산 카드의 프로필 버튼. 여기 '누리'(스토어 기본 닉)가 뜨면 completeOnboarding이 입력을 버린 것
-    const profile = page.getByRole('button').filter({ hasText: '님 👋' })
+    // 👋는 SVG 아이콘(대체 텍스트 '👋') — 글자가 아니라 접근성 이름으로 찾는다
+    const profile = page.getByRole('button', { name: /님 👋/ })
     await expect(profile).toContainText(NICK)
 
     const st = await persisted(page)
@@ -96,7 +99,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     const nick = page.getByPlaceholder(NICK_PH)
     await nick.fill(NICK)
     await page.getByRole('button', { name: '🐧', exact: true }).click()
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
 
     await page.getByRole('button', { name: '이용약관', exact: true }).click()
 
@@ -119,7 +122,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
 
     // 회귀 ③: 필수 동의 약관을 읽고 왔더니 폼이 비어 있는 문제. 셋 다 살아있어야 한다.
     await expect(nick).toHaveValue(NICK)
-    await expect(page.getByRole('button', { name: AGREE, exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('checkbox', { name: AGREE, exact: true })).toHaveAttribute('aria-checked', 'true')
     await expect(page.getByRole('button', { name: START })).toBeEnabled()
     await expect(page).toHaveURL('/')
   })
@@ -136,13 +139,13 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
 
     await page.getByPlaceholder(NICK_PH).fill(NICK)
     await page.getByRole('button', { name: '🐧', exact: true }).click()
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
 
     await page.reload()
     await waitForApp(page)
 
     await expect(page.getByPlaceholder(NICK_PH)).toHaveValue(NICK)
-    await expect(page.getByRole('button', { name: AGREE, exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('checkbox', { name: AGREE, exact: true })).toHaveAttribute('aria-checked', 'true')
 
     // 캐릭터는 선택 상태가 인라인 색으로만 표시돼 DOM 이름이 없다 — 가입까지 밀어
     // '저장된 아바타'로 확인한다(초안에서 picked만 빠지는 회귀를 이 단언만 잡는다).
@@ -162,7 +165,7 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     // moderation.ts BANNED 목록의 실제 단어. 닉네임도 커뮤니티 표시 문자열이라
     // 전광판·댓글과 같은 필터를 통과해야 우회 경로가 안 생긴다.
     await page.getByPlaceholder(NICK_PH).fill('병신')
-    await page.getByRole('button', { name: AGREE, exact: true }).click()
+    await page.getByRole('checkbox', { name: AGREE, exact: true }).click()
 
     const start = page.getByRole('button', { name: START })
     // 형식 게이트(닉+동의)는 통과한다 — 실제 차단은 moderateText가 하므로 눌러봐야 검증된다
@@ -184,8 +187,10 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     await waitForApp(page)
 
     // PUBLIC_ROUTES(/legal|zodiac|magazine|vs)가 깨지면 sitemap 등재 URL이 전부 온보딩으로 튕긴다
-    await expect(page.getByText('심리 매거진')).toBeVisible()
-    const card = page.getByRole('button').filter({ hasText: '집중력이 약한 게 아니라' })
+    // (매거진 목록에 푸터가 붙어 '심리 매거진' 글자가 여러 곳에 있다 — 목록 고유 부제로 확인)
+    await expect(page.getByText('검사보다 한 걸음 더, 짧게 읽는 심리 인사이트')).toBeVisible()
+    // 아티클 카드는 버튼이 아니라 링크(<a href>)다 — 크롤러가 목록에서 상세로 따라갈 수 있어야 한다
+    const card = page.getByRole('link').filter({ hasText: '집중력이 약한 게 아니라' })
     await expect(card).toBeVisible()
     await card.click()
     await expect(page).toHaveURL('/magazine/adhd-focus')
@@ -206,7 +211,8 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     expect(st.onboarded).toBe(false)
 
     // 저장소를 한 번 왕복하고 온 뒤라 카운트업 effect까지 끝났다 — 이제야 화면 값이 확정이다.
-    // 로케이터는 '잔액이 얼마든' 잡고(🪙로 시작하는 Pill) 값은 단언으로 못박는다.
-    await expect(page.getByText(/^🪙\s/)).toHaveText(/^🪙\s*100$/)
+    // 로케이터는 '잔액이 얼마든' 잡고(지갑 Pill) 값은 단언으로 못박는다.
+    // 🪙 아이콘은 SVG라 글자가 아니다 — 지갑 Pill을 data-testid로 잡고 값만 정확히 못 박는다
+    await expect(page.getByTestId('points-pill')).toHaveText(/^\s*100$/)
   })
 })

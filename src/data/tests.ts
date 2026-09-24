@@ -100,7 +100,8 @@ export const TESTS: TestMeta[] = [
   },
   {
     id: 'switch',
-    emoji: '🔀',
+    // 🔀(섞기 버튼)은 Fluent에서 파란 네모 버튼이라 칩 안에서 '버튼 속 버튼'처럼 보였다 → 🤹(여러 규칙을 번갈아 다루기)
+    emoji: '🤹',
     count: 32,
     minutes: 3,
     tint: 'bg-iq-light',
@@ -156,7 +157,7 @@ export const TESTS: TestMeta[] = [
   },
   {
     id: 'dark',
-    emoji: '🃏',
+    emoji: '😈',
     count: 20,
     minutes: 5,
     tint: 'bg-dk-light',

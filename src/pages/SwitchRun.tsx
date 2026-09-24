@@ -9,6 +9,7 @@ import { mulberry32 } from '../lib/random'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 const TOTAL = 32
 const FB_MS = 320
@@ -83,6 +84,19 @@ export default function SwitchRun() {
     nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
+  /** 중단 확인 창이 떠 있던 시간은 반응시간에서 뺀다 — 창을 열었다 '계속하기'를 누르면 그 시간이 통째로 RT에 더해졌다 */
+  const pausedAtRef = useRef(0)
+  const openQuit = () => {
+    pausedAtRef.current = Date.now()
+    setQuitOpen(true)
+  }
+  const closeQuit = () => {
+    if (!quitOpen) return
+    // 창이 떠 있는 동안 다음 자극이 시작됐으면(onset > pausedAt) 창을 닫은 지금부터 잰다
+    onsetRef.current += Date.now() - Math.max(pausedAtRef.current, onsetRef.current)
+    setQuitOpen(false)
+  }
+
   const answer = (side: 'L' | 'R') => {
     if (phase !== 'stim' || lockRef.current) return
     lockRef.current = true
@@ -101,7 +115,7 @@ export default function SwitchRun() {
   return (
     <div className="flex min-h-dvh flex-col">
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button whileTap={{ scale: 0.97 }} onClick={() => setQuitOpen(true)} className="text-2xl font-bold text-ink-faint" aria-label="quit">
+        <motion.button whileTap={{ scale: 0.97 }} onClick={openQuit} className="text-2xl font-bold text-ink-faint" aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}>
           ✕
         </motion.button>
         <div className="flex-1">
@@ -119,10 +133,10 @@ export default function SwitchRun() {
             key={`cue-${idx}`}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-semibold text-white"
+            className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-extrabold text-white"
             style={{ background: cueColor }}
           >
-            {it.task === 'size' ? `🔢 ${l({ ko: '5보다 클까?', en: 'Size — vs 5?', ja: '大きさ — 5より？' })}` : `⚖️ ${l({ ko: '홀짝?', en: 'Odd / Even?', ja: '偶奇？' })}`}
+            <EmojiText text={it.task === 'size' ? `🔢 ${l({ ko: '5보다 클까?', en: 'Size — vs 5?', ja: '大きさ — 5より？' })}` : `⚖️ ${l({ ko: '홀짝?', en: 'Odd / Even?', ja: '偶奇？' })}`} />
           </motion.span>
         </div>
 
@@ -135,8 +149,8 @@ export default function SwitchRun() {
                   {it.num}
                 </motion.span>
               ) : (
-                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-[28px] leading-none">
-                  {verdict ? '✅' : '❌'}
+                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="leading-none">
+                  <Emoji e={verdict ? '✅' : '❌'} size={28} className="align-top" />
                 </motion.span>
               )}
             </AnimatePresence>
@@ -149,8 +163,7 @@ export default function SwitchRun() {
             whileTap={{ scale: 0.97 }}
             onClick={() => answer('L')}
             disabled={phase !== 'stim'}
-            aria-label="ans-L"
-            className="flex h-16 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[17px] font-semibold shadow-card disabled:opacity-50"
+            className="flex h-16 items-center justify-center rounded-2xl border-2 border-line bg-surface text-[17px] font-extrabold shadow-card disabled:opacity-50"
           >
             {labelL}
           </motion.button>
@@ -158,8 +171,7 @@ export default function SwitchRun() {
             whileTap={{ scale: 0.97 }}
             onClick={() => answer('R')}
             disabled={phase !== 'stim'}
-            aria-label="ans-R"
-            className="flex h-16 items-center justify-center rounded-2xl border-2 text-[17px] font-semibold text-white shadow-card disabled:opacity-50"
+            className="flex h-16 items-center justify-center rounded-2xl border-2 text-[17px] font-extrabold text-white shadow-card disabled:opacity-50"
             style={{ borderColor: accent, background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
           >
             {labelR}
@@ -167,19 +179,19 @@ export default function SwitchRun() {
         </div>
       </main>
 
-      <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
+      <Modal open={quitOpen} onClose={closeQuit}>
         <div className="text-center">
-          <div className="text-4xl">🥺</div>
-          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 그만둘까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
-          <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">
+          <div className="leading-none"><Emoji e="🥺" size={36} className="align-top" /></div>
+          <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
+          <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">
-            <Button color="iq" onClick={() => setQuitOpen(false)}>
-              {l({ ko: '계속할게요', en: 'Keep going', ja: '続ける' })}
+            <Button color="iq" onClick={closeQuit}>
+              {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
             <Button color="white" onClick={() => nav('/test/switch', { replace: true })}>
-              {l({ ko: '그만두기', en: 'Quit', ja: 'やめる' })}
+              {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>
         </div>

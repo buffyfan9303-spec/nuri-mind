@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
 import { useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
+import Emoji from '../components/Emoji'
 
 /**
  * 404 — 예전엔 `path="*"`가 홈으로 조용히 리다이렉트했다. 잘못 친 주소·바뀐 링크·오래된 공유 링크가
@@ -24,23 +25,29 @@ export default function NotFound() {
   return (
     <div className="bg-dots min-h-dvh pb-36">
       <main className="mx-auto flex min-h-[70dvh] max-w-md flex-col items-center justify-center px-6 text-center">
-        <div className="text-5xl" aria-hidden="true">
-          🧭
-        </div>
+        <div className="leading-none"><Emoji e="🧭" size={48} className="align-top" /></div>
         <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
           {l({ ko: '이 주소엔 아무것도 없어요', en: 'Nothing lives at this address', ja: 'このアドレスには何もありません' })}
         </h1>
-        <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+        <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
           {l({
             ko: '주소가 바뀌었거나 잘못 입력됐을 수 있어요.',
             en: 'The link may have moved or been typed wrong.',
             ja: 'リンクが移動したか、入力ミスの可能性があります。',
           })}
         </p>
-        <code className="mt-3 max-w-full truncate rounded-xl bg-surface2 px-3 py-1.5 text-[12px] font-medium text-ink-faint">{shown}</code>
+        <code className="mt-3 max-w-full truncate rounded-xl bg-surface2 px-3 py-1.5 text-[12px] font-bold text-ink-faint">{shown}</code>
         <div className="mt-6 flex w-full flex-col gap-2.5">
           <Button onClick={() => nav('/', { replace: true })}>{l({ ko: '홈으로', en: 'Go home', ja: 'ホームへ' })}</Button>
-          <Button color="white" onClick={() => nav(-1)}>
+          <Button
+            color="white"
+            onClick={() => {
+              // 공유 링크로 바로 들어온 경우엔 앱 안에 돌아갈 곳이 없다 — nav(-1)은 아무 반응이 없거나 앱을 떠난다
+              const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
+              if (idx > 0) nav(-1)
+              else nav('/', { replace: true })
+            }}
+          >
             {l({ ko: '뒤로 가기', en: 'Go back', ja: '戻る' })}
           </Button>
         </div>

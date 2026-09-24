@@ -15,3 +15,5 @@ PUSH-KEYS.local.txt
 pw.*.config.*
 .mutbak/
 mut.sh
+
+.impeccable/

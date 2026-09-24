@@ -40,7 +40,11 @@ if (!existsSync(ASSETS)) {
   process.exit(1)
 }
 
-const entry = readdirSync(ASSETS).find((f) => /^index-.*\.js$/.test(f))
+// 진입 스크립트는 index.html에서 읽는다 — 동적 import 청크(@capacitor/* 등)도 index-*.js 이름을 달고 나와
+// 파일명 패턴으로 고르면 엉뚱한 작은 청크를 재서 '0KB 통과'가 났다
+const html = readFileSync(join(ROOT, 'dist/index.html'), 'utf8')
+const entry = html.match(/<script[^>]+type="module"[^>]+src="\/assets\/([^"]+\.js)"/)?.[1]
+  ?? readdirSync(ASSETS).find((f) => /^index-.*\.js$/.test(f))
 if (!entry) {
   console.log('❌ 메인 번들(index-*.js)을 찾지 못했습니다.')
   process.exit(1)

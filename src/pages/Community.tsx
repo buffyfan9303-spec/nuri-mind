@@ -19,6 +19,7 @@ import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
 import { supabaseReady } from '../lib/supabase'
 import { checkRate, moderateText, recordAction } from '../lib/moderation'
+import Emoji from '../components/Emoji'
 import {
   createComment,
   createPost,
@@ -57,6 +58,8 @@ export default function Community() {
   const addComment = useStore((s) => s.addComment)
   const reportPost = useStore((s) => s.reportPost)
   const blockUser = useStore((s) => s.blockUser)
+  const unblockUser = useStore((s) => s.unblockUser)
+  const [showBlocked, setShowBlocked] = useState(false)
   const blockedNicks = useStore((s) => s.blockedNicks)
   const claimFirstPost = useStore((s) => s.claimFirstPost)
   const claimFirstComment = useStore((s) => s.claimFirstComment)
@@ -73,9 +76,13 @@ export default function Community() {
   const [serverComments, setServerComments] = useState<Record<string, CommunityComment[]>>({})
 
   /** 상단 리워드 배너 + 전역 토스트를 함께 — 호출부(수십 곳)는 그대로 flash()를 쓴다 */
+  const rewardTimer = useRef<ReturnType<typeof setTimeout>>()
+  useEffect(() => () => clearTimeout(rewardTimer.current), [])
   const flash = (msg: string) => {
     setReward(msg)
-    setTimeout(() => setReward(''), 2400)
+    // 연달아 뜨면 앞 타이머가 새 배너를 일찍 지우지 않게 갈아 끼운다
+    clearTimeout(rewardTimer.current)
+    rewardTimer.current = setTimeout(() => setReward(''), 2400)
     toast.ok(msg)
   }
 
@@ -103,8 +110,8 @@ export default function Community() {
   const [serverPosts, setServerPosts] = useState<CommunityPost[]>([])
   const [newCount, setNewCount] = useState(0)
   const [pulling, setPulling] = useState(0)
-  const pullRef = useRef(0)
-  const likeBusyRef = useRef<Set<string>>(new Set()) // 당겨서 새로고침 거리(px)
+  const pullRef = useRef(0) // 당겨서 새로고침 거리(px)
+  const likeBusyRef = useRef<Set<string>>(new Set())
   const [refreshing, setRefreshing] = useState(false)
 
   const reload = async () => {
@@ -230,8 +237,10 @@ export default function Community() {
   }, [raw, filter, sort, hiddenPosts, blockedNicks, pendingDelete])
 
   const submit = async () => {
-    if (!text.trim() || posting) return
-    if (!moderateText(text).ok) return flash(t('community.badword'))
+    // 앞뒤 빈 줄까지 그대로 올라가 카드 위아래가 휑하게 뜨던 자리 — 다듬은 본문만 올린다
+    const body = text.trim()
+    if (!body || posting) return
+    if (!moderateText(body).ok) return flash(t('community.badword'))
     const rl = checkRate('post')
     if (!rl.ok) return flash(t('community.tooFast', { n: rl.waitSec }))
     recordAction('post')
@@ -240,17 +249,17 @@ export default function Community() {
     setPostFailed(false)
     if (server) {
       try {
-        await createPost(deviceId, { nick: nickname, avatar, badge, text })
+        await createPost(deviceId, { nick: nickname, avatar, badge, text: body })
         await reload()
       } catch (e) {
         // 서버에 못 올렸어도 글은 이 기기에 남긴다 — 쓴 글이 통째로 사라지는 것보다 낫다.
         // 다만 조용히 넘기지 않는다: 다른 사람에게 안 보인다는 사실을 말해야 한다.
-        addPost(text, badge)
+        addPost(body, badge)
         setPostFailed(true)
         toast.err(humanizeError(e, lang, l({ ko: '이 기기에만 저장했어요', en: 'Saved on this device only', ja: 'この端末にのみ保存しました' })))
       }
     } else {
-      addPost(text, badge)
+      addPost(body, badge)
     }
     setPosting(false)
     setText('')
@@ -271,6 +280,8 @@ export default function Community() {
     }
   }
   const toggleComments = (postId: string) => {
+    // 다른 글을 펼치면 쓰던 댓글을 비운다 — 입력이 그대로 따라와 엉뚱한 글에 달리던 자리
+    if (openComments !== postId) setCommentText('')
     setOpenComments((v) => {
       const next = v === postId ? null : postId
       if (next && server) loadComments(postId)
@@ -291,8 +302,10 @@ export default function Community() {
       try {
         await createComment(deviceId, postId, { nick: nickname, avatar, badge, text: body })
         await loadComments(postId)
-      } catch {
+      } catch (e) {
         addComment(postId, body, badge) // 폴백: 로컬
+        // 글과 같은 원칙 — 다른 사람에게 안 보인다는 사실을 조용히 넘기지 않는다
+        toast.err(humanizeError(e, lang, l({ ko: '댓글을 이 기기에만 저장했어요', en: 'Comment saved on this device only', ja: 'コメントはこの端末にのみ保存しました' })))
       }
     } else {
       addComment(postId, body, badge)
@@ -438,9 +451,9 @@ export default function Community() {
                  당김 거리만큼 따라 내려오는 움직임이 사라진다(제자리에서 회전만 한다). */
               animate={refreshing ? { rotate: 360, y: 8 } : { rotate: pulling * 4, y: pulling - 12 }}
               transition={refreshing ? { repeat: Infinity, duration: 0.8, ease: 'linear' } : { duration: 0 }}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-[20px] shadow-pop"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-surface shadow-pop"
             >
-              {refreshing ? '🐢' : pulling > 50 ? '🐰' : '🐢'}
+              <Emoji e={refreshing ? '🐢' : pulling > 50 ? '🐰' : '🐢'} size={20} />
             </motion.div>
           </motion.div>
         )}
@@ -456,9 +469,9 @@ export default function Community() {
           className="mt-3 flex w-full items-center gap-3 rounded-full bg-surface px-3 py-2.5 shadow-card"
         >
           <Avatar avatar={avatar} size={34} emojiScale={0.52} />
-          <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium text-ink-faint">{t('community.composer')}</span>
-          <span className="shrink-0 rounded-full bg-mind-500 px-3.5 py-1.5 text-[13px] font-semibold text-white">
-            ✏️ {t('community.write')}
+          <span className="min-w-0 flex-1 truncate text-left text-[14px] font-bold text-ink-faint">{t('community.composer')}</span>
+          <span className="shrink-0 rounded-full bg-mind-500 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
+            <Emoji e="✏️" inline />{t('community.write')}
           </span>
         </button>
 
@@ -470,18 +483,40 @@ export default function Community() {
           <motion.span
             animate={{ rotate: [0, -10, 10, -6, 6, 0] }}
             transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut', repeatDelay: 2 }}
-            className="text-[20px]"
+            className="leading-none"
           >
-            🗓️
+            <Emoji e="🗓️" size={20} className="align-top" />
           </motion.span>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold tracking-wide text-mind-600">{t('community.themeLabel')}</p>
-            <p className="mt-0.5 break-keep text-[14px] font-semibold leading-snug">{l(todayTheme())}</p>
+            <p className="text-[11px] font-extrabold tracking-wide text-mind-600">{t('community.themeLabel')}</p>
+            <p className="mt-0.5 break-keep text-[14px] font-extrabold leading-snug">{l(todayTheme())}</p>
           </div>
-          <span className="shrink-0 whitespace-nowrap rounded-full bg-mind-500 px-3 py-1.5 text-[12px] font-semibold text-white">
-            ✍️ {t('community.themeWrite')}
+          <span className="shrink-0 whitespace-nowrap rounded-full bg-mind-500 px-3 py-1.5 text-[12px] font-extrabold text-white">
+            <Emoji e="✍️" inline />{t('community.themeWrite')}
           </span>
         </button>
+
+        {/* 차단 관리 — 차단만 되고 풀 길이 없으면 실수 한 번이 영구가 된다 */}
+        {blockedNicks.length > 0 && (
+          <div className="mt-3 rounded-2xl bg-surface2 px-3.5 py-2.5 text-[12px] font-bold text-ink-sub">
+            <button onClick={() => setShowBlocked((v) => !v)} className="flex w-full items-center justify-between">
+              <span><Emoji e="🚫" inline />{l({ ko: `차단한 사용자 ${blockedNicks.length}명`, en: `${blockedNicks.length} blocked`, ja: `ブロック中 ${blockedNicks.length}人` })}</span>
+              <span className="text-ink-faint">{showBlocked ? '▴' : '▾'}</span>
+            </button>
+            {showBlocked && (
+              <ul className="mt-2 space-y-1.5">
+                {blockedNicks.map((n) => (
+                  <li key={n} className="flex items-center justify-between gap-2">
+                    <span className="min-w-0 truncate">{n}</span>
+                    <button onClick={() => unblockUser(n)} className="shrink-0 rounded-full border border-line px-2.5 py-1 text-[11px] font-extrabold">
+                      {l({ ko: '차단 해제', en: 'Unblock', ja: '解除' })}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
 
         {/* 주제 필터 칩 (가로 스크롤) */}
         <div className="no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5">
@@ -492,14 +527,14 @@ export default function Community() {
               <button
                 key={tp}
                 onClick={() => setFilter(tp)}
-                className="shrink-0 whitespace-nowrap rounded-full border-2 px-3.5 py-1.5 text-[13px] font-semibold transition-colors"
+                className="shrink-0 whitespace-nowrap rounded-full border-2 px-3.5 py-1.5 text-[13px] font-extrabold transition-colors"
                 style={{
                   borderColor: active ? '#4FA882' : '#E3EAE5',
                   background: active ? '#4FA882' : 'rgb(var(--surface))',
                   color: active ? '#fff' : 'rgb(var(--text-sub))',
                 }}
               >
-                {tm ? `${tm.emoji} ${t(`test.${tm.id}.short`)}` : t('community.all')}
+                {tm ? <><Emoji e={tm.emoji} inline />{t(`test.${tm.id}.short`)}</> : t('community.all')}
               </button>
             )
           })}
@@ -511,7 +546,7 @@ export default function Community() {
             <button
               key={s}
               onClick={() => setSort(s)}
-              className={`flex-1 rounded-xl py-2 text-[13px] font-semibold transition-colors ${
+              className={`flex-1 rounded-xl py-2 text-[13px] font-extrabold transition-colors ${
                 sort === s ? 'bg-surface text-mind-700 shadow-card' : 'text-ink-faint'
               }`}
             >
@@ -521,7 +556,7 @@ export default function Community() {
         </div>
 
         {copied && (
-          <p className="mt-2 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">
+          <p className="mt-2 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">
             {t('common.copied')}
           </p>
         )}
@@ -556,23 +591,25 @@ export default function Community() {
             />
           )}
           {server === null ? (
-            showLoading && <p className="py-10 text-center text-3xl">🧠</p>
+            showLoading && <p className="py-10 text-center leading-none"><Emoji e="🧠" size={30} className="align-top" /></p>
           ) : posts.length === 0 ? (
             <Card className="py-10 text-center">
-              <div className="text-5xl">🌱</div>
+              <div className="leading-none"><Emoji e="🌱" size={48} className="align-top" /></div>
               <p className="mt-3 whitespace-pre-line text-[14px] font-bold leading-relaxed text-ink-faint">
                 {filter === 'all' ? t('community.empty') : t('community.emptyFilter')}
               </p>
               <div className="mx-auto mt-4 max-w-[200px]">
                 <Button color="mind" size="sm" onClick={() => setOpen(true)}>
-                  ✏️ {t('community.write')}
+                  <Emoji e="✏️" inline />{t('community.write')}
                 </Button>
               </div>
             </Card>
           ) : (
             posts.map((p, i) => {
               const hot = p.likes >= HOT
-              const comments = server ? serverComments[p.id] || [] : commentsMap[p.id] || []
+              const comments = (server ? serverComments[p.id] || [] : commentsMap[p.id] || []).filter(
+                (c) => !blockedNicks.includes(c.nick), // 차단한 사람의 댓글도 가린다(글만 가리면 차단이 반쪽)
+              )
               return (
                 <div key={p.id} className="[content-visibility:auto] [contain-intrinsic-size:auto_180px]">
                   <motion.div
@@ -584,7 +621,7 @@ export default function Community() {
                       <div className="flex items-center gap-2">
                         <Avatar avatar={p.avatar} size={36} emojiScale={0.52} />
                         <div className="min-w-0 flex-1">
-                          <p className="flex min-w-0 items-center gap-1.5 text-[13px] font-semibold">
+                          <p className="flex min-w-0 items-center gap-1.5 text-[13px] font-extrabold">
                             <span className="min-w-0 truncate">{p.nick}</span>
                             {p.badge && (
                               <span className="shrink-0 rounded-full bg-mind-50 px-1.5 py-0.5 text-[12px]">
@@ -592,21 +629,21 @@ export default function Community() {
                               </span>
                             )}
                             {hot && (
-                              <span className="shrink-0 rounded-full bg-ego-light px-1.5 py-0.5 text-[11px] font-semibold text-ego-deep">
-                                🔥 {t('community.hot')}
+                              <span className="shrink-0 rounded-full bg-ego-light px-1.5 py-0.5 text-[11px] font-extrabold text-ego-deep">
+                                <Emoji e="🔥" inline />{t('community.hot')}
                               </span>
                             )}
                           </p>
-                          <p className="text-[11px] font-medium text-ink-faint">{timeAgo(p.at, t)}</p>
+                          <p className="text-[11px] font-bold text-ink-faint">{timeAgo(p.at, t)}</p>
                         </div>
                         {p.mine && (
-                          <button onClick={() => onDelete(p)} className="shrink-0 text-[12px] font-medium text-ink-faint">
+                          <button onClick={() => onDelete(p)} className="shrink-0 text-[12px] font-bold text-ink-faint">
                             {t('common.delete')}
                           </button>
                         )}
                       </div>
 
-                      <p className="mt-2 whitespace-pre-line break-keep text-[14px] font-medium leading-[1.65] text-ink">
+                      <p className="mt-2 whitespace-pre-line break-keep text-[14px] font-bold leading-[1.65] text-ink">
                         {p.text}
                       </p>
 
@@ -614,37 +651,42 @@ export default function Community() {
                         <motion.button
                           whileTap={{ scale: 0.97 }}
                           onClick={() => onLike(p)}
-                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors ${
+                          aria-pressed={!!p.liked}
+                          aria-label={l({ ko: `좋아요 ${p.likes}`, en: `Like ${p.likes}`, ja: `いいね ${p.likes}` })}
+                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-extrabold transition-colors ${
                             p.liked ? 'bg-red-50 text-red-500' : 'bg-surface2 text-ink-sub'
                           }`}
                         >
                           <motion.span animate={p.liked ? { scale: [1, 1.4, 1] } : {}}>
-                            {p.liked ? '❤️' : '🤍'}
+                            <Emoji e={p.liked ? '❤️' : '🤍'} inline />
                           </motion.span>
                           {p.likes}
                         </motion.button>
                         <motion.button
                           whileTap={{ scale: 0.97 }}
                           onClick={() => toggleComments(p.id)}
-                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors ${
+                          aria-expanded={openComments === p.id}
+                          aria-label={l({ ko: `댓글 ${comments.length}`, en: `Comments ${comments.length}`, ja: `コメント ${comments.length}` })}
+                          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-extrabold transition-colors ${
                             openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-sub'
                           }`}
                         >
-                          💬 {comments.length || ''}
+                          <Emoji e="💬" inline />{comments.length || ''}
                         </motion.button>
                         <button
                           onClick={() => onShare(p)}
-                          className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-[12px] font-semibold text-ink-sub"
+                          aria-label={l({ ko: '공유', en: 'Share', ja: '共有' })}
+                          className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-[12px] font-extrabold text-ink-sub"
                         >
                           📤
                         </button>
                         {!p.mine && (
                           <div className="ml-auto flex shrink-0 items-center gap-1">
-                            <button onClick={() => onBlock(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-medium text-ink-faint">
-                              🚫 {t('community.block')}
+                            <button onClick={() => onBlock(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-bold text-ink-faint">
+                              <Emoji e="🚫" inline />{t('community.block')}
                             </button>
-                            <button onClick={() => onReport(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-medium text-ink-faint">
-                              🚩 {t('community.report')}
+                            <button onClick={() => onReport(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-bold text-ink-faint">
+                              <Emoji e="🚩" inline />{t('community.report')}
                             </button>
                           </div>
                         )}
@@ -662,7 +704,7 @@ export default function Community() {
                           >
                             <div className="mt-3 space-y-2 border-t-2 border-line pt-3">
                               {comments.length === 0 ? (
-                                <p className="py-1 text-center text-[12px] font-medium text-ink-faint">
+                                <p className="py-1 text-center text-[12px] font-bold text-ink-faint">
                                   {t('community.commentEmpty')}
                                 </p>
                               ) : (
@@ -675,14 +717,14 @@ export default function Community() {
                                   >
                                     <Avatar avatar={c.avatar} size={26} emojiScale={0.5} />
                                     <div className="min-w-0 flex-1 rounded-2xl bg-surface2 px-3 py-2">
-                                      <p className="flex items-center gap-1 text-[12px] font-semibold">
+                                      <p className="flex items-center gap-1 text-[12px] font-extrabold">
                                         <span className="truncate">{c.nick}</span>
                                         {c.badge && <span className="shrink-0">{c.badge}</span>}
-                                        <span className="ml-auto shrink-0 text-[11px] font-medium text-ink-faint">
+                                        <span className="ml-auto shrink-0 text-[11px] font-bold text-ink-faint">
                                           {timeAgo(c.at, t)}
                                         </span>
                                       </p>
-                                      <p className="mt-0.5 whitespace-pre-line break-keep text-[13px] font-medium leading-relaxed text-ink">
+                                      <p className="mt-0.5 whitespace-pre-line break-keep text-[13px] font-bold leading-relaxed text-ink">
                                         {c.text}
                                       </p>
                                     </div>
@@ -697,13 +739,13 @@ export default function Community() {
                                   onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && submitComment(p.id)}
                                   placeholder={t('community.commentPh')}
                                   maxLength={200}
-                                  className="min-w-0 flex-1 rounded-full border-2 border-line bg-surface px-3.5 py-2 text-[13px] font-medium outline-none focus:border-mind-400"
+                                  className="min-w-0 flex-1 rounded-full border-2 border-line bg-surface px-3.5 py-2 text-[13px] font-bold outline-none focus:border-mind-400"
                                 />
                                 <motion.button
                                   whileTap={{ scale: 0.97 }}
                                   onClick={() => submitComment(p.id)}
                                   disabled={!commentText.trim() || commenting === p.id}
-                                  className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-40"
+                                  className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-extrabold text-white disabled:opacity-40"
                                 >
                                   {t('community.send')}
                                 </motion.button>
@@ -733,7 +775,7 @@ export default function Community() {
             transition={SPRING.flick}
             whileTap={{ scale: 0.97 }}
             onClick={applyNew}
-            className="fixed inset-x-0 top-16 z-40 mx-auto flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-semibold text-white shadow-pop"
+            className="fixed inset-x-0 top-16 z-40 mx-auto flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-extrabold text-white shadow-pop"
             style={{ background: 'linear-gradient(135deg, #4FA882, #6E9FDC)' }}
           >
             <motion.span animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 1.2 }}>
@@ -753,7 +795,7 @@ export default function Community() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.9 }}
             transition={SPRING.ui}
-            className="safe-bottom fixed inset-x-0 bottom-28 z-40 mx-auto flex w-fit max-w-[90%] items-center gap-2 rounded-full bg-mind-600 px-5 py-3 text-[14px] font-semibold text-white shadow-pop"
+            className="safe-bottom fixed inset-x-0 bottom-28 z-40 mx-auto flex w-fit max-w-[90%] items-center gap-2 rounded-full bg-mind-600 px-5 py-3 text-[14px] font-extrabold text-white shadow-pop"
           >
             <motion.span animate={{ rotate: [0, -12, 12, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}>
               🎉
@@ -769,7 +811,7 @@ export default function Community() {
         onClick={() => setOpen(true)}
         className="safe-bottom fixed bottom-24 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full text-[24px] text-white shadow-pop"
         style={{ background: 'linear-gradient(135deg, #4FA882, #6E9FDC)' }}
-        aria-label="write"
+        aria-label={t('community.write')}
       >
         <motion.span
           animate={{ rotate: [0, -12, 12, 0] }}
@@ -784,14 +826,14 @@ export default function Community() {
         <div className="flex items-center gap-2.5">
           <Avatar avatar={avatar} size={38} />
           <div className="min-w-0">
-            <p className="text-[15px] font-semibold">{nickname}</p>
-            <p className="text-[12px] font-medium text-ink-faint">{server ? t('community.shared') : t('community.local')}</p>
+            <p className="text-[15px] font-extrabold">{nickname}</p>
+            <p className="text-[12px] font-bold text-ink-faint">{server ? t('community.shared') : t('community.local')}</p>
           </div>
         </div>
         {/* 이번 주 주제 힌트 */}
         <div className="mt-2.5 flex items-center gap-2 rounded-xl bg-mind-50 px-3 py-2">
-          <span className="shrink-0 text-[14px]">🗓️</span>
-          <p className="break-keep text-[12px] font-medium leading-snug text-mind-700">
+          <Emoji e="🗓️" size={14} className="shrink-0" />
+          <p className="break-keep text-[12px] font-bold leading-snug text-mind-700">
             {t('community.themeLabel')} · {l(todayTheme())}
           </p>
         </div>
@@ -802,11 +844,11 @@ export default function Community() {
           rows={4}
           maxLength={280}
           autoFocus
-          className="mt-3 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-medium leading-relaxed outline-none focus:border-mind-400"
+          className="mt-3 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-bold leading-relaxed outline-none focus:border-mind-400"
         />
         <div className="mt-1.5 flex items-center justify-between">
           {myAnimal ? (
-            <button onClick={() => setAttach((v) => !v)} className="flex items-center gap-2 text-[13px] font-medium">
+            <button onClick={() => setAttach((v) => !v)} className="flex items-center gap-2 text-[13px] font-bold">
               <span
                 className="flex h-5 w-5 items-center justify-center rounded-md border-2"
                 style={{ borderColor: attach ? '#4FA882' : 'rgb(var(--line))', background: attach ? '#4FA882' : 'rgb(var(--surface))' }}
@@ -818,7 +860,7 @@ export default function Community() {
           ) : (
             <span />
           )}
-          <span className="text-[12px] font-medium text-ink-faint">{text.length}/280</span>
+          <span className="text-[12px] font-bold text-ink-faint">{text.length}/280</span>
         </div>
         <div className="mt-3.5">
           <Button color="mind" disabled={!text.trim()} busy={posting} error={postFailed} onClick={submit}>

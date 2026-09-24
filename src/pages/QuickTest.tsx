@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
-import { SPRING } from '../lib/motion'
+import { useMemo, useRef, useState } from 'react'
+import { SPRING, press3d } from '../lib/motion'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '../components/Button'
-import { ProgressBar, TopBar } from '../components/ui'
+import { AnswerCard, LessonHeader, TopBar } from '../components/ui'
 import { quickById } from '../data/quick'
 import { useT, useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
@@ -11,10 +11,14 @@ import { sfx } from '../lib/sound'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
-import { shiftGrad } from '../lib/color'
+import { darken, shiftGrad } from '../lib/color'
 import { CHARACTERS } from '../lib/characters'
 import { encodeQuickDuel } from '../lib/duel'
 import { useStore } from '../store/useStore'
+import Emoji from '../components/Emoji'
+
+/** 카카오 공유 버튼 아랫면 — 카카오 노랑을 같은 색조로 짙게 */
+const KAKAO_3D = press3d(4, '#C9B400')
 
 export default function QuickTest() {
   const { id } = useParams<{ id: string }>()
@@ -30,6 +34,8 @@ export default function QuickTest() {
   const [done, setDone] = useState(false)
   const [copied, setCopied] = useState(false)
   const [saved, setSaved] = useState(false)
+  /** 이미 답한 문항 번호 — 연타나 나가는 중인 이전 카드(낡은 onClick)가 같은 문항을 두 번 세지 못하게 */
+  const answeredRef = useRef(-1)
 
   const winner = useMemo(() => {
     if (!test) return null
@@ -55,6 +61,8 @@ export default function QuickTest() {
   if (!test) return <Navigate to="/" replace />
 
   const pick = (to: string) => {
+    if (answeredRef.current >= step) return
+    answeredRef.current = step
     sfx.tap()
     setTally((prev) => ({ ...prev, [to]: (prev[to] || 0) + 1 }))
     if (step + 1 < test.questions.length) setStep(step + 1)
@@ -149,13 +157,18 @@ export default function QuickTest() {
   }
 
   const reset = () => {
+    answeredRef.current = -1
     setTally({})
     setStep(0)
     setDone(false)
+    // 긴 결과 화면 아래쪽에서 눌렀으므로 첫 문항이 화면 밖에 걸리지 않게 맨 위로
+    window.scrollTo(0, 0)
   }
 
   // ── 결과 ──
   if (done && winner) {
+    // 결과 화면의 색 버튼도 Button과 같은 3D 아랫면(같은 색조로 짙게) — 납작한 버튼만 따로 놀지 않게
+    const duel3d = press3d(4, darken(accent[0], 0.25))
     return (
       <div className="min-h-dvh pb-36">
         <TopBar back="/quick" title={l(test.title)} />
@@ -180,19 +193,20 @@ export default function QuickTest() {
                   <motion.span
                     key={i}
                     aria-hidden="true"
-                    className="absolute left-1/2 top-1/2 text-[17px] leading-none"
+                    className="absolute left-1/2 top-1/2 flex leading-none"
                     initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
                     animate={{ x: Math.cos(rad) * 86, y: Math.sin(rad) * 86, scale: [0, 1.1, 0], opacity: [0, 1, 0] }}
                     transition={{ duration: 0.95, delay: 0.3 + i * 0.025, ease: 'easeOut' }}
                   >
-                    {s.e}
+                    <Emoji e={s.e} size={18} />
                   </motion.span>
                 )
               })}
               <motion.div
                 initial={{ scale: 0.5, y: 8 }}
                 animate={{ scale: 1, y: 0, rotate: [0, -8, 6, 0] }}
-                transition={SPRING.sheet}
+                // 스프링은 첫·끝 키프레임만 보간한다(0→0) — 흔들기는 키프레임 트윈으로 따로 줘야 실제로 움직인다
+                transition={{ ...SPRING.sheet, rotate: { duration: 0.5, ease: 'easeOut' } }}
                 className="relative drop-shadow-[0_6px_14px_rgba(0,0,0,0.18)]"
               >
                 <span className="floaty block">
@@ -203,7 +217,7 @@ export default function QuickTest() {
                       className="h-[108px] w-[108px]"
                     />
                   ) : (
-                    <span className="block text-[28px] leading-none">{winner.emoji}</span>
+                    <Emoji e={winner.emoji} size={28} className="block" />
                   )}
                 </span>
               </motion.div>
@@ -220,7 +234,7 @@ export default function QuickTest() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.3 }}
-              className="mt-2 text-[15px] font-semibold text-white/90"
+              className="mt-2 text-[15px] font-extrabold text-white/90"
             >
               “{l(winner.tag)}”
             </motion.p>
@@ -228,26 +242,29 @@ export default function QuickTest() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.58, duration: 0.3 }}
-              className="mt-3 break-keep text-[14px] font-medium leading-relaxed text-white/95"
+              className="mt-3 break-keep text-[14px] font-bold leading-relaxed text-white/95"
             >
               {l(winner.desc)}
             </motion.p>
           </motion.div>
 
           {(copied || saved) && (
-            <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">
-              ✅ {saved ? t('share.saved') : t('common.copied')}
+            <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">
+              <Emoji e="✅" inline />{saved ? t('share.saved') : t('common.copied')}
             </p>
           )}
 
           <div className="mt-4 space-y-2.5">
             {kakaoEnabled() && (
-              <button
+              <motion.button
                 onClick={shareKakaoQuick}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-semibold text-[#3A1D1D]"
+                whileTap={KAKAO_3D.whileTap}
+                transition={KAKAO_3D.transition}
+                className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] text-[15px] font-extrabold leading-none text-[#3A1D1D]"
+                style={{ boxShadow: KAKAO_3D.rest }}
               >
                 {t('quick.shareKakao')}
-              </button>
+              </motion.button>
             )}
             <div className="grid grid-cols-2 gap-2.5">
               <Button color="sky" onClick={shareCard}>
@@ -257,19 +274,21 @@ export default function QuickTest() {
                 {t('quick.share')}
               </Button>
             </div>
-            <button
+            <motion.button
               onClick={shareDuelQuick}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-semibold text-white"
-              style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }}
+              whileTap={duel3d.whileTap}
+              transition={duel3d.transition}
+              className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl text-[15px] font-extrabold leading-none text-white"
+              style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})`, boxShadow: duel3d.rest }}
             >
               {l({ ko: '친구와 대결', en: 'Challenge a friend', ja: '友達とバトル' })}
-            </button>
+            </motion.button>
             {test.funnel && (
               <Button color="white" onClick={() => nav(`/test/${test.funnel}`)}>
-                🔬 {t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}
+                <Emoji e="🔬" inline />{t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}
               </Button>
             )}
-            <button onClick={reset} className="w-full py-2 text-[13px] font-semibold text-ink-faint">
+            <button onClick={reset} className="w-full py-2 text-[13px] font-extrabold text-ink-faint">
               {t('quick.again')}
             </button>
           </div>
@@ -282,35 +301,41 @@ export default function QuickTest() {
   const q = test.questions[step]
   return (
     <div className="min-h-dvh pb-10">
-      <TopBar back="/quick" title={l(test.title)} />
-      <main className="mx-auto max-w-md px-5">
-        <div className="mt-1">
-          <ProgressBar value={(step + 1) / test.questions.length} />
-          <p className="mt-1.5 text-right text-[12px] font-semibold text-ink-faint">
+      {/* 문항 머리 — 듀오링고 레슨처럼 닫기(X)·진행바·번호만. 목록으로 나가는 길은 그대로 /quick */}
+      <LessonHeader
+        value={(step + 1) / test.questions.length}
+        color={test.grad[0]}
+        onClose={() => nav('/quick')}
+        closeLabel={t('common.close')}
+        right={
+          <span className="text-[13px] font-extrabold text-ink-faint">
             {step + 1} / {test.questions.length}
-          </p>
-        </div>
-
+          </span>
+        }
+      />
+      <main className="mx-auto max-w-md px-5">
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -24 }}
+            exit={{ opacity: 0, x: -24, transition: SPRING.snap }}
             transition={SPRING.ui}
           >
-            <h1 className="mt-6 break-keep text-[20px] font-extrabold leading-snug tracking-tight">{l(q.text)}</h1>
-            <div className="mt-5 space-y-2.5">
+            <p className="mt-5 text-[13px] font-extrabold" style={{ color: darken(test.grad[0], 0.2) }}>
+              {l(test.title)}
+            </p>
+            <h1 className="mt-2 break-keep text-[20px] font-extrabold leading-snug tracking-tight">{l(q.text)}</h1>
+            <div className="mt-6 space-y-3">
               {q.options.map((op, i) => (
-                <motion.button
+                <AnswerCard
                   key={i}
-                  whileTap={{ scale: 0.97 }}
-                  transition={SPRING.flick}
+                  accent={test.grad[0]}
                   onClick={() => pick(op.to)}
-                  className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-4 text-left text-[15px] font-bold leading-snug transition-colors active:border-mind-400 active:bg-mind-50"
+                  className="px-4 py-4 text-left text-[15px] font-bold leading-snug"
                 >
                   {l(op.text)}
-                </motion.button>
+                </AnswerCard>
               ))}
             </div>
           </motion.div>

@@ -22,6 +22,7 @@ export default function Toast() {
 
   return (
     <div
+      role="status"
       aria-live="polite"
       aria-atomic="false"
       className="pointer-events-none fixed inset-x-0 bottom-[calc(96px+env(safe-area-inset-bottom))] z-[60] flex flex-col items-center gap-2 px-5"
@@ -31,7 +32,8 @@ export default function Toast() {
           <motion.div
             key={it.id}
             layout
-            role="status"
+            // role="status"를 따로 달지 않는다 — 바깥 컨테이너가 이미 aria-live라, 안쪽에 또 라이브 영역을 두면
+            // 일부 스크린리더(VoiceOver)가 같은 문장을 두 번 읽는다
             initial={{ opacity: 0, y: 16, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96, transition: { duration: 0.16 } }}
@@ -45,7 +47,7 @@ export default function Toast() {
             <span className="shrink-0 text-[14px]" aria-hidden="true">
               {GLYPH[it.variant]}
             </span>
-            <span className="min-w-0 flex-1 break-keep text-[13px] font-semibold leading-snug">{it.text}</span>
+            <span className="min-w-0 flex-1 break-keep text-[13px] font-extrabold leading-snug">{it.text}</span>
             {it.action && (
               <button
                 onClick={(e) => {
@@ -53,7 +55,8 @@ export default function Toast() {
                   it.action?.run()
                   dismiss(it.id)
                 }}
-                className="-mr-1 shrink-0 rounded-full bg-white/15 px-3 py-1.5 text-[12px] font-semibold"
+                // 보이는 알약은 30px이지만 before로 위아래 8px씩 넓혀 44px 히트영역 — 토스트 높이는 그대로
+                className="relative -mr-1 shrink-0 rounded-full bg-white/15 px-3 py-1.5 text-[12px] font-extrabold before:absolute before:-inset-2 before:content-['']"
               >
                 {it.action.label}
               </button>

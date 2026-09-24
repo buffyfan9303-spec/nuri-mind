@@ -1,4 +1,5 @@
 import type { L, LedgerEntry } from './types'
+import { SURVEYS_ENABLED } from './features'
 
 /**
  * 랭크 등급 시스템 — "누적 적립 이력"을 등급으로 치환.
@@ -25,7 +26,10 @@ export const TIERS: Tier[] = [
     grad: ['#9BC4B2', '#C8E3D5'],
     name: { ko: '새싹', en: 'Seed', ja: '芽生え' },
     perks: [
-      { ko: '검사 3종 · 설문 참여 · 출석 적립', en: 'All tests · join surveys · daily check-in', ja: '検査3種・アンケート参加・出席' },
+      // 설문이 꺼져 있으면(data/features.ts) 없는 혜택을 약속하지 않는다
+      SURVEYS_ENABLED
+        ? { ko: '검사 3종 · 설문 참여 · 출석 적립', en: 'All tests · join surveys · daily check-in', ja: '検査3種・アンケート参加・出席' }
+        : { ko: '검사 · 출석 적립 (설문 참여는 준비 중)', en: 'Tests · daily check-in (surveys coming soon)', ja: '検査・出席（アンケートは準備中）' },
       { ko: '포인트 상점 교환 신청', en: 'Point shop redemption', ja: 'ポイントショップ交換' },
     ],
   },
@@ -37,7 +41,9 @@ export const TIERS: Tier[] = [
     grad: ['#D99A62', '#C8824A'],
     name: { ko: '브론즈', en: 'Bronze', ja: 'ブロンズ' },
     perks: [
-      { ko: '설문 등록 권한 해금 (내 설문 만들기)', en: 'Unlock survey creation', ja: 'アンケート作成権限を解禁' },
+      SURVEYS_ENABLED
+        ? { ko: '설문 등록 권한 해금 (내 설문 만들기)', en: 'Unlock survey creation', ja: 'アンケート作成権限を解禁' }
+        : { ko: '설문 등록 권한 (준비 중)', en: 'Survey creation (coming soon)', ja: 'アンケート作成権限（準備中）' },
       { ko: '📊 등급 뱃지·랭킹 노출', en: 'Tier badge & ranking', ja: 'ティアバッジ・ランキング表示' },
     ],
   },
