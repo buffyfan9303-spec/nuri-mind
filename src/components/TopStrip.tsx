@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { useStore } from '../store/useStore'
+import { isPremium, PREMIUM_KRW, useStore } from '../store/useStore'
 import { bestSurveyOf } from '../lib/survey'
 import { useL } from '../i18n/useT'
 import { haptic } from '../lib/haptic'
 import { canHover } from '../lib/device'
+import { SURVEYS_ENABLED } from '../data/features'
 
 /**
  * 상단 띠 배너 — 화면 맨 위 한 줄. 누르면 지금 가장 보상이 큰 설문으로 바로 간다.
@@ -15,8 +16,77 @@ import { canHover } from '../lib/device'
  *
  * 설문이 하나도 없으면 리워드 허브로 보낸다 — 빈손으로 보내지 않는다.
  * 광택 스윕은 3.6초마다 한 번, 동작 줄이기에선 MotionConfig가 통째로 끈다.
+ *
+ * 설문이 꺼져 있으면(data/features.ts) 누를 수 없는 '준비 중' 띠로 바뀐다 — 없는 설문으로 보내는 링크를 남기지 않는다.
  */
 export default function TopStrip() {
+  // 설문이 켜져 있으면 설문 띠, 꺼져 있으면 프리미엄 안내 띠 — 이미 구독 중이면 띠 자체를 숨긴다
+  const premium = isPremium(useStore((s) => s.premiumUntil))
+  if (SURVEYS_ENABLED) return <TopStripLive />
+  return premium ? null : <TopStripPremium />
+}
+
+/** 프리미엄 안내 띠 — 설문이 준비 중인 동안 이 자리는 유일한 유료 상품을 알린다(홈 하단 배너는 뺐다) */
+function TopStripPremium() {
+  const nav = useNavigate()
+  const l = useL()
+  return (
+    <motion.button
+      onClick={() => {
+        haptic(6)
+        nav('/premium')
+      }}
+      whileTap={{ scale: 0.995, filter: 'brightness(0.96)' }}
+      whileHover={canHover ? { filter: 'brightness(1.06)' } : undefined}
+      className="relative block w-full overflow-hidden bg-gradient-to-r from-[#6E7BF2] via-[#8B7CF6] to-[#A88BF2] py-2 text-white"
+    >
+      <motion.span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+        initial={{ x: '-30%' }}
+        animate={{ x: '130vw' }}
+        transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 3.6, ease: 'easeInOut' }}
+      />
+      <span className="relative mx-auto flex max-w-md items-center gap-2 px-5">
+        <span className="shrink-0 text-[14px]" aria-hidden="true">
+          ✨
+        </span>
+        <span className="min-w-0 flex-1 truncate text-left text-[12px] font-semibold">
+          {l({
+            ko: `프리미엄 · 운세·두뇌 측정 무제한 월 ${PREMIUM_KRW.toLocaleString()}원`,
+            en: `Premium · unlimited fortune & tests ₩${PREMIUM_KRW.toLocaleString()}/mo`,
+            ja: `プレミアム・運勢と検査が無制限 月₩${PREMIUM_KRW.toLocaleString()}`,
+          })}
+        </span>
+        <span className="shrink-0 rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-semibold">
+          {l({ ko: '알아보기', en: 'See', ja: '見る' })} ›
+        </span>
+      </span>
+    </motion.button>
+  )
+}
+
+/** 설문이 꺼져 있을 때 쓰던 '준비 중' 띠 — 지금은 프리미엄 띠가 자리를 쓴다(다시 쓸 수 있게 남겨 둠) */
+export function TopStripSoon() {
+  const l = useL()
+  return (
+    <div role="note" className="relative block w-full overflow-hidden bg-gradient-to-r from-mind-600 via-mind-500 to-sky2-500 py-2 text-white">
+      <span className="relative mx-auto flex max-w-md items-center gap-2 px-5">
+        <span className="shrink-0 text-[14px]" aria-hidden="true">
+          🛠️
+        </span>
+        <span className="min-w-0 flex-1 truncate text-left text-[12px] font-semibold">
+          {l({ ko: '리워드 설문은 준비 중이에요', en: 'Reward surveys are coming soon', ja: 'リワードアンケートは準備中です' })}
+        </span>
+        <span className="shrink-0 rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-semibold">
+          {l({ ko: '준비 중', en: 'Soon', ja: '準備中' })}
+        </span>
+      </span>
+    </div>
+  )
+}
+
+function TopStripLive() {
   const nav = useNavigate()
   const l = useL()
   const surveys = useStore((s) => s.surveys)

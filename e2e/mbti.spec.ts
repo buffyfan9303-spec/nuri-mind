@@ -143,7 +143,8 @@ test.describe('16가지 성격유형', () => {
     await open(page, '/mbti/foo')
 
     await expect(page).toHaveURL('/')
-    await expect(page.getByRole('button', { name: '빠른 12문항' })).toBeVisible()
+    // 홈이 실제로 그려졌는지 — 16유형 진입점은 홈 즐겨찾기의 '성격' 칸이다(예전 16유형 카드는 홈 개편으로 뺐다)
+    await expect(page.getByRole('button', { name: '성격', exact: true })).toBeVisible()
     // 가드가 빠지면 deep=false로 떨어져 MBTI_QUICK 1번 문항이 그대로 렌더된다 — URL만 봐서는 못 잡는 케이스
     await expect(page.getByText('주말에 에너지가 채워지는 쪽은?')).toHaveCount(0)
   })

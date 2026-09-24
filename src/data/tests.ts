@@ -156,7 +156,7 @@ export const TESTS: TestMeta[] = [
   },
   {
     id: 'dark',
-    emoji: '🃏',
+    emoji: '😈',
     count: 20,
     minutes: 5,
     tint: 'bg-dk-light',

@@ -1,29 +1,27 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SPRING } from '../lib/motion'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import type { L } from '../data/types'
 import { useNavigate } from 'react-router-dom'
 import Avatar from '../components/Avatar'
-import Button from '../components/Button'
 import Footer from '../components/Footer'
 import TopStrip from '../components/TopStrip'
 import ScrollChips, { CHIP_W } from '../components/ScrollChips'
-import AdSlot from '../components/AdSlot'
 import IconBadge from '../components/IconBadge'
 import { SkeletonBlock } from '../components/Skeleton'
 import { PointsPill, Card } from '../components/ui'
 import { TESTS } from '../data/tests'
+import { DEEP_CATS } from '../data/testGroups'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
-import { useStore, isPremium, PREMIUM_KRW } from '../store/useStore'
+import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { TERMS, TEST_SHORT_KEY } from '../data/terms'
 import { unreadMailCount } from '../lib/mailbox'
 
-import { localDay, localDayOf } from '../lib/date'
-import { bestSurveyOf } from '../lib/survey'
+import { localDay } from '../lib/date'
 
 const todayStr = () => localDay()
 
@@ -60,6 +58,19 @@ function StatTile({ icon, value, label, onClick }: { icon: string; value: string
   )
 }
 
+/** 섹션 머리 — 모든 검사 묶음이 같은 모양(제목 + 오른쪽 '전체 ›')을 쓴다 */
+function SectionHead({ emoji, title, onAll, allLabel }: { emoji: string; title: string; onAll: () => void; allLabel: string }) {
+  return (
+    <button onClick={onAll} className="mt-4 flex w-full items-center justify-between px-1 py-1">
+      <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
+        <span aria-hidden="true">{emoji}</span>
+        {title}
+      </h2>
+      <span className="text-[12px] font-semibold text-mind-600">{allLabel} ›</span>
+    </button>
+  )
+}
+
 export default function Home() {
   const t = useT()
   const l = useL()
@@ -89,67 +100,38 @@ export default function Home() {
   const todayFree = s.freeDate === todayStr() ? s.freeAmount : 0
   const checkedToday = s.lastCheckIn === todayStr()
 
-  /* HOT 칸용: 지금 참여 가능한 최고 보상 설문 — 상단 띠(TopStrip)와 같은 선택기를 쓴다 */
-  const bestSurvey = bestSurveyOf(s.surveys, s.takenSurveys)
-
-  // 오늘의 운세 프리뷰 — saju 모듈(별도 청크 gzip 32KB)은 지연 로드(메인 번들 오염 방지 표준 패턴)
-  const [fx, setFx] = useState<{ overall: number; luckyColorKo: string; luckyNumber: number; zodiacEmoji: string } | null>(null)
-  const [zlines, setZlines] = useState<{ emoji: string; zo: string; line: L }[]>([])
-  const [zPick, setZPick] = useState<number | null>(null)
-  const [sajuFail, setSajuFail] = useState(false)
+  /**
+   * 오늘의 운세 박스 — 저장된 운세 입력(fortuneProfile)으로 오늘 점수만 계산한다.
+   * 운세 화면과 같은 입력(시각·성별·음력 포함)을 써야 두 화면 점수가 어긋나지 않는다.
+   * saju·manse 모듈은 지연 로드(메인 번들 오염 방지 표준 패턴).
+   */
+  const [fx, setFx] = useState<{ overall: number; luckyColorKo: string; zodiacEmoji: string } | null>(null)
+  const fp = s.fortuneProfile
   useEffect(() => {
+    setFx(null)
+    if (!fp?.date) return
     let alive = true
-    import('../lib/saju').then((m) => {
-      if (!alive) return
-      const now = new Date()
-      const td = { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() }
-      if (s.birthDate) {
-        const [y, mo, d] = s.birthDate.split('-').map(Number)
-        if (y && mo && d) {
-          const f = m.fortuneOf({ y, m: mo, d }, td)
-          const sj = m.sajuOf(y, mo, d)
-          setFx({ overall: f.overall, luckyColorKo: f.luckyColorKo, luckyNumber: f.luckyNumber, zodiacEmoji: sj.zodiacEmoji })
-          return
-        }
-      }
-      // 생년월일 없음 → 띠 12지 맛보기(입력 장벽 제거: zodiacTodayLines는 생일이 필요 없음)
-      setZlines(m.zodiacTodayLines(td).map((z) => ({ emoji: z.zodiacEmoji, zo: z.zodiacKo, line: z.line })))
-    }).catch(() => {
-      // 청크 로드 실패(재배포 후 구 해시·오프라인) — 스켈레톤 영구화 방지, 헤더+CTA만 렌더
-      if (alive) setSajuFail(true)
-    })
+    Promise.all([import('../lib/saju'), import('../lib/manse')])
+      .then(([sj, mn]) => {
+        if (!alive) return
+        const solar = mn.profileSolar(fp)
+        if (!solar) return
+        const now = new Date()
+        const td = { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() }
+        const chart = mn.chartOf(solar, mn.parseTime(fp.time))
+        const f = sj.fortuneOf(solar, td, { chart, gender: fp.gender || undefined })
+        setFx({ overall: f.overall, luckyColorKo: f.luckyColorKo, zodiacEmoji: sj.sajuOf(solar.y, solar.m, solar.d, chart).zodiacEmoji })
+      })
+      // 청크 로드 실패(재배포 후 구 해시·오프라인) — 박스는 점수 없이 진입 버튼으로만 남는다
+      .catch(() => {})
     return () => {
       alive = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [s.birthDate])
+  }, [fp])
 
-  // 출석 직후 운세 넛지 — 이미 하는 행동(출석)에 얹는 재방문 습관 고리
-  const [fortuneNudge, setFortuneNudge] = useState(false)
-  const fortuneSeenToday = s.fortuneSeenDate === todayStr()
   const onCheckIn = () => {
-    if (s.checkIn()) {
-      fire('coin')
-      if (!fortuneSeenToday) setFortuneNudge(true)
-    }
+    if (s.checkIn()) fire('coin')
   }
-
-  // 오늘의 퀘스트 (출석 + 데일리퀴즈 + 검사 1개 + 운세 확인 → +50P)
-  const quizDoneToday = s.lastQuizDate === todayStr()
-  const testedToday = s.results.some((r) => localDayOf(r.at) === todayStr())
-  const questClaimed = s.questClaimedDate === todayStr()
-  const quests = [
-    { key: 'checkin', emoji: '📅', label: l({ ko: '출석 체크', en: 'Check in', ja: '出席チェック' }), done: checkedToday, go: onCheckIn },
-    { key: 'quiz', emoji: '🧠', label: l({ ko: '데일리 퀴즈 풀기', en: 'Daily quiz', ja: 'デイリークイズ' }), done: quizDoneToday, go: () => nav('/rewards') },
-    { key: 'test', emoji: '🔬', label: l({ ko: '심리검사 1개 완료', en: 'Finish 1 test', ja: '検査を1つ' }), done: testedToday, go: () => document.getElementById('deep-tests')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
-    { key: 'fortune', emoji: '🔮', label: l({ ko: '오늘의 운세 확인', en: "Check today's fortune", ja: '今日の運勢を見る' }), done: fortuneSeenToday, go: () => nav('/fortune') },
-  ]
-  const questDone = quests.filter((q) => q.done).length
-  const onClaimQuest = () => {
-    if (s.claimDailyQuest() > 0) fire('coin')
-  }
-  const premium = isPremium(s.premiumUntil)
-  const premiumDaysLeft = premium ? Math.max(0, Math.ceil((s.premiumUntil - Date.now()) / 86400000)) : 0
 
   // 퀵테스트 칩 — 문항·결과 데이터(60KB)는 지연 로드(메인 번들 오염 방지). 칩엔 메타 4필드만 필요
   const [quickChips, setQuickChips] = useState<{ id: string; emoji: string; short: L; grad0: string }[]>([])
@@ -162,22 +144,6 @@ export default function Home() {
       .catch(() => setQuickChips([]))
   }, [])
 
-  // 매거진 최신 글 롤링 — 본문 데이터는 지연 로드(메인 번들에 매거진 전문 미포함)
-  const [magHeads, setMagHeads] = useState<{ id: string; emoji: string; title: L }[]>([])
-  const [magIdx, setMagIdx] = useState(0)
-  useEffect(() => {
-    import('../data/magazine')
-      .then((m) =>
-        setMagHeads(m.ARTICLES.slice(-4).reverse().map((a) => ({ id: a.id, emoji: a.emoji, title: a.title }))),
-      )
-      .catch(() => setMagHeads([]))
-  }, [])
-  useEffect(() => {
-    if (magHeads.length < 2) return
-    const iv = setInterval(() => setMagIdx((i) => (i + 1) % magHeads.length), 3600)
-    return () => clearInterval(iv)
-  }, [magHeads.length])
-  const magHead = magHeads[magIdx]
   const trioDone = (['selfesteem', 'perfect', 'efficacy'] as const).every((id) => s.results.some((r) => r.testId === id))
   // 심층검사 전 종목 완주 시 AI 종합 심층 리포트 진입 노출(프리미엄 가치 상단 노출)
   const deepAllDone = TESTS.filter((tm) => !tm.precision).every((tm) => s.results.some((r) => r.testId === tm.id))
@@ -213,7 +179,7 @@ export default function Home() {
 
   return (
     <div className="bg-dots min-h-dvh pb-36">
-      {/* 맨 위 얇은 띠 — 리워드 설문 상시 진입점(본문 레이아웃을 밀지 않는 34px) */}
+      {/* 맨 위 얇은 띠 — 리워드 설문 상시 진입점(본문 레이아웃을 밀지 않는 34px). 설문이 꺼져 있으면 '준비 중' 안내 */}
       <TopStrip />
 
       <header className="mx-auto flex max-w-md items-center justify-between gap-2 px-5 pt-5">
@@ -310,78 +276,107 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* ── 즐겨찾는 심리검사 — 가장 많이 찾는 검사를 첫 줄에 모은다.
-            선정 근거(2026-09 조사): 성격유형·연애유형·애착유형·스트레스는 국내 테스트 플랫폼·기사에서 참여 수치가 확인된 유형.
-            운세·ADHD·IQ는 운영자 지정. 가장 큰 유행(에겐/테토)은 앱에 대응 검사가 없어 제외 ── */}
-        <div className="mt-5 flex items-center justify-between px-1">
-          <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
-            <span aria-hidden="true">⭐</span>
-            {l({ ko: '즐겨찾는 심리검사', en: 'Popular tests', ja: '人気の心理検査' })}
-          </h2>
+        {/* ── 대시보드 바로 아래 두 칸: 나에 관하여 | 오늘의 운세 — 매일 다시 올 이유 두 개를 첫 화면에 ── */}
+        <div className="mt-3 grid grid-cols-2 gap-2.5">
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => nav('/me')}
+            className="flex min-h-[92px] flex-col justify-between rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#8B95F6] p-3.5 text-left shadow-card"
+          >
+            <span className="flex items-center justify-between">
+              <IconBadge emoji="🪞" tone="frost" size={32} radius={11} />
+              <span className="text-[15px] text-white/80" aria-hidden="true">›</span>
+            </span>
+            <span>
+              <span className="block text-[15px] font-semibold leading-tight text-white">{l({ ko: '나에 관하여', en: 'About me', ja: '私について' })}</span>
+              <span className="mt-0.5 block truncate text-[12px] font-medium text-white/85">
+                {s.results.length > 0
+                  ? l({ ko: `내 검사 ${new Set(s.results.map((r) => r.testId)).size}종 모아 보기`, en: `${new Set(s.results.map((r) => r.testId)).size} results in one place`, ja: `検査${new Set(s.results.map((r) => r.testId)).size}種まとめ` })
+                  : l({ ko: '결과·머리 지도·읽을거리', en: 'Results · map · reads', ja: '結果・地図・読み物' })}
+              </span>
+            </span>
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => nav('/fortune')}
+            className="flex min-h-[92px] flex-col justify-between rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] p-3.5 text-left shadow-card"
+          >
+            <span className="flex items-center justify-between">
+              <IconBadge emoji={fx?.zodiacEmoji ?? '🔮'} tone="frost" size={32} radius={11} />
+              {fx ? (
+                <span className="rounded-full bg-white/25 px-2 py-0.5 text-[12px] font-semibold tabular-nums text-white">{fx.overall}{l({ ko: '점', en: 'pt', ja: '点' })}</span>
+              ) : (
+                <span className="text-[15px] text-white/80" aria-hidden="true">›</span>
+              )}
+            </span>
+            <span>
+              <span className="block text-[15px] font-semibold leading-tight text-white">{t('fortune.title')}</span>
+              <span className="mt-0.5 block truncate text-[12px] font-medium text-white/85">
+                {fx
+                  ? l({ ko: `행운색 ${fx.luckyColorKo}`, en: `Lucky color: ${l(LUCKY_COLOR_L[fx.luckyColorKo] ?? { ko: fx.luckyColorKo, en: fx.luckyColorKo, ja: fx.luckyColorKo })}`, ja: `ラッキーカラー ${l(LUCKY_COLOR_L[fx.luckyColorKo] ?? { ko: fx.luckyColorKo, en: fx.luckyColorKo, ja: fx.luckyColorKo })}` })
+                  : l({ ko: '생일로 오늘 흐름 보기', en: "See today's flow", ja: '誕生日で今日の流れ' })}
+              </span>
+            </span>
+          </motion.button>
         </div>
+
+        {/* ── 즐겨찾는 심리검사 — 가장 많이 찾는 검사를 첫 줄에 모은다.
+            선정 근거(2026-09 조사): 성격유형·연애유형·애착유형은 국내 테스트 플랫폼·기사에서 참여 수치가 확인된 유형.
+            ADHD·IQ는 운영자 지정. 가장 큰 유행(에겐/테토)은 앱에 대응 검사가 없어 제외. 운세는 위 박스로 옮겼다 ── */}
+        <SectionHead emoji="⭐" title={l({ ko: '즐겨찾는 심리검사', en: 'Popular tests', ja: '人気の心理検査' })} onAll={() => nav('/tests')} allLabel={t('community.all')} />
         <ScrollChips
           items={[
-            { id: 'fav-fortune', emoji: '🔮', label: l({ ko: '운세', en: 'Fortune', ja: '運勢' }), color: '#6B4FB8', onClick: () => nav('/fortune') },
             { id: 'fav-adhd', emoji: '🎯', label: 'ADHD', color: '#FFB020', onClick: () => nav('/test/adhd') },
             { id: 'fav-iq', emoji: '🧩', label: t('test.iq.short'), color: '#6E7BF2', onClick: () => nav('/test/iq') },
             { id: 'fav-mbti', emoji: '🔠', label: l({ ko: '성격', en: 'Persona', ja: '性格' }), color: '#3B9EFF', onClick: () => nav('/mbti/quick') },
             { id: 'fav-lovestyle', emoji: '💘', label: l({ ko: '연애', en: 'Love', ja: '恋愛' }), color: '#F25C8E', onClick: () => nav('/quick/lovestyle') },
             { id: 'fav-attach', emoji: '💞', label: l({ ko: '애착', en: 'Attach', ja: '愛着' }), color: '#E0567F', onClick: () => nav('/test/love') },
             { id: 'fav-stress', emoji: '🌋', label: l({ ko: '스트레스', en: 'Stress', ja: 'ストレス' }), color: '#8B7CF6', onClick: () => nav('/quick/stress') },
+            { id: 'fav-mbti-deep', emoji: '🧩', label: l({ ko: '성격 심층', en: 'Persona+', ja: '性格詳細' }), color: '#6E7BF2', onClick: () => nav('/mbti/deep') },
           ]}
         />
 
-        {/* ── 1분 퀵 테스트 — 유행형·가벼운 검사라 즐겨찾기 바로 아래(사용자가 먼저 찾는 쪽을 앞으로) ── */}
-        <div className="mt-4">
-          <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
-            <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
-              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
-              {t('quick.banner')}
-            </h2>
-            <span className="text-[12px] font-semibold text-mind-600">{t('community.all')} ›</span>
-          </button>
-          {quickChips.length ? (
-            <ScrollChips
-              items={quickChips.map((q, i) => ({
-                id: q.id,
-                emoji: q.emoji,
-                label: l(q.short),
-                color: q.grad0,
-                onClick: () => nav(`/quick/${q.id}`),
-                badge: i === 0 ? ('HOT' as const) : i >= quickChips.length - 2 ? ('NEW' as const) : undefined,
-              }))}
-            />
-          ) : (
-            /* 데이터 로드 전 스켈레톤 칩 — 레이아웃 시프트 방지(실제 칩과 동일 규격) */
-            <div className="no-scrollbar mt-2 flex gap-2.5 overflow-x-hidden pb-3 pt-1">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <SkeletonBlock key={i} className={`${CHIP_W} aspect-square shrink-0 !rounded-[20px]`} />
-              ))}
-            </div>
-          )}
-        </div>
+        {/* ── 두뇌 측정 (실측 인지과제) — 즐겨찾기 바로 아래 ── */}
+        <SectionHead emoji="🔬" title={l(TERMS.sectionPrecision)} onAll={() => nav('/tests', { state: { scrollTo: 'brain' } })} allLabel={t('community.all')} />
+        <ScrollChips
+          items={TESTS.filter((tm) => tm.precision).map((tm) => ({
+            id: tm.id,
+            emoji: tm.emoji,
+            label: t(TEST_SHORT_KEY(tm.id)),
+            color: tm.gradFrom,
+            onClick: () => nav(`/test/${tm.id}`),
+          }))}
+        />
 
-        {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 이 앱의 본편. 자산 대시보드 바로 아래 첫 콘텐츠 ── */}
-        <div id="deep-tests" className="mt-4 flex items-center justify-between px-1">
-          <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
-            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.4 }}>🧠</motion.span>
-            {t('home.testsHeader')}
-          </h2>
-          <span className="rounded-full bg-mind-100 px-2 py-0.5 text-[11px] font-semibold text-mind-700">
-            {TESTS.filter((tm) => !tm.precision).length}
-            {l(TERMS.unitTests)}
-          </span>
+        {/* ── 1분 테스트 — 유행형·가벼운 검사 ── */}
+        <SectionHead emoji="🔥" title={t('quick.banner')} onAll={() => nav('/quick')} allLabel={t('community.all')} />
+        {quickChips.length ? (
+          <ScrollChips
+            items={quickChips.map((q, i) => ({
+              id: q.id,
+              emoji: q.emoji,
+              label: l(q.short),
+              color: q.grad0,
+              onClick: () => nav(`/quick/${q.id}`),
+              badge: i === 0 ? ('HOT' as const) : undefined,
+            }))}
+          />
+        ) : (
+          /* 데이터 로드 전 스켈레톤 칩 — 레이아웃 시프트 방지(실제 칩과 동일 규격) */
+          <div className="no-scrollbar mt-2 flex gap-2.5 overflow-x-hidden pb-3 pt-1">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <SkeletonBlock key={i} className={`${CHIP_W} aspect-square shrink-0 !rounded-[20px]`} />
+            ))}
+          </div>
+        )}
+
+        {/* ── 깊이 보는 심리검사 — 많이 찾는 순서: 연애·관계 → 요즘 내 마음 → 나를 알기 ── */}
+        <div id="deep-tests">
+          <SectionHead emoji="🧠" title={t('home.testsHeader')} onAll={() => nav('/tests', { state: { scrollTo: 'deep' } })} allLabel={t('community.all')} />
         </div>
-        {/* 카테고리 허브 — 많이 찾는 순서: 연애·관계 → 요즘 내 마음 → 나를 알기 (두뇌 측정은 아래 섹션) */}
-        {(
-          [
-            { key: 'relation', emoji: '💞', label: { ko: '연애 · 관계', en: 'Love & relationships', ja: '恋愛・関係' }, ids: ['love', 'dark', 'ego'], newIds: [] },
-            { key: 'mind', emoji: '🌿', label: { ko: '요즘 내 마음', en: 'How I feel lately', ja: '最近の心' }, ids: ['burnout', 'adhd', 'socialanx', 'dopamine', 'resilience'], newIds: ['socialanx'] },
-            { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['selfesteem', 'perfect', 'efficacy'], newIds: ['efficacy'] },
-          ] as const
-        ).map((cat) => (
+        {DEEP_CATS.map((cat) => (
           <div key={cat.key}>
-            <p className="mt-3 flex items-center gap-1 px-1 text-[13px] font-semibold text-ink-sub">
+            <p className="mt-1 flex items-center gap-1 px-1 text-[13px] font-semibold text-ink-sub">
               <span aria-hidden="true">{cat.emoji}</span>
               {l(cat.label)}
             </p>
@@ -395,410 +390,69 @@ export default function Home() {
                   label: t(TEST_SHORT_KEY(tm.id)),
                   color: tm.gradFrom,
                   onClick: () => nav(`/test/${tm.id}`),
-                  badge: (cat.newIds as readonly string[]).includes(tm.id) ? ('NEW' as const) : undefined,
                 }))}
             />
           </div>
         ))}
 
-        {/* 출석 직후 운세 넛지 — 출석이라는 기존 습관에 운세 확인을 얹음 */}
-        <AnimatePresence>
-          {fortuneNudge && !fortuneSeenToday && (
-            <motion.button
-              initial={{ opacity: 0, y: -8, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8 }}
-              onClick={() => nav('/fortune')}
-              className="mt-3 flex w-full items-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#6B4FB8] to-[#A88BF2] px-4 py-3 text-left shadow-card"
-            >
-              <span className="shrink-0 text-[20px]">🔮</span>
-              <span className="min-w-0 flex-1 break-keep text-[13px] font-semibold leading-snug text-white">
-                {l({ ko: '출석 완료! 오늘의 운세도 확인해보세요', en: "Checked in! See today's fortune too", ja: '出席完了！今日の運勢もチェック' })}
-              </span>
-              <span className="shrink-0 text-[15px] text-white/80">›</span>
-            </motion.button>
-          )}
-        </AnimatePresence>
-
-        {/* 섹션 헤더 — 블록 이동 없이 리듬만 부여(수익·바이럴 CTA는 어떤 버킷에도 넣지 않음) */}
-        <p className="mt-6 px-1 text-[12px] font-semibold tracking-wide text-ink-faint">{l({ ko: '오늘 할 일', en: 'Today', ja: '今日やること' })}</p>
-
-        {/* ── 오늘의 퀘스트 ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING.ui, delay: 0.06 }}>
-          <Card className="mt-3.5 !p-4">
-            <div className="flex items-center justify-between">
-              <h3 className="flex items-center gap-1.5 text-[15px] font-semibold">{l({ ko: '오늘의 퀘스트', en: 'Daily quest', ja: '今日のクエスト' })}</h3>
-              <span className="text-[12px] font-semibold text-mind-600">{questDone}/{quests.length}</span>
-            </div>
-            <div className="mt-3 space-y-2">
-              {quests.map((q) => (
-                <div key={q.key} className="flex items-center gap-2.5">
-                  <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] ${q.done ? 'bg-mind-500 text-white' : 'bg-surface2'}`}>{q.done ? '✓' : q.emoji}</span>
-                  <span className={`flex-1 break-keep text-[13px] font-medium ${q.done ? 'text-ink-faint line-through' : 'text-ink'}`}>{q.label}</span>
-                  {!q.done && (
-                    <button onClick={q.go} className="shrink-0 rounded-full bg-surface2 px-2.5 py-1 text-[11px] font-semibold text-mind-700">{l({ ko: '하기', en: 'Go', ja: 'やる' })} ›</button>
-                  )}
-                </div>
-              ))}
-            </div>
-            {questDone === quests.length && !questClaimed && (
-              <button onClick={onClaimQuest} className="mt-3 w-full rounded-2xl bg-mind-500 py-3 text-[14px] font-semibold text-white shadow-[0_3px_0_#2F6B52] transition-transform active:translate-y-[3px]">
-                {l({ ko: '보너스 +50P 받기', en: 'Claim +50P', ja: 'ボーナス+50P受取' })}
-              </button>
-            )}
-            {questClaimed && (
-              <p className="mt-3 rounded-2xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">✅ {l({ ko: '오늘 퀘스트 완료! +50P', en: 'Quest done! +50P', ja: 'クエスト完了！+50P' })}</p>
-            )}
-          </Card>
-        </motion.div>
-
         {/* ── 🌱 오늘의 성장 실천 — 플랜 보유자에게만 ── */}
         {s.growthPlanAt > 0 && growth.total > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...SPRING.ui, delay: 0.07 }}
-          >
-            <Card
-              onClick={() => nav('/growth')}
-              ariaLabel={l({ ko: '성장 플랜 열기', en: 'Open growth plan', ja: '成長プランを開く' })}
-              className="mt-3.5 flex items-center gap-3 !p-4"
-            >
-              <IconBadge emoji="🌱" color="#4FA882" size={44} radius={14} wiggle />
-              <div className="min-w-0 flex-1">
-                <h3 className="break-keep text-[15px] font-semibold">
-                  {l({ ko: '오늘의 성장 실천', en: "Today's growth actions", ja: '今日の成長実践' })}
-                </h3>
-                <p className="mt-0.5 break-keep text-[12px] font-medium text-ink-faint">
-                  {growth.left > 0
-                    ? l({
-                        ko: `${growth.left}개 남았어요 · 하나씩 체크하면 +5P`,
-                        en: `${growth.left} left · +5P each`,
-                        ja: `残り${growth.left}件・1つ+5P`,
-                      })
-                    : l({ ko: '오늘 실천 완료! 🎉', en: 'All done today! 🎉', ja: '今日は完了！🎉' })}
-                </p>
-              </div>
-              <span className="shrink-0 rounded-full bg-mind-100 px-2.5 py-1 text-[12px] font-semibold text-mind-700">
-                {growth.total - growth.left}/{growth.total}
-              </span>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* ── 돈 버는 리워드 설문 (즉시 적립) ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...SPRING.ui, delay: 0.08 }}
-        >
           <Card
-            onClick={() => nav(bestSurvey ? `/rewards/survey/${bestSurvey.id}` : '/rewards')}
-            className="mt-3.5 flex items-center gap-3 !bg-gradient-to-r from-mind-600 to-mind-400 !p-4"
+            onClick={() => nav('/growth')}
+            ariaLabel={l({ ko: '성장 플랜 열기', en: 'Open growth plan', ja: '成長プランを開く' })}
+            className="mt-3 flex items-center gap-3 !p-3.5"
           >
-            <motion.span animate={{ rotate: [0, -6, 6, 0] }} transition={{ repeat: Infinity, duration: 2.4 }} className="shrink-0 text-[24px]">
-              💰
-            </motion.span>
+            <IconBadge emoji="🌱" color="#4FA882" size={40} radius={13} />
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[15px] font-semibold leading-tight text-white">{t('home.surveyBanner')}</h3>
-              <p className="mt-0.5 truncate text-[12px] font-medium text-white/90">
-                {bestSurvey ? t('home.surveyBadge') : t('home.surveyBannerEmpty')}
+              <h3 className="break-keep text-[15px] font-semibold">{l({ ko: '오늘의 성장 실천', en: "Today's growth actions", ja: '今日の成長実践' })}</h3>
+              <p className="mt-0.5 break-keep text-[12px] font-medium text-ink-faint">
+                {growth.left > 0
+                  ? l({ ko: `${growth.left}개 남았어요 · 하나씩 체크하면 +5P`, en: `${growth.left} left · +5P each`, ja: `残り${growth.left}件・1つ+5P` })
+                  : l({ ko: '오늘 실천을 다 했어요', en: 'All done today', ja: '今日は完了' })}
               </p>
             </div>
-            {bestSurvey && (
-              <span className="shrink-0 rounded-full bg-surface px-3 py-1.5 text-[14px] font-semibold text-mind-700">
-                +{bestSurvey.reward}P
-              </span>
-            )}
+            <span className="shrink-0 rounded-full bg-mind-100 px-2.5 py-1 text-[12px] font-semibold text-mind-700">
+              {growth.total - growth.left}/{growth.total}
+            </span>
           </Card>
-        </motion.div>
+        )}
 
-        {/* 중간 광고 — 콘텐츠 사이에만 둔다(빈 화면 광고는 애드센스 정책 위반). 프리미엄은 AdSlot이 스스로 숨긴다 */}
-        <div className="mt-6">
-          <AdSlot variant="banner" />
-        </div>
-
-        {/* ── 오늘의 운세 히어로 — 결과 프리뷰(생일 없으면 띠 맛보기)로 존재감 강화 ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...SPRING.ui, delay: 0.1 }}
-        >
-          <Card onClick={() => nav('/fortune')} className="mt-3.5 overflow-hidden !bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] !p-4">
-            <div className="flex items-center gap-2.5">
-              <IconBadge emoji="🔮" tone="frost" size={40} radius={13} wiggle />
-              <div className="min-w-0 flex-1">
-                <h3 className="break-keep text-[15px] font-semibold leading-tight text-white">{t('fortune.title')}</h3>
-                <p className="mt-0.5 break-keep text-[11px] font-medium text-white/80">{t('fortune.homeSub')}</p>
-              </div>
-              <span className="shrink-0 text-[15px] text-white/70">›</span>
-            </div>
-
-            {fx ? (
-              <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                <span className="flex items-center gap-1 rounded-full bg-white/20 px-3 py-1.5 text-[13px] font-semibold text-white">
-                  {fx.zodiacEmoji} {l({ ko: `총운 ${fx.overall}점`, en: `Overall ${fx.overall}`, ja: `総運 ${fx.overall}点` })}
-                </span>
-                <span className="rounded-full bg-white/15 px-2.5 py-1.5 text-[12px] font-semibold text-white/90">🎨 {l(LUCKY_COLOR_L[fx.luckyColorKo] ?? { ko: fx.luckyColorKo, en: fx.luckyColorKo, ja: fx.luckyColorKo })}</span>
-                <span className="rounded-full bg-white/15 px-2.5 py-1.5 text-[12px] font-semibold text-white/90">🔢 {fx.luckyNumber}</span>
-              </div>
-            ) : zlines.length > 0 ? (
-              <div className="mt-3" onClick={(e) => e.stopPropagation()}>
-                <p className="text-[12px] font-semibold text-white/85">
-                  {l({ ko: '내 띠 누르고 3초 맛보기', en: 'Tap your zodiac for a 3s taste', ja: '干支をタップして3秒お試し' })}
-                </p>
-                <div className="mt-1.5 flex flex-wrap gap-1">
-                  {zlines.map((z, i2) => (
-                    <button
-                      key={z.zo}
-                      onClick={() => setZPick(i2)}
-                      aria-label={z.zo}
-                      className={`rounded-full px-2.5 py-2 text-[17px] leading-none transition-colors ${zPick === i2 ? 'bg-white/90' : 'bg-white/15'}`}
-                    >
-                      {z.emoji}
-                    </button>
-                  ))}
-                </div>
-                <AnimatePresence mode="wait">
-                  {zPick !== null && zlines[zPick] && (
-                    <motion.div
-                      key={zPick}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="mt-2 rounded-2xl bg-white/15 px-3 py-2.5"
-                    >
-                      <p className="break-keep text-[12px] font-medium leading-relaxed text-white">
-                        {zlines[zPick].emoji} {l(zlines[zPick].line)}
-                      </p>
-                      <button
-                        onClick={() => nav('/fortune')}
-                        className="mt-1.5 text-[12px] font-semibold text-white underline underline-offset-2"
-                      >
-                        {l({ ko: '내 사주로 정확히 보기 →', en: 'See my exact fortune →', ja: '私の四柱で正確に見る →' })}
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ) : sajuFail ? null : (
-              <div className="mt-3 flex gap-2">
-                <SkeletonBlock className="h-8 w-28 rounded-full" />
-                <SkeletonBlock className="h-8 w-20 rounded-full" />
-              </div>
-            )}
-          </Card>
-
-          {/* 생일 궁합 — 슬림 배너 */}
-          <Card onClick={() => nav('/compat')} className="mt-2.5 flex items-center gap-2.5 overflow-hidden !bg-gradient-to-br from-[#F25C8E] to-[#FF9EC0] !p-3.5">
-            <IconBadge emoji="💞" tone="frost" size={36} radius={12} wiggle />
-            <h3 className="min-w-0 flex-1 break-keep text-[14px] font-semibold leading-tight text-white">{t('compat.title')}</h3>
-            <span className="shrink-0 text-[15px] text-white/70">›</span>
-          </Card>
-        </motion.div>
-
-        {/* 섹션 헤더 — 블록 이동 없이 리듬만 부여(수익·바이럴 CTA는 어떤 버킷에도 넣지 않음) */}
-        <p className="mt-6 px-1 text-[12px] font-semibold tracking-wide text-ink-faint">{l({ ko: '나를 탐색하기', en: 'Explore yourself', ja: '自分を知る' })}</p>
-
-        {/* ── 16가지 성격유형 — 일반(12문항)·심층(24문항) 2종 ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px 0px' }}
-          transition={SPRING.ui}
-          className="mt-3.5"
-        >
-          <Card className="!p-4">
-            <div className="flex items-center gap-3">
-              <IconBadge emoji="🧩" color="#6E7BF2" size={44} radius={14} wiggle />
-              <div className="min-w-0 flex-1">
-                <h3 className="break-keep text-[15px] font-semibold">
-                  {l({ ko: '16가지 성격유형', en: '16 personality types', ja: '16の性格タイプ' })}
-                </h3>
-                <p className="mt-0.5 break-keep text-[12px] font-medium text-ink-faint">
-                  {l({ ko: '가볍게 12문항 · 정확하게 24문항', en: '12 quick · 24 in depth', ja: '手軽12問・詳細24問' })}
-                </p>
-              </div>
-            </div>
-            <div className="mt-3 grid grid-cols-2 gap-2.5">
-              <Button color="mind" size="sm" onClick={() => nav('/mbti/quick')}>
-                ⚡ {l({ ko: '빠른 12문항', en: 'Quick 12', ja: '手軽12問' })}
-              </Button>
-              <Button color="white" size="sm" onClick={() => nav('/mbti/deep')}>
-                🔬 {l({ ko: '심층 24문항', en: 'Deep 24', ja: '詳細24問' })}
-              </Button>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* ── 정밀검사 (실측 인지과제) — 1분 테스트식 헤더(앞 아이콘+뒤 배지) + 젤리 칩 ── */}
-        <div className="mt-6 flex items-center justify-between px-1">
-          <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
-            <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.6 }}>🔬</motion.span>
-            {l(TERMS.sectionPrecision)}
-          </h2>
-          <span className="rounded-full bg-iq-light px-2 py-0.5 text-[11px] font-semibold text-iq-deep">{l(TERMS.badgeMeasured)}</span>
-        </div>
-        <ScrollChips
-          items={TESTS.filter((tm) => tm.precision).map((tm, i, arr) => ({
-            id: tm.id,
-            emoji: tm.emoji,
-            label: t(TEST_SHORT_KEY(tm.id)),
-            color: tm.gradFrom,
-            onClick: () => nav(`/test/${tm.id}`),
-            badge: i >= arr.length - 2 ? ('NEW' as const) : undefined,
-          }))}
-        />
-
-        {/* 종합 인지 프로필 (정밀검사 레이더) */}
-        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui}>
-          <Card onClick={() => nav('/cog')} className="mt-2.5 flex items-center gap-3 !bg-gradient-to-r from-[#5B6CF0] to-[#3B82F6] !p-3.5">
-            <IconBadge emoji="🧩" tone="frost" size={40} radius={13} wiggle />
+        {/* ── 완주자 전용 리포트 — 조건을 채운 사람에게만 ── */}
+        {trioDone && (
+          <Card onClick={() => nav('/self-report')} className="mt-3 flex items-center gap-3 !bg-gradient-to-r from-[#5B6CF0] to-[#9AA6FF] !p-3.5">
+            <IconBadge emoji="🪞" tone="frost" size={40} radius={13} />
             <div className="min-w-0 flex-1">
-              <h3 className="text-[14px] font-semibold leading-tight text-white">{l({ ko: '종합 인지 프로필 보기', en: 'View cognitive profile', ja: '総合認知プロフィール' })}</h3>
-              <p className="mt-0.5 truncate text-[11px] font-medium text-white/85">{l({ ko: 'IQ·기억·집중·처리속도·공간·전환 레이더', en: 'IQ·memory·focus·speed·spatial·switching radar', ja: 'IQ·記憶·集中·速度·空間·切替レーダー' })}</p>
+              <h3 className="text-[15px] font-semibold text-white">{l({ ko: '통합 자기 리포트', en: 'Integrated self report', ja: '統合自己レポート' })}</h3>
+              <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">{l({ ko: '자존감·완벽주의·자기효능감을 한 번에', en: 'Self-esteem · perfectionism · efficacy', ja: '自尊感情・完璧主義・自己効力感' })}</p>
             </div>
             <span className="text-white/80">›</span>
           </Card>
-        </motion.div>
-
-        {/* ── 통합 자기 리포트 (자기 3부작 완료 시) — 검사 섹션 뒤 완료자 대상 ── */}
-        {trioDone && (
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui} className="mt-4">
-            <button
-              onClick={() => nav('/self-report')}
-              className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
-              style={{ background: 'linear-gradient(135deg,#5B6CF0,#9AA6FF)' }}
-            >
-              <IconBadge emoji="🪞" tone="frost" size={44} radius={14} wiggle />
-              <div className="min-w-0 flex-1">
-                <h3 className="text-[15px] font-semibold text-white">
-                  {l({ ko: '통합 자기 리포트 완성!', en: 'Self report ready!', ja: '統合セルフレポート完成！' })}
-                </h3>
-                <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">
-                  {l({ ko: '자존감·완벽주의·효능감 종합 분석', en: 'Your combined self-profile', ja: '自尊心・完璧主義・効力感の統合分析' })}
-                </p>
-              </div>
-              <span className="text-xl text-white/80">›</span>
-            </button>
-          </motion.div>
         )}
-
-        {/* ── AI 종합 심층 리포트 — 심층 전종목 완주자 전용 진입(프리미엄 가치) ── */}
         {deepAllDone && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px 0px' }}
-            transition={SPRING.ui}
-            className="mt-4"
-          >
-            <Card
-              onClick={() => nav('/deep-report')}
-              className="flex items-center gap-3.5 !bg-gradient-to-r from-[#6E7BF2] to-[#A88BF2] !p-4"
-            >
-              <IconBadge emoji="🧬" tone="frost" size={46} radius={15} wiggle />
-              <div className="min-w-0 flex-1">
-                <h3 className="break-keep text-[15px] font-semibold text-white">
-                  {l({ ko: 'AI 종합 심층 리포트', en: 'AI deep report', ja: 'AI総合レポート' })}
-                </h3>
-                <p className="mt-0.5 break-keep text-[12px] font-medium text-white/85">
-                  {l({ ko: '심층검사를 모두 마쳤어요. 결과를 한데 모아 읽어 드려요', en: 'All deep tests done — read as one person', ja: '深層検査完走！一つに読み解きます' })}
-                </p>
-              </div>
-              <span className="shrink-0 text-[15px] text-white/80">›</span>
-            </Card>
-          </motion.div>
+          <Card onClick={() => nav('/deep-report')} className="mt-3 flex items-center gap-3 !bg-gradient-to-r from-[#6E7BF2] to-[#A88BF2] !p-3.5">
+            <IconBadge emoji="🧬" tone="frost" size={40} radius={13} />
+            <div className="min-w-0 flex-1">
+              <h3 className="text-[15px] font-semibold text-white">{l({ ko: 'AI 종합 심층 리포트', en: 'AI deep report', ja: 'AI総合レポート' })}</h3>
+              <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">{l({ ko: '심층검사를 모두 마쳤어요. 한데 모아 읽어 드려요', en: 'All deep tests done — read as one', ja: '深層検査完走！一つに読み解きます' })}</p>
+            </div>
+            <span className="text-white/80">›</span>
+          </Card>
         )}
 
-        {/* ── 프리미엄 구독 CTA — 수익화 존(검사 가치 체험 뒤) ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui} className="mt-4">
-          <button
-            onClick={() => nav('/premium')}
-            className="flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-pop"
-            style={{ background: premium ? 'linear-gradient(135deg,#F2B01E,#FF7E5F)' : 'linear-gradient(135deg,#6E7BF2,#A88BF2)' }}
-          >
-            <IconBadge emoji="✨" tone="frost" size={44} radius={14} wiggle />
-            <div className="min-w-0 flex-1">
-              <h3 className="text-[15px] font-semibold text-white">
-                {premium
-                  ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
-                  : l({ ko: '프리미엄 · 운세 무제한', en: 'Premium · unlimited fortune', ja: 'プレミアム・運勢無制限' })}
-              </h3>
-              <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">
-                {premium
-                  ? l({ ko: `남은 기간 D-${premiumDaysLeft}`, en: `D-${premiumDaysLeft} left`, ja: `残りD-${premiumDaysLeft}` })
-                  : l({
-                      ko: `운세·두뇌 측정 무제한 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
-                      en: `Unlimited fortune & tests · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
-                      ja: `運勢・検査無制限・月₩${PREMIUM_KRW.toLocaleString()}`,
-                    })}
-              </p>
-            </div>
-            <span className="text-xl text-white/80">›</span>
-          </button>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui}
-          className="mt-4"
+        {/* 친구 초대 — 둘 다 +100P */}
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          onClick={() => nav('/rewards', { state: { scrollTo: 'invite' } })}
+          className="mt-4 flex w-full items-center gap-3 rounded-3xl p-3.5 text-left shadow-card"
+          style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)' }}
         >
-          <Card onClick={() => nav('/rewards')} ariaLabel={t('home.rewardsBanner')} className="flex items-center gap-3 !p-3.5">
-            <IconBadge emoji="🪙" color="#F2B01E" size={40} radius={13} wiggle />
-            <div className="min-w-0 flex-1">
-              <h3 className="text-[16px] font-semibold">{t('home.rewardsBanner')}</h3>
-              <p className="mt-0.5 text-[13px] font-medium text-ink-faint">{t('home.rewardsBannerSub')}</p>
-            </div>
-            <span className="text-xl text-ink-faint">›</span>
-          </Card>
-        </motion.div>
-
-        {/* 친구 초대 CTA — 바이럴 후크 (둘 다 +100P) */}
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui} className="mt-4">
-          <button
-            onClick={() => nav('/rewards', { state: { scrollTo: 'invite' } })}
-            className="flex w-full items-center gap-3.5 rounded-3xl p-4 text-left shadow-pop"
-            style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)' }}
-          >
-            <IconBadge emoji="🎁" tone="frost" size={46} radius={15} wiggle />
-            <div className="min-w-0 flex-1">
-              <h3 className="text-[15px] font-semibold text-white">{l({ ko: '친구 초대하고 +100P', en: 'Invite a friend, +100P', ja: '友達招待で+100P' })}</h3>
-              <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">{l({ ko: '친구도 나도 +100P · 많이 부를수록 보너스 ↑', en: 'You both get +100P · more invites, bigger bonus', ja: '二人とも+100P・招待ほどボーナス↑' })}</p>
-            </div>
-            <span className="text-xl text-white/80">›</span>
-          </button>
-        </motion.div>
-
-        {/* 심리 매거진 — 최신 글 제목 롤링(누르면 해당 글로) */}
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui} className="mt-4">
-          <Card onClick={() => nav(magHead ? `/magazine/${magHead.id}` : '/magazine')} ariaLabel={l({ ko: '심리 매거진', en: 'Psychology magazine', ja: '心理マガジン' })} className="flex items-center gap-3 !p-3.5">
-            <IconBadge emoji="📖" color="#8B95F6" size={46} radius={15} wiggle />
-            <div className="min-w-0 flex-1">
-              <h3 className="text-[16px] font-semibold">{t('mag.title')}</h3>
-              {magHead ? (
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.p
-                    key={magHead.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={SPRING.snap}
-                    className="mt-0.5 flex items-center gap-1 truncate text-[13px] font-medium text-ink-faint"
-                  >
-                    {magIdx === 0 && (
-                      <span className="shrink-0 rounded-full bg-[#3B9EFF] px-1.5 py-px text-[11px] font-semibold leading-[1.4] tracking-wide text-white">NEW</span>
-                    )}
-                    <span className="truncate">{magHead.emoji} {l(magHead.title)}</span>
-                  </motion.p>
-                </AnimatePresence>
-              ) : (
-                <p className="mt-0.5 truncate text-[13px] font-medium text-ink-faint">{t('mag.banner')}</p>
-              )}
-            </div>
-            <span className="text-xl text-ink-faint">›</span>
-          </Card>
-        </motion.div>
+          <IconBadge emoji="🎁" tone="frost" size={40} radius={13} />
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[15px] font-semibold text-white">{l({ ko: '친구 초대하고 +100P', en: 'Invite a friend, +100P', ja: '友達招待で+100P' })}</h3>
+            <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">{l({ ko: '친구도 나도 +100P', en: 'You both get +100P', ja: '二人とも+100P' })}</p>
+          </div>
+          <span className="text-white/80">›</span>
+        </motion.button>
 
         <p className="mt-6 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
           {t('home.disclaimer')}
