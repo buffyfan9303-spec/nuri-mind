@@ -18,7 +18,7 @@ import type {
   TestResult,
   TestId,
 } from '../data/types'
-import { SEED_SURVEYS, SEED_POSTS } from '../data/seed'
+import { SEED_SURVEYS, SEED_POSTS, LEGACY_SEED_SURVEY_IDS } from '../data/seed'
 import { lifetimeOf, tierAtLeast } from '../data/rank'
 import { botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
 import { uid } from '../lib/random'
@@ -921,7 +921,7 @@ export const useStore = create<State>()(
     },
     {
       name: 'nuri-mind-v1',
-      version: 4,
+      version: 5,
       migrate: (persisted, version) => {
         const s = persisted as Partial<State> | undefined
         if (s) {
@@ -938,6 +938,11 @@ export const useStore = create<State>()(
             s.fortuneProfile = s.birthDate ? profileFromBirthDate(s.birthDate) : null
             s.fortuneRecent = s.fortuneProfile ? [s.fortuneProfile] : []
             s.fortuneAiKey = ''
+          }
+          // v5: 가짜 커뮤니티 시드 글·데모 설문 삭제 — 기존 기기에 persist된 사본도 지운다(사용자가 쓴 글·설문은 유지)
+          if (version < 5) {
+            if (Array.isArray(s.posts)) s.posts = s.posts.filter((p) => !String(p.id).startsWith('po_seed'))
+            if (Array.isArray(s.surveys)) s.surveys = s.surveys.filter((v) => !LEGACY_SEED_SURVEY_IDS.includes(v.id))
           }
         }
         return s as State

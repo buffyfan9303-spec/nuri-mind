@@ -2,7 +2,8 @@
 --  서버 감사 확정 수정 (2026-09) — 기존 마이그레이션 파일은 그대로 두고 이 파일로만 덮어쓴다
 --  전제: schema.sql → v2-auth-economy.sql → referrals.sql → diamonds.sql → mailbox.sql
 --        → mailbox_v2.sql(또는 mailbox-fix-encoding.sql) → economy-sync.sql 적용 완료.
---  적용: 내용을 Supabase SQL Editor에 붙여넣고 Run (1회). 재실행해도 안전(멱등).
+--  적용: 2026-09-24 라이브(xdcglyavndiwbbaryocx)에 마이그레이션 audit_fixes_2026_09로 적용 완료(주석 처리한 2곳 제외).
+--        재실행해도 안전(멱등).
 --  ⚠️ 이 파일 적용 후 위 옛 파일(특히 mailbox*.sql·schema.sql)을 재실행하면 여기 수정이 되돌아간다.
 --     옛 파일을 다시 돌렸다면 이 파일도 다시 돌릴 것.
 -- ════════════════════════════════════════════════════════════════
@@ -66,20 +67,22 @@ grant execute on function public.cancel_purchase(bigint) to authenticated;
 -- ── 5) 🟠 만료 우편이 '모두 받기'로는 수령됐다 ─────────────────────────────
 --  mailbox_v2.sql은 claim_mail에만 expires_at 조건을 넣었다. claim_all_mail·claim_my_diamond_grants는
 --  mailbox.sql/diamonds.sql 버전 그대로라 목록에서 숨겨진 만료 우편까지 전부 수령됐다.
-create or replace function public.claim_all_mail()
-returns int language plpgsql security definer set search_path = public as $$
-declare total int;
-begin
-  with upd as (
-    update public.diamond_grants set claimed = true, claimed_at = now()
-      where user_id = auth.uid() and not claimed
-        and (expires_at is null or expires_at > now())
-      returning amount
-  )
-  select coalesce(sum(amount), 0) into total from upd;
-  return coalesce(total, 0);
-end; $$;
-grant execute on function public.claim_all_mail() to authenticated;
+-- ⚠️ 2026-09-24 라이브 적용 시 건너뜀: 라이브 claim_all_mail은 이미 만료 검사 + delivered(전달 확인) 흐름을 가진
+--    최신본이다(리포 mailbox*.sql보다 새것). 아래 옛 모양으로 덮으면 우편 재전달이 깨지므로 주석으로 남긴다.
+-- create or replace function public.claim_all_mail()
+-- returns int language plpgsql security definer set search_path = public as $$
+-- declare total int;
+-- begin
+--   with upd as (
+--     update public.diamond_grants set claimed = true, claimed_at = now()
+--       where user_id = auth.uid() and not claimed
+--         and (expires_at is null or expires_at > now())
+--       returning amount
+--   )
+--   select coalesce(sum(amount), 0) into total from upd;
+--   return coalesce(total, 0);
+-- end; $$;
+-- grant execute on function public.claim_all_mail() to authenticated;
 
 create or replace function public.claim_my_diamond_grants()
 returns int language plpgsql security definer set search_path = public as $$
@@ -120,29 +123,32 @@ create policy "posts_select" on public.posts for select using (not hidden);
 --  ⚠️ 먼저 확인: 아래 쿼리가 행을 돌려주면 이미 수동으로 만든 버전이 있는 것 — 그 정의를 보고
 --     반환형이 boolean이 아니면 이 섹션은 건너뛸 것(create or replace가 반환형 변경을 거부한다).
 --     select pg_get_functiondef('public.bump_ai_usage'::regproc);
-create table if not exists public.ai_usage (
-  subject text not null,          -- u:<uid> 또는 ip:<해시 앞 12바이트> — 원문 IP는 저장하지 않는다
-  fn text not null,
-  day date not null default ((now() at time zone 'Asia/Seoul')::date),
-  count int not null default 0,
-  primary key (subject, fn, day)
-);
-alter table public.ai_usage enable row level security;
--- 정책 없음 → anon/authenticated는 읽기·쓰기 불가. 엣지 함수가 service_role로만 호출.
-
--- 한도 안이면 true(카운터 +1). 원자적 upsert라 동시 호출에도 카운트가 새지 않는다.
-create or replace function public.bump_ai_usage(p_subject text, p_fn text, p_limit int)
-returns boolean language plpgsql set search_path = public as $$
-declare n int;
-begin
-  insert into public.ai_usage(subject, fn, day, count)
-    values (left(p_subject, 80), left(p_fn, 40), (now() at time zone 'Asia/Seoul')::date, 1)
-  on conflict (subject, fn, day) do update set count = public.ai_usage.count + 1
-  returning ai_usage.count into n;
-  return n <= p_limit;
-end; $$;
-revoke all on function public.bump_ai_usage(text, text, int) from public, anon, authenticated;
-grant execute on function public.bump_ai_usage(text, text, int) to service_role;
+-- ⚠️ 2026-09-24 라이브 적용 시 건너뜀: 라이브에 이미 ai_usage(day, subject, fn, n)와 그 위의 bump_ai_usage(boolean,
+--    한도 도달 시 증가하지 않음)가 있다. 아래 정의는 count 열을 가정해, 덮으면 매 호출이 오류 → withinQuota가
+--    fail-open으로 통과시켜 한도가 사라진다. 새 프로젝트에 처음 세울 때만 참고할 것.
+-- create table if not exists public.ai_usage (
+--   subject text not null,          -- u:<uid> 또는 ip:<해시 앞 12바이트> — 원문 IP는 저장하지 않는다
+--   fn text not null,
+--   day date not null default ((now() at time zone 'Asia/Seoul')::date),
+--   count int not null default 0,
+--   primary key (subject, fn, day)
+-- );
+-- alter table public.ai_usage enable row level security;
+-- -- 정책 없음 → anon/authenticated는 읽기·쓰기 불가. 엣지 함수가 service_role로만 호출.
+--
+-- -- 한도 안이면 true(카운터 +1). 원자적 upsert라 동시 호출에도 카운트가 새지 않는다.
+-- create or replace function public.bump_ai_usage(p_subject text, p_fn text, p_limit int)
+-- returns boolean language plpgsql set search_path = public as $$
+-- declare n int;
+-- begin
+--   insert into public.ai_usage(subject, fn, day, count)
+--     values (left(p_subject, 80), left(p_fn, 40), (now() at time zone 'Asia/Seoul')::date, 1)
+--   on conflict (subject, fn, day) do update set count = public.ai_usage.count + 1
+--   returning ai_usage.count into n;
+--   return n <= p_limit;
+-- end; $$;
+-- revoke all on function public.bump_ai_usage(text, text, int) from public, anon, authenticated;
+-- grant execute on function public.bump_ai_usage(text, text, int) to service_role;
 
 -- 오래된 카운터 정리(선택) — 필요하면 pg_cron에 걸 것:
 --   delete from public.ai_usage where day < (now() at time zone 'Asia/Seoul')::date - 7;
