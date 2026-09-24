@@ -8,6 +8,7 @@ import { useDialogFocus } from '../hooks/useDialogFocus'
 import { useSkeletonGate } from '../hooks/useSkeletonGate'
 import { haptic } from '../lib/haptic'
 import { LEGAL_EFFECTIVE } from '../data/legal'
+import { COMPANY } from '../data/company'
 
 /**
  * 약관·개인정보 본문 시트 — 온보딩에서 라우트 이동 대신 이걸 띄운다.
@@ -103,7 +104,7 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
                 <h2 className="truncate text-[16px] font-semibold">
                   {t(doc === 'terms' ? 'legal.terms' : 'legal.privacy')}
                 </h2>
-                <p className="mt-0.5 text-[11px] font-medium text-ink-faint">{LEGAL_EFFECTIVE} 시행 · 엔에이치홀딩스</p>
+                <p className="mt-0.5 text-[11px] font-medium text-ink-faint">{LEGAL_EFFECTIVE} 시행 · {COMPANY.name}</p>
               </div>
               <button
                 onClick={onClose}

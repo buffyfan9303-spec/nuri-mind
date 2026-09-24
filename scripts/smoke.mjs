@@ -12,6 +12,7 @@
  *  ⑧ 모션이 lib/motion 프리셋을 우회하고 스프링을 하드코딩하지 않는가
  *  ⑨ 타이포 정책 — ≤17px에 extrabold/tracking-tight 금지, 크기는 10단계 스케일만
  *  ⑩ 제목·버튼·라벨에 장식 이모지 접두 없음(스탯 타일·뱃지의 내용 이모지는 대상 아님)
+ *  ⑪ 만세력(사주팔자·음력·절기)이 공표 기준값과 맞는가 — scripts/saju-check.mjs
  *
  * 실행: npm run smoke   (실패 시 exit 1 — 배포 전 게이트로 사용)
  */
@@ -80,6 +81,20 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   // 공개 라우트 화이트리스트가 sitemap 경로를 실제로 열어주는지
   const pub = read('src/App.tsx').match(/PUBLIC_ROUTES = ([^\n]+)/)?.[1] ?? ''
   check('공개 라우트에 zodiac·magazine 포함', pub.includes('zodiac') && pub.includes('magazine'), pub)
+
+  // sitemap의 모든 주소가 가입 없이 열리는가 — 비공개 주소를 실으면 크롤러는 전부 같은 가입 화면을 받는다(얇은 중복 페이지)
+  const lit = pub.match(/^\/(.+)\/([a-z]*)$/)
+  const re = lit ? new RegExp(lit[1], lit[2]) : null
+  const paths = [...sm.matchAll(/<loc>https:\/\/www\.nurimind\.co\.kr([^<]*)<\/loc>/g)].map((m) => m[1] || '/')
+  const gated = re ? paths.filter((p) => p !== '/' && !re.test(p)) : ['PUBLIC_ROUTES 정규식 파싱 실패']
+  check(`sitemap URL 전부 공개(${paths.length})`, gated.length === 0, gated.join(', '))
+
+  // 매거진·검사 소개 URL이 실제 데이터에 있는가(오타 URL = 크롤러가 받는 리다이렉트)
+  const artIds = [...read('src/data/magazine.ts').matchAll(/^\s{4}id: '([a-z-]+)'/gm)].map((m) => m[1])
+  const testIds = [...read('src/data/tests.ts').matchAll(/^\s{4}id: '([a-z]+)'/gm)].map((m) => m[1])
+  const badArt = [...sm.matchAll(/\/magazine\/([a-z-]+)</g)].map((m) => m[1]).filter((id) => !artIds.includes(id))
+  const badTest = [...sm.matchAll(/\/test\/([a-z]+)</g)].map((m) => m[1]).filter((id) => !testIds.includes(id))
+  check('sitemap 매거진·검사 URL ↔ 데이터', badArt.length === 0 && badTest.length === 0, [...badArt, ...badTest].join(', '))
 }
 
 /* ⑥ 16유형 심층 문항 극별 균형 */
@@ -217,6 +232,13 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   check('className 보간 앞 공백(클래스 붙임 없음)', glued.length === 0, glued.slice(0, 4).join(' | '))
 }
 
+
+/* ⑪ 만세력 — 일진·음력(KASI 공표 설날·추석·윤달)·절기 시각·사주팔자 규칙 */
+{
+  const { runSajuCheck } = await import('./saju-check.mjs')
+  const { passes, fails: bad } = await runSajuCheck()
+  check(`만세력 기준값(${passes.length + bad.length}건)`, bad.length === 0, bad.slice(0, 3).join(' · '))
+}
 
 /* 결과 */
 console.log(`\n✅ 통과 ${ok.length}`)

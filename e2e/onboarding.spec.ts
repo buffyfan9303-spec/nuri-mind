@@ -185,8 +185,10 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     await waitForApp(page)
 
     // PUBLIC_ROUTES(/legal|zodiac|magazine|vs)가 깨지면 sitemap 등재 URL이 전부 온보딩으로 튕긴다
-    await expect(page.getByText('심리 매거진')).toBeVisible()
-    const card = page.getByRole('button').filter({ hasText: '집중력이 약한 게 아니라' })
+    // (매거진 목록에 푸터가 붙어 '심리 매거진' 글자가 여러 곳에 있다 — 목록 고유 부제로 확인)
+    await expect(page.getByText('검사보다 한 걸음 더, 짧게 읽는 심리 인사이트')).toBeVisible()
+    // 아티클 카드는 버튼이 아니라 링크(<a href>)다 — 크롤러가 목록에서 상세로 따라갈 수 있어야 한다
+    const card = page.getByRole('link').filter({ hasText: '집중력이 약한 게 아니라' })
     await expect(card).toBeVisible()
     await card.click()
     await expect(page).toHaveURL('/magazine/adhd-focus')

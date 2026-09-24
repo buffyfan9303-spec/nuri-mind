@@ -7,6 +7,7 @@ import { testMeta } from '../data/tests'
 import type { TestId } from '../data/types'
 import { useT, useL } from '../i18n/useT'
 import { useStore, IQ_DIA_COST } from '../store/useStore'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function TestIntro() {
   const { id } = useParams<{ id: TestId }>()
@@ -15,6 +16,16 @@ export default function TestIntro() {
   const nav = useNavigate()
   const tm = testMeta(id as TestId)
   const iqUnlocked = useStore((s) => s.iqUnlocked)
+  // 검사 소개는 가입 없이 열리는 공개 페이지(App PUBLIC_ROUTES) — 검사마다 고유한 제목·설명
+  usePageMeta(
+    tm
+      ? {
+          title: `${t(`test.${id}.name`)} — 무료 심리검사 | 누리 마인드`,
+          description: `${t(`test.${id}.desc`)} ${t(`intro.${id}.basis`)}`.slice(0, 160),
+          path: `/test/${id}`,
+        }
+      : null,
+  )
 
   // 알 수 없는 검사 id(오타·구링크)면 크래시 대신 홈으로 — tm 단언(!) 사용처 보호
   if (!tm) return <Navigate to="/" replace />

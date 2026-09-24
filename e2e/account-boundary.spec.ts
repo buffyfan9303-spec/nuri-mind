@@ -146,6 +146,10 @@ const PUBLIC_ROUTES = [
   // 목록만 보면 `/magazine`은 열리는데 본문 URL은 전부 막히는 회귀를 놓친다.
   { path: '/magazine/adhd-focus', marker: '집중력이 약한 게 아니라, 뇌가 다른 거예요' },
   { path: '/legal/terms', marker: '시행 · 엔에이치홀딩스' },
+  // 소개 페이지 — 광고 심사가 운영 주체·문의처를 확인하는 자리라 가입 없이 열려야 한다
+  { path: '/about', marker: '누리 마인드를 소개합니다' },
+  // 검사 소개(척도 근거·주의 사항)는 공개, 진행(/run)은 가입 후 — 아래 별도 테스트
+  { path: '/test/selfesteem', marker: '세계에서 가장 많이 쓰는 자존감 척도' },
 ] as const
 
 for (const { path, marker } of PUBLIC_ROUTES) {
@@ -189,3 +193,11 @@ for (const { path, marker } of PRIVATE_ROUTES) {
     await expect(page.getByText(marker).first()).toBeVisible()
   })
 }
+
+test('검사 소개는 공개지만 검사 진행(/run)은 가입 게이트에 막힌다 — 공개 정규식이 /test/:id/run까지 넓어지지 않게', async ({ page }) => {
+  await seedStore(page, { onboarded: false, lang: 'ko' })
+  await page.goto('/test/selfesteem/run')
+  await waitForApp(page)
+  await expect(page.getByRole('heading', { level: 1, name: '누리 마인드에 오신 걸 환영해요' })).toBeVisible()
+  await expect(page).toHaveURL(/\/test\/selfesteem\/run$/)
+})

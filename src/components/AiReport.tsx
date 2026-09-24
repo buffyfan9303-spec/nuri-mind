@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSkeletonGate } from '../hooks/useSkeletonGate'
-import { AnimatePresence, motion } from 'framer-motion'
-import AdGate from './AdGate'
+import { motion } from 'framer-motion'
 import Button from './Button'
 import type { Persona } from '../i18n/animalTranslations'
 import type { TestResult } from '../data/types'
@@ -10,7 +9,7 @@ import { useT, useL } from '../i18n/useT'
 import { FUNCTIONS_URL, ANON_KEY } from '../lib/supabase'
 
 /**
- * 정밀 분석 리포트(유료 잠금) — 보상형 광고로 무료 해금(수익화 지점).
+ * 정밀 분석 리포트 — 버튼 한 번으로 펼친다(예전엔 5초 대기 게이트를 거쳤으나 광고 없는 강제 대기라 없앰).
  * 해금 후 Supabase Edge Function(ai-report)이 배포돼 있으면 Claude가 쓴 맞춤 종합 해석을
  * 1회 생성해 캐싱(결과별). 미배포/실패 시 기존 정적 페르소나 해석으로 자동 폴백.
  */
@@ -22,7 +21,6 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
   const unlockAi = useStore((s) => s.unlockAi)
   const aiReportText = useStore((s) => s.aiReportText)
   const setAiReportText = useStore((s) => s.setAiReportText)
-  const [gate, setGate] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const unlocked = aiReports.includes(result.id)
@@ -59,24 +57,8 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unlocked, cached])
 
-  // 게이트는 잠금/해금 두 분기 **밖**에 둔다. 분기 안에 두면 onDone이 unlockAi로 분기를 바꾸는 순간
-  // AnimatePresence째 언마운트돼 exit(페이드아웃)가 재생되지 않고 전면 오버레이가 한 프레임에 증발했다.
-  const gateLayer = (
-    <AnimatePresence>
-      {gate && (
-        <AdGate
-          onDone={() => {
-            setGate(false)
-            unlockAi(result.id)
-          }}
-        />
-      )}
-    </AnimatePresence>
-  )
-
   if (!unlocked) {
     return (
-      <>
         <div className="relative mt-4 overflow-hidden rounded-3xl border-2 border-[#E7D9E0] bg-gradient-to-br from-[#FBF4F8] to-[#F3EEFC] dark:from-surface dark:to-surface p-5">
           <h2 className="text-[16px] font-semibold text-dk-deep">{t('ai.title')}</h2>
           <p className="mt-1 text-[13px] font-medium text-ink-sub">{t('ai.sub')}</p>
@@ -84,18 +66,16 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
             {l(persona.desc).slice(0, 120)}…
           </p>
           <div className="mt-4">
-            <Button color="dk" onClick={() => setGate(true)}>
-              {t('ai.unlock')}
+            <Button color="dk" onClick={() => unlockAi(result.id)}>
+              {/* dict의 'ai.unlock'은 '광고 보고 무료로 열기' — 광고가 없어졌으니 인라인 문구로 대체 */}
+              {l({ ko: '무료로 열기', en: 'Open for free', ja: '無料で開く' })}
             </Button>
           </div>
         </div>
-        {gateLayer}
-      </>
     )
   }
 
   return (
-    <>
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
@@ -130,8 +110,6 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
         <Section title={`${t('result.strengthTitle')}`} items={persona.strengths.map(l)} mark="★" color="#6E9FDC" />
       </div>
     </motion.div>
-    {gateLayer}
-    </>
   )
 }
 

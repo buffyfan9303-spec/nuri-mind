@@ -39,7 +39,9 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <!--
       [수익화] Google AdSense — 로더 스크립트는 src/lib/ads.ts(loadAdSenseScript)가
-      VITE_ADSENSE_CLIENT 설정 시 자동 주입합니다. index.html은 손댈 필요 없음.
+      광고 슬롯(AdSlot)이 있는 화면(매거진 아티클·검사 결과 하단)에 들어갈 때만 주입합니다.
+      ⚠️ 여기(index.html)에 adsbygoogle.js를 직접 넣지 마세요 — 모든 화면(가입·로딩·404)에 스크립트가 실리고,
+         대시보드 '자동 광고(Auto ads)'가 켜져 있으면 콘텐츠 없는 화면에도 광고가 붙어 정책 위반이 됩니다.
       필요한 것: ① 환경변수 3개(CLIENT/SLOT_BANNER/SLOT_RECT) ② public/ads.txt에 게시자 ID.
       APK(네이티브) 빌드 시에는 AdMob을 사용합니다 — README.md의 'APK 패키징' 섹션 참고.
     -->
@@ -64,6 +66,41 @@
           모든 결과는 자기 성찰을 돕는 참고 자료이며 의학적 진단을 대신하지 않습니다.
           이 서비스를 이용하려면 JavaScript를 켜 주세요.
         </p>
+        <!-- 크롤러가 따라갈 수 있는 공개 콘텐츠 주소(가입 없이 열림) — sitemap.xml과 같은 목록 -->
+        <h2>심리 매거진</h2>
+        <ul>
+          <li><a href="/magazine/adhd-focus">집중력이 약한 게 아니라, 뇌가 다른 거예요</a></li>
+          <li><a href="/magazine/burnout-recover">번아웃은 의지박약이 아니라 신호입니다</a></li>
+          <li><a href="/magazine/attachment">내 연애가 반복되는 이유, 애착유형</a></li>
+          <li><a href="/magazine/dopamine-detox">도파민 디톡스, 진짜 효과 있을까?</a></li>
+          <li><a href="/magazine/resilience">무너져도 다시 일어서는 사람들의 비밀</a></li>
+          <li><a href="/magazine/selfesteem-grow">자존감은 &quot;잘나서&quot; 생기는 게 아니에요</a></li>
+          <li><a href="/magazine/socialanx-ease">사람들 앞에서 떨리는 건, 고장이 아니에요</a></li>
+          <li><a href="/magazine/sleep-phone">잠들기 전 스마트폰이 잠을 훔치는 법</a></li>
+          <li><a href="/magazine/perfect-procrastination">완벽주의자가 가장 많이 미루는 이유</a></li>
+          <li><a href="/magazine/emotion-regulation">감정은 파도예요 — 싸우지 말고 타는 법</a></li>
+        </ul>
+        <h2>검사 소개</h2>
+        <ul>
+          <li><a href="/test/selfesteem">자존감 검사</a></li>
+          <li><a href="/test/adhd">주의산만 검사</a></li>
+          <li><a href="/test/burnout">번아웃 검사</a></li>
+          <li><a href="/test/love">연애 애착 검사</a></li>
+          <li><a href="/test/socialanx">사회불안 검사</a></li>
+          <li><a href="/test/perfect">완벽주의 검사</a></li>
+          <li><a href="/test/efficacy">자기효능감 검사</a></li>
+          <li><a href="/test/resilience">회복탄력성 검사</a></li>
+          <li><a href="/test/dopamine">도파민 중독 검사</a></li>
+          <li><a href="/test/ego">이기심 검사</a></li>
+          <li><a href="/test/dark">숨은 본성 검사</a></li>
+          <li><a href="/test/iq">IQ 테스트</a></li>
+          <li><a href="/test/memory">기억력 측정</a></li>
+          <li><a href="/test/focus">집중력 측정</a></li>
+          <li><a href="/test/speed">반응속도 측정</a></li>
+          <li><a href="/test/spatial">공간감각 측정</a></li>
+          <li><a href="/test/switch">상황적응력 측정</a></li>
+        </ul>
+        <p><a href="/about">서비스 소개</a> · <a href="/legal/terms">이용약관</a> · <a href="/legal/privacy">개인정보처리방침</a></p>
         <p>엔에이치홀딩스 · 문의 buffyfan9303@gmail.com</p>
       </main>
     </noscript>

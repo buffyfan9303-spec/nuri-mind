@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
 import { Card, Chip, TopBar } from '../components/ui'
 import { JellyChip } from '../components/ScrollChips'
 import { ARTICLES } from '../data/magazine'
@@ -9,13 +8,19 @@ import { testMeta } from '../data/tests'
 import type { L } from '../data/types'
 import { useT, useL } from '../i18n/useT'
 import { useStore } from '../store/useStore'
+import { usePageMeta } from '../hooks/usePageMeta'
+import Footer from '../components/Footer'
 
 export default function Magazine() {
   const t = useT()
   const l = useL()
-  const nav = useNavigate()
   const readArticles = useStore((s) => s.readArticles)
   const [tag, setTag] = useState<string | null>(null)
+  usePageMeta({
+    title: '심리 매거진 — 집중력·번아웃·자존감·애착 심리 읽을거리 | 누리 마인드',
+    description: `집중력·번아웃·애착·도파민·회복탄력성·자존감·사회불안·수면·완벽주의·감정 조절을 다룬 심리 매거진 ${ARTICLES.length}편. 짧게 읽고 오늘 바로 해 볼 수 있는 팁까지.`,
+    path: '/magazine',
+  })
 
   const FALLBACK = ['#4FA882', '#6E9FDC', '#F25C8E', '#8B7CF6', '#12A5C2', '#FFB020']
   const tags = useMemo(() => {
@@ -59,7 +64,7 @@ export default function Magazine() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...SPRING.ui, delay: Math.min(0.05 * i, 0.25) }}
               >
-                <Card onClick={() => nav(`/magazine/${a.id}`)} className="flex items-center gap-3.5 !p-4">
+                <Card href={`/magazine/${a.id}`} className="flex items-center gap-3.5 !p-4">
                   <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-mind-50 text-[28px]">
                     {a.emoji}
                     {read && (
@@ -82,6 +87,7 @@ export default function Magazine() {
         </div>
 
         <p className="mt-6 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">{t('mag.hint')}</p>
+        <Footer />
       </main>
     </div>
   )

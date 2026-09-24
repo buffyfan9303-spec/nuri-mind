@@ -6,7 +6,8 @@ import Avatar from './Avatar'
 import { PERSONA_VISUAL } from '../i18n/personaVisual'
 import type { Avatar as AvatarT } from '../data/types'
 import { useStore } from '../store/useStore'
-import { useT } from '../i18n/useT'
+import { useT, useL } from '../i18n/useT'
+import { Link } from 'react-router-dom'
 import { celebrate } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { LEGAL_EFFECTIVE } from '../data/legal'
@@ -15,6 +16,7 @@ import { logoutAccount } from '../lib/economy'
 import { moderateText } from '../lib/moderation'
 import { humanizeError } from '../lib/dbError'
 import LegalSheet from './LegalSheet'
+import BizInfo from './BizInfo'
 
 /**
  * 온보딩 입력 초안 — 이 화면은 두 정상 동선에서 통째로 언마운트된다.
@@ -40,6 +42,7 @@ const loadDraft = (): Draft => {
 const STARTERS = ['penguin', 'koala', 'cat', 'dolphin', 'hamster', 'owl', 'meerkat', 'collie']
 
 export default function Onboarding() {
+  const lx = useL()
   const t = useT()
   const lang = useStore((s) => s.lang)
   const completeOnboarding = useStore((s) => s.completeOnboarding)
@@ -300,15 +303,17 @@ export default function Onboarding() {
             {t('onboard.effective', { date: LEGAL_EFFECTIVE })} · {t('onboard.note')}
           </p>
 
+          {/* 가입 없이 읽을 수 있는 공개 페이지 — 첫 화면이 가입 폼뿐이면 검색엔진·광고 심사가
+              '콘텐츠 없는 사이트'로 본다. 진짜 <a href>라 크롤러가 따라간다(버튼은 못 따라간다). */}
+          <nav aria-label={lx({ ko: '둘러보기', en: 'Browse', ja: '閲覧' })} className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[13px] font-semibold text-mind-700">
+            <Link to="/about" className="py-1.5">{lx({ ko: '서비스 소개', en: 'About', ja: 'サービス紹介' })}</Link>
+            <Link to="/magazine" className="py-1.5">{lx({ ko: '심리 매거진', en: 'Magazine', ja: 'マガジン' })}</Link>
+            <Link to="/zodiac/rat" className="py-1.5">{lx({ ko: '띠별 오늘의 운세', en: 'Zodiac fortune', ja: '干支別運勢' })}</Link>
+          </nav>
+
           {/* 사업자 정보 — 가입 전 첫 화면에서 확인 가능해야 함(카카오 비즈 심사·전자상거래 표시 의무) */}
-          <div className="mt-5 border-t border-line pt-4 text-center">
-            <p className="text-[11px] font-medium leading-relaxed text-ink-faint">
-              엔에이치홀딩스 · 대표 김윤혜 · 사업자등록번호 525-20-02937
-              <br />
-              경기도 남양주시 진건읍 사릉로372번길 25, 201동 1403호
-              <br />
-              문의 buffyfan9303@gmail.com · © {new Date().getFullYear()} NURI MIND
-            </p>
+          <div className="mt-4 border-t border-line pt-4 text-center">
+            <BizInfo />
           </div>
         </div>
       </main>

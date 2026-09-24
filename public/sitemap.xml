@@ -1,39 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  가입 없이 본문이 열리는 공개 주소만 싣는다(App.tsx PUBLIC_ROUTES + 홈).
+  /community·/rewards·/shop·/fortune 처럼 가입 뒤에만 열리는 주소를 실으면 크롤러는 전부 같은 가입 화면을 받는다
+  → '내용이 같은 얇은 페이지 여러 장'으로 읽힌다. 새 공개 페이지를 만들면 여기와 index.html noscript 목록에 같이 추가.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://www.nurimind.co.kr/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>https://www.nurimind.co.kr/community</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.nurimind.co.kr/rewards</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/shop</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.nurimind.co.kr/test/adhd</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.nurimind.co.kr/test/ego</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.nurimind.co.kr/test/iq</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.nurimind.co.kr/test/love</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.nurimind.co.kr/test/burnout</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.nurimind.co.kr/test/dopamine</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.nurimind.co.kr/test/resilience</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.nurimind.co.kr/test/dark</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/adhd-focus</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/burnout-recover</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/attachment</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/dopamine-detox</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/resilience</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/selfesteem-grow</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/socialanx-ease</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/sleep-phone</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/perfect-procrastination</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/magazine/emotion-regulation</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://www.nurimind.co.kr/fortune</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/rat</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/ox</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/tiger</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/rabbit</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/dragon</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/snake</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/horse</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/sheep</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/monkey</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/rooster</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/dog</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.nurimind.co.kr/zodiac/pig</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/about</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/adhd-focus</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/burnout-recover</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/attachment</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/dopamine-detox</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/resilience</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/selfesteem-grow</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/socialanx-ease</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/sleep-phone</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/perfect-procrastination</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/magazine/emotion-regulation</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/selfesteem</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/adhd</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/burnout</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/love</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/socialanx</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/perfect</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/efficacy</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/resilience</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/dopamine</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/ego</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/dark</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/iq</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/memory</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/focus</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/speed</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/spatial</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/test/switch</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/rat</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/ox</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/tiger</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/rabbit</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/dragon</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/snake</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/horse</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/sheep</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/monkey</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/rooster</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/dog</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/zodiac/pig</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/legal/terms</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://www.nurimind.co.kr/legal/privacy</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
 </urlset>

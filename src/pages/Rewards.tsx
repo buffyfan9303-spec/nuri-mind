@@ -15,6 +15,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import { SURVEYS_ENABLED } from '../data/features'
 
 export default function Rewards() {
   const t = useT()
@@ -157,7 +158,30 @@ export default function Rewards() {
           <DailyQuiz />
         </div>
 
+        {/* 설문이 꺼져 있으면(data/features.ts) 목록·'설문 만들기' 대신 준비 중 안내 한 장 */}
+        {!SURVEYS_ENABLED && (
+          <Section title={l({ ko: '리워드 설문', en: 'Reward surveys', ja: 'リワードアンケート' })}>
+            <Card className="flex items-center gap-3.5 !p-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-surface2 text-2xl" aria-hidden="true">
+                🛠️
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[16px] font-semibold">{l({ ko: '준비 중이에요', en: 'Coming soon', ja: '準備中です' })}</h3>
+                <p className="mt-1 break-keep text-[13px] font-medium text-ink-faint">
+                  {l({
+                    ko: '지금은 참여할 수 있는 설문이 없어요. 설문 참여·만들기는 준비가 끝나면 다시 열어 둘게요.',
+                    en: 'No surveys are open right now. Taking and creating surveys will return when ready.',
+                    ja: '現在参加できるアンケートはありません。準備ができ次第再開します。',
+                  })}
+                </p>
+              </div>
+              <Chip tone="gray">{l({ ko: '준비 중', en: 'Soon', ja: '準備中' })}</Chip>
+            </Card>
+          </Section>
+        )}
+
         {/* 참여 가능한 설문 */}
+        {SURVEYS_ENABLED && (
         <Section
           title={`${t('rewards.surveys')}`}
           action={
@@ -196,9 +220,10 @@ export default function Rewards() {
             })}
           </div>
         </Section>
+        )}
 
         {/* 내가 만든 설문 */}
-        {mine.length > 0 && (
+        {SURVEYS_ENABLED && mine.length > 0 && (
           <Section title={`${t('rewards.mySurveys')}`}>
             <div className="space-y-3">
               {mine.map((sv) => (

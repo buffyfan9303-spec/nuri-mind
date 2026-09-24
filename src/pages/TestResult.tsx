@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../components/Button'
-import AdGate from '../components/AdGate'
 import AdSlot from '../components/AdSlot'
 import Gauge from '../components/Gauge'
 import AiReport from '../components/AiReport'
@@ -43,13 +42,14 @@ export default function TestResult() {
   const result = results.find((r) => r.id === rid)
 
   // '방금 끝낸 검사' 표시는 첫 진입에서 한 번만 읽고 히스토리에선 지운다 —
-  // 남겨 두면 새로고침·도감 갔다가 뒤로가기마다 결과 준비 게이트·축하·'+P 받았어요'가 다시 떴다
+  // 남겨 두면 새로고침·도감 갔다가 뒤로가기마다 축하·'+P 받았어요'가 다시 떴다
   const [state] = useState(() => (location.state ?? {}) as { fresh?: boolean; reward?: number })
   useEffect(() => {
     if (location.state) nav(location.pathname, { replace: true, state: null })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  const [gate, setGate] = useState(Boolean(state.fresh))
+  // 결과 준비 게이트(5초 대기 전면 화면)는 없앴다 — 애드센스 '행동 목적 화면' 정책과 무관하게도
+  // 광고 없는 강제 대기는 사용자에게 가치가 없다. 결과는 곧바로 보여 준다.
   const [copied, setCopied] = useState(false)
   const [shareMsg, setShareMsg] = useState('')
   const [avatarSet, setAvatarSet] = useState(false)
@@ -68,11 +68,11 @@ export default function TestResult() {
   const celebrated = useRef(false)
 
   useEffect(() => {
-    if (!gate && state.fresh && !celebrated.current) {
+    if (state.fresh && !celebrated.current) {
       celebrated.current = true
       fire('win')
     }
-  }, [gate, state.fresh])
+  }, [state.fresh])
 
   if (!result) return <Navigate to="/" replace />
   const persona = PERSONAS[result.persona]
@@ -250,23 +250,20 @@ export default function TestResult() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <AnimatePresence>{gate && <AdGate onDone={() => setGate(false)} />}</AnimatePresence>
-
       <TopBar back="/" title={t('result.title')} />
 
       <main className="mx-auto max-w-md px-5">
         {/* 페르소나 히어로 */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 18 }}
-          animate={gate ? {} : { opacity: 1, scale: 1, y: 0 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ ...SPRING.ui, delay: 0.05 }}
           className="rounded-3xl p-7 text-center shadow-pop"
           style={{ background: `linear-gradient(140deg, ${persona.grad[0]}, ${persona.grad[1]})` }}
         >
           <div className="relative mx-auto h-28 w-28">
             {/* 파티클 링 — 이모지 팝과 함께 사방으로 퍼짐 */}
-            {!gate &&
-              [
+            {[
                 { e: '✨', a: -90 }, { e: '⭐', a: -45 }, { e: '💫', a: 0 }, { e: '✨', a: 45 },
                 { e: '⭐', a: 90 }, { e: '💫', a: 135 }, { e: '✨', a: 180 }, { e: '⭐', a: 225 },
               ].map((s, i) => {
@@ -286,7 +283,7 @@ export default function TestResult() {
               })}
             <motion.div
               initial={{ scale: 0 }}
-              animate={gate ? {} : { scale: 1, rotate: [0, -8, 6, 0] }}
+              animate={{ scale: 1, rotate: [0, -8, 6, 0] }}
               // 스프링은 첫·끝 키프레임만 보간한다(0→0) — 흔들기는 키프레임 트윈으로 따로 줘야 실제로 움직인다
               transition={{ ...SPRING.sheet, delay: 0.25, rotate: { duration: 0.5, delay: 0.25, ease: 'easeOut' } }}
               className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 text-6xl shadow-pop"
@@ -296,7 +293,7 @@ export default function TestResult() {
           </div>
           <motion.p
             initial={{ opacity: 0, y: 8 }}
-            animate={gate ? {} : { opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.42, duration: 0.3 }}
             className="mt-4 text-[15px] font-semibold text-white/85"
           >
@@ -304,7 +301,7 @@ export default function TestResult() {
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
-            animate={gate ? {} : { opacity: 1, y: 0, scale: 1 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ ...SPRING.flick, delay: 0.5 }}
             className="mt-1 text-[28px] font-extrabold tracking-tight text-white"
           >
@@ -312,7 +309,7 @@ export default function TestResult() {
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 8 }}
-            animate={gate ? {} : { opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.58, duration: 0.3 }}
             className="mt-2.5 text-[15px] font-bold leading-relaxed text-white/90"
           >
@@ -364,7 +361,7 @@ export default function TestResult() {
         </motion.div>
 
         {/* 보상 배너 */}
-        {reward > 0 && !gate && (
+        {reward > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -478,7 +475,7 @@ export default function TestResult() {
         </Card>
 
         {/* 빠른 IQ → 정밀 IQ 업셀 (더 정확한 측정으로 유도) */}
-        {result.testId === 'iq' && result.iqMode === 'fast' && !gate && (
+        {result.testId === 'iq' && result.iqMode === 'fast' && (
           <motion.button
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -509,11 +506,6 @@ export default function TestResult() {
 
         {/* 심리 날씨 — 재검사 추이 (2회 이상부터) */}
         <Trend testId={result.testId} />
-
-        {/* 광고 — 게이지 직하단(고시선 영역) */}
-        <div className="mt-4">
-          <AdSlot variant="banner" />
-        </div>
 
         {/* 검사별 3축 카드 */}
         {result.axes && axisDefs && (
@@ -880,10 +872,13 @@ export default function TestResult() {
           </Button>
         </div>
 
-        {/* 정사각형 광고 — 페이지 맨 아래 */}
-        <div className="mt-5">
-          <AdSlot variant="rect" />
-        </div>
+        {/* 광고는 해석을 다 읽은 뒤 페이지 맨 아래 한 자리만. 해석이 잠긴(블러) 결과엔 게재하지 않는다 —
+            읽을 수 있는 게시자 콘텐츠가 없는 화면이 되기 때문(애드센스 '콘텐츠 없는 화면' 정책) */}
+        {!locked && (
+          <div className="mt-5">
+            <AdSlot variant="rect" />
+          </div>
+        )}
 
         {/* 다이아 부족 → 충전 안내 (IQ 결과 해제) */}
         <Modal open={needCharge} onClose={() => setNeedCharge(false)}>

@@ -1,5 +1,6 @@
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useL } from '../i18n/useT'
+import BizInfo from './BizInfo'
 
 /**
  * 사이트 푸터 — 서비스 소개 + 법적 고지 + 사업자 정보.
@@ -7,7 +8,6 @@ import { useL } from '../i18n/useT'
  */
 export default function Footer() {
   const l = useL()
-  const nav = useNavigate()
   return (
     <footer className="mt-10 border-t border-line pb-4 pt-6 text-center">
       <p className="px-4 text-[12px] font-medium leading-relaxed text-ink-faint">
@@ -17,21 +17,18 @@ export default function Footer() {
           ja: 'ヌリマインドはRSES・ASRS・CD-RISCなど公開心理尺度に基づく12種の自己理解検査と心理マガジン、リワードを提供します。結果は自己省察の参考であり医学的診断ではありません。',
         })}
       </p>
-      {/* 링크 글자는 21px 높이뿐 — before로 위아래 12px씩 넓혀 44px 히트영역(줄 간격·모양은 그대로) */}
-      <nav className="mt-4 flex items-center justify-center gap-4 text-[13px] font-semibold text-ink-sub">
-        <button onClick={() => nav('/legal/terms')} className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '이용약관', en: 'Terms', ja: '利用規約' })}</button>
+      {/* 버튼이 아니라 <a href>(Link) — 크롤러는 버튼을 따라가지 않아 공개 페이지가 발견되지 않는다.
+          링크 글자는 21px 높이뿐 — before로 위아래 12px씩 넓혀 44px 히트영역(줄 간격·모양은 그대로) */}
+      <nav className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 px-4 text-[13px] font-semibold text-ink-sub">
+        <Link to="/about" className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '서비스 소개', en: 'About', ja: 'サービス紹介' })}</Link>
         <span className="text-line">|</span>
-        <button onClick={() => nav('/legal/privacy')} className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '개인정보처리방침', en: 'Privacy', ja: 'プライバシー' })}</button>
+        <Link to="/legal/terms" className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '이용약관', en: 'Terms', ja: '利用規約' })}</Link>
         <span className="text-line">|</span>
-        <button onClick={() => nav('/magazine')} className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '심리 매거진', en: 'Magazine', ja: 'マガジン' })}</button>
+        <Link to="/legal/privacy" className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '개인정보처리방침', en: 'Privacy', ja: 'プライバシー' })}</Link>
+        <span className="text-line">|</span>
+        <Link to="/magazine" className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '심리 매거진', en: 'Magazine', ja: 'マガジン' })}</Link>
       </nav>
-      <p className="mt-4 px-4 text-[11px] font-medium leading-relaxed text-ink-faint">
-        엔에이치홀딩스 · 대표 김윤혜 · 사업자등록번호 525-20-02937
-        <br />
-        경기도 남양주시 진건읍 사릉로372번길 25, 201동 1403호
-        <br />
-        문의 buffyfan9303@gmail.com · © {new Date().getFullYear()} NURI MIND
-      </p>
+      <BizInfo className="mt-4 px-4" />
     </footer>
   )
 }

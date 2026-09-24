@@ -4,6 +4,8 @@ import { Card, Chip, TopBar } from '../components/ui'
 import { useT } from '../i18n/useT'
 import { LEGAL_EFFECTIVE } from '../data/legal'
 import { TERMS, PRIVACY } from '../data/legalDocs'
+import { COMPANY } from '../data/company'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 /**
  * 이용약관 / 개인정보처리방침 — 엔에이치홀딩스(누리 마인드) 정식본 (2026-06-23 개정 시행).
@@ -16,13 +18,21 @@ export default function Legal() {
   const nav = useNavigate()
   const onboarded = useStore((st) => st.onboarded)
   const t = useT()
+  const known = doc === 'terms' || doc === 'privacy'
+  usePageMeta(
+    known
+      ? doc === 'terms'
+        ? { title: '이용약관 | 누리 마인드', description: `${COMPANY.name}이 운영하는 누리 마인드 서비스 이용약관 — 회원·포인트·유료 결제(다이아·프리미엄)·청약철회·분쟁 해결.`, path: '/legal/terms' }
+        : { title: '개인정보처리방침 | 누리 마인드', description: `${COMPANY.name}(누리 마인드)의 개인정보 처리 목적·항목·보유 기간·제3자 제공·광고 쿠키·개인정보 보호책임자 안내.`, path: '/legal/privacy' }
+      : null,
+  )
   if (doc !== 'terms' && doc !== 'privacy') return <Navigate to="/profile" replace />
   const isTerms = doc === 'terms'
   return (
     <div className="min-h-dvh pb-36">
       <TopBar back={onboarded ? '/profile' : () => nav(-1)} title={t(isTerms ? 'legal.terms' : 'legal.privacy')} />
       <main className="mx-auto max-w-md px-5">
-        <Chip tone="mind">✅ {LEGAL_EFFECTIVE} 시행 · 엔에이치홀딩스</Chip>
+        <Chip tone="mind">✅ {LEGAL_EFFECTIVE} 시행 · {COMPANY.name}</Chip>
         <Card className="mt-3">
           <p className="whitespace-pre-line text-[14px] font-medium leading-[1.85] text-ink">
             {isTerms ? TERMS : PRIVACY}

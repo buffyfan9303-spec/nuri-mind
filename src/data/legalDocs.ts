@@ -4,7 +4,10 @@
  * 페이지(pages/Legal)와 온보딩 시트(components/LegalSheet)가 같은 본문을 써야 하므로 분리했다.
  * ⚠️ 두 곳 모두 동적 import로만 가져온다 — 본문이 50KB대라 초기 번들에 들어가면
  *    첫 화면 로딩이 그만큼 느려진다.
+ * 사업자 정보 블록은 data/company.ts에서 끼워 넣는다(푸터·소개 페이지와 표기가 어긋나지 않게).
  */
+import { COMPANY } from './company'
+
 export const TERMS = `누리 마인드 이용약관
 
 시행일: 2026년 6월 23일
@@ -218,12 +221,13 @@ export const TERMS = `누리 마인드 이용약관
 제1조(시행일) 이 약관은 2026년 6월 23일부터 시행합니다. (2026년 6월 19일 제정, 2026년 6월 23일 프리미엄 정기결제(구독) 조항 신설 개정)
 
 사업자 정보
-- 상호: 엔에이치홀딩스
-- 대표자: 김윤혜
-- 사업자등록번호: 525-20-02937 (간이과세자)
-- 사업장 소재지: 경기도 남양주시 진건읍 사릉로372번길 25, 201동 1403호
-- 업태/종목: 정보통신업 / 컴퓨터 프로그래밍 서비스업, 포털 및 기타 인터넷 정보 매개 서비스업
-- 서비스명: 누리 마인드(www.nurimind.co.kr)
+- 상호: ${COMPANY.name}
+- 대표자: ${COMPANY.ceo}
+- 사업자등록번호: ${COMPANY.bizNo} (${COMPANY.taxType})
+- 사업장 소재지: ${COMPANY.address}
+- 업태/종목: ${COMPANY.bizType} / ${COMPANY.bizItems}
+- 개업일: ${COMPANY.openedAt.replace(/-/g, '.')}
+- 서비스명: ${COMPANY.serviceName}(${COMPANY.site})
 - 통신판매업 신고: 유료 결제(다이아) 서비스 운영과 관련한 통신판매업 신고를 진행할 예정이며, 신고 완료 후 신고번호를 본 약관 및 서비스 하단에 게시합니다. 신고 완료 전까지는 본 안내로 그 취지를 갈음합니다.
 - 문의: buffyfan9303@gmail.com`
 
@@ -361,11 +365,12 @@ export const PRIVACY = `누리 마인드 개인정보처리방침
 2. 법령, 정책 또는 보안기술의 변경에 따라 내용의 추가, 삭제 및 정정이 있는 경우에는 변경사항의 시행일 7일 전부터 서비스 공지사항을 통하여 고지합니다. 다만, 정보주체의 권리에 중대한 변경이 있는 경우에는 시행일 30일 전부터 고지합니다.
 
 사업자 정보
-- 상호: 엔에이치홀딩스
-- 대표자: 김윤혜
-- 사업자등록번호: 525-20-02937 (간이과세자)
-- 사업장 소재지: 경기도 남양주시 진건읍 사릉로372번길 25, 201동 1403호
-- 업태/종목: 정보통신업 / 컴퓨터 프로그래밍 서비스업, 포털 및 기타 인터넷 정보 매개 서비스업
-- 서비스명: 누리 마인드(www.nurimind.co.kr)
+- 상호: ${COMPANY.name}
+- 대표자: ${COMPANY.ceo}
+- 사업자등록번호: ${COMPANY.bizNo} (${COMPANY.taxType})
+- 사업장 소재지: ${COMPANY.address}
+- 업태/종목: ${COMPANY.bizType} / ${COMPANY.bizItems}
+- 개업일: ${COMPANY.openedAt.replace(/-/g, '.')}
+- 서비스명: ${COMPANY.serviceName}(${COMPANY.site})
 - 개인정보 보호책임자: 김윤혜(대표자)
 - 문의: buffyfan9303@gmail.com`

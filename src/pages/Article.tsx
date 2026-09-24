@@ -9,6 +9,8 @@ import { articleById } from '../data/magazine'
 import { useT, useL } from '../i18n/useT'
 import { useStore } from '../store/useStore'
 import { celebrate } from '../lib/confetti'
+import { usePageMeta } from '../hooks/usePageMeta'
+import Footer from '../components/Footer'
 
 export default function Article() {
   const { id } = useParams<{ id: string }>()
@@ -19,6 +21,7 @@ export default function Article() {
   const readArticle = useStore((s) => s.readArticle)
   const claimedBefore = useStore((s) => (a ? s.readArticles.includes(a.id) : false))
   const [justClaimed, setJustClaimed] = useState(false)
+  usePageMeta(a ? { title: `${l(a.title)} | 누리 마인드 심리 매거진`, description: l(a.summary), path: `/magazine/${a.id}` } : null)
   if (!a) return <Navigate to="/magazine" replace />
 
   const done = claimedBefore || justClaimed
@@ -27,8 +30,6 @@ export default function Article() {
     setJustClaimed(true)
     if (got > 0) celebrate()
   }
-  // 본문 중간(섹션 절반 지점)에 광고 1회 삽입
-  const adAt = Math.min(2, Math.max(0, Math.floor(a.sections.length / 2) - 1))
 
   return (
     <div className="min-h-dvh pb-36">
@@ -52,7 +53,7 @@ export default function Article() {
           <p className="mx-auto mt-2.5 max-w-[19rem] break-keep text-[14px] font-medium leading-relaxed text-ink-sub">{l(a.intro)}</p>
         </motion.div>
 
-        {/* 섹션 = 듀오링고식 레슨 카드 (+ 중간 광고) */}
+        {/* 섹션 = 듀오링고식 레슨 카드. 본문 중간 광고는 뺐다 — 재심사 전까지 광고는 글을 다 읽은 뒤 한 자리만 */}
         <div className="mt-7 space-y-3.5">
           {a.sections.map((s, i) => (
             <div key={i}>
@@ -83,11 +84,6 @@ export default function Article() {
                   )}
                 </Card>
               </motion.div>
-              {i === adAt && (
-                <div className="mt-3.5">
-                  <AdSlot variant="banner" />
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -135,11 +131,12 @@ export default function Article() {
           </div>
         )}
 
-        {/* 하단 사각 광고 + 디스클레이머 */}
+        {/* 하단 사각 광고(본문·요약·마무리를 다 읽은 뒤) + 디스클레이머 */}
         <div className="mt-6">
           <AdSlot variant="rect" />
         </div>
         <p className="mt-4 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">{t('mag.disclaimer')}</p>
+        <Footer />
       </main>
     </div>
   )
