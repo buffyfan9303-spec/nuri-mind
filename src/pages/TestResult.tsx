@@ -22,6 +22,7 @@ import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
 import { encodeDuel } from '../lib/duel'
+import { StatTile } from '../components/StatTile'
 import Emoji, { EmojiText } from '../components/Emoji'
 
 /** 정밀검사 전용 실행 라우트 — 문항뱅크(/test/:id/run)가 아니라 인지과제 화면으로 보내야 한다 */
@@ -65,6 +66,7 @@ export default function TestResult() {
   const unlockPrecision = useStore((s) => s.unlockPrecision)
   const diamonds = useStore((s) => s.diamonds)
   const nickname = useStore((s) => s.nickname)
+  const streak = useStore((s) => s.streak)
   const { fire } = useRewardAnimation()
   const celebrated = useRef(false)
 
@@ -361,17 +363,27 @@ export default function TestResult() {
           </div>
         </motion.div>
 
-        {/* 보상 배너 */}
-        {reward > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...SPRING.flick, delay: 0.5 }}
-            className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-100 py-3.5 text-[15px] font-extrabold text-mind-700"
-          >
-            <Emoji e="🪙" inline />{t('result.reward', { p: reward })}
-          </motion.div>
-        )}
+        {/* 방금 끝낸 검사 — 듀오링고 '레슨 완료' 스탯 타일(보상·소요 시간·연속 출석). 다시 열어 볼 땐 없다 */}
+        {state.fresh && (() => {
+          const secs = Math.round((result.durationMs || 0) / 1000)
+          const tiles = [
+            reward > 0 && { label: t('result.tileReward'), value: `+${reward}P`, icon: '🪙', color: '#FFB020' },
+            secs > 0 && {
+              label: t('result.tileTime'),
+              value: `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`,
+              icon: '⏱️',
+              color: '#6E9FDC',
+            },
+            streak > 0 && { label: t('result.tileStreak'), value: t('result.tileDays', { n: streak }), icon: '🔥', color: '#FF8A3D' },
+          ].filter(Boolean) as { label: string; value: string; icon: string; color: string }[]
+          return tiles.length > 0 ? (
+            <div className="mt-3 flex gap-2.5">
+              {tiles.map((x, i) => (
+                <StatTile key={x.label} index={i} {...x} />
+              ))}
+            </div>
+          ) : null
+        })()}
 
         {/* 가면 지수 경고 (EGO) */}
         {result.maskFlag && (

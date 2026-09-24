@@ -60,3 +60,11 @@ export function shiftGrad(grad: [string, string], deg: number): [string, string]
   if (!deg) return grad
   return [shiftHue(grad[0], deg), shiftHue(grad[1], deg)]
 }
+
+/** 같은 색조로 밝기만 낮춘다(amt 0~1, 명도 비율) — 3D 버튼·카드의 아랫면(ledge) 색 */
+export function darken(hex: string, amt = 0.22): string {
+  const [r, g, b] = hexToRgb(hex)
+  const [h, s, l] = rgbToHsl(r, g, b)
+  const [r2, g2, b2] = hslToRgb(h, s, clamp(l * (1 - amt), 0, 1))
+  return rgbToHex(r2, g2, b2)
+}

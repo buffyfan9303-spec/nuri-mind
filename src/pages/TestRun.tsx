@@ -3,7 +3,7 @@ import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import Button from '../components/Button'
-import { Modal, ProgressBar } from '../components/ui'
+import { AnswerCard, LessonHeader, Modal } from '../components/ui'
 import { FigCell, FoldStrip, MatrixGrid } from '../components/Fig'
 import { ADHD_ITEMS } from '../data/adhd'
 import { EGO_ITEMS } from '../data/ego'
@@ -240,50 +240,45 @@ export default function TestRun() {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      {/* 헤더: 중단 X + 진행바 + (IQ) 타이머 */}
-      <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={() => setQuitOpen(true)}
-          className="text-2xl font-bold text-ink-faint"
-          aria-label={t('run.quitYes')}
-        >
-          ✕
-        </motion.button>
-        <div className="flex-1">
-          <ProgressBar value={ratio} color={tm.gradFrom} />
-        </div>
-        {isIq ? (
-          <div className="relative h-10 w-10">
-            <svg viewBox="0 0 40 40" className="h-10 w-10 -rotate-90">
-              <circle cx="20" cy="20" r="16" fill="none" stroke="#E7EDE9" strokeWidth="5" />
-              <circle
-                cx="20"
-                cy="20"
-                r="16"
-                fill="none"
-                stroke={timeLeft <= 10 ? '#EF4444' : tm.gradFrom}
-                strokeWidth="5"
-                strokeLinecap="round"
-                strokeDasharray={2 * Math.PI * 16}
-                strokeDashoffset={2 * Math.PI * 16 * (1 - timeLeft / iqTimeFor((item as IqItem).difficulty))}
-                style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
-              />
-            </svg>
-            <span
-              className={`absolute inset-0 flex items-center justify-center text-xs font-extrabold ${
-                timeLeft <= 10 ? 'text-red-500' : 'text-ink-sub'
-              }`}
-            >
-              {timeLeft}
+      {/* 헤더: 중단 X + 진행바 + (IQ) 타이머 — 듀오링고 레슨 머리(LessonHeader) */}
+      <LessonHeader
+        value={ratio}
+        color={tm.gradFrom}
+        onClose={() => setQuitOpen(true)}
+        closeLabel={t('run.quitYes')}
+        right={
+          isIq ? (
+            <div className="relative h-10 w-10">
+              <svg viewBox="0 0 40 40" className="h-10 w-10 -rotate-90">
+                <circle cx="20" cy="20" r="16" fill="none" stroke="#E7EDE9" strokeWidth="5" />
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="16"
+                  fill="none"
+                  stroke={timeLeft <= 10 ? '#EF4444' : tm.gradFrom}
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 16}
+                  strokeDashoffset={2 * Math.PI * 16 * (1 - timeLeft / iqTimeFor((item as IqItem).difficulty))}
+                  style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
+                />
+              </svg>
+              <span
+                className={`absolute inset-0 flex items-center justify-center text-xs font-extrabold ${
+                  timeLeft <= 10 ? 'text-red-500' : 'text-ink-sub'
+                }`}
+              >
+                {timeLeft}
+              </span>
+            </div>
+          ) : (
+            <span className="text-sm font-extrabold text-ink-faint">
+              {idx + 1}/{total}
             </span>
-          </div>
-        ) : (
-          <span className="text-sm font-extrabold text-ink-faint">
-            {idx + 1}/{total}
-          </span>
-        )}
-      </div>
+          )
+        }
+      />
 
       {/* 응원 버블 */}
       <AnimatePresence>
@@ -312,7 +307,7 @@ export default function TestRun() {
           >
             {!isIq ? (
               <>
-                <p className="mt-8 text-[13px] font-extrabold" style={{ color: tm.gradFrom }}>
+                <p className="mt-5 text-[13px] font-extrabold" style={{ color: tm.gradFrom }}>
                   Q{idx + 1}
                 </p>
                 <h1 className="mt-2.5 text-[20px] font-extrabold leading-[1.6] tracking-tight">
@@ -323,30 +318,24 @@ export default function TestRun() {
                     const v = likertBase + i
                     const active = sel === v
                     return (
-                      <motion.button
+                      <AnswerCard
                         key={i}
                         onClick={() => pickLikert(v)}
-                        whileTap={{ scale: 0.97 }}
-                        animate={active ? { scale: [1, 1.06, 0.98, 1] } : { scale: 1 }}
-                        transition={active ? { duration: 0.34, ease: [0.34, 1.4, 0.5, 1] } : SPRING.flick}
-                        className="flex w-full items-center justify-between rounded-2xl border-2 bg-surface px-5 py-4 text-left text-[17px] font-bold leading-tight"
-                        style={{
-                          borderColor: active ? tm.gradFrom : '#E3EAE5',
-                          background: active ? `${tm.gradFrom}1A` : 'rgb(var(--surface))',
-                          boxShadow: active ? 'none' : '0 2px 0 #EDF1EE',
-                        }}
+                        selected={active}
+                        accent={tm.gradFrom}
+                        className="flex items-center justify-between px-5 py-4 text-left text-[17px] font-bold leading-tight"
                       >
                         {label}
-                        <span className="ml-3 flex shrink-0 gap-1">
+                        <span className="ml-3 flex shrink-0 gap-1" aria-hidden="true">
                           {Array.from({ length: 5 }).map((_, d) => (
                             <span
                               key={d}
                               className="h-1.5 w-1.5 rounded-full"
-                              style={{ background: d <= i ? tm.gradFrom : '#E3EAE5' }}
+                              style={{ background: d <= i ? tm.gradFrom : 'rgb(var(--line))' }}
                             />
                           ))}
                         </span>
-                      </motion.button>
+                      </AnswerCard>
                     )
                   })}
                 </div>
@@ -427,19 +416,12 @@ function IqQuestion({
         {item.options.map((o, i) => {
           const active = sel === o.id
           return (
-            <motion.button
+            <AnswerCard
               key={o.id}
               onClick={() => onPick(o.id)}
-              whileTap={{ scale: 0.97 }}
-              animate={active ? { scale: [1, 1.05, 1] } : { scale: 1 }}
-              className={`rounded-2xl border-2 bg-surface ${
-                o.fig ? 'aspect-square p-2' : 'px-4 py-4'
-              } font-extrabold`}
-              style={{
-                borderColor: active ? accent : '#E3EAE5',
-                background: active ? `${accent}14` : 'rgb(var(--surface))',
-                boxShadow: active ? 'none' : '0 2px 0 #EDF1EE',
-              }}
+              selected={active}
+              accent={accent}
+              className={`${o.fig ? 'aspect-square p-2' : 'px-4 py-4'} font-extrabold`}
             >
               <span className="sr-only">{l({ ko: `보기 ${i + 1}`, en: `Option ${i + 1}`, ja: `選択肢 ${i + 1}` })}</span>
               {o.fig ? (
@@ -449,7 +431,7 @@ function IqQuestion({
                   {l(o.text)}
                 </span>
               )}
-            </motion.button>
+            </AnswerCard>
           )
         })}
       </div>

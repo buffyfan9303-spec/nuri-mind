@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '../components/Button'
-import { Card, TopBar } from '../components/ui'
+import { AnswerCard, Card, LessonHeader, TopBar } from '../components/ui'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
@@ -36,6 +36,8 @@ export default function MbtiTest() {
   const deep = mode === 'deep'
 
   const [step, setStep] = useState(0)
+  // 문항당 응답 1회 — 연타·퇴장 중인 카드 탭이 같은 문항을 두 번 세어 결과 유형이 바뀌던 문제(QuickTest의 answeredRef와 같은 가드)
+  const answeredRef = useRef(-1)
   const [tally, setTally] = useState<Record<string, number>>({})
   const [done, setDone] = useState(false)
 
@@ -72,12 +74,16 @@ export default function MbtiTest() {
   }
 
   const pickQuick = (to: string) => {
+    if (answeredRef.current === step) return
+    answeredRef.current = step
     sfx.tap()
     setTally((p) => ({ ...p, [to]: (p[to] ?? 0) + 1 }))
     advance()
   }
 
   const pickDeep = (v: number) => {
+    if (answeredRef.current === step) return
+    answeredRef.current = step
     sfx.tap()
     const item = MBTI_DEEP[step]
     const other = AXES.flat().find((p) => {
@@ -179,6 +185,7 @@ export default function MbtiTest() {
               color="white"
               onClick={() => {
                 setTally({})
+                answeredRef.current = -1
                 setStep(0)
                 setDone(false)
                 // 긴 결과지 아래쪽에서 눌렀으므로 첫 문항이 화면 밖에 걸리지 않게 맨 위로
@@ -202,53 +209,38 @@ export default function MbtiTest() {
   }
 
   /* ── 문항 ── */
-  const progress = Math.round((step / total) * 100)
+  const title = deep ? l({ ko: '깊이 보는 유형검사', en: 'Deep type test', ja: '詳細タイプ検査' }) : l({ ko: '빠른 유형검사', en: 'Quick type test', ja: 'クイックタイプ' })
   return (
     <div className="bg-dots min-h-dvh pb-24">
-      <TopBar
-        back="/"
-        title={deep ? l({ ko: '깊이 보는 유형검사', en: 'Deep type test', ja: '詳細タイプ検査' }) : l({ ko: '빠른 유형검사', en: 'Quick type test', ja: 'クイックタイプ' })}
-      />
-      <main className="mx-auto max-w-md px-5">
-        <div className="mt-3 flex items-center gap-2.5">
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface2">
-            <motion.div
-              animate={{ width: `${progress}%` }}
-              transition={SPRING.ui}
-              className="h-full rounded-full bg-gradient-to-r from-mind-500 to-sky2-500"
-            />
-          </div>
-          <span className="shrink-0 text-[12px] font-extrabold text-ink-faint">
+      {/* 문항 머리 — 듀오링고 레슨처럼 닫기(X)·진행바·번호만 */}
+      <LessonHeader
+        value={step / total}
+        onClose={() => nav('/')}
+        closeLabel={l({ ko: '닫기', en: 'Close', ja: '閉じる' })}
+        right={
+          <span className="text-[13px] font-extrabold text-ink-faint">
             {step + 1}/{total}
           </span>
-        </div>
-
+        }
+      />
+      <main className="mx-auto max-w-md px-5">
         <motion.div key={step} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={SPRING.ui}>
-          <Card className="mt-4 !p-6">
-            <p className="break-keep text-center text-[17px] font-extrabold leading-tight">
-              {deep ? l(MBTI_DEEP[step].text) : l(MBTI_QUICK[step].text)}
-            </p>
-          </Card>
+          <p className="mt-5 text-[13px] font-extrabold text-mind-700">{title}</p>
+          <h1 className="mt-2 break-keep text-[20px] font-extrabold leading-snug tracking-tight">
+            {deep ? l(MBTI_DEEP[step].text) : l(MBTI_QUICK[step].text)}
+          </h1>
 
-          <div className="mt-4 space-y-2.5">
+          <div className="mt-6 space-y-3">
             {deep
               ? LIKERT.map((o) => (
-                  <button
-                    key={o.v}
-                    onClick={() => pickDeep(o.v)}
-                    className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[15px] font-extrabold transition-colors active:border-mind-400 active:bg-mind-50"
-                  >
+                  <AnswerCard key={o.v} onClick={() => pickDeep(o.v)} className="px-4 py-3.5 text-[15px] font-extrabold">
                     {l(o.label)}
-                  </button>
+                  </AnswerCard>
                 ))
               : MBTI_QUICK[step].options.map((o) => (
-                  <button
-                    key={o.to}
-                    onClick={() => pickQuick(o.to)}
-                    className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-4 text-[15px] font-bold leading-relaxed transition-colors active:border-mind-400 active:bg-mind-50"
-                  >
+                  <AnswerCard key={o.to} onClick={() => pickQuick(o.to)} className="px-4 py-4 text-[15px] font-bold leading-relaxed">
                     {l(o.text)}
-                  </button>
+                  </AnswerCard>
                 ))}
           </div>
         </motion.div>

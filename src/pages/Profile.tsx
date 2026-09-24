@@ -220,10 +220,6 @@ export default function Profile() {
                 </button>
               </h2>
             )}
-            <p className="mt-1 text-[13px] font-bold text-ink-faint">
-              {/* 아이콘은 SVG라 글자가 아니다 — 값을 잡는 테스트는 data-testid로 찾는다 */}
-              <Emoji e="🪙" inline />{s.points.toLocaleString()}P · <Emoji e="🧪" inline /><span data-testid="profile-results">{s.results.length}</span> · <Emoji e="🔥" inline />{s.streak}
-            </p>
             <button
               onClick={() => nav('/rank')}
               className="mt-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-extrabold"
@@ -233,6 +229,26 @@ export default function Profile() {
             </button>
           </div>
         </Card>
+
+        {/* 통계 — 듀오링고 프로필의 테두리 타일(아이콘 + 굵은 숫자 + 회색 라벨). 누르는 물체가 아니라 아랫면(ledge)은 없다 */}
+        <div className="mt-3 grid grid-cols-3 gap-2.5">
+          {[
+            { e: '🪙', v: `${s.points.toLocaleString()}P`, k: l({ ko: '포인트', en: 'Points', ja: 'ポイント' }) },
+            { e: '🧪', v: null, k: l({ ko: '완료한 검사', en: 'Tests done', ja: '完了した検査' }) },
+            { e: '🔥', v: String(s.streak), k: l({ ko: '연속 출석', en: 'Day streak', ja: '連続出席' }) },
+          ].map((x) => (
+            <div key={x.e} className="rounded-2xl border-2 border-line bg-surface px-3 py-2.5">
+              <div className="flex items-center gap-1.5">
+                <Emoji e={x.e} size={18} />
+                {/* 아이콘은 SVG라 글자가 아니다 — 값을 잡는 테스트는 data-testid로 찾는다 */}
+                <span className="truncate text-[17px] font-extrabold" {...(x.v === null ? { 'data-testid': 'profile-results' } : {})}>
+                  {x.v ?? s.results.length}
+                </span>
+              </div>
+              <p className="mt-0.5 truncate text-[12px] font-bold text-ink-faint">{x.k}</p>
+            </div>
+          ))}
+        </div>
 
         {/* 최근 4주 출석 — 스트릭을 '숫자'가 아니라 '흐름'으로(손실회피 시각화) */}
         <Card className="mt-3.5 !p-4">

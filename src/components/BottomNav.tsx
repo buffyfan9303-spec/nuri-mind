@@ -103,8 +103,8 @@ export default function BottomNav() {
                 <motion.span
                   animate={
                     active
-                      ? { y: -2, scale: [0.88, 1.14, 1], boxShadow: '0 5px 12px rgba(47,107,82,0.28)' }
-                      : { y: 0, scale: 1, boxShadow: '0 0px 0px rgba(0,0,0,0)' }
+                      ? { y: -1, scale: [0.88, 1.14, 1] }
+                      : { y: 0, scale: 1 }
                   }
                   transition={{
                     ...SPRING.flick,
@@ -112,8 +112,12 @@ export default function BottomNav() {
                     scale: { duration: 0.34, times: [0, 0.55, 1], ease: 'easeOut' },
                   }}
                   aria-hidden="true"
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-[20px]"
-                  style={{ background: active ? 'linear-gradient(135deg, #9BC4B2, #8FB8E8)' : 'transparent' }}
+                  // 듀오링고식 활성 탭 — 둥근 네모에 옅은 면 + 2px 테두리(아이콘은 그대로 선명하게)
+                  className="flex h-9 w-10 items-center justify-center rounded-xl border-2 text-[20px] transition-colors"
+                  style={{
+                    background: active ? 'rgba(79,168,130,0.14)' : 'transparent',
+                    borderColor: active ? '#4FA882' : 'transparent',
+                  }}
                 >
                   <Emoji e={tab.icon} size={22} />
                 </motion.span>

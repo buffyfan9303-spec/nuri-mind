@@ -57,7 +57,13 @@ export default function Button({
   busy = false,
   error = false,
 }: Props) {
-  const c = COLORS[color]
+  /**
+   * 비활성은 듀오링고처럼 '평평한 회색' — 색 버튼을 흐리게(opacity) 두면 '눌러도 되나?'가 애매했다.
+   * 회색 면 + 옅은 아랫면 + 흐린 글자로 색 자체가 빠져 '아직 못 누름'이 한눈에 읽힌다. 바쁨(busy)은 제 색 유지.
+   */
+  const c = disabled
+    ? { bg: 'rgb(var(--line))', sh: 'rgb(var(--ledge))', fg: 'rgb(var(--text-faint))', border: 'none' }
+    : COLORS[color]
   /**
    * 버튼 스케일 — 높이를 min-h로 고정하고 글자는 leading-none + flex 가운데 정렬.
    * 줄높이(1.65)에 기대던 예전 방식은 글꼴이 바뀌면(나눔스퀘어라운드는 위아래 여백 비율이 다르다)
@@ -98,7 +104,7 @@ export default function Button({
       whileHover={canHover && !disabled && !busy ? { y: -2, boxShadow: `0 ${depth + 2}px 0 ${c.sh}, 0 10px 22px -8px ${c.sh}` } : undefined}
       // 누를 땐 pressIn(곧장 바닥까지), 떼면 press(살짝 튀며 복귀) — lib/motion.press3d
       transition={p.transition}
-      className={`relative inline-flex items-center justify-center ${full ? 'w-full' : ''} ${pad} ${error ? 'shake' : ''} whitespace-nowrap rounded-2xl font-extrabold leading-none select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
+      className={`relative inline-flex items-center justify-center ${full ? 'w-full' : ''} ${pad} ${error ? 'shake' : ''} whitespace-nowrap rounded-2xl font-extrabold leading-none select-none outline-none ${busy ? 'opacity-60' : ''} ${className}`}
       style={{ background: c.bg, color: c.fg, boxShadow: p.rest, border: c.border ?? 'none' }}
     >
       {/* 글자를 지우지 않고 투명하게만 둔다 — 지우면 버튼 폭이 줄어 옆 버튼까지 밀린다 */}

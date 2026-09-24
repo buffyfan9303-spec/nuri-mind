@@ -251,6 +251,10 @@ export default {
   'result.axisAvd': 'Conflict avoidance',
   'result.medical': '⚕️ This is a self-report reference, not a medical diagnosis.',
   'result.reward': 'First-completion bonus +{p}P',
+  'result.tileReward': 'First bonus',
+  'result.tileTime': 'Time',
+  'result.tileStreak': 'Streak',
+  'result.tileDays': '{n}d',
   'result.shareText': '[Nuri Mind] My {test} result: I\'m {persona}! Top {p}% — try it 👉',
 
   'band.adhd.high': 'High alert',

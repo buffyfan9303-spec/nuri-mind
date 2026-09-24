@@ -251,6 +251,10 @@ export default {
   'result.axisAvd': '葛藤回避率',
   'result.medical': '⚕️ 本結果は自己報告に基づく参考指標であり、医学的診断ではありません。',
   'result.reward': '初回完了ボーナス +{p}P',
+  'result.tileReward': '初回ボーナス',
+  'result.tileTime': '所要時間',
+  'result.tileStreak': '連続出席',
+  'result.tileDays': '{n}日',
   'result.shareText': '[ヌリマインド] {test}の結果：私は{persona}！上位{p}% — 君もやってみて 👉',
 
   'band.adhd.high': '高い警戒',

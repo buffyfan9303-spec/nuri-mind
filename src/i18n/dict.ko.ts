@@ -255,6 +255,10 @@ export default {
   'result.axisAvd': '갈등 회피율',
   'result.medical': '이 결과는 재미와 참고용이에요. 병원에서 받는 진단이 아니에요.',
   'result.reward': '첫 완료 보상 +{p}P',
+  'result.tileReward': '첫 완료 보상',
+  'result.tileTime': '소요 시간',
+  'result.tileStreak': '연속 출석',
+  'result.tileDays': '{n}일',
   'result.shareText': '[누리 마인드] {test} 결과: 나는 {persona}! 상위 {p}%, 너도 해봐 👉',
 
   'band.adhd.high': '높은 경계',

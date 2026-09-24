@@ -151,19 +151,25 @@ export default function League() {
                     r.me ? 'bg-mind-50 dark:bg-surface2 ring-2 ring-mind-400' : inPromo ? 'bg-surface2' : inDemo ? 'bg-red-50/60 dark:bg-red-950/40' : ''
                   }`}
                 >
+                  {/* 1~3위는 메달(듀오링고 리더보드), 나머지는 순위 숫자 — 메달도 스크린리더엔 숫자로 읽힌다 */}
                   <span
-                    className={`w-7 text-center text-[16px] font-extrabold ${
-                      i === 0 ? 'text-amber-500' : i === 1 ? 'text-gray-400' : i === 2 ? 'text-amber-700' : 'text-ink-faint'
-                    }`}
+                    className={`flex w-7 justify-center text-center text-[16px] font-extrabold ${r.me ? 'text-mind-700' : 'text-ink-faint'}`}
                   >
-                    {i + 1}
+                    {i < 3 ? (
+                      <>
+                        <Emoji e={['🥇', '🥈', '🥉'][i]} size={24} />
+                        <span className="sr-only">{i + 1}</span>
+                      </>
+                    ) : (
+                      i + 1
+                    )}
                   </span>
                   <Emoji e={r.emoji} size={24} />
-                  <span className="min-w-0 flex-1 truncate text-[15px] font-extrabold">
+                  <span className={`min-w-0 flex-1 truncate text-[15px] font-extrabold ${r.me ? 'text-mind-700' : ''}`}>
                     {r.name}
                     {r.me && <Chip tone="mind"> {t('league.me')}</Chip>}
                   </span>
-                  <span className="text-[15px] font-extrabold text-ink-sub">{r.points.toLocaleString()}P</span>
+                  <span className={`text-[15px] font-extrabold ${r.me ? 'text-mind-700' : 'text-ink-sub'}`}>{r.points.toLocaleString()}P</span>
                 </motion.div>
               </div>
             )

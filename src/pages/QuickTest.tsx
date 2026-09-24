@@ -1,9 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
-import { SPRING } from '../lib/motion'
+import { SPRING, press3d } from '../lib/motion'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '../components/Button'
-import { ProgressBar, TopBar } from '../components/ui'
+import { AnswerCard, LessonHeader, TopBar } from '../components/ui'
 import { quickById } from '../data/quick'
 import { useT, useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
@@ -11,11 +11,14 @@ import { sfx } from '../lib/sound'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
-import { shiftGrad } from '../lib/color'
+import { darken, shiftGrad } from '../lib/color'
 import { CHARACTERS } from '../lib/characters'
 import { encodeQuickDuel } from '../lib/duel'
 import { useStore } from '../store/useStore'
 import Emoji from '../components/Emoji'
+
+/** 카카오 공유 버튼 아랫면 — 카카오 노랑을 같은 색조로 짙게 */
+const KAKAO_3D = press3d(4, '#C9B400')
 
 export default function QuickTest() {
   const { id } = useParams<{ id: string }>()
@@ -164,6 +167,8 @@ export default function QuickTest() {
 
   // ── 결과 ──
   if (done && winner) {
+    // 결과 화면의 색 버튼도 Button과 같은 3D 아랫면(같은 색조로 짙게) — 납작한 버튼만 따로 놀지 않게
+    const duel3d = press3d(4, darken(accent[0], 0.25))
     return (
       <div className="min-h-dvh pb-36">
         <TopBar back="/quick" title={l(test.title)} />
@@ -251,12 +256,15 @@ export default function QuickTest() {
 
           <div className="mt-4 space-y-2.5">
             {kakaoEnabled() && (
-              <button
+              <motion.button
                 onClick={shareKakaoQuick}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-extrabold text-[#3A1D1D]"
+                whileTap={KAKAO_3D.whileTap}
+                transition={KAKAO_3D.transition}
+                className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] text-[15px] font-extrabold leading-none text-[#3A1D1D]"
+                style={{ boxShadow: KAKAO_3D.rest }}
               >
                 {t('quick.shareKakao')}
-              </button>
+              </motion.button>
             )}
             <div className="grid grid-cols-2 gap-2.5">
               <Button color="sky" onClick={shareCard}>
@@ -266,13 +274,15 @@ export default function QuickTest() {
                 {t('quick.share')}
               </Button>
             </div>
-            <button
+            <motion.button
               onClick={shareDuelQuick}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-extrabold text-white"
-              style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }}
+              whileTap={duel3d.whileTap}
+              transition={duel3d.transition}
+              className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl text-[15px] font-extrabold leading-none text-white"
+              style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})`, boxShadow: duel3d.rest }}
             >
               {l({ ko: '친구와 대결', en: 'Challenge a friend', ja: '友達とバトル' })}
-            </button>
+            </motion.button>
             {test.funnel && (
               <Button color="white" onClick={() => nav(`/test/${test.funnel}`)}>
                 <Emoji e="🔬" inline />{t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}
@@ -291,15 +301,19 @@ export default function QuickTest() {
   const q = test.questions[step]
   return (
     <div className="min-h-dvh pb-10">
-      <TopBar back="/quick" title={l(test.title)} />
-      <main className="mx-auto max-w-md px-5">
-        <div className="mt-1">
-          <ProgressBar value={(step + 1) / test.questions.length} />
-          <p className="mt-1.5 text-right text-[12px] font-extrabold text-ink-faint">
+      {/* 문항 머리 — 듀오링고 레슨처럼 닫기(X)·진행바·번호만. 목록으로 나가는 길은 그대로 /quick */}
+      <LessonHeader
+        value={(step + 1) / test.questions.length}
+        color={test.grad[0]}
+        onClose={() => nav('/quick')}
+        closeLabel={t('common.close')}
+        right={
+          <span className="text-[13px] font-extrabold text-ink-faint">
             {step + 1} / {test.questions.length}
-          </p>
-        </div>
-
+          </span>
+        }
+      />
+      <main className="mx-auto max-w-md px-5">
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
@@ -308,18 +322,20 @@ export default function QuickTest() {
             exit={{ opacity: 0, x: -24, transition: SPRING.snap }}
             transition={SPRING.ui}
           >
-            <h1 className="mt-6 break-keep text-[20px] font-extrabold leading-snug tracking-tight">{l(q.text)}</h1>
-            <div className="mt-5 space-y-2.5">
+            <p className="mt-5 text-[13px] font-extrabold" style={{ color: darken(test.grad[0], 0.2) }}>
+              {l(test.title)}
+            </p>
+            <h1 className="mt-2 break-keep text-[20px] font-extrabold leading-snug tracking-tight">{l(q.text)}</h1>
+            <div className="mt-6 space-y-3">
               {q.options.map((op, i) => (
-                <motion.button
+                <AnswerCard
                   key={i}
-                  whileTap={{ scale: 0.97 }}
-                  transition={SPRING.flick}
+                  accent={test.grad[0]}
                   onClick={() => pick(op.to)}
-                  className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-4 text-left text-[15px] font-bold leading-snug transition-colors active:border-mind-400 active:bg-mind-50"
+                  className="px-4 py-4 text-left text-[15px] font-bold leading-snug"
                 >
                   {l(op.text)}
-                </motion.button>
+                </AnswerCard>
               ))}
             </div>
           </motion.div>
