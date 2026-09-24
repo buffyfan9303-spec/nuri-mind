@@ -43,7 +43,9 @@ export default function InstallPrompt() {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 90, opacity: 0 }}
         transition={SPRING.ui}
-        className="fixed inset-x-3 bottom-[84px] z-50 mx-auto flex max-w-md items-center gap-3 rounded-3xl border border-line bg-surface px-4 py-3 shadow-pop"
+        // z-40: 모달·시트(z-50) 아래, 하단 내비(z-30) 위. z-50이면 DOM 순서상 나중이라 열린 모달 위에 떠서
+        // 시트 아래쪽 버튼을 가리고, aria-modal 대화상자 밖인데도 눌렸다.
+        className="fixed inset-x-3 bottom-[84px] z-40 mx-auto flex max-w-md items-center gap-3 rounded-3xl border border-line bg-surface px-4 py-3 shadow-pop"
       >
         <span className="text-[24px] leading-none">📲</span>
         <div className="min-w-0 flex-1">
@@ -53,7 +55,7 @@ export default function InstallPrompt() {
         <button onClick={install} className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-semibold text-white">
           {l({ ko: '설치', en: 'Install', ja: '追加' })}
         </button>
-        <button onClick={close} aria-label="close" className="-mr-2 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center text-[17px] font-bold text-ink-faint">
+        <button onClick={close} aria-label={l({ ko: '닫기', en: 'Close', ja: '閉じる' })} className="-mr-2 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center text-[17px] font-bold text-ink-faint">
           ✕
         </button>
       </motion.div>

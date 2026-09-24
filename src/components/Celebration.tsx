@@ -73,7 +73,9 @@ export default function Celebration({
               <motion.div
                 initial={{ scale: 0, rotate: -18 }}
                 animate={{ scale: 1, rotate: [0, -10, 8, 0] }}
-                transition={{ ...SPRING.sheet, delay: 0.16 }}
+                // ⚠️ 스프링은 키프레임 2개만 쓴다(처음·끝) — rotate [0,-10,8,0]에 SPRING.sheet를 그대로 주면
+                // 0→0이라 흔들림이 통째로 사라진다. rotate만 키프레임 트윈으로 따로 돌린다.
+                transition={{ ...SPRING.sheet, delay: 0.16, rotate: { duration: 0.6, ease: 'easeInOut', delay: 0.16 } }}
                 className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 text-6xl shadow-pop"
               >
                 {emoji}

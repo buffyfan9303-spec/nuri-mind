@@ -22,7 +22,7 @@ const TICKER_PALETTES = [
   { grad: ['#A23E63', '#C76A8C'], shadow: '#7C2D49', fade: '#B45478' }, // 🃏 본성(dark)
 ]
 
-/** 📣 전광판(확성기) — 커뮤니티 상단. 1다이아로 게시, AI 필터로 욕설·19금·스팸 차단. */
+/** 📣 전광판(확성기) — 커뮤니티 상단. 1다이아로 게시, 자동 필터(lib/moderation)로 욕설·19금·스팸 차단. */
 export default function Ticker() {
   const l = useL()
   const nav = useNavigate()
@@ -115,7 +115,9 @@ export default function Ticker() {
               setOpen(true)
               sfx.tap()
             }}
-            className="z-10 shrink-0 rounded-2xl bg-white px-2.5 py-1.5 text-[12px] font-semibold text-[#2F6B52]"
+            // 글자가 이모지뿐이라 이름이 없으면 '확성기, 보석, 1'로 읽힌다. 히트영역은 before로 44px까지(모양은 그대로)
+            aria-label={l({ ko: `확성기 쏘기 · 다이아 ${TICKER_COST}개`, en: `Megaphone shout · ${TICKER_COST} diamond`, ja: `拡声器 · ダイヤ${TICKER_COST}` })}
+            className="relative z-10 shrink-0 rounded-2xl bg-white px-2.5 py-1.5 text-[12px] font-semibold text-[#2F6B52] before:absolute before:-inset-x-1 before:-inset-y-2 before:content-['']"
             style={{ boxShadow: '0 2px 0 rgba(0,0,0,0.18)' }}
           >
             📢 💎{TICKER_COST}
@@ -149,7 +151,8 @@ export default function Ticker() {
             </Button>
           </div>
           <p className="mt-2 text-[11px] font-medium leading-relaxed text-ink-faint">
-            {l({ ko: '🤖 욕설·19금·광고/연락처는 AI 필터로 자동 차단돼요', en: '🤖 Profanity, adult, ads/contacts are auto-blocked', ja: '🤖 暴言・アダルト・広告/連絡先は自動ブロック' })}
+            {/* 실제 필터는 금칙어·패턴 검사(lib/moderation)라 'AI 필터'는 사실과 달랐다 */}
+            {l({ ko: '🤖 욕설·19금·광고/연락처는 자동 필터로 차단돼요', en: '🤖 Profanity, adult, ads/contacts are auto-blocked', ja: '🤖 暴言・アダルト・広告/連絡先は自動ブロック' })}
           </p>
         </div>
       </Modal>
@@ -164,7 +167,7 @@ export default function Ticker() {
           </p>
           <div className="mt-5">
             <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
-            <button onClick={() => setNeedCharge(false)} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">{l({ ko: '닫기', en: 'Close', ja: '閉じる' })}</button>
+            <button onClick={() => setNeedCharge(false)} className="mt-2 min-h-[44px] w-full py-2 text-[13px] font-medium text-ink-faint">{l({ ko: '닫기', en: 'Close', ja: '閉じる' })}</button>
           </div>
         </div>
       </Modal>

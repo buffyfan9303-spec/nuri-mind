@@ -145,7 +145,8 @@ export default function Invite() {
                 key={m.n}
                 className="rounded-2xl border-2 py-2 text-center"
                 style={{
-                  borderColor: hit ? '#4FA882' : '#E3EAE5',
+                  // 라인 토큰 — 고정 #E3EAE5는 다크모드에서 어두운 카드 위에 밝은 테두리로 떠 있었다
+                  borderColor: hit ? '#4FA882' : 'rgb(var(--line))',
                   background: hit ? '#4FA8821A' : 'rgb(var(--surface))',
                 }}
               >
@@ -171,6 +172,7 @@ export default function Invite() {
                 setMsg(null)
               }}
               placeholder={t('invite.ph')}
+              aria-label={t('invite.enterTitle')}
               maxLength={11}
               className="min-w-0 flex-1 rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-semibold outline-none focus:border-mind-400"
             />

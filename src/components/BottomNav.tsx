@@ -85,7 +85,8 @@ export default function BottomNav() {
       {/* 콘텐츠가 바 아래/옆으로 비치지 않도록 풀폭 페이드 */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-cream via-cream/95 to-transparent" />
 
-      <nav className="safe-bottom pointer-events-none relative z-40">
+      {/* 숨은 채로도 Tab 순서엔 남아 있다 — 키보드 포커스가 들어오면 다시 보여 준다(화면 밖 요소에 포커스가 가면 위치를 잃는다) */}
+      <nav className="safe-bottom pointer-events-none relative z-40" onFocusCapture={() => hidden && setHidden(false)}>
         <div className="pointer-events-auto mx-auto mb-1 flex max-w-[380px] items-center justify-around rounded-[26px] border border-line bg-surface/95 px-1.5 py-1.5 shadow-pop backdrop-blur-md">
           {TABS.map((tab) => {
             const active = tab.to === '/' ? loc.pathname === '/' : loc.pathname.startsWith(tab.to)
@@ -109,6 +110,7 @@ export default function BottomNav() {
                     // 탭 배지의 scale만 키프레임으로 따로 간다(스프링으로는 중간 피크를 만들 수 없다)
                     scale: { duration: 0.34, times: [0, 0.55, 1], ease: 'easeOut' },
                   }}
+                  aria-hidden="true"
                   className="flex h-9 w-9 items-center justify-center rounded-full text-[20px]"
                   style={{ background: active ? 'linear-gradient(135deg, #9BC4B2, #8FB8E8)' : 'transparent' }}
                 >

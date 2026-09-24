@@ -17,12 +17,13 @@ export default function Footer() {
           ja: 'ヌリマインドはRSES・ASRS・CD-RISCなど公開心理尺度に基づく12種の自己理解検査と心理マガジン、リワードを提供します。結果は自己省察の参考であり医学的診断ではありません。',
         })}
       </p>
+      {/* 링크 글자는 21px 높이뿐 — before로 위아래 12px씩 넓혀 44px 히트영역(줄 간격·모양은 그대로) */}
       <nav className="mt-4 flex items-center justify-center gap-4 text-[13px] font-semibold text-ink-sub">
-        <button onClick={() => nav('/legal/terms')}>{l({ ko: '이용약관', en: 'Terms', ja: '利用規約' })}</button>
+        <button onClick={() => nav('/legal/terms')} className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '이용약관', en: 'Terms', ja: '利用規約' })}</button>
         <span className="text-line">|</span>
-        <button onClick={() => nav('/legal/privacy')}>{l({ ko: '개인정보처리방침', en: 'Privacy', ja: 'プライバシー' })}</button>
+        <button onClick={() => nav('/legal/privacy')} className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '개인정보처리방침', en: 'Privacy', ja: 'プライバシー' })}</button>
         <span className="text-line">|</span>
-        <button onClick={() => nav('/magazine')}>{l({ ko: '심리 매거진', en: 'Magazine', ja: 'マガジン' })}</button>
+        <button onClick={() => nav('/magazine')} className="relative before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']">{l({ ko: '심리 매거진', en: 'Magazine', ja: 'マガジン' })}</button>
       </nav>
       <p className="mt-4 px-4 text-[11px] font-medium leading-relaxed text-ink-faint">
         엔에이치홀딩스 · 대표 김윤혜 · 사업자등록번호 525-20-02937

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import Button from './Button'
 import { Card, Modal } from './ui'
@@ -37,6 +37,9 @@ export function DailySpin() {
 
   const [opening, setOpening] = useState(false)
   const [reward, setReward] = useState<{ rolled: number; granted: number } | null>(null)
+  // 여는 연출 타이머 — 1.1초 안에 다른 탭으로 가면 폭죽·코인음이 엉뚱한 화면에서 터졌다(언마운트 시 정리)
+  const openTimer = useRef<ReturnType<typeof setTimeout>>()
+  useEffect(() => () => clearTimeout(openTimer.current), [])
 
   const freeUsed = lastSpinDate === todayStr()
   const allDone = freeUsed
@@ -48,7 +51,8 @@ export function DailySpin() {
     setOpening(true)
     setReward(null)
     sfx.tap()
-    setTimeout(() => {
+    clearTimeout(openTimer.current)
+    openTimer.current = setTimeout(() => {
       setOpening(false)
       setReward(res)
       burst()
@@ -191,7 +195,8 @@ export function DailyQuiz() {
                   onClick={() => pick(i)}
                   className="w-full rounded-2xl border-2 px-4 py-3.5 text-left text-[15px] font-bold leading-relaxed"
                   style={{
-                    borderColor: show ? (isAnswer ? '#4FA882' : isPicked ? '#EF4444' : '#E3EAE5') : '#E3EAE5',
+                    // 라인 토큰 — 고정 #E3EAE5는 다크모드에서 보기 테두리만 밝게 떠 보였다
+                    borderColor: show ? (isAnswer ? '#4FA882' : isPicked ? '#EF4444' : 'rgb(var(--line))') : 'rgb(var(--line))',
                     background: show ? (isAnswer ? '#4FA8821A' : isPicked ? '#EF44441A' : 'rgb(var(--surface))') : 'rgb(var(--surface))',
                   }}
                 >

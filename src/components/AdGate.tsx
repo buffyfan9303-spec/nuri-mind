@@ -5,6 +5,7 @@ import Button from './Button'
 import { useT, useL } from '../i18n/useT'
 import { showInterstitial } from '../lib/ads'
 import type { L } from '../data/types'
+import { useDialogFocus } from '../hooks/useDialogFocus'
 
 const WAIT_SEC = 5
 
@@ -30,9 +31,12 @@ export default function AdGate({ onDone }: { onDone: () => void }) {
   const tip = useMemo(() => TIPS[Math.floor(Math.random() * TIPS.length)], [])
   const boxRef = useRef<HTMLDivElement>(null)
 
+  // 게이트로 초점 이동 + Tab 가두기 — 예전엔 focus()만 해서 Tab 한 번이면 뒤 화면(결과·잠금 버튼)으로 새어 나가
+  // 5초 대기를 키보드로 우회할 수 있었다. 닫히면 열었던 요소로 복귀.
+  useDialogFocus(true, boxRef)
+
   useEffect(() => {
     showInterstitial()
-    boxRef.current?.focus() // 게이트로 초점 이동 — 키보드로 뒤 화면 조작해 우회하는 것 방지(+스크린리더 인지)
     const iv = setInterval(() => setLeft((v) => Math.max(0, v - 1)), 1000)
     return () => clearInterval(iv)
   }, [])

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { SPRING } from '../lib/motion'
-import { motion } from 'framer-motion'
+import { MotionConfig, motion } from 'framer-motion'
 import Button from './Button'
 import Avatar from './Avatar'
 import { PERSONA_VISUAL } from '../i18n/personaVisual'
@@ -10,7 +10,8 @@ import { useT } from '../i18n/useT'
 import { celebrate } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { LEGAL_EFFECTIVE } from '../data/legal'
-import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange } from '../lib/auth'
+import { authReady, signInWithKakao, getAuthUser, onAuthChange } from '../lib/auth'
+import { logoutAccount } from '../lib/economy'
 import { moderateText } from '../lib/moderation'
 import { humanizeError } from '../lib/dbError'
 import LegalSheet from './LegalSheet'
@@ -51,6 +52,8 @@ export default function Onboarding() {
   const [nickErr, setNickErr] = useState('')
   // 약관은 시트로 — 라우트 이동은 이 화면을 언마운트해 입력을 통째로 날린다
   const [legal, setLegal] = useState<'terms' | 'privacy' | null>(null)
+  // label↔input 연결 — 없으면 스크린리더가 입력칸을 이름 없이('편집 가능한 텍스트') 읽는다
+  const nickId = useId()
 
   // 초대 코드 캡처 — URL에서 한 번 읽어 보관하고 주소창은 정리한다
   useEffect(() => {
@@ -141,6 +144,9 @@ export default function Onboarding() {
   }
 
   return (
+    // 온보딩은 App의 <MotionConfig reducedMotion="user"> **바깥**에서 렌더된다(가입 전 분기가 먼저 return) —
+    // 여기서 직접 감싸지 않으면 '동작 줄이기'를 켠 사용자에게도 로고가 무한히 흔들린다(가입 첫 화면에서만).
+    <MotionConfig reducedMotion="user">
     <div className="bg-dots min-h-dvh">
       <main className="mx-auto flex min-h-dvh max-w-md flex-col px-6 pb-10 pt-12">
         {/* 환영 */}
@@ -152,7 +158,8 @@ export default function Onboarding() {
 
         {oauthErr && (
           <motion.p role="alert" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-medium text-red-500">
-            {t('onboard.kakao')} 실패: {oauthErr}
+            {/* '카카오로 3초 만에 시작 실패: …'는 버튼 문구에 '실패'를 붙인 꼴이라 어색했다 */}
+            {lang === 'ko' ? '카카오 로그인 실패' : lang === 'ja' ? 'カカオログイン失敗' : 'Kakao sign-in failed'}: {oauthErr}
           </motion.p>
         )}
 
@@ -165,9 +172,14 @@ export default function Onboarding() {
                 {/* 다른 계정으로 붙었을 때 빠져나갈 길 — 온보딩 게이트 탓에 Profile에 못 가므로 여기 필요 */}
                 <button
                   onClick={async () => {
-                    await signOut()
+                    // ⚠️ signOut만 부르면 직전 계정의 지갑·검사기록이 게스트 프로필에 남는다 → 경계까지 한 쌍으로.
+                    // 그리고 버튼 이름대로 곧장 카카오 로그인 화면(계정 선택)으로 보낸다 — 로그아웃만 하고 멈추면
+                    // 다시 '카카오로 시작'을 눌러도 카카오 세션 때문에 같은 계정으로 돌아왔다.
+                    await logoutAccount()
                     setKakaoNick(null)
                     setNick('')
+                    const r = await signInWithKakao(true)
+                    if (!r.ok) alert(t('auth.needSetup'))
                   }}
                   className="mt-1.5 block w-full text-[12px] font-medium text-[#3A1D1D]/60 underline"
                 >
@@ -193,8 +205,11 @@ export default function Onboarding() {
 
         {/* 닉네임 */}
         <div className={authReady() ? '' : 'mt-8'}>
-          <label className="px-1 text-[14px] font-semibold">{t('onboard.nickLabel')}</label>
+          <label htmlFor={nickId} className="px-1 text-[14px] font-semibold">
+            {t('onboard.nickLabel')}
+          </label>
           <input
+            id={nickId}
             value={nick}
             onChange={(e) => {
               setNick(e.target.value)
@@ -225,6 +240,7 @@ export default function Onboarding() {
                 <motion.button
                   key={key}
                   whileTap={{ scale: 0.97 }}
+                  aria-pressed={sel}
                   onClick={() => {
                     setPicked(sel ? null : key)
                     sfx.tap()
@@ -255,9 +271,12 @@ export default function Onboarding() {
                 setAgreed((v) => !v)
                 sfx.tap()
               }}
-              aria-pressed={agreed}
-              aria-label={t('onboard.terms') + ' ' + t('onboard.agreeReq')}
-              className="mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 transition-colors"
+              // 동의 체크는 토글 버튼이 아니라 체크박스로 읽혀야 한다. 이름도 약관+개인정보 둘 다
+              role="checkbox"
+              aria-checked={agreed}
+              aria-label={`${t('onboard.terms')} · ${t('onboard.privacy')} ${t('onboard.agreeReq')}`}
+              // 보이는 칸은 22px — before로 사방 11px 넓혀 44px 히트영역(레이아웃은 그대로)
+              className="relative mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 transition-colors before:absolute before:-inset-[11px] before:content-['']"
               style={{ borderColor: agreed ? '#4FA882' : 'rgb(var(--line))', background: agreed ? '#4FA882' : 'rgb(var(--surface))' }}
             >
               {agreed && <span className="text-[13px] font-medium leading-none text-white">✓</span>}
@@ -305,5 +324,6 @@ export default function Onboarding() {
         </motion.div>
       )}
     </div>
+    </MotionConfig>
   )
 }

@@ -2,6 +2,7 @@ import { motion, useReducedMotion, useSpring, useTransform } from 'framer-motion
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
+import { useL } from '../../i18n/useT'
 
 /** 숫자 카운터 전용 — lib/motion의 transition 프리셋과 API가 달라 여기 둔다(오버슈트 금지) */
 const COUNTER_SPRING = { stiffness: 110, damping: 22 }
@@ -24,11 +25,15 @@ export function DiamondPill() {
   const diamonds = useStore((s) => s.diamonds)
   const diaText = useCountUp(diamonds)
   const nav = useNavigate()
+  const l = useL()
   return (
     <motion.button
       whileTap={{ scale: 0.97 }}
       onClick={() => nav('/charge')}
-      className="flex items-center gap-1 rounded-full bg-surface px-2 py-1 text-sm font-extrabold text-[#6E7BF2] shadow-card"
+      // 이름이 없으면 '보석 12 더하기'로 읽힌다 — 누르면 무엇이 되는지(충전)를 말해 준다.
+      // 알약은 28px 남짓이라 before로 위아래 8px 넓혀 44px 히트영역(모양·줄 높이는 그대로)
+      aria-label={l({ ko: `다이아 ${diamonds}개 · 충전하기`, en: `${diamonds} diamonds · Top up`, ja: `ダイヤ${diamonds}個・チャージ` })}
+      className="relative flex items-center gap-1 rounded-full bg-surface px-2 py-1 text-sm font-extrabold text-[#6E7BF2] shadow-card before:absolute before:-inset-y-2 before:inset-x-0 before:content-['']"
     >
       💎 <motion.span>{diaText}</motion.span>
       <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#6E7BF2] text-[11px] leading-none text-white">+</span>

@@ -82,7 +82,8 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
             aria-label={t(doc === 'terms' ? 'legal.terms' : 'legal.privacy')}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
+            // 퇴장은 snap — sheet(바운스)는 들어올 때 손맛이고, 닫을 땐 빨리 비켜야 한다(Modal과 동일)
+            exit={{ y: '100%', transition: SPRING.snap }}
             transition={SPRING.sheet}
             drag="y"
             dragListener={false}

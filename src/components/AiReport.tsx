@@ -59,6 +59,21 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unlocked, cached])
 
+  // 게이트는 잠금/해금 두 분기 **밖**에 둔다. 분기 안에 두면 onDone이 unlockAi로 분기를 바꾸는 순간
+  // AnimatePresence째 언마운트돼 exit(페이드아웃)가 재생되지 않고 전면 오버레이가 한 프레임에 증발했다.
+  const gateLayer = (
+    <AnimatePresence>
+      {gate && (
+        <AdGate
+          onDone={() => {
+            setGate(false)
+            unlockAi(result.id)
+          }}
+        />
+      )}
+    </AnimatePresence>
+  )
+
   if (!unlocked) {
     return (
       <>
@@ -74,14 +89,13 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
             </Button>
           </div>
         </div>
-        <AnimatePresence>
-          {gate && <AdGate onDone={() => { setGate(false); unlockAi(result.id) }} />}
-        </AnimatePresence>
+        {gateLayer}
       </>
     )
   }
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
@@ -116,6 +130,8 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
         <Section title={`${t('result.strengthTitle')}`} items={persona.strengths.map(l)} mark="★" color="#6E9FDC" />
       </div>
     </motion.div>
+    {gateLayer}
+    </>
   )
 }
 
