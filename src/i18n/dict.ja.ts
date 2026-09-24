@@ -379,10 +379,10 @@ export default {
   'shop.st.rejected': '却下',
 
   'admin.title': '運営者コンソール',
-  'admin.pinTitle': '運営者PINを入力',
+  'admin.pinTitle': '運営者アカウントを確認します',
   'admin.pinPh': 'PIN',
-  'admin.enter': 'ロック解除',
-  'admin.pinErr': 'PINが正しくありません',
+  'admin.enter': '運営者確認',
+  'admin.pinErr': '運営者アカウントではありません',
   'admin.tab.surveys': 'アンケート承認',
   'admin.tab.redeem': '交換承認',
   'admin.tab.stats': '状況',

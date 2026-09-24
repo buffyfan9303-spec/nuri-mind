@@ -32,8 +32,6 @@ import { claimDiamondGrantsServer } from '../lib/diamonds'
 import { mirrorEarn, mirrorSpend, initEconomySync, clearAccountSync, type SyncHooks } from '../lib/economy'
 import { createSettingsSlice } from './slices/settingsSlice'
 
-/** 운영자 PIN — 배포 전 반드시 변경 (실서비스는 Supabase Auth 권장) */
-const OPERATOR_PIN = '5690'
 /** 검사 첫 완료 보상 (1회성 — 일일 상한 제외) */
 export const TEST_REWARD = 20
 /**
@@ -53,7 +51,7 @@ export const FORTUNE_DIA_COST = 5
 export const FORTUNE_DETAIL_DIA_COST = 5
 /** IQ 정밀검사 전체 해제(영구) */
 export const IQ_DIA_COST = 10
-/** 운영자 콘솔이 보이는 계정(닉네임 화이트리스트). 콘솔 진입은 PIN(5690)으로 2차 보호. */
+/** 운영자 콘솔 진입 버튼이 보이는 닉네임. 실제 진입은 서버 profiles.is_admin 확인(Admin.tsx)으로 막는다. */
 export const OPERATOR_NICKS = ['누리', 'WTA']
 /** 정밀검사(기억/집중/처리속도/공간) 상세분석 전체 해제 비용 */
 export const PRECISION_DIA_COST = 10
@@ -287,7 +285,7 @@ interface State {
   /** 성장 과제 완료 토글 — 첫 완료 시 +5P(하루 1회, 서버 멱등키) */
   toggleGrowthTask: (taskId: string, cadence?: Cadence) => number
   readArticle: (id: string) => number
-  unlockAdmin: (pin: string) => boolean
+  unlockAdmin: () => void
   lockAdmin: () => void
   resetAll: () => void
 }
@@ -905,13 +903,8 @@ export const useStore = create<State>()(
           return first ? 10 : 0
         },
 
-        unlockAdmin: (pin) => {
-          if (pin === OPERATOR_PIN) {
-            set({ adminUnlocked: true })
-            return true
-          }
-          return false
-        },
+        // 서버 is_admin 확인(lib/auth isServerAdmin)을 통과한 뒤에만 부른다 — 번들에 비밀(PIN)을 두지 않는다
+        unlockAdmin: () => set({ adminUnlocked: true }),
         lockAdmin: () => set({ adminUnlocked: false }),
 
         resetAll: () => {

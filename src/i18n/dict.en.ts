@@ -379,10 +379,10 @@ export default {
   'shop.st.rejected': 'Rejected',
 
   'admin.title': 'Operator Console',
-  'admin.pinTitle': 'Enter operator PIN',
+  'admin.pinTitle': 'Verify operator account',
   'admin.pinPh': 'PIN',
-  'admin.enter': 'Unlock',
-  'admin.pinErr': 'Wrong PIN',
+  'admin.enter': 'Verify operator',
+  'admin.pinErr': 'This is not an operator account',
   'admin.tab.surveys': 'Surveys',
   'admin.tab.redeem': 'Redemptions',
   'admin.tab.stats': 'Stats',

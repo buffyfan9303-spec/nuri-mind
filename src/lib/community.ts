@@ -97,19 +97,45 @@ function isMissingOwnerColumn(err: unknown): boolean {
   return e.code === '42703' || e.code === 'PGRST204'
 }
 
+/**
+ * 내가 이 기기에서 올린 글·댓글 id — '내 것' 판정의 근거.
+ * owner_hash는 공개 컬럼이라, 해시만 같으면 '내 것'으로 치면 남이 내 해시를 복사해 올린 글이 내 글로 보인다.
+ */
+const MINE_KEY = (deviceId: string) => `nuri-community-mine:${deviceId}`
+function mineIds(deviceId: string): Set<string> {
+  try {
+    const v = JSON.parse(localStorage.getItem(MINE_KEY(deviceId)) ?? '[]')
+    return new Set(Array.isArray(v) ? (v as string[]) : [])
+  } catch {
+    return new Set()
+  }
+}
+function rememberMine(deviceId: string, id: string) {
+  try {
+    const ids = [...mineIds(deviceId), id].slice(-500) // 오래된 것부터 버린다
+    localStorage.setItem(MINE_KEY(deviceId), JSON.stringify(ids))
+  } catch {
+    /* 저장 불가 — '내 글' 표시만 빠진다 */
+  }
+}
+
+/** 서버 소유권 SQL 적용 시각 — 그 전 글만 옛 방식(sha256(deviceId))으로 내 것 판정 */
+const OWNER_FIX_AT = Date.parse('2026-09-24T05:41:00Z')
+
 /** 행의 소유 판정 + 삭제 비밀 기억 */
 function resolveMine(
   id: string,
-  row: { owner_hash?: string | null; device_id?: string | null },
+  row: { owner_hash?: string | null; device_id?: string | null; created_at?: string },
   deviceId: string,
   o: Owner,
 ): boolean {
   if (row.owner_hash != null) {
-    if (o.token && o.tokenHash && row.owner_hash === o.tokenHash) {
+    if (o.token && o.tokenHash && row.owner_hash === o.tokenHash && mineIds(deviceId).has(id)) {
       secretById.set(id, o.token)
       return true
     }
-    if (o.legacyHash && row.owner_hash === o.legacyHash) {
+    const before = row.created_at ? Date.parse(row.created_at) < OWNER_FIX_AT : false
+    if (before && o.legacyHash && row.owner_hash === o.legacyHash) {
       secretById.set(id, deviceId)
       return true
     }
@@ -155,8 +181,15 @@ async function insertWithOwner(table: 'posts' | 'comments', deviceId: string, ro
   const o = await owner(deviceId)
   if (ownerHashSupported !== false && o.token && o.tokenHash) {
     // device_id는 NOT NULL 칸을 채우는 자리표시 — 서버 트리거가 owner_hash로 덮는다(원문 deviceId를 보내지 않는다)
-    const { error } = await supabase.from(table).insert({ ...row, device_id: o.tokenHash, owner_hash: o.tokenHash })
-    if (!error) return
+    const { data, error } = await supabase
+      .from(table)
+      .insert({ ...row, device_id: o.tokenHash, owner_hash: o.tokenHash })
+      .select('id')
+      .single()
+    if (!error) {
+      if (data?.id) rememberMine(deviceId, String(data.id))
+      return
+    }
     if (!isMissingOwnerColumn(error)) throw error
     ownerHashSupported = false
   }
@@ -235,8 +268,10 @@ export async function toggleLike(postId: string): Promise<boolean> {
 export async function removePost(postId: string, deviceId: string): Promise<void> {
   if (!supabase) throw new Error('supabase-not-configured')
   const did = secretById.get(postId) ?? deviceId
-  const { error } = await supabase.rpc('delete_my_post', { pid: postId, did })
+  const { data, error } = await supabase.rpc('delete_my_post', { pid: postId, did })
   if (error) throw error
+  // 서버가 지운 행이 없으면 false(community-delete-result SQL 적용 후). 적용 전 void(null)는 성공으로 본다
+  if (data === false) throw new Error('not_deleted')
   secretById.delete(postId)
 }
 

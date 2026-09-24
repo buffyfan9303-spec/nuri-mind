@@ -9,6 +9,7 @@ import { sfx } from '../lib/sound'
 import { grantDiamondsNick, sendMailNick } from '../lib/mailbox'
 import { probeAi, type AiHealth, type AiFnName } from '../lib/aiHealth'
 import Emoji, { EmojiText } from '../components/Emoji'
+import { isServerAdmin } from '../lib/auth'
 
 type Tab = 'surveys' | 'redeem' | 'exp' | 'reports' | 'stats'
 
@@ -18,21 +19,28 @@ export default function Admin() {
   return unlocked ? <Console /> : <PinGate />
 }
 
+/**
+ * 운영자 확인 — 예전 PIN은 번들에 그대로 들어가 누구나 찾을 수 있었다.
+ * 이제 로그인한 계정의 서버 profiles.is_admin이 true일 때만 콘솔을 연다.
+ */
 function PinGate() {
   const t = useT()
   const unlockAdmin = useStore((s) => s.unlockAdmin)
-  const [pin, setPin] = useState('')
-  const [err, setErr] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState<'' | 'no' | 'no_login'>('')
 
-  const tryUnlock = () => {
-    if (!unlockAdmin(pin)) {
-      setErr(true)
-      sfx.err()
-      setTimeout(() => setErr(false), 500)
-      setPin('')
-    } else {
+  const tryUnlock = async () => {
+    if (busy) return
+    setBusy(true)
+    const r = await isServerAdmin().catch(() => 'no' as const)
+    setBusy(false)
+    if (r === 'yes') {
       sfx.coin()
+      unlockAdmin()
+      return
     }
+    setErr(r)
+    sfx.err()
   }
 
   return (
@@ -41,20 +49,13 @@ function PinGate() {
       <div className="mx-auto max-w-md px-5 pt-16 text-center">
         <div className="leading-none"><Emoji e="🔐" size={48} className="align-top" /></div>
         <h1 className="mt-4 text-lg font-extrabold">{t('admin.pinTitle')}</h1>
-        <div className={`mx-auto mt-5 max-w-[260px] ${err ? 'shake' : ''}`}>
-          <input
-            type="password"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && tryUnlock()}
-            placeholder={t('admin.pinPh')}
-            className="w-full rounded-2xl border-2 bg-surface px-4 py-3.5 text-center text-lg font-extrabold tracking-widest outline-none focus:border-mind-400"
-            style={{ borderColor: err ? '#EF4444' : '#E3EAE5' }}
-          />
-        </div>
-        {err && <p className="mt-2 text-sm font-bold text-red-500">{t('admin.pinErr')}</p>}
-        <div className="mx-auto mt-4 max-w-[260px]">
-          <Button color="mind" onClick={tryUnlock} disabled={pin.length < 4}>
+        {err && (
+          <p className="mt-3 text-sm font-bold text-red-500">
+            {err === 'no_login' ? '운영자 카카오 계정으로 먼저 로그인해 주세요(프로필 > 카카오로 로그인).' : t('admin.pinErr')}
+          </p>
+        )}
+        <div className="mx-auto mt-5 max-w-[260px]">
+          <Button color="mind" busy={busy} onClick={tryUnlock}>
             {t('admin.enter')}
           </Button>
         </div>

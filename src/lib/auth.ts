@@ -146,6 +146,19 @@ export async function getAuthUser(): Promise<AuthUser | null> {
   }
 }
 
+/**
+ * 운영자인가 — 서버 profiles.is_admin(본인 행만 읽히는 RLS). 'no_login'이면 로그인이 먼저다.
+ * 화면 잠금용일 뿐 권한 경계는 서버 RPC(send_mail_admin 등)의 is_admin 확인이다.
+ */
+export async function isServerAdmin(): Promise<'yes' | 'no' | 'no_login'> {
+  if (!supabase) return 'no'
+  const { data: sess } = await supabase.auth.getSession()
+  const uid = sess.session?.user?.id
+  if (!uid) return 'no_login'
+  const { data, error } = await supabase.from('profiles').select('is_admin').eq('id', uid).maybeSingle()
+  return !error && data?.is_admin === true ? 'yes' : 'no'
+}
+
 /** 로그인 상태 변화 구독. cleanup 함수 반환. */
 export function onAuthChange(cb: (userId: string | null) => void): () => void {
   if (!supabase) return () => {}

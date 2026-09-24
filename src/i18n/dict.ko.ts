@@ -383,10 +383,10 @@ export default {
   'shop.st.rejected': '반려됨',
 
   'admin.title': '운영자 콘솔',
-  'admin.pinTitle': '운영자 PIN을 입력하세요',
+  'admin.pinTitle': '운영자 계정인지 확인할게요',
   'admin.pinPh': 'PIN 입력',
-  'admin.enter': '잠금 해제',
-  'admin.pinErr': 'PIN이 올바르지 않아요',
+  'admin.enter': '운영자 확인',
+  'admin.pinErr': '운영자 계정이 아니에요',
   'admin.tab.surveys': '설문 승인',
   'admin.tab.redeem': '교환 승인',
   'admin.tab.stats': '현황',
