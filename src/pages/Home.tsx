@@ -99,11 +99,10 @@ export default function Home() {
   const checkedToday = s.lastCheckIn === todayStr()
 
   /**
-   * 오늘의 운세 박스 — 저장된 운세 입력(fortuneProfile)으로 오늘 점수만 계산한다.
-   * 운세 화면과 같은 입력(시각·성별·음력 포함)을 써야 두 화면 점수가 어긋나지 않는다.
+   * 오늘의 운세 칸 아이콘 — 저장된 운세 입력(fortuneProfile)의 띠. 입춘 기준 띠라 만세력 차트로 구한다.
    * saju·manse 모듈은 지연 로드(메인 번들 오염 방지 표준 패턴).
    */
-  const [fx, setFx] = useState<{ overall: number; zodiacEmoji: string } | null>(null)
+  const [fx, setFx] = useState<{ zodiacEmoji: string } | null>(null)
   const fp = s.fortuneProfile
   useEffect(() => {
     setFx(null)
@@ -114,13 +113,10 @@ export default function Home() {
         if (!alive) return
         const solar = mn.profileSolar(fp)
         if (!solar) return
-        const now = new Date()
-        const td = { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() }
         const chart = mn.chartOf(solar, mn.parseTime(fp.time))
-        const f = sj.fortuneOf(solar, td, { chart, gender: fp.gender || undefined })
-        setFx({ overall: f.overall, zodiacEmoji: sj.sajuOf(solar.y, solar.m, solar.d, chart).zodiacEmoji })
+        setFx({ zodiacEmoji: sj.sajuOf(solar.y, solar.m, solar.d, chart).zodiacEmoji })
       })
-      // 청크 로드 실패(재배포 후 구 해시·오프라인) — 박스는 점수 없이 진입 버튼으로만 남는다
+      // 청크 로드 실패(재배포 후 구 해시·오프라인) — 칸은 기본 아이콘(🔮)으로 남는다
       .catch(() => {})
     return () => {
       alive = false
@@ -280,8 +276,8 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* ── 대시보드 바로 아래 두 칸: 나에 관하여 | 오늘의 운세 — 아이콘 옆 제목 한 줄(설명 줄 없음).
-            운세 점수는 제목 옆이 아니라 아이콘 모서리 배지로 — 360px 폭에서도 제목이 잘리지 않게 ── */}
+        {/* ── 대시보드 바로 아래 두 칸: 나에 관하여 | 오늘의 운세 — 아이콘 옆 제목 한 줄(설명·점수 없음).
+            운세 칸 아이콘은 입력한 생일의 띠(없으면 🔮) ── */}
         <div className="mt-3 grid grid-cols-2 gap-2.5">
           {/* 등장('톡', 지연 포함)은 바깥 칸이, 누름은 안쪽 버튼이 — 한 요소에 두면 등장 지연이 누름 복귀에도 붙는다 */}
           <motion.div className="flex" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...SPRING.pop, delay: 0.06 }}>
@@ -300,17 +296,9 @@ export default function Home() {
               whileTap={tapPop}
               transition={SPRING.press}
               onClick={() => nav('/fortune')}
-              aria-label={fx ? `${t('fortune.title')} ${fx.overall}${l({ ko: '점', en: 'pt', ja: '点' })}` : undefined}
               className="flex h-[64px] flex-1 items-center gap-2.5 rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] px-3.5 text-left shadow-card"
             >
-              <span className="relative shrink-0">
-                <IconBadge emoji={fx?.zodiacEmoji ?? '🔮'} tone="frost" size={36} radius={12} />
-                {fx && (
-                  <span className="absolute -right-2 -top-1.5 flex h-[18px] min-w-[26px] items-center justify-center rounded-full bg-white px-1 text-[11px] font-extrabold leading-none tabular-nums text-[#6B4FB8] shadow-sm">
-                    {fx.overall}
-                  </span>
-                )}
-              </span>
+              <IconBadge emoji={fx?.zodiacEmoji ?? '🔮'} tone="frost" size={36} radius={12} />
               <span className="min-w-0 flex-1 truncate text-[16px] font-extrabold leading-none text-white">{t('fortune.title')}</span>
             </motion.button>
           </motion.div>
