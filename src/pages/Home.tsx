@@ -25,15 +25,6 @@ import { localDay } from '../lib/date'
 
 const todayStr = () => localDay()
 
-/** 행운색 다국어(saju.ts COLOR_KO 5색 — 모듈이 지연 로드라 렌더용 미니맵을 여기 둠) */
-const LUCKY_COLOR_L: Record<string, L> = {
-  초록: { ko: '초록', en: 'Green', ja: '緑' },
-  빨강: { ko: '빨강', en: 'Red', ja: '赤' },
-  노랑: { ko: '노랑', en: 'Yellow', ja: '黄' },
-  흰색: { ko: '흰색', en: 'White', ja: '白' },
-  남색: { ko: '남색', en: 'Navy', ja: '紺' },
-}
-
 /** 출석 버튼 — 흰 3D 버튼(아랫면 3px). 누르면 그 깊이만큼 내려앉고 떼면 살짝 튀어 올라온다 */
 const CHECKIN_PRESS = press3d(3, '#D8E0DA')
 
@@ -112,7 +103,7 @@ export default function Home() {
    * 운세 화면과 같은 입력(시각·성별·음력 포함)을 써야 두 화면 점수가 어긋나지 않는다.
    * saju·manse 모듈은 지연 로드(메인 번들 오염 방지 표준 패턴).
    */
-  const [fx, setFx] = useState<{ overall: number; luckyColorKo: string; zodiacEmoji: string } | null>(null)
+  const [fx, setFx] = useState<{ overall: number; zodiacEmoji: string } | null>(null)
   const fp = s.fortuneProfile
   useEffect(() => {
     setFx(null)
@@ -127,7 +118,7 @@ export default function Home() {
         const td = { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() }
         const chart = mn.chartOf(solar, mn.parseTime(fp.time))
         const f = sj.fortuneOf(solar, td, { chart, gender: fp.gender || undefined })
-        setFx({ overall: f.overall, luckyColorKo: f.luckyColorKo, zodiacEmoji: sj.sajuOf(solar.y, solar.m, solar.d, chart).zodiacEmoji })
+        setFx({ overall: f.overall, zodiacEmoji: sj.sajuOf(solar.y, solar.m, solar.d, chart).zodiacEmoji })
       })
       // 청크 로드 실패(재배포 후 구 해시·오프라인) — 박스는 점수 없이 진입 버튼으로만 남는다
       .catch(() => {})
@@ -289,55 +280,39 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* ── 대시보드 바로 아래 두 칸: 나에 관하여 | 오늘의 운세 — 매일 다시 올 이유 두 개를 첫 화면에 ── */}
+        {/* ── 대시보드 바로 아래 두 칸: 나에 관하여 | 오늘의 운세 — 아이콘 옆 제목 한 줄(설명 줄 없음).
+            운세 점수는 제목 옆이 아니라 아이콘 모서리 배지로 — 360px 폭에서도 제목이 잘리지 않게 ── */}
         <div className="mt-3 grid grid-cols-2 gap-2.5">
           {/* 등장('톡', 지연 포함)은 바깥 칸이, 누름은 안쪽 버튼이 — 한 요소에 두면 등장 지연이 누름 복귀에도 붙는다 */}
           <motion.div className="flex" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...SPRING.pop, delay: 0.06 }}>
-          <motion.button
-            whileTap={tapPop}
-            transition={SPRING.press}
-            onClick={() => nav('/me')}
-            className="flex min-h-[92px] flex-1 flex-col justify-between rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#8B95F6] p-3.5 text-left shadow-card"
-          >
-            <span className="flex items-center justify-between">
-              <IconBadge emoji="🪞" tone="frost" size={32} radius={11} />
-              <span className="text-[17px] font-extrabold leading-none text-white/85" aria-hidden="true">›</span>
-            </span>
-            <span>
-              <span className="block text-[17px] font-extrabold leading-tight text-white">{l({ ko: '나에 관하여', en: 'About me', ja: '私について' })}</span>
-              <span className="mt-1 block truncate text-[12px] font-bold leading-snug text-white/90">
-                {s.results.length > 0
-                  ? l({ ko: `내 검사 ${new Set(s.results.map((r) => r.testId)).size}종 모아 보기`, en: `${new Set(s.results.map((r) => r.testId)).size} results in one place`, ja: `検査${new Set(s.results.map((r) => r.testId)).size}種まとめ` })
-                  : l({ ko: '결과·머리 지도·읽을거리', en: 'Results · map · reads', ja: '結果・地図・読み物' })}
-              </span>
-            </span>
-          </motion.button>
+            <motion.button
+              whileTap={tapPop}
+              transition={SPRING.press}
+              onClick={() => nav('/me')}
+              className="flex h-[64px] flex-1 items-center gap-2.5 rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#8B95F6] px-3.5 text-left shadow-card"
+            >
+              <IconBadge emoji="🪞" tone="frost" size={36} radius={12} />
+              <span className="min-w-0 flex-1 truncate text-[16px] font-extrabold leading-none text-white">{l({ ko: '나에 관하여', en: 'About me', ja: '私について' })}</span>
+            </motion.button>
           </motion.div>
-          {/* 등장('톡', 지연 포함)은 바깥 칸이, 누름은 안쪽 버튼이 — 한 요소에 두면 등장 지연이 누름 복귀에도 붙는다 */}
           <motion.div className="flex" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...SPRING.pop, delay: 0.1 }}>
-          <motion.button
-            whileTap={tapPop}
-            transition={SPRING.press}
-            onClick={() => nav('/fortune')}
-            className="flex min-h-[92px] flex-1 flex-col justify-between rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] p-3.5 text-left shadow-card"
-          >
-            <span className="flex items-center justify-between">
-              <IconBadge emoji={fx?.zodiacEmoji ?? '🔮'} tone="frost" size={32} radius={11} />
-              {fx ? (
-                <span className="flex h-6 items-center rounded-full bg-white/25 px-2 text-[12px] font-extrabold leading-none tabular-nums text-white">{fx.overall}{l({ ko: '점', en: 'pt', ja: '点' })}</span>
-              ) : (
-                <span className="text-[17px] font-extrabold leading-none text-white/85" aria-hidden="true">›</span>
-              )}
-            </span>
-            <span>
-              <span className="block text-[17px] font-extrabold leading-tight text-white">{t('fortune.title')}</span>
-              <span className="mt-1 block truncate text-[12px] font-bold leading-snug text-white/90">
-                {fx
-                  ? l({ ko: `행운색 ${fx.luckyColorKo}`, en: `Lucky color: ${l(LUCKY_COLOR_L[fx.luckyColorKo] ?? { ko: fx.luckyColorKo, en: fx.luckyColorKo, ja: fx.luckyColorKo })}`, ja: `ラッキーカラー ${l(LUCKY_COLOR_L[fx.luckyColorKo] ?? { ko: fx.luckyColorKo, en: fx.luckyColorKo, ja: fx.luckyColorKo })}` })
-                  : l({ ko: '생일로 오늘 흐름 보기', en: "See today's flow", ja: '誕生日で今日の流れ' })}
+            <motion.button
+              whileTap={tapPop}
+              transition={SPRING.press}
+              onClick={() => nav('/fortune')}
+              aria-label={fx ? `${t('fortune.title')} ${fx.overall}${l({ ko: '점', en: 'pt', ja: '点' })}` : undefined}
+              className="flex h-[64px] flex-1 items-center gap-2.5 rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] px-3.5 text-left shadow-card"
+            >
+              <span className="relative shrink-0">
+                <IconBadge emoji={fx?.zodiacEmoji ?? '🔮'} tone="frost" size={36} radius={12} />
+                {fx && (
+                  <span className="absolute -right-2 -top-1.5 flex h-[18px] min-w-[26px] items-center justify-center rounded-full bg-white px-1 text-[11px] font-extrabold leading-none tabular-nums text-[#6B4FB8] shadow-sm">
+                    {fx.overall}
+                  </span>
+                )}
               </span>
-            </span>
-          </motion.button>
+              <span className="min-w-0 flex-1 truncate text-[16px] font-extrabold leading-none text-white">{t('fortune.title')}</span>
+            </motion.button>
           </motion.div>
         </div>
 
