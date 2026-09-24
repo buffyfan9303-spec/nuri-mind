@@ -391,3 +391,92 @@ export const MONTH_LINES: Record<string, L> = {
     ja: '今月は責任と圧が増えがち。拡大より仕上げと整備に集中すれば損を防ぎ次に備えられます。',
   },
 }
+
+/* ───────── 사주팔자 해석 문구(재미·참고용) ─────────
+ * 명리학의 일반 개념(십신·신강/신약·합충)을 쉬운 말로 푼 것 — 특정 사건을 단정하지 않는다.
+ * 키는 lib/manse.ts의 TenGod·Strength와 같다. */
+
+/** 오행 이름 */
+export const EL_NAMES: Record<string, L> = {
+  목: { ko: '목(나무)', en: 'Wood', ja: '木' },
+  화: { ko: '화(불)', en: 'Fire', ja: '火' },
+  토: { ko: '토(흙)', en: 'Earth', ja: '土' },
+  금: { ko: '금(쇠)', en: 'Metal', ja: '金' },
+  수: { ko: '수(물)', en: 'Water', ja: '水' },
+}
+
+/** 오늘 일진 천간이 내 일간에게 어떤 십신인가 → 오늘의 테마 */
+export const TEN_GOD_LINES: Record<string, { title: L; line: L }> = {
+  비견: {
+    title: { ko: '내 편이 늘어나는 날', en: 'A day your allies grow', ja: '味方が増える日' },
+    line: { ko: '나와 같은 기운이 들어와 자신감이 붙어요. 혼자 끌어안기보다 동료와 나누면 힘이 두 배가 돼요.', en: 'Energy like your own arrives and confidence rises. Share the load with peers and your strength doubles.', ja: '自分と同じ気が入り自信がつきます。一人で抱えず仲間と分ければ力が倍に。' },
+  },
+  겁재: {
+    title: { ko: '승부욕이 올라오는 날', en: 'A competitive day', ja: '勝負心が高まる日' },
+    line: { ko: '승부욕이 좋은 추진력이 돼요. 다만 돈이나 공을 나눌 땐 한 번 더 따져 보세요.', en: 'Competitive drive becomes good momentum — but double-check when splitting money or credit.', ja: '勝負心が良い推進力に。ただお金や手柄を分けるときはもう一度確認を。' },
+  },
+  식신: {
+    title: { ko: '표현과 즐거움의 날', en: 'A day for expression and joy', ja: '表現と楽しみの日' },
+    line: { ko: '먹고 말하고 만드는 일에 기운이 실려요. 하고 싶던 말을 부드럽게 꺼내 보기 좋은 날이에요.', en: 'Eating, talking, making — energy flows there. A good day to gently say what you’ve wanted to say.', ja: '食べる・話す・作ることに気が乗ります。言いたかったことを柔らかく伝えるのに良い日。' },
+  },
+  상관: {
+    title: { ko: '재치가 번뜩이는 날', en: 'A day of quick wit', ja: '機転が冴える日' },
+    line: { ko: '아이디어가 톡톡 튀는 만큼 말이 앞설 수 있어요. 윗사람 앞에서는 한 템포 쉬고 말해 보세요.', en: 'Ideas sparkle, and words may run ahead. Pause a beat before speaking to seniors.', ja: 'アイデアが弾む分、言葉が先走りがち。目上の前では一呼吸おいて。' },
+  },
+  편재: {
+    title: { ko: '기회가 넓게 열리는 날', en: 'A day of wide opportunity', ja: 'チャンスが広がる日' },
+    line: { ko: '사람과 돈이 활발히 오가요. 새로운 제안엔 귀를 열되, 큰 결정은 숫자로 확인하고 정해요.', en: 'People and money move briskly. Stay open to offers, but confirm big decisions with numbers.', ja: '人とお金が活発に動きます。新しい提案には耳を傾けつつ、大きな決定は数字で確認を。' },
+  },
+  정재: {
+    title: { ko: '차곡차곡 쌓이는 날', en: 'A day things add up', ja: 'こつこつ積み上がる日' },
+    line: { ko: '꼼꼼함이 보상받는 날이에요. 가계부 정리나 미뤄둔 정산처럼 작은 관리가 든든함으로 돌아와요.', en: 'Care pays off today. Small upkeep — budgeting, settling that overdue tab — returns as security.', ja: '几帳面さが報われる日。家計簿や後回しの精算など小さな管理が安心に変わります。' },
+  },
+  편관: {
+    title: { ko: '긴장감이 드는 날', en: 'A day with some pressure', ja: '緊張感のある日' },
+    line: { ko: '책임이 한꺼번에 몰릴 수 있어요. 할 일을 잘게 쪼개 하나씩 처리하면 오히려 실력을 보여줄 기회가 돼요.', en: 'Responsibilities may pile up at once. Break them down and handle one at a time — it becomes a chance to show your skill.', ja: '責任が一度に集まるかも。細かく分けて一つずつ片付ければ、むしろ実力を見せる機会に。' },
+  },
+  정관: {
+    title: { ko: '신뢰를 얻는 날', en: 'A day to earn trust', ja: '信頼を得る日' },
+    line: { ko: '약속과 규칙을 지키는 모습이 눈에 띄어요. 서류·면접처럼 단정함이 필요한 일에 잘 맞아요.', en: 'Keeping promises and rules gets noticed. Good for paperwork, interviews — anything that needs polish.', ja: '約束やルールを守る姿が目に留まります。書類や面接など端正さが必要なことに向く日。' },
+  },
+  편인: {
+    title: { ko: '직감이 예민해지는 날', en: 'A day of sharp intuition', ja: '直感が冴える日' },
+    line: { ko: '혼자 생각할 시간이 필요한 날이에요. 새로 배우는 일엔 좋지만, 결론은 서두르지 않는 편이 좋아요.', en: 'You need some time alone to think. Great for learning something new — just don’t rush conclusions.', ja: '一人で考える時間が必要な日。新しい学びには良いですが、結論は急がずに。' },
+  },
+  정인: {
+    title: { ko: '도움과 배움의 날', en: 'A day of support and learning', ja: '助けと学びの日' },
+    line: { ko: '가까운 사람의 조언이 힘이 돼요. 책·강의·공부처럼 나를 채우는 일에 운이 따라요.', en: 'Advice from someone close gives you strength. Luck favors filling yourself up — books, classes, study.', ja: '身近な人の助言が力に。本・講義・勉強など自分を満たすことに運がつきます。' },
+  },
+}
+
+/** 일간 강약(억부 단순화) */
+export const STRENGTH_LINES: Record<string, { label: L; line: L }> = {
+  strong: {
+    label: { ko: '힘 있는 편(신강)', en: 'Strong (신강)', ja: '身強' },
+    line: { ko: '타고난 기운이 힘 있는 편이에요. 넘치는 힘을 밖으로 풀어낼 때 운이 트여요 — 표현·도전·활동이 잘 맞아요.', en: 'Your innate energy runs strong. Luck opens when you channel it outward — expression, challenges, action.', ja: '生まれ持った気が強めです。あふれる力を外に出すと運が開けます — 表現・挑戦・活動が吉。' },
+  },
+  balanced: {
+    label: { ko: '고른 편(중화)', en: 'Balanced (중화)', ja: '中和' },
+    line: { ko: '기운이 고르게 어우러진 편이에요. 한쪽으로 치우치지 않는 균형감이 가장 큰 장점이에요.', en: 'Your energies are fairly even. A sense of balance is your biggest strength.', ja: '気がバランスよく調和しています。偏らない均衡感が一番の長所。' },
+  },
+  weak: {
+    label: { ko: '섬세한 편(신약)', en: 'Gentle (신약)', ja: '身弱' },
+    line: { ko: '타고난 기운이 섬세한 편이에요. 좋은 사람과 배움으로 힘을 채울 때 운이 살아나요 — 무리한 확장보다 내실이 먼저예요.', en: 'Your innate energy is delicate. Luck revives as good people and learning fill you up — depth before expansion.', ja: '生まれ持った気が繊細です。良い人と学びで力を満たすと運が生きます — 無理な拡大より内実を。' },
+  },
+}
+
+/** 오늘 일진과 내 사주 사이의 합·충 안내 */
+export const PILLAR_POS: Record<string, L> = {
+  year: { ko: '년지(바깥 환경)', en: 'year branch (surroundings)', ja: '年支（外の環境）' },
+  month: { ko: '월지(일·사회)', en: 'month branch (work & society)', ja: '月支（仕事・社会）' },
+  day: { ko: '일지(나와 가까운 사람)', en: 'day branch (you & those close)', ja: '日支（自分と身近な人）' },
+  hour: { ko: '시지(계획·앞날)', en: 'hour branch (plans ahead)', ja: '時支（計画・将来）' },
+}
+export const REL_NOTES: Record<string, L> = {
+  stemHap: { ko: '오늘 일진의 천간이 내 일간과 합(合)을 이뤄요. 인연과 협력이 부드럽게 풀리기 좋아요.', en: 'Today’s stem combines (합) with your day stem — cooperation and connection flow smoothly.', ja: '今日の天干があなたの日干と合。縁と協力が滑らかに。' },
+  stemChung: { ko: '오늘 일진의 천간이 내 일간과 부딪혀요(충). 말과 결정은 한 박자 늦추면 좋아요.', en: 'Today’s stem clashes (충) with your day stem — slow down words and decisions a beat.', ja: '今日の天干があなたの日干と冲。言葉と決断は一拍おいて。' },
+  hap: { ko: '오늘 지지가 내 {pos}와 육합을 이뤄요. 이 영역에서 마음이 잘 맞는 흐름이에요.', en: 'Today’s branch forms a harmony (육합) with your {pos} — things click in that area.', ja: '今日の地支があなたの{pos}と六合。この領域で気が合う流れ。' },
+  samhap: { ko: '오늘 지지가 내 {pos}와 삼합의 짝이에요. 함께하는 일이 수월해요.', en: 'Today’s branch pairs with your {pos} in a trine (삼합) — teamwork goes easily.', ja: '今日の地支があなたの{pos}と三合の組。共同作業が順調に。' },
+  chung: { ko: '오늘 지지가 내 {pos}와 충(沖)이에요. 이 영역에 작은 변화가 생기기 쉬우니 일정에 여유를 두세요.', en: 'Today’s branch clashes (충) with your {pos} — small changes are likely there, so leave slack in your plans.', ja: '今日の地支があなたの{pos}と冲。この領域に小さな変化が起きやすいので予定に余裕を。' },
+  none: { ko: '오늘 일진과 내 사주 사이에 큰 합·충이 없어요. 평소 흐름대로 가면 되는 날이에요.', en: 'No major combine or clash between today and your chart — just go with your usual flow.', ja: '今日の日辰とあなたの四柱に大きな合・冲はありません。普段通りでOKな日。' },
+}

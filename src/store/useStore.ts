@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { LEGAL_VERSION } from '../data/legal'
 import type { FortuneDetailText } from '../lib/fortuneAi'
+import { profileFromBirthDate, profileKey, profileSolar, fmtYmd, type FortuneProfile } from '../lib/manse'
 import type {
   Avatar,
   CommunityComment,
@@ -120,6 +121,12 @@ interface State {
   /** AI 개인화 상세 운세 캐시(해당 날짜 1회 생성) */
   fortuneAiDate: string
   fortuneAiData: FortuneDetailText | null
+  /** AI 캐시가 누구 사주로 만든 것인지(profileKey) — 다른 사람 운세에 내 풀이가 섞이지 않게 */
+  fortuneAiKey: string
+  /** 오늘의 운세 마지막 입력값(본인 또는 가족·친구) — 재방문 시 폼에 미리 채운다 */
+  fortuneProfile: FortuneProfile | null
+  /** 최근 본 사람들(최대 5) — 이름 칩으로 빠르게 전환 */
+  fortuneRecent: FortuneProfile[]
   /** IQ 정밀검사 전체 해제 여부(영구) */
   iqUnlocked: boolean
   /** 정밀검사 상세분석 💎 게이팅 on/off (운영자 토글) */
@@ -255,7 +262,11 @@ interface State {
   /** 운세 공유 보상 — 하루 1회 +5P(공유/저장 성공 시) */
   claimFortuneShare: () => number
   /** AI 개인화 상세 운세 캐시 저장(날짜+데이터) */
-  setFortuneAi: (date: string, data: FortuneDetailText) => void
+  setFortuneAi: (date: string, data: FortuneDetailText, key?: string) => void
+  /** 운세 입력값 저장 + 최근 목록 갱신. 본인(self)이면 계정 생일(양력)도 맞춘다 */
+  saveFortuneProfile: (p: FortuneProfile) => void
+  /** 최근 목록에서 한 명 지우기 */
+  removeFortuneRecent: (key: string) => void
   /** IQ 정밀검사 전체 해제(10다이아) — 부족 시 false */
   unlockIq: () => boolean
   /** 정밀검사 상세 게이팅 on/off (운영자) */
@@ -301,6 +312,9 @@ const initial = () => ({
   fortuneShareDate: '',
   fortuneAiDate: '',
   fortuneAiData: null,
+  fortuneAiKey: '',
+  fortuneProfile: null as FortuneProfile | null,
+  fortuneRecent: [] as FortuneProfile[],
   iqUnlocked: false,
   precisionGate: false,
   precisionUnlocked: false,
@@ -781,7 +795,21 @@ export const useStore = create<State>()(
           set({ fortuneShareDate: t })
           return grantFree(5, '📤 운세 공유 보상', `share:fortune:${t}`)
         },
-        setFortuneAi: (date, data) => set({ fortuneAiDate: date, fortuneAiData: data }),
+        setFortuneAi: (date, data, key = '') => set({ fortuneAiDate: date, fortuneAiData: data, fortuneAiKey: key }),
+        // ⚠️ 보상과 무관 — 열람·공유 보상은 날짜 가드(fortuneSeenDate·fortuneShareDate·paidKeys)가 계정당 하루 1회로 막는다.
+        //    사람을 바꿔 가며 봐도 보상이 늘지 않는다.
+        saveFortuneProfile: (p) => {
+          const clean: FortuneProfile = { ...p, name: p.name.trim().slice(0, 12), leap: p.calendar === 'lunar' && p.leap }
+          const k = recentKey(clean)
+          const recent = [clean, ...get().fortuneRecent.filter((r) => recentKey(r) !== k && !(clean.self && r.self))].slice(0, 5)
+          const patch: Partial<State> = { fortuneProfile: clean, fortuneRecent: recent }
+          if (clean.self) {
+            const sol = profileSolar(clean)
+            if (sol) patch.birthDate = fmtYmd(sol)
+          }
+          set(patch)
+        },
+        removeFortuneRecent: (key) => set((s) => ({ fortuneRecent: s.fortuneRecent.filter((r) => recentKey(r) !== key) })),
         /** IQ 정밀검사 전체 해제 — 1회 10다이아(영구) */
         unlockIq: () => {
           const s = get()
@@ -893,7 +921,7 @@ export const useStore = create<State>()(
     },
     {
       name: 'nuri-mind-v1',
-      version: 3,
+      version: 4,
       migrate: (persisted, version) => {
         const s = persisted as Partial<State> | undefined
         if (s) {
@@ -905,6 +933,12 @@ export const useStore = create<State>()(
           //     오늘 이미 받은 보상을 한 번 더 받을 수 있는 하루짜리 창이 생기지만,
           //     과거 키를 지어내면 오늘 정상 보상까지 막히므로 이쪽이 안전하다.
           if (version < 3) s.paidKeys = []
+          // v4: 오늘의 운세 입력이 생일 하나 → 프로필(이름·성별·음/양력·시간)로. 기존 양력 생일은 본인 프로필로 옮긴다
+          if (version < 4) {
+            s.fortuneProfile = s.birthDate ? profileFromBirthDate(s.birthDate) : null
+            s.fortuneRecent = s.fortuneProfile ? [s.fortuneProfile] : []
+            s.fortuneAiKey = ''
+          }
         }
         return s as State
       },
@@ -914,6 +948,12 @@ export const useStore = create<State>()(
     },
   ),
 )
+
+/** 최근 목록 중복 판정 — 같은 사주 입력이라도 이름이 다르면 다른 사람(쌍둥이·동갑 친구) */
+const recentKey = (p: FortuneProfile) => `${profileKey(p)}|${p.name.trim()}`
+export { recentKey as fortuneRecentKey }
+/** AI 상세 운세 캐시 — 계정 전환 시 비운다(개인화 풀이는 그 사람 것) */
+const NO_FORTUNE_AI = { fortuneAiDate: '', fortuneAiData: null, fortuneAiKey: '' }
 
 // ── 서버 경제 동기화(로그인 시) — 키 있는 아웃박스 미러 + 복원/이관(economy.ts 참조) ──
 const econHooks: SyncHooks = {
@@ -973,6 +1013,9 @@ const econHooks: SyncHooks = {
       fortuneShareDate: st.fortuneShareDate,
       fortuneMonth: st.fortuneMonth,
       fortuneFreeUses: st.fortuneFreeUses,
+      // 가족·친구 생일까지 담긴 개인 정보 — 계정 소유
+      fortuneProfile: st.fortuneProfile,
+      fortuneRecent: st.fortuneRecent,
       referredBy: st.referredBy,
       nickname: st.nickname,
       avatar: st.avatar,
@@ -997,7 +1040,16 @@ const econHooks: SyncHooks = {
     if (restored) {
       // 이 기기에서 쓰던 계정으로 돌아온 경우 — 보관본 복원(운영자 잠금은 항상 다시 걸린다)
       // paidKeys가 없는 옛 보관본은 빈 목록으로 — 직전 계정의 키를 이어받지 않게(v3 이관과 같은 판단)
-      useStore.setState({ paidKeys: [], ...restored, adminUnlocked: false })
+      // 운세 프로필이 없는 옛 보관본은 그 계정의 생일에서 되살린다(직전 계정의 입력을 이어받지 않게)
+      const fp = restored.fortuneProfile ?? (restored.birthDate ? profileFromBirthDate(restored.birthDate) : null)
+      useStore.setState({
+        paidKeys: [],
+        ...restored,
+        fortuneProfile: fp,
+        fortuneRecent: restored.fortuneRecent ?? (fp ? [fp] : []),
+        ...NO_FORTUNE_AI,
+        adminUnlocked: false,
+      })
       return
     }
     // 처음 보는 계정 — 이전 사용자의 흔적을 남기지 않고 새 프로필로 시작.
@@ -1034,6 +1086,9 @@ const econHooks: SyncHooks = {
       fortuneShareDate: '',
       fortuneMonth: '',
       fortuneFreeUses: 0,
+      fortuneProfile: null,
+      fortuneRecent: [],
+      ...NO_FORTUNE_AI,
       referredBy: '',
       paidKeys: [],
       nickname: base.nickname,
