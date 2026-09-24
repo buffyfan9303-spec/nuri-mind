@@ -93,7 +93,8 @@ function isMissingOwnerColumn(err: unknown): boolean {
   const e = err as { code?: string; message?: string } | null
   if (!e) return false
   // 42703 = undefined_column(Postgres), PGRST204 = PostgREST 스키마 캐시에 컬럼 없음
-  return e.code === '42703' || e.code === 'PGRST204' || /owner_hash/.test(e.message ?? '')
+  // 코드로만 판정 — 메시지에 owner_hash가 든 다른 오류(트리거의 'invalid owner_hash' 22023)까지 폴백으로 오판하지 않게
+  return e.code === '42703' || e.code === 'PGRST204'
 }
 
 /** 행의 소유 판정 + 삭제 비밀 기억 */

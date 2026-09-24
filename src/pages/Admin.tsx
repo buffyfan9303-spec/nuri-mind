@@ -428,12 +428,15 @@ function Console() {
           {/* 운영자 도구 — 다이아 지급 / 개인 우편 */}
           <div className="mt-3 rounded-2xl bg-white/10 p-4">
             <h3 className="text-[14px] font-extrabold text-white">다이아 지급</h3>
-            <button
-              onClick={() => { addDiamonds(10000); setOpMsg('이 기기에 💎10,000 지급됨'); sfx.coin() }}
-              className="mt-2 w-full rounded-xl bg-[#1ab394] py-2.5 text-[13px] font-extrabold text-white"
-            >
-              내 기기에 <Emoji e="💎" inline />10,000 지급 (로컬)
-            </button>
+            {/* 로컬 지급은 개발 빌드에서만 — 운영 PIN은 번들에 들어 있어 누구나 찾을 수 있다(무료 다이아 경로) */}
+            {import.meta.env.DEV && (
+              <button
+                onClick={() => { addDiamonds(10000); setOpMsg('이 기기에 💎10,000 지급됨'); sfx.coin() }}
+                className="mt-2 w-full rounded-xl bg-[#1ab394] py-2.5 text-[13px] font-extrabold text-white"
+              >
+                내 기기에 <Emoji e="💎" inline />10,000 지급 (로컬·개발용)
+              </button>
+            )}
             <div className="mt-2 flex gap-2">
               <input value={diaNick} onChange={(e) => setDiaNick(e.target.value)} placeholder="닉네임(서버 유저)" className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
               <input value={diaAmt} onChange={(e) => setDiaAmt(e.target.value.replace(/\D/g, ''))} placeholder="개수" inputMode="numeric" className="w-20 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />

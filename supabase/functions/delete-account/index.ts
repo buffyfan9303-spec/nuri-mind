@@ -32,8 +32,9 @@ Deno.serve(async (req) => {
   const uid = data?.user?.id
   if (error || !uid) return json(401, { error: 'invalid_token' })
 
-  await admin.from('ai_usage').delete().eq('subject', uid)
+  // ai_usage.subject는 'u:<uid>' / 'ip:<해시>' 형식(_shared/llm.ts withinQuota)
+  await admin.from('ai_usage').delete().eq('subject', `u:${uid}`)
   const del = await admin.auth.admin.deleteUser(uid)
-  if (del.error) return json(500, { error: 'delete_failed', detail: del.error.message })
+  if (del.error) return json(500, { error: 'delete_failed' }) // 내부 오류 문구는 밖으로 내지 않는다
   return json(200, { ok: true })
 })

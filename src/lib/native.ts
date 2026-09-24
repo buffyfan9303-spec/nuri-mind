@@ -24,8 +24,10 @@ export async function initNative(): Promise<void> {
   })
 
   void App.addListener('appUrlOpen', ({ url }) => {
-    if (!url.startsWith(NATIVE_AUTH_CALLBACK)) return
-    void completeOAuth(url).finally(() => void Browser.close().catch(() => {}))
+    if (!isAuthCallback(url)) return
+    void completeOAuth(url)
+      .catch(() => alert('로그인을 마치지 못했어요. 다시 시도해 주세요.'))
+      .finally(() => void Browser.close().catch(() => {}))
   })
 
   try {
@@ -43,23 +45,40 @@ export async function initNative(): Promise<void> {
   }
 }
 
-/** 딥링크의 토큰(implicit: #access_token) 또는 코드(PKCE: ?code)로 세션을 만든다 */
+/**
+ * 이 앱이 방금 로그인을 시작했는가 — 외부 웹페이지·앱이 딥링크를 열어 '남의 세션'을 심는 것(로그인 CSRF)을 막는다.
+ * 메모리에만 둔다: 앱이 죽었다 살아나면 로그인을 다시 시작하면 된다.
+ */
+let pendingSince = 0
+const PENDING_MS = 10 * 60_000
+
+function isAuthCallback(url: string): boolean {
+  try {
+    const u = new URL(url)
+    const want = new URL(NATIVE_AUTH_CALLBACK)
+    return u.protocol === want.protocol && u.host === want.host
+  } catch {
+    return false
+  }
+}
+
+/**
+ * PKCE 코드로만 세션을 만든다(supabase.ts가 앱에서 flowType 'pkce').
+ * URL 조각에 토큰을 실어 오는 implicit 콜백은 받지 않는다 — 누구나 만들 수 있는 링크라서.
+ */
 async function completeOAuth(url: string): Promise<void> {
   if (!supabase) return
-  const u = new URL(url)
-  const hash = new URLSearchParams(u.hash.replace(/^#/, ''))
-  const access_token = hash.get('access_token')
-  const refresh_token = hash.get('refresh_token')
-  if (access_token && refresh_token) {
-    await supabase.auth.setSession({ access_token, refresh_token })
-    return
-  }
-  const code = u.searchParams.get('code')
-  if (code) await supabase.auth.exchangeCodeForSession(code)
+  if (!pendingSince || Date.now() - pendingSince > PENDING_MS) return // 우리가 시작하지 않은 로그인
+  pendingSince = 0
+  const code = new URL(url).searchParams.get('code')
+  if (!code) throw new Error('no_code')
+  const { error } = await supabase.auth.exchangeCodeForSession(code)
+  if (error) throw error
 }
 
 /** 네이티브 앱에서 OAuth 시작 — 인증 URL을 외부 브라우저로 연다(WebView 안 로그인은 카카오·구글 정책상 막힌다) */
 export async function openOAuthInBrowser(url: string): Promise<void> {
+  pendingSince = Date.now()
   const { Browser } = await import('@capacitor/browser')
   await Browser.open({ url, presentationStyle: 'popover' })
 }
