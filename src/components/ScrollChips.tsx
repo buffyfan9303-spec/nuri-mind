@@ -21,6 +21,14 @@ export interface ChipItem {
 
 /* 색 파생(pastelOf)·아이콘 타일 색은 lib/chipColor.ts로 분리 (IconBadge와 공유) */
 
+/**
+ * 가로 줄 칩 한 칸의 폭 — 화면(최대 28rem) 안쪽 여백 20px×2와 간격 10px×4를 빼고 5등분.
+ * 첫 화면에 정확히 5칸이 들어가 왼쪽 여백(20px)과 오른쪽 여백(20px)이 같다(듀오링고식 대칭 격자).
+ * 정사각(aspect-square)이라 칸 모양도 화면 폭과 함께 비례한다.
+ */
+export const CHIP_W = 'w-[calc((min(100vw,28rem)-80px)/5)]'
+const CHIP_SQUARE = CHIP_W + ' aspect-square shrink-0'
+
 const BADGE_BG: Record<NonNullable<ChipItem['badge']>, string> = { NEW: '#3B9EFF', HOT: '#FF4D4D' }
 
 /**
@@ -58,7 +66,7 @@ export const JellyChip = memo(function JellyChip({
       aria-label={label}
       aria-pressed={selected}
       style={style}
-      className={`jelly-chip relative flex h-[68px] ${full ? 'w-full' : 'w-[70px] shrink-0'} flex-col items-center justify-center gap-1 overflow-hidden rounded-[20px] px-1.5 outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-current`}
+      className={`jelly-chip relative flex ${full ? 'h-[76px] w-full' : CHIP_SQUARE} flex-col items-center justify-center gap-1 overflow-hidden rounded-[20px] px-1 outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-current`}
     >
       {/* 글로시 상단 광택 — 단색감을 없애는 핵심 */}
       <span
@@ -77,17 +85,19 @@ export const JellyChip = memo(function JellyChip({
       <span className="relative z-[1]">
         <IconBadge emoji={emoji} color={color} size={30} radius={10} tone={selected ? 'frost' : 'solid'} />
       </span>
-      <span className="relative z-[1] line-clamp-2 break-keep px-0.5 text-center text-[11px] font-semibold leading-tight">{label}</span>
+      <span className="relative z-[1] block w-full truncate whitespace-nowrap text-center text-[11px] font-semibold leading-tight">{label}</span>
     </button>
   )
 })
 
 /**
- * 가로 스크롤 젤리 칩 줄. CSS Scroll Snap + 스크롤바 숨김 + 우측 칩 살짝 잘림(부모 -mx-5 px-5) + 칩 간격 12px.
+ * 가로 스크롤 젤리 칩 줄. CSS Scroll Snap + 스크롤바 숨김 + 칩 간격 10px.
+ * ⚠️ 본문 폭 안에서만 스크롤한다(예전 -mx-5 풀블리드는 다음 칩이 오른쪽 여백을 파고들어 좌우가 어긋났다).
+ *    6번째 칩부터는 밀어서 본다 — 라벨은 전부 한 줄 약칭이라 아이콘 위치가 칸마다 같다.
  */
 export default function ScrollChips({ items, baseDelay = 0 }: { items: ChipItem[]; baseDelay?: number }) {
   return (
-    <div className="no-scrollbar -mx-5 mt-2 flex snap-x snap-mandatory scroll-pl-5 gap-2.5 overflow-x-auto px-5 pb-3 pt-1 [overscroll-behavior-x:contain]">
+    <div className="no-scrollbar mt-2 flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-3 pt-1 [overscroll-behavior-x:contain]">
       {items.map((it, i) => (
         <motion.div
           key={it.id}

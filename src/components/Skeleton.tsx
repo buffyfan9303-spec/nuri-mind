@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { CHIP_W } from './ScrollChips'
 
 /** 펄스 스켈레톤 블록 — 토큰 색(bg-line)이라 라이트/다크 자동 대응. 레이아웃 시프트 방지용 자리표시. */
 export function SkeletonBlock({ className = '' }: { className?: string }) {
@@ -21,8 +22,8 @@ export default function Skeleton() {
       </motion.div>
       <SkeletonBlock className="h-28 w-full" />
       <div className="mt-4 flex gap-2.5 overflow-hidden">
-        {[0, 1, 2, 3].map((i) => (
-          <SkeletonBlock key={i} className="h-[68px] w-[70px] shrink-0 !rounded-[20px]" />
+        {[0, 1, 2, 3, 4].map((i) => (
+          <SkeletonBlock key={i} className={`${CHIP_W} aspect-square shrink-0 !rounded-[20px]`} />
         ))}
       </div>
       <SkeletonBlock className="mt-5 h-16 w-full" />

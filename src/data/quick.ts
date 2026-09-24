@@ -17,6 +17,8 @@ export interface QuickTest {
   id: string
   emoji: string
   title: L
+  /** 칩 한 줄 약칭 — 홈 격자 칸은 라벨이 한 줄이어야 아이콘 위치가 칸마다 같다 */
+  short: L
   desc: L
   grad: [string, string]
   funnel?: TestId // 결과에서 유도할 깊은 검사
@@ -29,6 +31,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'lovestyle',
     emoji: '💘',
     title: { ko: '연애 스타일', en: 'Love Style', ja: '恋愛スタイル' },
+    short: { ko: '연애', en: 'Love', ja: '恋愛' },
     desc: { ko: '4문항으로 보는 내 연애 본능', en: 'Your love instinct in 4 Qs', ja: '4問でわかる恋愛本能' },
     grad: ['#F25C8E', '#FF8AAE'],
     funnel: 'love',
@@ -81,6 +84,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'stress',
     emoji: '🌋',
     title: { ko: '스트레스 유형', en: 'Stress Type', ja: 'ストレスタイプ' },
+    short: { ko: '스트레스', en: 'Stress', ja: 'ストレス' },
     desc: { ko: '나는 스트레스를 어떻게 푸나?', en: 'How do you release stress?', ja: 'ストレスの解放法は？' },
     grad: ['#8B7CF6', '#B3A6FF'],
     funnel: 'burnout',
@@ -133,6 +137,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'sleep',
     emoji: '🌙',
     title: { ko: '수면 성향', en: 'Sleep Type', ja: '睡眠タイプ' },
+    short: { ko: '수면', en: 'Sleep', ja: '睡眠' },
     desc: { ko: '내 진짜 수면 동물은?', en: 'Your true sleep animal?', ja: '本当の睡眠どうぶつは？' },
     grad: ['#6E7BF2', '#9AA6FF'],
     funnel: 'dopamine',
@@ -185,6 +190,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'color',
     emoji: '🎨',
     title: { ko: '색채 심리', en: 'Color Psychology', ja: '色彩心理' },
+    short: { ko: '색채', en: 'Color', ja: '色彩' },
     desc: { ko: '끌리는 색으로 보는 내 마음', en: 'Your mind via the color you love', ja: '惹かれる色でわかる心' },
     grad: ['#FF8A4C', '#FFC04C'],
     funnel: 'ego',
@@ -237,6 +243,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'energy',
     emoji: '🔋',
     title: { ko: '에너지 타입', en: 'Energy Type', ja: 'エネルギータイプ' },
+    short: { ko: '에너지', en: 'Energy', ja: 'エネルギー' },
     desc: { ko: 'MBTI가 못 잡는 진짜 내향·외향', en: 'Your true intro/extra beyond MBTI', ja: 'MBTIを超える内向·外向' },
     grad: ['#10B981', '#5BD9A8'],
     funnel: 'ego',
@@ -289,6 +296,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'friend',
     emoji: '🧑‍🤝‍🧑',
     title: { ko: '친구 유형', en: 'Friend Type', ja: '友達タイプ' },
+    short: { ko: '친구', en: 'Friend', ja: '友達' },
     desc: { ko: '모임에서 나는 어떤 친구?', en: 'What kind of friend are you?', ja: '集まりでどんな友達？' },
     grad: ['#12A5C2', '#5BD0E0'],
     funnel: 'ego',
@@ -341,6 +349,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'lovecell',
     emoji: '💘',
     title: { ko: '연애세포', en: 'Love Cells', ja: '恋愛細胞' },
+    short: { ko: '연애세포', en: 'Love cells', ja: '恋愛細胞' },
     desc: { ko: '내 연애세포는 지금 몇 살?', en: 'How alive are your love cells?', ja: '恋愛細胞は今元気？' },
     grad: ['#F25C8E', '#FF9EC0'],
     funnel: 'love',
@@ -393,6 +402,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'soulmate',
     emoji: '💞',
     title: { ko: '소울메이트', en: 'Soulmate', ja: 'ソウルメイト' },
+    short: { ko: '소울메이트', en: 'Soulmate', ja: 'ソウルメイト' },
     desc: { ko: '나랑 찰떡인 짝꿍은?', en: 'Who\'s your perfect match?', ja: 'ピッタリの相手は？' },
     grad: ['#F25C8E', '#C58BF2'],
     funnel: 'love',
@@ -445,6 +455,7 @@ export const QUICK_TESTS: QuickTest[] = [
     id: 'stressanimal',
     emoji: '🐯',
     title: { ko: '스트레스 동물', en: 'Stress Animal', ja: 'ストレス動物' },
+    short: { ko: '동물', en: 'Animal', ja: '動物' },
     desc: { ko: '스트레스 받으면 변하는 내 동물', en: 'The animal you turn into', ja: 'ストレスで変わる動物' },
     grad: ['#FF6F61', '#FFA28C'],
     funnel: 'burnout',
@@ -500,6 +511,11 @@ export const QUICK_TESTS: QuickTest[] = [
       "ko": "나의 꽃",
       "en": "Your Flower",
       "ja": "あなたの花"
+    },
+    "short": {
+      "ko": "꽃",
+      "en": "Flower",
+      "ja": "花"
     },
     "desc": {
       "ko": "4문항으로 보는 내 마음을 닮은 꽃",

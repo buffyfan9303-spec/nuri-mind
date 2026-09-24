@@ -7,7 +7,7 @@ import Avatar from '../components/Avatar'
 import Button from '../components/Button'
 import Footer from '../components/Footer'
 import TopStrip from '../components/TopStrip'
-import ScrollChips from '../components/ScrollChips'
+import ScrollChips, { CHIP_W } from '../components/ScrollChips'
 import AdSlot from '../components/AdSlot'
 import IconBadge from '../components/IconBadge'
 import { SkeletonBlock } from '../components/Skeleton'
@@ -152,11 +152,11 @@ export default function Home() {
   const premiumDaysLeft = premium ? Math.max(0, Math.ceil((s.premiumUntil - Date.now()) / 86400000)) : 0
 
   // 퀵테스트 칩 — 문항·결과 데이터(60KB)는 지연 로드(메인 번들 오염 방지). 칩엔 메타 4필드만 필요
-  const [quickChips, setQuickChips] = useState<{ id: string; emoji: string; title: L; grad0: string }[]>([])
+  const [quickChips, setQuickChips] = useState<{ id: string; emoji: string; short: L; grad0: string }[]>([])
   useEffect(() => {
     import('../data/quick')
       .then((m) =>
-        setQuickChips(m.QUICK_TESTS.map((q) => ({ id: q.id, emoji: q.emoji, title: q.title, grad0: q.grad[0] }))),
+        setQuickChips(m.QUICK_TESTS.map((q) => ({ id: q.id, emoji: q.emoji, short: q.short, grad0: q.grad[0] }))),
       )
       // 청크 로드 실패(재배포 후 구 해시·오프라인) — 스켈레톤 영구 고착·unhandled rejection 방지
       .catch(() => setQuickChips([]))
@@ -321,12 +321,12 @@ export default function Home() {
         </div>
         <ScrollChips
           items={[
-            { id: 'fav-fortune', emoji: '🔮', label: t('fortune.title'), color: '#6B4FB8', onClick: () => nav('/fortune') },
+            { id: 'fav-fortune', emoji: '🔮', label: l({ ko: '운세', en: 'Fortune', ja: '運勢' }), color: '#6B4FB8', onClick: () => nav('/fortune') },
             { id: 'fav-adhd', emoji: '🎯', label: 'ADHD', color: '#FFB020', onClick: () => nav('/test/adhd') },
             { id: 'fav-iq', emoji: '🧩', label: t('test.iq.short'), color: '#6E7BF2', onClick: () => nav('/test/iq') },
-            { id: 'fav-mbti', emoji: '🔠', label: l({ ko: '성격유형', en: 'Personality', ja: '性格タイプ' }), color: '#3B9EFF', onClick: () => nav('/mbti/quick') },
-            { id: 'fav-lovestyle', emoji: '💘', label: l({ ko: '연애 스타일', en: 'Love style', ja: '恋愛スタイル' }), color: '#F25C8E', onClick: () => nav('/quick/lovestyle') },
-            { id: 'fav-attach', emoji: '💞', label: l({ ko: '애착 유형', en: 'Attachment', ja: '愛着タイプ' }), color: '#E0567F', onClick: () => nav('/test/love') },
+            { id: 'fav-mbti', emoji: '🔠', label: l({ ko: '성격', en: 'Persona', ja: '性格' }), color: '#3B9EFF', onClick: () => nav('/mbti/quick') },
+            { id: 'fav-lovestyle', emoji: '💘', label: l({ ko: '연애', en: 'Love', ja: '恋愛' }), color: '#F25C8E', onClick: () => nav('/quick/lovestyle') },
+            { id: 'fav-attach', emoji: '💞', label: l({ ko: '애착', en: 'Attach', ja: '愛着' }), color: '#E0567F', onClick: () => nav('/test/love') },
             { id: 'fav-stress', emoji: '🌋', label: l({ ko: '스트레스', en: 'Stress', ja: 'ストレス' }), color: '#8B7CF6', onClick: () => nav('/quick/stress') },
           ]}
         />
@@ -345,7 +345,7 @@ export default function Home() {
               items={quickChips.map((q, i) => ({
                 id: q.id,
                 emoji: q.emoji,
-                label: l(q.title),
+                label: l(q.short),
                 color: q.grad0,
                 onClick: () => nav(`/quick/${q.id}`),
                 badge: i === 0 ? ('HOT' as const) : i >= quickChips.length - 2 ? ('NEW' as const) : undefined,
@@ -353,9 +353,9 @@ export default function Home() {
             />
           ) : (
             /* 데이터 로드 전 스켈레톤 칩 — 레이아웃 시프트 방지(실제 칩과 동일 규격) */
-            <div className="no-scrollbar -mx-5 mt-2 flex gap-2.5 overflow-x-hidden px-5 pb-3 pt-1">
+            <div className="no-scrollbar mt-2 flex gap-2.5 overflow-x-hidden pb-3 pt-1">
               {[0, 1, 2, 3, 4].map((i) => (
-                <SkeletonBlock key={i} className="h-[68px] w-[70px] shrink-0 !rounded-[20px]" />
+                <SkeletonBlock key={i} className={`${CHIP_W} aspect-square shrink-0 !rounded-[20px]`} />
               ))}
             </div>
           )}
