@@ -58,6 +58,8 @@ export default function Community() {
   const addComment = useStore((s) => s.addComment)
   const reportPost = useStore((s) => s.reportPost)
   const blockUser = useStore((s) => s.blockUser)
+  const unblockUser = useStore((s) => s.unblockUser)
+  const [showBlocked, setShowBlocked] = useState(false)
   const blockedNicks = useStore((s) => s.blockedNicks)
   const claimFirstPost = useStore((s) => s.claimFirstPost)
   const claimFirstComment = useStore((s) => s.claimFirstComment)
@@ -494,6 +496,28 @@ export default function Community() {
           </span>
         </button>
 
+        {/* 차단 관리 — 차단만 되고 풀 길이 없으면 실수 한 번이 영구가 된다 */}
+        {blockedNicks.length > 0 && (
+          <div className="mt-3 rounded-2xl bg-surface2 px-3.5 py-2.5 text-[12px] font-bold text-ink-sub">
+            <button onClick={() => setShowBlocked((v) => !v)} className="flex w-full items-center justify-between">
+              <span><Emoji e="🚫" inline />{l({ ko: `차단한 사용자 ${blockedNicks.length}명`, en: `${blockedNicks.length} blocked`, ja: `ブロック中 ${blockedNicks.length}人` })}</span>
+              <span className="text-ink-faint">{showBlocked ? '▴' : '▾'}</span>
+            </button>
+            {showBlocked && (
+              <ul className="mt-2 space-y-1.5">
+                {blockedNicks.map((n) => (
+                  <li key={n} className="flex items-center justify-between gap-2">
+                    <span className="min-w-0 truncate">{n}</span>
+                    <button onClick={() => unblockUser(n)} className="shrink-0 rounded-full border border-line px-2.5 py-1 text-[11px] font-extrabold">
+                      {l({ ko: '차단 해제', en: 'Unblock', ja: '解除' })}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         {/* 주제 필터 칩 (가로 스크롤) */}
         <div className="no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5">
           {topics.map((tp) => {
@@ -583,7 +607,9 @@ export default function Community() {
           ) : (
             posts.map((p, i) => {
               const hot = p.likes >= HOT
-              const comments = server ? serverComments[p.id] || [] : commentsMap[p.id] || []
+              const comments = (server ? serverComments[p.id] || [] : commentsMap[p.id] || []).filter(
+                (c) => !blockedNicks.includes(c.nick), // 차단한 사람의 댓글도 가린다(글만 가리면 차단이 반쪽)
+              )
               return (
                 <div key={p.id} className="[content-visibility:auto] [contain-intrinsic-size:auto_180px]">
                   <motion.div

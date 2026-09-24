@@ -18,6 +18,7 @@ import { humanizeError } from '../lib/dbError'
 import LegalSheet from './LegalSheet'
 import BizInfo from './BizInfo'
 import Emoji from './Emoji'
+import AppleLoginButton from './AppleLoginButton'
 
 /**
  * 온보딩 입력 초안 — 이 화면은 두 정상 동선에서 통째로 언마운트된다.
@@ -199,6 +200,7 @@ export default function Onboarding() {
                 {t('onboard.kakao')}
               </motion.button>
             )}
+            {!kakaoNick && <AppleLoginButton className="mt-2.5" />}
             <div className="my-5 flex items-center gap-3">
               <div className="h-px flex-1 bg-line" />
               <span className="shrink-0 text-[12px] font-bold text-ink-faint">{t('onboard.or')}</span>

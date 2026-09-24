@@ -14,7 +14,8 @@ import type { Lang } from '../data/types'
 import { fileToAvatarDataUrl } from '../lib/image'
 import { scheduleStreakReminder } from '../lib/notify'
 import { enablePush, disablePush, pushSupported, pushConfigured, pushPermission } from '../lib/push'
-import { authReady, signInWithKakao, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
+import { authReady, signInWithKakao, signInWithApple, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
+import { APPLE_SIGNIN_ENABLED } from '../data/features'
 import { logoutAccount, deleteAccount } from '../lib/economy'
 import { moderateText } from '../lib/moderation'
 import { humanizeError } from '../lib/dbError'
@@ -612,6 +613,18 @@ export default function Profile() {
                   <span className="text-ink-faint">›</span>
                 </button>
               ))}
+            {authReady() && !authUser && APPLE_SIGNIN_ENABLED && (
+              <button
+                onClick={async () => {
+                  const r = await signInWithApple()
+                  if (!r.ok) alert(t('auth.needSetup'))
+                }}
+                className="flex w-full items-center justify-between border-t border-line px-3 py-3"
+              >
+                <span className="text-[15px] font-bold">{l({ ko: 'Apple로 로그인', en: 'Sign in with Apple', ja: 'Appleでサインイン' })}</span>
+                <span className="text-ink-faint">›</span>
+              </button>
+            )}
             <button
               onClick={() => nav('/legal/terms')}
               className="flex w-full items-center justify-between border-t border-line px-3 py-3"

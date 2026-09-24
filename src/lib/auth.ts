@@ -50,22 +50,39 @@ export async function signInWithKakao(chooseAccount = false): Promise<{ ok: bool
   } catch {
     /* 저장소 불가 — 인자로 받은 값만 따른다 */
   }
-  const queryParams = reauth ? { prompt: 'login' } : undefined
+  return oauth('kakao', 'profile_nickname', redirectTo, reauth ? { prompt: 'login' } : undefined)
+}
+
+/**
+ * Sign in with Apple(Apple 심사 지침 4.8) — features.APPLE_SIGNIN_ENABLED일 때만 버튼이 보인다.
+ * Supabase 대시보드 Apple provider 설정(Services ID·키) 전에는 에러를 돌려준다(docs/STORE.md).
+ */
+export async function signInWithApple(): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'supabase_not_configured' }
+  const redirectTo =
+    typeof window !== 'undefined' ? window.location.origin + window.location.pathname + window.location.search : undefined
+  return oauth('apple', 'name email', redirectTo)
+}
+
+async function oauth(
+  provider: 'kakao' | 'apple',
+  scopes: string,
+  redirectTo: string | undefined,
+  queryParams?: Record<string, string>,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'supabase_not_configured' }
   if (isNativeApp()) {
-    // 앱: WebView 안에서 카카오 로그인을 띄우지 않는다 — 외부 브라우저 → kr.nuri.mind://auth-callback 딥링크로 복귀(lib/native.ts)
+    // 앱: WebView 안에서 로그인 화면을 띄우지 않는다 — 외부 브라우저 → kr.nuri.mind://auth-callback 딥링크로 복귀(lib/native.ts)
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'kakao',
-      options: { redirectTo: NATIVE_AUTH_CALLBACK, scopes: 'profile_nickname', skipBrowserRedirect: true, queryParams },
+      provider,
+      options: { redirectTo: NATIVE_AUTH_CALLBACK, scopes, skipBrowserRedirect: true, queryParams },
     })
     if (error || !data.url) return { ok: false, error: error?.message ?? 'no_auth_url' }
     const { openOAuthInBrowser } = await import('./native')
     await openOAuthInBrowser(data.url)
     return { ok: true }
   }
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'kakao',
-    options: { redirectTo, scopes: 'profile_nickname', queryParams },
-  })
+  const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo, scopes, queryParams } })
   return error ? { ok: false, error: error.message } : { ok: true }
 }
 
