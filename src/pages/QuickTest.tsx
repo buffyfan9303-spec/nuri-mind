@@ -16,6 +16,7 @@ import { CHARACTERS } from '../lib/characters'
 import { encodeQuickDuel } from '../lib/duel'
 import { useStore } from '../store/useStore'
 import Emoji from '../components/Emoji'
+import { shareOrCopy } from '../lib/share'
 
 /** 카카오 공유 버튼 아랫면 — 카카오 노랑을 같은 색조로 짙게 */
 const KAKAO_3D = press3d(4, '#C9B400')
@@ -78,15 +79,9 @@ export default function QuickTest() {
     track('share', { channel: 'quick', id: test.id })
     const url = `${location.origin}/quick/${test.id}`
     const txt = `[누리 마인드] 나의 ${l(test.title)}: ${winner.emoji} ${l(winner.name)} — ${l(winner.tag)}`
-    try {
-      if (navigator.share) await navigator.share({ text: txt, url })
-      else {
-        await navigator.clipboard.writeText(`${txt} ${url}`)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1600)
-      }
-    } catch {
-      /* 취소 */
+    if ((await shareOrCopy({ text: txt, url })) === 'copied') {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1600)
     }
   }
 
@@ -143,16 +138,10 @@ export default function QuickTest() {
       en: `I got "${winner.emoji} ${l(winner.name)}" on ${l(test.title)}! Your turn 🆚`,
       ja: `${l(test.title)}で「${winner.emoji} ${l(winner.name)}」だった！君もやる？🆚`,
     })
-    try {
-      track('share', { channel: 'quick_duel', id: test.id })
-      if (navigator.share) await navigator.share({ title: '누리 마인드 결과 대결', text, url })
-      else {
-        await navigator.clipboard.writeText(`${text} ${url}`)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1600)
-      }
-    } catch {
-      /* 사용자 취소 — 무시 */
+    track('share', { channel: 'quick_duel', id: test.id })
+    if ((await shareOrCopy({ title: '누리 마인드 결과 대결', text, url })) === 'copied') {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1600)
     }
   }
 

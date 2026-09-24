@@ -1,0 +1,64 @@
+# 안드로이드 앱 빌드 확인 — 디버그 APK를 만들어 아티팩트로 올린다(설치해서 실기기 확인용).
+#
+# 스토어 업로드용 서명 AAB는 여기서 만들지 않는다: 업로드 키가 CI에 들어가야 하는데
+# 아직 운영자 결정 전이다(docs/STORE.md). 이 워크플로는 '네이티브 셸이 깨지지 않았는가'를 지킨다.
+# Capacitor 8 = JDK 21 · AGP 8.13 · Gradle 8.14 · compile/target SDK 36 (android/variables.gradle)
+name: android
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'capacitor.config.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'src/lib/native.ts'
+      - 'src/lib/platform.ts'
+      - 'src/lib/share.ts'
+      - '.github/workflows/android.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+# verify.yml과 같은 이유 — 값이 없으면 앱이 'Supabase 미설정' 모드로 빌드된다.
+# 저장소 Variables(VITE_SUPABASE_URL·VITE_SUPABASE_ANON_KEY — 둘 다 번들에 들어가는 공개값)가 있으면 그걸 쓴다.
+env:
+  VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://ci-dummy-not-a-real-project.supabase.co' }}
+  VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ci-dummy-anon-key-for-tests-only.ci-dummy-signature' }}
+
+jobs:
+  apk:
+    name: 디버그 APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+      - run: npm ci
+      - run: npm run build
+      - run: npx cap sync android
+      - name: gradle assembleDebug
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v5
+        with:
+          name: nuri-mind-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 14

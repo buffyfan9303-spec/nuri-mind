@@ -11,6 +11,7 @@ import { useT, useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
 import Emoji from '../components/Emoji'
+import { shareOrCopy } from '../lib/share'
 
 const VALID = new Set(LOVE_ANIMALS.map((a) => a.key))
 
@@ -35,15 +36,9 @@ export default function Chemi() {
     track('share', { channel: 'chemi' })
     const url = `${location.origin}/chemi?a=${mine}`
     const txt = `[누리 마인드] 나랑 연애 궁합 볼래? 내 연애 동물은 ${l(PERSONAS[mine]?.name ?? { ko: '', en: '', ja: '' })} ${PERSONAS[mine]?.emoji ?? '🐾'}!`
-    try {
-      if (navigator.share) await navigator.share({ text: txt, url })
-      else {
-        await navigator.clipboard.writeText(`${txt} ${url}`)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1600)
-      }
-    } catch {
-      /* 취소 */
+    if ((await shareOrCopy({ text: txt, url })) === 'copied') {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1600)
     }
   }
 

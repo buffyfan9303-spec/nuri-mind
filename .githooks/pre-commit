@@ -1,0 +1,6 @@
+#!/bin/sh
+# NURI MIND pre-commit — 스테이징된 파일의 비밀(API 키·토큰·개인키·비밀 파일) 검사.
+# 누리홀덤 .githooks/pre-commit을 이식. 의존성 없음(node만).
+# 활성화: git config core.hooksPath .githooks
+# 우회(--no-verify)하지 말고, 공개 키라면 scripts/secret-scan.mjs에 '왜 공개인지' 적어 예외를 둔다.
+exec node scripts/secret-scan.mjs

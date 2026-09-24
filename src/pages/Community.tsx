@@ -29,6 +29,7 @@ import {
   reportPostServer,
   toggleLike,
 } from '../lib/community'
+import { shareOrCopy } from '../lib/share'
 
 const HOT = 10 // 좋아요 이 수 이상이면 인기글 (초기 트래픽 고려)
 
@@ -343,7 +344,11 @@ export default function Community() {
         prev.map((x) => (x.id === p.id ? { ...x, liked: !x.liked, likes: x.likes + (x.liked ? -1 : 1) } : x)),
       )
       try {
-        await toggleLike(p.id)
+        // 서버가 확정한 값으로 맞춘다 — 이미 눌렀던 기록이 있거나 상한에 걸리면 낙관적 표시와 다를 수 있다
+        const r = await toggleLike(p.id, deviceId)
+        setServerPosts((prev) =>
+          prev.map((x) => (x.id === p.id ? { ...x, liked: r.liked, likes: r.likes ?? x.likes } : x)),
+        )
       } catch {
         reload()
       }
@@ -419,15 +424,9 @@ export default function Community() {
 
   const onShare = async (p: CommunityPost) => {
     const txt = `[${t('app.name')}] ${p.nick}${p.badge ? ' ' + p.badge : ''}: ${p.text}`
-    try {
-      if (navigator.share) await navigator.share({ text: txt, url: window.location.origin })
-      else {
-        await navigator.clipboard.writeText(`${txt} ${window.location.origin}`)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1600)
-      }
-    } catch {
-      /* 취소 */
+    if ((await shareOrCopy({ text: txt, url: window.location.origin })) === 'copied') {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1600)
     }
   }
 
@@ -444,7 +443,7 @@ export default function Community() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="pointer-events-none fixed inset-x-0 top-14 z-30 flex justify-center"
+            className="pointer-events-none fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-30 flex justify-center"
           >
             <motion.div
               /* y를 framer 값으로 넘긴다 — style.transform으로 주면 framer가 rotate를 쓰며 통째로 덮어써
@@ -775,7 +774,7 @@ export default function Community() {
             transition={SPRING.flick}
             whileTap={{ scale: 0.97 }}
             onClick={applyNew}
-            className="fixed inset-x-0 top-16 z-40 mx-auto flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-extrabold text-white shadow-pop"
+            className="fixed inset-x-0 top-[calc(4rem+env(safe-area-inset-top))] z-40 mx-auto flex w-fit items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-extrabold text-white shadow-pop"
             style={{ background: 'linear-gradient(135deg, #4FA882, #6E9FDC)' }}
           >
             <motion.span animate={{ y: [0, -3, 0] }} transition={{ repeat: Infinity, duration: 1.2 }}>
