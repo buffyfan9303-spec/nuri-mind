@@ -355,6 +355,32 @@ export async function logoutAccount(): Promise<void> {
 }
 
 /**
+ * 계정 삭제(스토어 필수) — 서버(엣지 함수 delete-account)가 auth 사용자와 연결 데이터를 지운 뒤,
+ * 이 기기에서도 그 계정의 흔적(보관 프로필)을 지우고 게스트로 돌아간다.
+ * 서버 삭제가 실패하면 로컬은 건드리지 않는다(지워졌다고 믿게 만들지 않는다).
+ */
+export async function deleteAccount(): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'supabase_not_configured' }
+  const { data: sess } = await supabase.auth.getSession()
+  const uid = sess.session?.user?.id
+  if (!uid) return { ok: false, error: 'not_logged_in' }
+  const { error } = await supabase.functions.invoke('delete-account', { method: 'POST' })
+  if (error) return { ok: false, error: error.message }
+  leaveAccount() // 게스트 프로필로 경계 — 이때 계정 스냅샷이 보관되므로 바로 아래에서 지운다
+  try {
+    localStorage.removeItem(`nuri-mind-acct-${uid}`)
+  } catch {
+    /* ignore */
+  }
+  try {
+    await supabase.auth.signOut({ scope: 'local' }) // 서버 사용자는 이미 없다 — 로컬 세션만 정리
+  } catch {
+    /* ignore */
+  }
+  return { ok: true }
+}
+
+/**
  * 계정 전환이 아직 반영되지 않은 상태인가 — 다이아 수령처럼 "받는 즉시 로컬에만 남는" 동작을
  * 이 구간에서 하면 직후의 프로필 스왑에 덮여 소멸한다. 그 창에서는 수령을 막는다.
  */

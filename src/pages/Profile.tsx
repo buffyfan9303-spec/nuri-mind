@@ -15,7 +15,7 @@ import { fileToAvatarDataUrl } from '../lib/image'
 import { scheduleStreakReminder } from '../lib/notify'
 import { enablePush, disablePush, pushSupported, pushConfigured, pushPermission } from '../lib/push'
 import { authReady, signInWithKakao, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
-import { logoutAccount } from '../lib/economy'
+import { logoutAccount, deleteAccount } from '../lib/economy'
 import { moderateText } from '../lib/moderation'
 import { humanizeError } from '../lib/dbError'
 import { useStore, OPERATOR_NICKS, isPremium, PREMIUM_KRW } from '../store/useStore'
@@ -70,6 +70,7 @@ function attendanceCells(ledger: { at: number; memo: string }[]) {
 export default function Profile() {
   const t = useT()
   const l = useL()
+  const [deleting, setDeleting] = useState(false)
   const nav = useNavigate()
   const s = useStore()
   const attendance = useMemo(() => attendanceCells(s.ledger), [s.ledger])
@@ -557,6 +558,7 @@ export default function Profile() {
 
             {authReady() &&
               (authUser ? (
+                <>
                 <button
                   onClick={async () => {
                     // 계정 경계는 로그아웃 시점에도 적용 — 안 하면 비로그인 사용자가
@@ -570,6 +572,34 @@ export default function Profile() {
                   <span className="text-[15px] font-bold"><Emoji e="🔓" inline />{t('auth.logout')}{authUser.nickname ? ` · ${authUser.nickname}` : ''}</span>
                   <span className="text-ink-faint">›</span>
                 </button>
+                <button
+                  disabled={deleting}
+                  onClick={async () => {
+                    // 되돌릴 수 없는 동작 — 무엇이 사라지는지 적어 한 번 더 묻는다(스토어 계정 삭제 정책)
+                    const ok = window.confirm(
+                      l({
+                        ko: '계정을 삭제하면 포인트·다이아·프리미엄·우편함·검사 기록이 모두 지워지고 되돌릴 수 없어요.\n커뮤니티 글은 계정과 연결되지 않아 남으니, 먼저 직접 지워 주세요.\n정말 삭제할까요?',
+                        en: 'Deleting your account permanently erases points, diamonds, premium, mailbox and test history.\nCommunity posts are not linked to your account and will remain — delete them first.\nDelete your account?',
+                        ja: 'アカウントを削除すると、ポイント・ダイヤ・プレミアム・メール・検査記録がすべて消え、元に戻せません。\nコミュニティ投稿はアカウントに紐づかないため残ります。先に削除してください。\n本当に削除しますか？',
+                      }),
+                    )
+                    if (!ok) return
+                    setDeleting(true)
+                    const r = await deleteAccount()
+                    setDeleting(false)
+                    if (!r.ok) {
+                      alert(l({ ko: '삭제하지 못했어요. 잠시 뒤 다시 시도해 주세요.', en: 'Could not delete. Please try again later.', ja: '削除できませんでした。しばらくしてから再度お試しください。' }))
+                      return
+                    }
+                    setAuthUser(null)
+                    alert(l({ ko: '계정이 삭제되었어요.', en: 'Your account has been deleted.', ja: 'アカウントを削除しました。' }))
+                  }}
+                  className="flex w-full items-center justify-between border-t border-line px-3 py-3"
+                >
+                  <span className="text-[15px] font-bold text-red-500"><Emoji e="🗑️" inline />{deleting ? l({ ko: '삭제 중…', en: 'Deleting…', ja: '削除中…' }) : l({ ko: '계정 삭제', en: 'Delete account', ja: 'アカウント削除' })}</span>
+                  <span className="text-ink-faint">›</span>
+                </button>
+                </>
               ) : (
                 <button
                   onClick={async () => {

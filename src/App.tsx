@@ -59,6 +59,7 @@ const GrowthPlan = lazyWithReload(() => import('./pages/GrowthPlan'))
 const MbtiTest = lazyWithReload(() => import('./pages/MbtiTest'))
 const About = lazyWithReload(() => import('./pages/About'))
 const AboutMe = lazyWithReload(() => import('./pages/AboutMe'))
+const AccountDeletion = lazyWithReload(() => import('./pages/AccountDeletion'))
 const AllTests = lazyWithReload(() => import('./pages/AllTests'))
 
 /**
@@ -111,6 +112,7 @@ const ROUTES = [
   { path: '/growth', element: <GrowthPlan /> },
   { path: '/mbti/:mode', element: <MbtiTest /> },
   { path: '/about', element: <About /> },
+  { path: '/account-deletion', element: <AccountDeletion /> },
   { path: '/me', element: <AboutMe /> },
   { path: '/tests', element: <AllTests /> },
   { path: '/admin', element: <Admin /> },
@@ -122,7 +124,7 @@ const ROUTES = [
  * 검사 소개(/test/:id)는 공개, 검사 진행(/test/:id/run)은 가입 후 — 소개 화면은 척도 근거·주의 사항이 담긴
  * 읽을거리라 크롤러·광고 심사가 볼 수 있어야 하고, 예전엔 sitemap의 /test/* 가 전부 같은 가입 화면을 돌려줬다.
  */
-const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs|about)(\/|$)|^\/test\/[^/]+\/?$/
+const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs|about|account-deletion)(\/|$)|^\/test\/[^/]+\/?$/
 
 /**
  * 뒤로가기 스크롤 기억(홀덤에서 이식) — 경로별 마지막 scrollY. 모듈 스코프라 라우트 전환에도 살고, 새로고침이면 비운다.
