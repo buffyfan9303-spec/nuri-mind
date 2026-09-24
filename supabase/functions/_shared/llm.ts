@@ -11,8 +11,9 @@
  *   LLM_PROVIDER=anthropic|google      → 둘 다 넣었을 때 강제 지정(미지정 시 Anthropic 우선)
  *
  * 세 함수가 ../_shared/llm.ts 로 직접 참조한다 — Supabase CLI가 함수 밖 의존까지 번들해 준다.
- * (MCP deploy_edge_function은 폴더 단위 업로드라 이 경로를 못 따라간다. 배포는 CLI로 할 것:
- *  npx supabase functions deploy <name> --project-ref xdcglyavndiwbbaryocx)
+ * 배포는 CLI 권장: npx supabase functions deploy <name> --project-ref xdcglyavndiwbbaryocx
+ * (MCP deploy_edge_function으로 올릴 땐 files에 'functions/<name>/index.ts'와 'functions/_shared/llm.ts'를
+ *  함께 넣고 entrypoint_path='functions/<name>/index.ts'로 — 상대 경로 ../_shared/llm.ts가 그대로 풀린다.)
  */
 
 export type Provider = 'anthropic' | 'google'

@@ -2,7 +2,7 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/((?!api/|assets/|emoji/).*)", "destination": "/index.html" }],
+  "rewrites": [{ "source": "/((?!api/|assets/|emoji/|fonts/).*)", "destination": "/index.html" }],
   "headers": [
     {
       "source": "/(.*)",
