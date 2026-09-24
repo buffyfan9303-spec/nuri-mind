@@ -24,6 +24,7 @@ import { sfx } from '../lib/sound'
 import { encodeDuel } from '../lib/duel'
 import { StatTile } from '../components/StatTile'
 import Emoji, { EmojiText } from '../components/Emoji'
+import { shareOrCopy } from '../lib/share'
 
 /** 정밀검사 전용 실행 라우트 — 문항뱅크(/test/:id/run)가 아니라 인지과제 화면으로 보내야 한다 */
 const PRECISION_RUN: Partial<Record<TestId, string>> = {
@@ -170,19 +171,12 @@ export default function TestResult() {
       persona: l(persona.name),
       p: topPercent,
     })
-    try {
-      if (navigator.share) await navigator.share({ text, url: window.location.origin })
-      else throw new Error()
-    } catch (e) {
-      // 공유 시트를 닫은 것(취소)은 실패가 아니다 — 클립보드를 덮어쓰거나 공유 보상을 주지 않는다
-      if (e instanceof DOMException && e.name === 'AbortError') return
-      try {
-        await navigator.clipboard.writeText(`${text} ${window.location.origin}`)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1800)
-      } catch {
-        /* noop */
-      }
+    const outcome = await shareOrCopy({ text, url: window.location.origin })
+    // 공유 시트를 닫은 것(취소)은 실패가 아니다 — 클립보드를 덮어쓰거나 공유 보상을 주지 않는다
+    if (outcome === 'cancelled') return
+    if (outcome === 'copied') {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
     }
     afterShare()
   }
@@ -238,17 +232,12 @@ export default function TestResult() {
       en: `Beat my ${t(`test.${result.testId}.name`)} result? 🆚`,
       ja: `${t(`test.${result.testId}.name`)}で勝負しよう！🆚`,
     })
-    try {
-      if (navigator.share) await navigator.share({ title: '누리 마인드 결과 대결', text, url })
-      else {
-        await navigator.clipboard.writeText(url)
-        setShareMsg(l({ ko: '대결 링크가 복사됐어요', en: '🆚 Duel link copied!', ja: '🆚 リンクをコピー！' }))
-        setTimeout(() => setShareMsg(''), 2400)
-      }
-      track('share', { channel: 'duel' })
-    } catch {
-      /* 사용자 취소 — 무시 */
+    const outcome = await shareOrCopy({ title: '누리 마인드 결과 대결', text, url, copyText: url })
+    if (outcome === 'copied') {
+      setShareMsg(l({ ko: '대결 링크가 복사됐어요', en: '🆚 Duel link copied!', ja: '🆚 リンクをコピー！' }))
+      setTimeout(() => setShareMsg(''), 2400)
     }
+    if (outcome === 'shared' || outcome === 'copied') track('share', { channel: 'duel' })
   }
 
   return (

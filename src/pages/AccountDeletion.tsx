@@ -47,7 +47,7 @@ export default function AccountDeletion() {
           {CONTACT_EMAIL && (
             <p className="mt-3 break-keep text-[13px] font-bold text-ink-faint">
               {l({ ko: '로그인할 수 없다면 다음 주소로 삭제를 요청해 주세요: ', en: 'If you cannot sign in, request deletion at: ', ja: 'ログインできない場合は次の宛先に削除をご依頼ください：' })}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-mind-500">{CONTACT_EMAIL}</a>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="text-mind-500 underline underline-offset-2">{CONTACT_EMAIL}</a>
             </p>
           )}
         </Card>

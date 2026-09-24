@@ -108,6 +108,10 @@ h1, h2, h3, h4 {
 
 #root {
   min-height: 100dvh;
+  /* 상태 표시줄 아래로 내용이 들어가지 않게 — viewport-fit=cover라서 안드로이드 15+ 앱(edge-to-edge 강제)·
+     iOS 홈 화면 앱에선 화면이 상태 표시줄 밑까지 그려진다. 일반 브라우저에선 0이라 변화 없음.
+     상단 고정 막대(TopBar 등)는 top도 같은 값으로 둔다. */
+  padding-top: env(safe-area-inset-top);
 }
 
 .no-scrollbar::-webkit-scrollbar {

@@ -23,7 +23,7 @@ export function LessonHeader({
   right?: ReactNode
 }) {
   return (
-    <div className="sticky top-0 z-30 bg-cream/90 backdrop-blur">
+    <div className="sticky top-[env(safe-area-inset-top)] z-30 bg-cream/90 backdrop-blur">
       <div className="mx-auto flex h-14 w-full max-w-md items-center gap-3 px-3">
         <motion.button
           type="button"

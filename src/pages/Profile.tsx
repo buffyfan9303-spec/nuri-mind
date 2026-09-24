@@ -525,6 +525,8 @@ export default function Profile() {
                   step={0.05}
                   value={s.fontScale}
                   onChange={(e) => s.setFontScale(Number(e.target.value))}
+                  aria-label={t('profile.fontSize')}
+                  aria-valuetext={`${Math.round(s.fontScale * 100)}%`}
                   className="h-2 flex-1 accent-mind-500"
                 />
                 <span className="text-[20px] font-bold text-ink">가</span>

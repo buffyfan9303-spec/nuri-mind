@@ -1,0 +1,33 @@
+# 의존성·액션 버전 자동 업데이트 PR — 주 1회, 묶어서 올린다(PR 폭주 방지).
+# 보안 업데이트는 이 설정과 무관하게 GitHub가 즉시 따로 올린다.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 5
+    groups:
+      capacitor:
+        patterns: ['@capacitor/*']
+      dev-tools:
+        dependency-type: development
+      runtime-minor:
+        dependency-type: production
+        update-types: [minor, patch]
+    ignore:
+      # 메이저 업그레이드는 사람이 계획해서 한다(React·Vite·Capacitor 등은 마이그레이션이 필요)
+      - dependency-name: '*'
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Seoul
+    groups:
+      actions:
+        patterns: ['*']

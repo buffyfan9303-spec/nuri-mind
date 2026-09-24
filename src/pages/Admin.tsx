@@ -153,7 +153,7 @@ function Console() {
 
   return (
     <div className="min-h-dvh bg-[#2F4050] pb-28">
-      <div className="sticky top-0 z-30 bg-[#2F4050]/95 backdrop-blur">
+      <div className="sticky top-[env(safe-area-inset-top)] z-30 bg-[#2F4050]/95 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-md items-center gap-2 px-4">
           <span className="text-lg font-extrabold text-white"><Emoji e="🛠" inline />{t('admin.title')}</span>
           <div className="flex-1" />

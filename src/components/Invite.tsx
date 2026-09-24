@@ -7,6 +7,7 @@ import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { ensureReferralCodeServer, referralCountServer, referralReady, redeemReferralServer } from '../lib/referral'
 import Emoji, { EmojiText } from './Emoji'
+import { shareOrCopy } from '../lib/share'
 
 // 누적 초대 보너스 — 신규 유입 LTV로 정당화(일일 상한과 별개). 서버 연동 시 자동 지급.
 // 최상위(10명+)엔 다이아(유료 재화)까지 얹어 강력한 바이럴 후크.
@@ -63,15 +64,9 @@ export default function Invite() {
     // 링크에 코드를 실어 보낸다 — 온보딩 화면엔 코드 입력란이 없어서
     // '가입할 때 코드 입력' 안내는 실제로 따라갈 수 없는 동선이었다.
     const text = `🧠 누리 마인드 — 심리검사로 진짜 나 찾기! 이 링크로 시작하면 너도 나도 +100P 🎁 ${window.location.origin}/?invite=${referralCode}`
-    try {
-      if (navigator.share) await navigator.share({ text })
-      else {
-        await navigator.clipboard.writeText(text)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1600)
-      }
-    } catch {
-      /* 사용자가 취소 */
+    if ((await shareOrCopy({ text })) === 'copied') {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1600)
     }
   }
 

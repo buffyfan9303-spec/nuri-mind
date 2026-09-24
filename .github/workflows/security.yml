@@ -1,0 +1,47 @@
+# 보안 자동 검사 — 공개 저장소라 둘 다 무료다.
+#   codeql  : TS/React 코드의 취약 패턴(XSS·열린 리다이렉트·안전하지 않은 URL 처리 등) 정적 분석 → Security 탭
+#   gitleaks: 커밋 이력 속 비밀(API 키·토큰). 로컬 커밋 훅(.githooks/pre-commit)을 우회·누락한 경우의 CI 방어선
+name: security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '17 3 * * 1' # 매주 월 12:17 KST — 새 규칙으로 기존 코드도 다시 본다
+  workflow_dispatch:
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  codeql:
+    name: CodeQL (JS/TS)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+      - uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:javascript-typescript
+
+  gitleaks:
+    name: 비밀 검사 (gitleaks)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # 전체 이력 — PR에선 새 커밋만 검사한다
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
