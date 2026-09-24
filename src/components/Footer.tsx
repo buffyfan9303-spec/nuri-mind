@@ -24,6 +24,10 @@ export default function Footer() {
         <span className="text-line">|</span>
         <button onClick={() => nav('/magazine')}>{l({ ko: '심리 매거진', en: 'Magazine', ja: 'マガジン' })}</button>
       </nav>
+      {/* 개정 사전 공지 — 시행(2026-10-05)에 개정본이 배포되면 함께 지운다 */}
+      <button onClick={() => nav('/legal/privacy')} className="mt-3 text-[12px] font-bold text-mind-700 underline underline-offset-2">
+        {l({ ko: '개인정보처리방침 개정 안내 (2026.10.05 시행)', en: 'Privacy policy update (effective Oct 5, 2026)', ja: 'プライバシーポリシー改定のお知らせ（2026.10.05施行）' })}
+      </button>
       <p className="mt-4 px-4 text-[11px] font-medium leading-relaxed text-ink-faint">
         엔에이치홀딩스 · 대표 김윤혜 · 사업자등록번호 525-20-02937
         <br />
