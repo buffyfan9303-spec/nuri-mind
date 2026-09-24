@@ -592,7 +592,9 @@ export const useStore = create<State>()(
         decideRedemption: (id, approve) => {
           const s = get()
           const rd = s.redemptions.find((x) => x.id === id)
-          if (!rd) return
+          // 대기 중인 건만 결정한다 — 두 번 불리면(연타·승인 후 반려) 로컬 환불이 거듭 쌓였다
+          // (서버는 refund:id 키로 1회만 받지만 상점 결제는 로컬 지갑을 본다)
+          if (!rd || rd.status !== 'pending') return
           set({
             redemptions: s.redemptions.map((x) =>
               x.id === id ? { ...x, status: approve ? ('approved' as const) : ('rejected' as const) } : x,
@@ -975,6 +977,9 @@ const econHooks: SyncHooks = {
       nickname: st.nickname,
       avatar: st.avatar,
       deviceId: st.deviceId,
+      // 로컬 중복 지급 차단 키도 계정 소유다 — 기기에 남기면 A가 오늘 받은 출석·성장 키가
+      // B의 정당한 첫 보상을 0P로 막았다(lastCheckIn 등 가드 필드는 이미 계정별로 스왑된다)
+      paidKeys: st.paidKeys,
     }
     const KEY = (u: string) => `nuri-mind-acct-${u}`
     try {
@@ -991,7 +996,8 @@ const econHooks: SyncHooks = {
     }
     if (restored) {
       // 이 기기에서 쓰던 계정으로 돌아온 경우 — 보관본 복원(운영자 잠금은 항상 다시 걸린다)
-      useStore.setState({ ...restored, adminUnlocked: false })
+      // paidKeys가 없는 옛 보관본은 빈 목록으로 — 직전 계정의 키를 이어받지 않게(v3 이관과 같은 판단)
+      useStore.setState({ paidKeys: [], ...restored, adminUnlocked: false })
       return
     }
     // 처음 보는 계정 — 이전 사용자의 흔적을 남기지 않고 새 프로필로 시작.
@@ -1029,6 +1035,7 @@ const econHooks: SyncHooks = {
       fortuneMonth: '',
       fortuneFreeUses: 0,
       referredBy: '',
+      paidKeys: [],
       nickname: base.nickname,
       avatar: base.avatar,
       adminUnlocked: false,

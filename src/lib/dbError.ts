@@ -89,7 +89,11 @@ export function humanizeError(err: unknown, lang: Lang = 'ko', fallback?: string
   const raw = textOf(err)
   const code = err && typeof err === 'object' ? (err as { code?: unknown }).code : undefined
   // P0001 = 우리가 DB 함수에서 직접 RAISE한 메시지 — 이미 사람 말이고, 출처가 우리다
-  if (code === 'P0001' && /[가-힣]/.test(raw)) return raw.slice(0, 120)
+  // ⚠️ raw(textOf)는 message·code·details를 이어 붙인 판정용 문자열이라 그대로 쓰면 문장 끝에 'P0001'이 붙어 보였다 → message만
+  if (code === 'P0001' && /[가-힣]/.test(raw)) {
+    const msg = (err as { message?: unknown }).message
+    return (typeof msg === 'string' && msg ? msg : raw).slice(0, 120)
+  }
   for (const r of RULES) if (r.re.test(raw)) return r.msg[lang]
   return fallback ?? FALLBACK[lang]
 }

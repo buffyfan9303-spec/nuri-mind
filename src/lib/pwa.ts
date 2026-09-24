@@ -60,9 +60,16 @@ export function onInstallable(cb: (canInstall: boolean) => void): () => void {
 /** 네이티브 설치 프롬프트 표시. accepted면 true. */
 export async function promptInstall(): Promise<boolean> {
   if (!deferred) return false
-  await deferred.prompt()
-  const { outcome } = await deferred.userChoice
+  // 이벤트는 1회용 — 먼저 떼어 낸다. 응답을 기다리는 동안 버튼을 한 번 더 누르면 같은 이벤트에
+  // prompt()를 두 번 불러 InvalidStateError(미처리 거부)가 나고, deferred가 남아 버튼이 계속 실패했다.
+  const d = deferred
   deferred = null
   emit()
-  return outcome === 'accepted'
+  try {
+    await d.prompt()
+    const { outcome } = await d.userChoice
+    return outcome === 'accepted'
+  } catch {
+    return false
+  }
 }
