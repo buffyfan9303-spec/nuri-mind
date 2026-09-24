@@ -58,7 +58,7 @@ export const JellyChip = memo(function JellyChip({
       aria-label={label}
       aria-pressed={selected}
       style={style}
-      className={`jelly-chip relative flex h-[84px] ${full ? 'w-full' : 'w-[86px] shrink-0'} flex-col items-center justify-center gap-1.5 overflow-hidden rounded-3xl px-2 outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-current`}
+      className={`jelly-chip relative flex h-[68px] ${full ? 'w-full' : 'w-[70px] shrink-0'} flex-col items-center justify-center gap-1 overflow-hidden rounded-[20px] px-1.5 outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-current`}
     >
       {/* 글로시 상단 광택 — 단색감을 없애는 핵심 */}
       <span
@@ -68,16 +68,16 @@ export const JellyChip = memo(function JellyChip({
       />
       {badge && (
         <span
-          className="pointer-events-none absolute right-1.5 top-1.5 z-[2] rounded-full px-1.5 py-px text-[11px] font-semibold leading-[1.4] tracking-wide text-white"
+          className="pointer-events-none absolute right-1 top-1 z-[2] rounded-full px-1 py-px text-[11px] font-semibold leading-none tracking-wide text-white"
           style={{ background: BADGE_BG[badge] }}
         >
           {badge}
         </span>
       )}
       <span className="relative z-[1]">
-        <IconBadge emoji={emoji} color={color} size={38} radius={12} tone={selected ? 'frost' : 'solid'} />
+        <IconBadge emoji={emoji} color={color} size={30} radius={10} tone={selected ? 'frost' : 'solid'} />
       </span>
-      <span className="relative z-[1] line-clamp-2 break-keep px-0.5 text-center text-[12px] font-semibold leading-tight">{label}</span>
+      <span className="relative z-[1] line-clamp-2 break-keep px-0.5 text-center text-[11px] font-semibold leading-tight">{label}</span>
     </button>
   )
 })
@@ -87,7 +87,7 @@ export const JellyChip = memo(function JellyChip({
  */
 export default function ScrollChips({ items, baseDelay = 0 }: { items: ChipItem[]; baseDelay?: number }) {
   return (
-    <div className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory scroll-pl-5 gap-3 overflow-x-auto px-5 pb-4 pt-1 [overscroll-behavior-x:contain]">
+    <div className="no-scrollbar -mx-5 mt-2 flex snap-x snap-mandatory scroll-pl-5 gap-2.5 overflow-x-auto px-5 pb-3 pt-1 [overscroll-behavior-x:contain]">
       {items.map((it, i) => (
         <motion.div
           key={it.id}

@@ -13,7 +13,6 @@ import IconBadge from '../components/IconBadge'
 import { SkeletonBlock } from '../components/Skeleton'
 import { PointsPill, Card } from '../components/ui'
 import { TESTS } from '../data/tests'
-import { SHOP_ITEMS } from '../data/seed'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
 import { useStore, isPremium, PREMIUM_KRW } from '../store/useStore'
@@ -35,6 +34,30 @@ const LUCKY_COLOR_L: Record<string, L> = {
   노랑: { ko: '노랑', en: 'Yellow', ja: '黄' },
   흰색: { ko: '흰색', en: 'White', ja: '白' },
   남색: { ko: '남색', en: 'Navy', ja: '紺' },
+}
+
+/**
+ * 대시보드 스탯 칸 — 높이를 고정(h-[50px])하고 내용 전체를 칸 정중앙에 둔다.
+ * 아이콘과 숫자를 한 덩어리로 묶어야 '🔥 1'과 '🔥 1,234'가 같은 중심선에 선다(따로 두면 숫자 폭만큼 치우친다).
+ */
+function StatTile({ icon, value, label, onClick }: { icon: string; value: string; label: string; onClick?: () => void }) {
+  const inner = (
+    <>
+      <span className="inline-flex max-w-full items-center justify-center gap-1 text-[15px] font-semibold leading-none text-white">
+        <span aria-hidden="true" className="shrink-0">{icon}</span>
+        <span className="truncate tabular-nums">{value}</span>
+      </span>
+      <span className="mt-1 block max-w-full truncate text-center text-[11px] font-medium leading-none text-white/80">{label}</span>
+    </>
+  )
+  const cls = 'flex h-[50px] min-w-0 flex-col items-center justify-center rounded-2xl bg-white/20 px-1.5 text-center'
+  return onClick ? (
+    <motion.button whileTap={{ scale: 0.97 }} onClick={onClick} className={cls}>
+      {inner}
+    </motion.button>
+  ) : (
+    <div className={cls}>{inner}</div>
+  )
 }
 
 export default function Home() {
@@ -64,7 +87,6 @@ export default function Home() {
   )
 
   const todayFree = s.freeDate === todayStr() ? s.freeAmount : 0
-  const redeemable = SHOP_ITEMS.filter((i) => s.points >= i.cost).length
   const checkedToday = s.lastCheckIn === todayStr()
 
   /* HOT 칸용: 지금 참여 가능한 최고 보상 설문 — 상단 띠(TopStrip)와 같은 선택기를 쓴다 */
@@ -223,7 +245,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={SPRING.ui}
-          className="mt-4 rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-5 shadow-pop"
+          className="mt-4 rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 px-4 pb-3.5 pt-4 shadow-pop"
         >
           <div className="flex items-center justify-between">
             <button onClick={() => nav('/profile')} className="flex min-w-0 items-center gap-2">
@@ -242,23 +264,19 @@ export default function Home() {
             </motion.button>
           </div>
 
-          <div className="mt-2.5 flex items-end justify-between">
-            <div>
-              <div className="flex items-end gap-1.5">
-                <span className="text-[28px] font-extrabold leading-none tracking-tight text-white">
-                  🪙 {s.points.toLocaleString()}
-                </span>
-                <span className="pb-1 text-[15px] font-semibold text-white/80">P</span>
-              </div>
-              <p className="mt-1 text-[13px] font-medium text-white/85">
-                {t('dash.cash', { w: s.points.toLocaleString() })} · {t('dash.redeem', { n: redeemable })}
-              </p>
+          {/* 잔액 줄 — 환산액·교환 가능 수는 뺐다(홈 첫 카드는 잔액과 출석만). 출석 버튼과 세로 중앙 정렬 */}
+          <div className="mt-2.5 flex min-h-[40px] items-center justify-between gap-3">
+            <div className="flex min-w-0 items-end gap-1.5">
+              <span className="truncate text-[24px] font-extrabold leading-none tracking-tight text-white tabular-nums">
+                🪙 {s.points.toLocaleString()}
+              </span>
+              <span className="pb-0.5 text-[14px] font-semibold text-white/80">P</span>
             </div>
             {!checkedToday && (
               <motion.button
                 whileTap={{ y: 3, boxShadow: '0 0 0 #D8E0DA' }}
                 onClick={onCheckIn}
-                className="rounded-2xl bg-white px-4 py-2.5 text-[14px] font-semibold text-[#2F6B52]"
+                className="shrink-0 rounded-2xl bg-white px-4 py-2 text-[14px] font-semibold text-[#2F6B52]"
                 style={{ boxShadow: '0 3px 0 #D8E0DA' }}
               >
                 {t('dash.checkin')}
@@ -266,25 +284,17 @@ export default function Home() {
             )}
           </div>
 
-          {/* 스탯 3종 */}
-          <div className="mt-3.5 grid grid-cols-3 gap-2">
-            <div className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
-              <p className="text-[16px] font-semibold leading-none text-white">🔥 {s.streak}</p>
-              <p className="mt-1 whitespace-nowrap text-[11px] font-medium text-white/80">{t('dash.streak')}</p>
-            </div>
-            <motion.button whileTap={{ scale: 0.97 }} onClick={() => nav('/league')} className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
-              <p className="text-[16px] font-semibold leading-none text-white">{lgTier.emoji} {lgRank}위</p>
-              <p className="mt-1 whitespace-nowrap text-[11px] font-medium text-white/80">{t('dash.leagueShort')}</p>
-            </motion.button>
-            <motion.button whileTap={{ scale: 0.97 }} onClick={() => nav('/rewards')} className="flex flex-col items-center rounded-2xl bg-white/20 px-1 py-2.5">
-              <p className="text-[16px] font-semibold leading-none text-white">⚡ {todayFree}P</p>
-              <p className="mt-1 whitespace-nowrap text-[11px] font-medium text-white/80">{t('dash.freeShort')}</p>
-            </motion.button>
+          {/* 스탯 3종 — 세 칸 모두 같은 틀(StatTile). 숫자 자릿수가 바뀌어도 칸 한가운데에 오도록
+              아이콘+숫자를 한 덩어리(inline-flex)로 묶어 가운데 정렬하고, 숫자는 고정폭(tabular-nums) */}
+          <div className="mt-2.5 grid grid-cols-3 gap-2">
+            <StatTile icon="🔥" value={s.streak.toLocaleString()} label={t('dash.streak')} />
+            <StatTile icon={lgTier.emoji} value={l({ ko: `${lgRank}위`, en: `#${lgRank}`, ja: `${lgRank}位` })} label={t('dash.leagueShort')} onClick={() => nav('/league')} />
+            <StatTile icon="⚡" value={`${todayFree.toLocaleString()}P`} label={t('dash.freeShort')} onClick={() => nav('/rewards')} />
           </div>
 
           {/* 다음 등급 진행 */}
-          <div className="mt-3">
-            <div className="h-2.5 overflow-hidden rounded-full bg-white/25">
+          <div className="mt-2.5">
+            <div className="h-2 overflow-hidden rounded-full bg-white/25">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(100, Math.round(tierProgress * 100))}%` }}
@@ -300,8 +310,59 @@ export default function Home() {
           </div>
         </motion.div>
 
+        {/* ── 즐겨찾는 심리검사 — 가장 많이 찾는 검사를 첫 줄에 모은다.
+            선정 근거(2026-09 조사): 성격유형·연애유형·애착유형·스트레스는 국내 테스트 플랫폼·기사에서 참여 수치가 확인된 유형.
+            운세·ADHD·IQ는 운영자 지정. 가장 큰 유행(에겐/테토)은 앱에 대응 검사가 없어 제외 ── */}
+        <div className="mt-5 flex items-center justify-between px-1">
+          <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
+            <span aria-hidden="true">⭐</span>
+            {l({ ko: '즐겨찾는 심리검사', en: 'Popular tests', ja: '人気の心理検査' })}
+          </h2>
+        </div>
+        <ScrollChips
+          items={[
+            { id: 'fav-fortune', emoji: '🔮', label: t('fortune.title'), color: '#6B4FB8', onClick: () => nav('/fortune') },
+            { id: 'fav-adhd', emoji: '🎯', label: 'ADHD', color: '#FFB020', onClick: () => nav('/test/adhd') },
+            { id: 'fav-iq', emoji: '🧩', label: t('test.iq.short'), color: '#6E7BF2', onClick: () => nav('/test/iq') },
+            { id: 'fav-mbti', emoji: '🔠', label: l({ ko: '성격유형', en: 'Personality', ja: '性格タイプ' }), color: '#3B9EFF', onClick: () => nav('/mbti/quick') },
+            { id: 'fav-lovestyle', emoji: '💘', label: l({ ko: '연애 스타일', en: 'Love style', ja: '恋愛スタイル' }), color: '#F25C8E', onClick: () => nav('/quick/lovestyle') },
+            { id: 'fav-attach', emoji: '💞', label: l({ ko: '애착 유형', en: 'Attachment', ja: '愛着タイプ' }), color: '#E0567F', onClick: () => nav('/test/love') },
+            { id: 'fav-stress', emoji: '🌋', label: l({ ko: '스트레스', en: 'Stress', ja: 'ストレス' }), color: '#8B7CF6', onClick: () => nav('/quick/stress') },
+          ]}
+        />
+
+        {/* ── 1분 퀵 테스트 — 유행형·가벼운 검사라 즐겨찾기 바로 아래(사용자가 먼저 찾는 쪽을 앞으로) ── */}
+        <div className="mt-4">
+          <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
+            <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
+              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
+              {t('quick.banner')}
+            </h2>
+            <span className="text-[12px] font-semibold text-mind-600">{t('community.all')} ›</span>
+          </button>
+          {quickChips.length ? (
+            <ScrollChips
+              items={quickChips.map((q, i) => ({
+                id: q.id,
+                emoji: q.emoji,
+                label: l(q.title),
+                color: q.grad0,
+                onClick: () => nav(`/quick/${q.id}`),
+                badge: i === 0 ? ('HOT' as const) : i >= quickChips.length - 2 ? ('NEW' as const) : undefined,
+              }))}
+            />
+          ) : (
+            /* 데이터 로드 전 스켈레톤 칩 — 레이아웃 시프트 방지(실제 칩과 동일 규격) */
+            <div className="no-scrollbar -mx-5 mt-2 flex gap-2.5 overflow-x-hidden px-5 pb-3 pt-1">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <SkeletonBlock key={i} className="h-[68px] w-[70px] shrink-0 !rounded-[20px]" />
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* ── 심층 심리검사 (듀오링고식 젤리 칩 가로 스크롤) — 이 앱의 본편. 자산 대시보드 바로 아래 첫 콘텐츠 ── */}
-        <div id="deep-tests" className="mt-6 flex items-center justify-between px-1">
+        <div id="deep-tests" className="mt-4 flex items-center justify-between px-1">
           <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
             <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.4 }}>🧠</motion.span>
             {t('home.testsHeader')}
@@ -311,12 +372,12 @@ export default function Home() {
             {l(TERMS.unitTests)}
           </span>
         </div>
-        {/* 카테고리 허브 — 기질·마음 / 나를 알기 / 관계 속 나 (인지=아래 정밀검사 섹션) */}
+        {/* 카테고리 허브 — 많이 찾는 순서: 연애·관계 → 요즘 내 마음 → 나를 알기 (두뇌 측정은 아래 섹션) */}
         {(
           [
-            { key: 'temper', emoji: '🧘', label: { ko: '기질 · 마음 컨디션', en: 'Mind & temperament', ja: '気質・心のコンディション' }, ids: ['adhd', 'burnout', 'dopamine', 'resilience', 'socialanx'], newIds: ['socialanx'] },
+            { key: 'relation', emoji: '💞', label: { ko: '연애 · 관계', en: 'Love & relationships', ja: '恋愛・関係' }, ids: ['love', 'dark', 'ego'], newIds: [] },
+            { key: 'mind', emoji: '🌿', label: { ko: '요즘 내 마음', en: 'How I feel lately', ja: '最近の心' }, ids: ['burnout', 'adhd', 'socialanx', 'dopamine', 'resilience'], newIds: ['socialanx'] },
             { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['selfesteem', 'perfect', 'efficacy'], newIds: ['efficacy'] },
-            { key: 'relation', emoji: '💞', label: { ko: '관계 속 나', en: 'Me in relationships', ja: '関係の中の私' }, ids: ['love', 'ego', 'dark'], newIds: [] },
           ] as const
         ).map((cat) => (
           <div key={cat.key}>
@@ -588,36 +649,6 @@ export default function Home() {
             badge: i >= arr.length - 2 ? ('NEW' as const) : undefined,
           }))}
         />
-
-        {/* ── 1분 바이럴 퀵 테스트 — 검사 섹션을 다 훑은 뒤의 가벼운 곁들이(첫 화면 자리는 심층검사에 양보) ── */}
-        <div className="mt-5">
-          <button onClick={() => nav('/quick')} className="flex w-full items-center justify-between px-1">
-            <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
-              <motion.span animate={{ rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }}>🔥</motion.span>
-              {t('quick.banner')}
-            </h2>
-            <span className="text-[12px] font-semibold text-mind-600">{t('community.all')} ›</span>
-          </button>
-          {quickChips.length ? (
-            <ScrollChips
-              items={quickChips.map((q, i) => ({
-                id: q.id,
-                emoji: q.emoji,
-                label: l(q.title),
-                color: q.grad0,
-                onClick: () => nav(`/quick/${q.id}`),
-                badge: i === 0 ? ('HOT' as const) : i >= quickChips.length - 2 ? ('NEW' as const) : undefined,
-              }))}
-            />
-          ) : (
-            /* 데이터 로드 전 스켈레톤 칩 — 레이아웃 시프트 방지(실제 칩과 동일 규격) */
-            <div className="no-scrollbar -mx-5 mt-3 flex gap-3 overflow-x-hidden px-5 pb-4 pt-1">
-              {[0, 1, 2, 3].map((i) => (
-                <SkeletonBlock key={i} className="h-[84px] w-[86px] shrink-0 !rounded-3xl" />
-              ))}
-            </div>
-          )}
-        </div>
 
         {/* 종합 인지 프로필 (정밀검사 레이더) */}
         <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px 0px' }} transition={SPRING.ui}>

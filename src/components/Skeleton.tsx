@@ -20,9 +20,9 @@ export default function Skeleton() {
         🧠
       </motion.div>
       <SkeletonBlock className="h-28 w-full" />
-      <div className="mt-4 flex gap-3 overflow-hidden">
+      <div className="mt-4 flex gap-2.5 overflow-hidden">
         {[0, 1, 2, 3].map((i) => (
-          <SkeletonBlock key={i} className="h-[84px] w-[86px] shrink-0" />
+          <SkeletonBlock key={i} className="h-[68px] w-[70px] shrink-0 !rounded-[20px]" />
         ))}
       </div>
       <SkeletonBlock className="mt-5 h-16 w-full" />
