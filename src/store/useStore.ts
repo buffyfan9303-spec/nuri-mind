@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { LEGAL_VERSION } from '../data/legal'
+import { PAYMENTS_ENABLED } from '../data/features'
 import type { FortuneDetailText } from '../lib/fortuneAi'
 import { profileFromBirthDate, profileKey, profileSolar, fmtYmd, type FortuneProfile } from '../lib/manse'
 import type {
@@ -829,6 +830,8 @@ export const useStore = create<State>()(
         },
         /** 프리미엄 구독(베타: PG 연동 전 즉시지급) — 30일 연장 + 정밀/IQ 즉시 해제 */
         subscribePremiumBeta: () => {
+          // 결제가 꺼져 있으면 어떤 경로로 불려도 기간을 만들지 않는다(features.ts)
+          if (!PAYMENTS_ENABLED) return
           const s = get()
           const base = Math.max(Date.now(), s.premiumUntil)
           set({ premiumUntil: base + PREMIUM_DAYS * 86400000, iqUnlocked: true, precisionUnlocked: true })

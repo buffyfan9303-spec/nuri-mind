@@ -80,7 +80,7 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   check(`sitemap 띠 URL(${smZodiac.length})`, orphan.length === 0 && smZodiac.length === 12, orphan.join(', '))
 
   // 공개 라우트 화이트리스트가 sitemap 경로를 실제로 열어주는지
-  const pub = read('src/App.tsx').match(/PUBLIC_ROUTES = ([^\n]+)/)?.[1] ?? ''
+  const pub = read('src/App.tsx').match(/PUBLIC_ROUTES = ([^\r\n]+)/)?.[1] ?? ''
   check('공개 라우트에 zodiac·magazine 포함', pub.includes('zodiac') && pub.includes('magazine'), pub)
 
   // sitemap의 모든 주소가 가입 없이 열리는가 — 비공개 주소를 실으면 크롤러는 전부 같은 가입 화면을 받는다(얇은 중복 페이지)

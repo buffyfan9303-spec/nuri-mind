@@ -9,6 +9,7 @@ import { useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import Emoji from '../components/Emoji'
+import { PAYMENTS_ENABLED } from '../data/features'
 
 /**
  * ✨ 프리미엄 구독 — 월 5,900원(광고 제거·운세 무제한·전 정밀검사 해제).
@@ -39,7 +40,7 @@ export default function Premium() {
 
   const onSubscribe = () => {
     // 확인 시트가 내려가는 동안에도 버튼이 눌린다 — 두 번째 탭이 30일을 한 번 더 쌓던 자리
-    if (!confirm) return
+    if (!confirm || !PAYMENTS_ENABLED) return
     // TODO(PG): 카카오페이/카드 정기결제 성공 콜백에서 subscribe() 호출로 교체
     // ⚠️ 지금은 베타 즉시지급이라 이 이벤트는 '결제'가 아니라 '구독 의사'를 뜻한다.
     //    PG가 붙으면 결제 성공 콜백으로 옮겨야 매출과 일치한다.
@@ -111,14 +112,22 @@ export default function Premium() {
             {l({ ko: '구독 해지 (베타)', en: 'Cancel subscription (beta)', ja: '解約（ベータ）' })}
           </button>
         ) : (
-          <Button color="iq" onClick={() => setConfirm(true)}>
-            <Emoji e="✨" inline />{l({ ko: `프리미엄 시작 · 월 ₩${PREMIUM_KRW.toLocaleString()}`, en: `Start Premium · ₩${PREMIUM_KRW.toLocaleString()}/mo`, ja: `プレミアム開始・月₩${PREMIUM_KRW.toLocaleString()}` })}
+          <Button color="iq" disabled={!PAYMENTS_ENABLED} onClick={() => setConfirm(true)}>
+            {PAYMENTS_ENABLED ? (
+              <><Emoji e="✨" inline />{l({ ko: `프리미엄 시작 · 월 ₩${PREMIUM_KRW.toLocaleString()}`, en: `Start Premium · ₩${PREMIUM_KRW.toLocaleString()}/mo`, ja: `プレミアム開始・月₩${PREMIUM_KRW.toLocaleString()}` })}</>
+            ) : (
+              l({ ko: '결제 준비 중', en: 'Payments coming soon', ja: '決済準備中' })
+            )}
           </Button>
         )}
 
         {/* 베타 안내 */}
         <div className="rounded-2xl bg-[#FFF6E5] px-4 py-3 text-[12px] font-bold leading-relaxed text-[#9A6B00]">
-          <Emoji e="🧪" inline />{l({
+          <Emoji e="🧪" inline />{!PAYMENTS_ENABLED ? l({
+            ko: '결제는 준비 중이에요. 지금은 구독을 시작할 수 없어요. 이미 이용 중인 기간은 그대로 유지돼요.',
+            en: 'Payments are coming soon, so new subscriptions aren’t available yet. Any active period stays as is.',
+            ja: '決済は準備中のため、新規購読はまだできません。利用中の期間はそのまま維持されます。',
+          }) : l({
             ko: '정기결제(PG) 연동 전 베타예요. 지금은 구독하면 30일 바로 활성화되고, 정식 오픈 때 카카오페이·카드 정기결제로 바뀌어요.',
             en: 'Beta before recurring billing. Subscribing activates 30 days instantly; real KakaoPay/card billing comes at launch.',
             ja: '定期決済連携前のベータです。今は30日即時有効化され、正式公開時にカカオペイ・カード定期決済へ切り替わります。',

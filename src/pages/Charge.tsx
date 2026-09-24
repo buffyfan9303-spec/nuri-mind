@@ -14,6 +14,7 @@ import { useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import Emoji from '../components/Emoji'
+import { PAYMENTS_ENABLED } from '../data/features'
 
 /**
  * 💎 다이아 충전 — 유료 디지털 재화(1다이아=100원).
@@ -34,7 +35,8 @@ export default function Charge() {
   const [paying, setPaying] = useState(false)
 
   const onPay = () => {
-    if (!sel || paying) return
+    // 결제가 꺼져 있으면 다이아를 만들지 않는다(addDiamonds는 우편함 보상과 공용이라 여기서 막는다)
+    if (!PAYMENTS_ENABLED || !sel || paying) return
     setPaying(true)
     // TODO(PG): 카카오페이/카드/토스 결제 성공 콜백에서 addDiamonds 호출로 교체.
     //           그때 setPaying(false)는 콜백의 성공·실패 양쪽에서 반드시 불러야 한다.
@@ -130,10 +132,14 @@ export default function Charge() {
 
         {/* 베타 안내 */}
         <div className="rounded-2xl bg-[#FFF6E5] px-4 py-3 text-[12px] font-bold leading-relaxed text-[#9A6B00]">
-          <Emoji e="🧪" inline />{l({
+          <Emoji e="🧪" inline />{PAYMENTS_ENABLED ? l({
             ko: '결제(PG) 연동 전 베타예요. 지금은 충전하면 바로 지급되고, 정식 오픈 때 카카오페이·신용카드·토스 결제로 바뀌어요.',
             en: 'Beta before payment gateway. Diamonds are granted instantly now; real KakaoPay/card/Toss checkout comes at launch.',
             ja: '決済連携前のベータです。今は即時付与され、正式公開時にカカオペイ・カード・Toss決済へ切り替わります。',
+          }) : l({
+            ko: '결제는 준비 중이에요. 지금은 다이아를 살 수 없고, 우편함 보상으로 받을 수 있어요.',
+            en: 'Payments are coming soon. Diamonds can’t be bought yet, but you can get them from mailbox rewards.',
+            ja: '決済は準備中です。今はダイヤを購入できませんが、メール報酬で受け取れます。',
           })}
         </div>
       </div>
@@ -157,8 +163,10 @@ export default function Charge() {
             </div>
 
             <div className="mt-5">
-              <Button color="iq" busy={paying} onClick={onPay}>
-                {l({ ko: '충전하기 (베타 즉시 지급)', en: 'Charge (beta · instant)', ja: 'チャージ（ベータ即時）' })}
+              <Button color="iq" busy={paying} disabled={!PAYMENTS_ENABLED} onClick={onPay}>
+                {PAYMENTS_ENABLED
+                  ? l({ ko: '충전하기 (베타 즉시 지급)', en: 'Charge (beta · instant)', ja: 'チャージ（ベータ即時）' })
+                  : l({ ko: '결제 준비 중', en: 'Payments coming soon', ja: '決済準備中' })}
               </Button>
               <button onClick={close} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">
                 {l({ ko: '취소', en: 'Cancel', ja: 'キャンセル' })}
