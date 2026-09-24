@@ -23,7 +23,7 @@ export default {
   'onboard.kakaoReady': '카카오 연결 완료 · {nick}님 환영해요!',
   'onboard.otherAccount': '다른 계정으로 로그인',
   'onboard.note': '닉네임·캐릭터는 나중에 프로필에서 바꿀 수 있어요',
-  'onboard.agreePre': '',
+  'onboard.agreePre': '만 14세 이상이며, ',
   'onboard.terms': '이용약관',
   'onboard.privacy': '개인정보처리방침',
   'onboard.agreeSuf': '에 동의합니다',

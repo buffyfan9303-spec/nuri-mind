@@ -20,7 +20,8 @@ const NICK_PH = '닉네임을 입력해 주세요'
 const START = '시작하고 100P 받기'
 /** 동의 체크박스의 접근명 = t('onboard.terms') + ' ' + t('onboard.agreeReq'). 본문 '이용약관' 링크와 반드시 exact로 구분한다 */
 // 동의 칸은 role=checkbox — 이름에 약관 두 문서가 다 들어간다(스크린리더가 무엇에 동의하는지 알 수 있게)
-const AGREE = '이용약관 · 개인정보처리방침 (필수)'
+// 만 14세 이상 확인도 같은 칸에 들어 있다 — 체크 한 번이 '나이 확인 + 두 문서 동의'라는 걸 이름으로 드러낸다
+const AGREE = '만 14세 이상이며, 이용약관 · 개인정보처리방침에 동의합니다 (필수)'
 
 /** persist가 실제로 기록한 상태 — dev 뒷문이 없는 프로덕션에선 저장소가 유일한 관측점이다 */
 async function persisted(page: Page): Promise<Record<string, unknown>> {

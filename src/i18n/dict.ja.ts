@@ -19,7 +19,7 @@ export default {
   'onboard.kakaoReady': 'カカオ連携完了 · {nick}さん歓迎！',
   'onboard.otherAccount': '別のアカウントでログイン',
   'onboard.note': '名前·キャラは後でプロフィールで変更できます',
-  'onboard.agreePre': '',
+  'onboard.agreePre': '14歳以上であり、',
   'onboard.terms': '利用規約',
   'onboard.privacy': 'プライバシーポリシー',
   'onboard.agreeSuf': 'に同意します',

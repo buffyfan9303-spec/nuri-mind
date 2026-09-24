@@ -281,7 +281,7 @@ export default function Onboarding() {
               // 동의 체크는 토글 버튼이 아니라 체크박스로 읽혀야 한다. 이름도 약관+개인정보 둘 다
               role="checkbox"
               aria-checked={agreed}
-              aria-label={`${t('onboard.terms')} · ${t('onboard.privacy')} ${t('onboard.agreeReq')}`}
+              aria-label={`${t('onboard.agreePre')}${t('onboard.terms')} · ${t('onboard.privacy')}${t('onboard.agreeSuf')} ${t('onboard.agreeReq')}`}
               // 보이는 칸은 22px — before로 사방 11px 넓혀 44px 히트영역(레이아웃은 그대로)
               className="relative mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border-2 transition-colors before:absolute before:-inset-[11px] before:content-['']"
               style={{ borderColor: agreed ? '#4FA882' : 'rgb(var(--line))', background: agreed ? '#4FA882' : 'rgb(var(--surface))' }}

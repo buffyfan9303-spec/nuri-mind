@@ -19,7 +19,7 @@ export default {
   'onboard.kakaoReady': 'Kakao connected · welcome, {nick}!',
   'onboard.otherAccount': 'Sign in with another account',
   'onboard.note': 'You can change your name & character later in Profile',
-  'onboard.agreePre': 'I agree to the ',
+  'onboard.agreePre': 'I am 14 or older and agree to the ',
   'onboard.terms': 'Terms',
   'onboard.privacy': 'Privacy Policy',
   'onboard.agreeSuf': '',
