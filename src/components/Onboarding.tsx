@@ -17,6 +17,7 @@ import { moderateText } from '../lib/moderation'
 import { humanizeError } from '../lib/dbError'
 import LegalSheet from './LegalSheet'
 import BizInfo from './BizInfo'
+import Emoji from './Emoji'
 
 /**
  * 온보딩 입력 초안 — 이 화면은 두 정상 동선에서 통째로 언마운트된다.
@@ -171,7 +172,7 @@ export default function Onboarding() {
           <div className="mt-7">
             {kakaoNick ? (
               <div className="rounded-2xl bg-[#FEE500]/90 py-3.5 text-center text-[14px] font-extrabold text-[#3A1D1D]">
-                💬 {t('onboard.kakaoReady', { nick: kakaoNick })}
+                <Emoji e="💬" inline />{t('onboard.kakaoReady', { nick: kakaoNick })}
                 {/* 다른 계정으로 붙었을 때 빠져나갈 길 — 온보딩 게이트 탓에 Profile에 못 가므로 여기 필요 */}
                 <button
                   onClick={async () => {
@@ -248,10 +249,11 @@ export default function Onboarding() {
                     setPicked(sel ? null : key)
                     sfx.tap()
                   }}
-                  className="flex aspect-square items-center justify-center rounded-2xl border-2 text-[28px]"
+                  className="flex aspect-square items-center justify-center rounded-2xl border-2"
                   style={{ borderColor: sel ? '#4FA882' : 'rgb(var(--line))', background: sel ? '#4FA88216' : 'rgb(var(--surface))' }}
                 >
-                  {p.emoji}
+                  {/* 글자가 없는 버튼 — 이모지가 곧 이름이라 대체 텍스트로 남긴다(버튼 이름 '🐧') */}
+                  <Emoji e={p.emoji} size={32} label={p.emoji} />
                 </motion.button>
               )
             })}
@@ -264,7 +266,7 @@ export default function Onboarding() {
         {/* 가입 선물 + 시작 */}
         <div className="mt-8">
           <div className="mb-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-50 py-2.5 text-[14px] font-extrabold text-mind-700">
-            🎁 {t('onboard.bonus')}
+            <Emoji e="🎁" inline />{t('onboard.bonus')}
           </div>
           {/* 필수 약관 동의 체크 (실서비스/스토어 심사 대비) */}
           <div className="mb-3 flex items-start gap-2.5 rounded-2xl border-2 border-line bg-surface px-3.5 py-3">

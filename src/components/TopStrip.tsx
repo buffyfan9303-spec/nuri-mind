@@ -6,6 +6,7 @@ import { useL } from '../i18n/useT'
 import { haptic } from '../lib/haptic'
 import { canHover } from '../lib/device'
 import { SURVEYS_ENABLED } from '../data/features'
+import Emoji from './Emoji'
 
 /**
  * 상단 띠 배너 — 화면 맨 위 한 줄. 누르면 지금 가장 보상이 큰 설문으로 바로 간다.
@@ -48,9 +49,7 @@ function TopStripPremium() {
         transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 3.6, ease: 'easeInOut' }}
       />
       <span className="relative mx-auto flex max-w-md items-center gap-2 px-5">
-        <span className="shrink-0 text-[14px]" aria-hidden="true">
-          ✨
-        </span>
+        <Emoji e="✨" size={16} />
         {/* 380px 미만은 11px — 굵은 글꼴(800)에선 12px 문구가 360px 폭에서 가격 앞에서 잘렸다. 줄높이 20px 고정이라 띠 높이는 같다 */}
         <span className="min-w-0 flex-1 truncate text-left text-[11px] font-extrabold leading-5 min-[380px]:text-[12px]">
           {l({
@@ -73,9 +72,7 @@ export function TopStripSoon() {
   return (
     <div role="note" className="relative block w-full overflow-hidden bg-gradient-to-r from-mind-600 via-mind-500 to-sky2-500 py-2 text-white">
       <span className="relative mx-auto flex max-w-md items-center gap-2 px-5">
-        <span className="shrink-0 text-[14px]" aria-hidden="true">
-          🛠️
-        </span>
+        <Emoji e="🛠️" size={16} />
         <span className="min-w-0 flex-1 truncate text-left text-[11px] font-extrabold leading-5 min-[380px]:text-[12px]">
           {l({ ko: '리워드 설문은 준비 중이에요', en: 'Reward surveys are coming soon', ja: 'リワードアンケートは準備中です' })}
         </span>
@@ -116,9 +113,7 @@ function TopStripLive() {
         transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 3.6, ease: 'easeInOut' }}
       />
       <span className="relative mx-auto flex max-w-md items-center gap-2 px-5">
-        <span className="shrink-0 text-[14px]" aria-hidden="true">
-          💰
-        </span>
+        <Emoji e="💰" size={16} />
         <span className="min-w-0 flex-1 truncate text-left text-[11px] font-extrabold leading-5 min-[380px]:text-[12px]">
           {best
             ? l({

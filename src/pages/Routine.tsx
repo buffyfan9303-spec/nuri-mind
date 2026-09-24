@@ -8,6 +8,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 export default function Routine() {
   const { id } = useParams<{ id: string }>()
@@ -44,7 +45,7 @@ export default function Routine() {
           className="rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-5 text-white shadow-pop"
         >
           <div className="flex items-center gap-3">
-            <span className="text-[28px]">{routine.emoji}</span>
+            <Emoji e={routine.emoji} size={28} />
             <div className="min-w-0 flex-1">
               <h1 className="text-[17px] font-extrabold leading-tight">{l(routine.title)}</h1>
               <p className="mt-0.5 text-[13px] font-bold text-white/85">{t('routine.sub')}</p>
@@ -61,7 +62,7 @@ export default function Routine() {
           </div>
           {complete && (
             <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={SPRING.flick} className="mt-3 text-center text-[14px] font-extrabold">
-              🎉 {t('routine.done')}
+              <Emoji e="🎉" inline />{t('routine.done')}
             </motion.p>
           )}
         </motion.div>
@@ -96,7 +97,7 @@ export default function Routine() {
           })}
         </div>
 
-        <p className="mt-6 px-2 text-center text-[12px] font-bold leading-relaxed text-ink-faint">{t('routine.hint')}</p>
+        <p className="mt-6 px-2 text-center text-[12px] font-bold leading-relaxed text-ink-faint"><EmojiText text={t('routine.hint')} /></p>
       </main>
     </div>
   )

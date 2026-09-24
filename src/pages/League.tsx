@@ -7,6 +7,7 @@ import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, nextResetMs, weekKeyOf } f
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 export default function League() {
   const t = useT()
@@ -107,9 +108,9 @@ export default function League() {
                 key={i}
                 animate={i === leagueTier ? { scale: [1, 1.25, 1.12], y: [0, -4, 0] } : { scale: 0.95 }}
                 transition={{ duration: 0.5 }}
-                className={`text-3xl ${i === leagueTier ? '' : 'opacity-40 grayscale'}`}
+                className={`flex ${i === leagueTier ? '' : 'opacity-40 grayscale'}`}
               >
-                {tr.emoji}
+                <Emoji e={tr.emoji} size={30} />
               </motion.span>
             ))}
           </div>
@@ -117,10 +118,10 @@ export default function League() {
           <p className="mt-1 text-[13px] font-bold leading-relaxed text-white/90">{t('league.sub')}</p>
           <div className="mt-3 flex items-center justify-center gap-2">
             <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
-              {t('league.myWeek')} 🪙 {my.toLocaleString()}P
+              {t('league.myWeek')} <Emoji e="🪙" inline />{my.toLocaleString()}P
             </span>
             <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
-              ⏳ {t('league.reset', { d: dLeft, h: hLeft })}
+              <Emoji e="⏳" inline />{t('league.reset', { d: dLeft, h: hLeft })}
             </span>
           </div>
         </motion.div>
@@ -134,12 +135,12 @@ export default function League() {
               <div key={r.me ? 'me' : r.name}>
                 {i === 0 && inPromo && (
                   <p className="px-3 pb-1.5 pt-1 text-[12px] font-extrabold tracking-wide text-mind-600">
-                    {t('league.promo')}
+                    <EmojiText text={t('league.promo')} />
                   </p>
                 )}
                 {i === rows.length - 3 && inDemo && (
                   <p className="px-3 pb-1.5 pt-3 text-[12px] font-extrabold tracking-wide text-red-400">
-                    {t('league.demo')}
+                    <EmojiText text={t('league.demo')} />
                   </p>
                 )}
                 <motion.div
@@ -157,7 +158,7 @@ export default function League() {
                   >
                     {i + 1}
                   </span>
-                  <span className="text-2xl">{r.emoji}</span>
+                  <Emoji e={r.emoji} size={24} />
                   <span className="min-w-0 flex-1 truncate text-[15px] font-extrabold">
                     {r.name}
                     {r.me && <Chip tone="mind"> {t('league.me')}</Chip>}
@@ -170,7 +171,7 @@ export default function League() {
         </Card>
 
         <p className="mt-3 text-center text-[12px] font-bold leading-relaxed text-ink-faint">
-          🏆 {t('league.sub')} · {l({ ko: `현재 ${rank}위`, en: `Now #${rank}`, ja: `現在${rank}位` })}
+          <Emoji e="🏆" inline />{t('league.sub')} · {l({ ko: `현재 ${rank}위`, en: `Now #${rank}`, ja: `現在${rank}位` })}
         </p>
       </main>
     </div>

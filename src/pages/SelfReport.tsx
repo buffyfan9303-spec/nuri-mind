@@ -8,6 +8,7 @@ import { PERSONAS } from '../i18n/animalTranslations'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import type { L } from '../data/types'
+import Emoji from '../components/Emoji'
 
 /** 자기 3부작 — 자존감(가치)·완벽주의(기준)·자기효능감(능력 믿음) */
 const TRIO = ['selfesteem', 'perfect', 'efficacy'] as const
@@ -102,7 +103,7 @@ export default function SelfReport() {
       <div className="min-h-dvh pb-36">
         <TopBar back="/" title={l({ ko: '통합 자기 리포트', en: 'Self report', ja: '統合セルフレポート' })} />
         <main className="mx-auto max-w-md px-5 pt-8 text-center">
-          <div className="text-6xl">🪞</div>
+          <div className="leading-none"><Emoji e="🪞" size={60} className="align-top" /></div>
           <h1 className="mt-4 text-[20px] font-extrabold tracking-tight">{l({ ko: '자기 3부작을 완성하면 열려요', en: 'Finish the self-trio to unlock', ja: 'セルフ3部作で解放' })}</h1>
           <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
             {l({ ko: '자존감·완벽주의·자기효능감을 모두 마치면, 셋을 종합한 나만의 통합 리포트를 드려요.', en: 'Finish self-esteem, perfectionism, and self-efficacy to get a combined report.', ja: '自尊心・完璧主義・自己効力感を全て終えると統合レポートが出ます。' })}
@@ -116,7 +117,7 @@ export default function SelfReport() {
                   onClick={() => !done && nav(`/test/${id}`)}
                   className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3.5 ${done ? 'border-mind-200 bg-mind-50 dark:border-mind-600/50 dark:bg-mind-500/10' : 'border-line bg-surface'}`}
                 >
-                  <span className="text-[20px]">{done ? '✅' : '⬜'}</span>
+                  <Emoji e={done ? '✅' : '⬜'} size={20} />
                   <span className="flex-1 break-keep text-[14px] font-extrabold">{t(`test.${id}.name`)}</span>
                   {!done && <span className="text-[13px] font-extrabold text-mind-600">{l({ ko: '하기 ›', en: 'Go ›', ja: 'やる ›' })}</span>}
                 </button>
@@ -156,7 +157,7 @@ export default function SelfReport() {
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ ...SPRING.sheet, delay: 0.08 }}>
           <Card className="mt-4 !bg-gradient-to-br !from-[#6E7BF2] !to-[#A88BF2] !p-6 text-center text-white">
             <p className="text-[12px] font-extrabold text-white/80">{l({ ko: '나의 자기 인식 유형', en: 'Your self-profile', ja: 'あなたの自己認識タイプ' })}</p>
-            <p className="mt-2 text-[28px] leading-none">{arch.emoji}</p>
+            <p className="mt-2 leading-none"><Emoji e={arch.emoji} size={28} className="align-top" /></p>
             <h1 className="mt-2 text-[20px] font-extrabold tracking-tight">{l(arch.name)}</h1>
             <p className="mt-3 break-keep text-[14px] font-bold leading-relaxed text-white/95">{l(arch.desc)}</p>
           </Card>
@@ -164,7 +165,7 @@ export default function SelfReport() {
 
         {/* 처방 */}
         <Card className="mt-3 !p-5">
-          <p className="text-[14px] font-extrabold">💡 {l({ ko: '나를 위한 한 걸음', en: 'A step for you', ja: 'あなたへの一歩' })}</p>
+          <p className="text-[14px] font-extrabold"><Emoji e="💡" inline />{l({ ko: '나를 위한 한 걸음', en: 'A step for you', ja: 'あなたへの一歩' })}</p>
           <div className="mt-3 space-y-2.5">
             {arch.tips.map((tip, i) => (
               <div key={i} className="flex items-start gap-2.5">

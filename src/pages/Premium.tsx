@@ -8,6 +8,7 @@ import { track } from '../lib/analytics'
 import { useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 /**
  * ✨ 프리미엄 구독 — 월 5,900원(광고 제거·운세 무제한·전 정밀검사 해제).
@@ -61,7 +62,7 @@ export default function Premium() {
             active ? '!bg-gradient-to-br !from-[#F2B01E] !to-[#FF7E5F]' : '!bg-gradient-to-br !from-[#6E7BF2] !to-[#A88BF2]'
           }`}
         >
-          <p className="text-[28px] leading-none">✨</p>
+          <p className="leading-none"><Emoji e="✨" size={28} className="align-top" /></p>
           {active ? (
             <>
               <h2 className="mt-2 text-[20px] font-extrabold">{l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })}</h2>
@@ -87,7 +88,7 @@ export default function Premium() {
           <div className="mt-3 space-y-3">
             {BENEFITS.map((b) => (
               <div key={b.e} className="flex items-start gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EEF0FE] text-[17px]">{b.e}</span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EEF0FE]"><Emoji e={b.e} size={17} /></span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[14px] font-extrabold">{b.t}</p>
                   <p className="mt-0.5 break-keep text-[12px] font-bold text-ink-faint">{b.d}</p>
@@ -111,13 +112,13 @@ export default function Premium() {
           </button>
         ) : (
           <Button color="iq" onClick={() => setConfirm(true)}>
-            ✨ {l({ ko: `프리미엄 시작 · 월 ₩${PREMIUM_KRW.toLocaleString()}`, en: `Start Premium · ₩${PREMIUM_KRW.toLocaleString()}/mo`, ja: `プレミアム開始・月₩${PREMIUM_KRW.toLocaleString()}` })}
+            <Emoji e="✨" inline />{l({ ko: `프리미엄 시작 · 월 ₩${PREMIUM_KRW.toLocaleString()}`, en: `Start Premium · ₩${PREMIUM_KRW.toLocaleString()}/mo`, ja: `プレミアム開始・月₩${PREMIUM_KRW.toLocaleString()}` })}
           </Button>
         )}
 
         {/* 베타 안내 */}
         <div className="rounded-2xl bg-[#FFF6E5] px-4 py-3 text-[12px] font-bold leading-relaxed text-[#9A6B00]">
-          🧪 {l({
+          <Emoji e="🧪" inline />{l({
             ko: '정기결제(PG) 연동 전 베타예요. 지금은 구독하면 30일 바로 활성화되고, 정식 오픈 때 카카오페이·카드 정기결제로 바뀌어요.',
             en: 'Beta before recurring billing. Subscribing activates 30 days instantly; real KakaoPay/card billing comes at launch.',
             ja: '定期決済連携前のベータです。今は30日即時有効化され、正式公開時にカカオペイ・カード定期決済へ切り替わります。',
@@ -128,7 +129,7 @@ export default function Premium() {
       {/* 구독 확인 모달 */}
       <Modal open={confirm} onClose={() => setConfirm(false)}>
         <div className="text-center">
-          <p className="text-[28px] leading-none">✨</p>
+          <p className="leading-none"><Emoji e="✨" size={28} className="align-top" /></p>
           <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '프리미엄 구독', en: 'Subscribe Premium', ja: 'プレミアム購読' })}</h3>
           <p className="mt-1 text-[14px] font-bold text-ink-faint">
             ₩{PREMIUM_KRW.toLocaleString()} / {l({ ko: '월', en: 'month', ja: '月' })} · {PREMIUM_DAYS}
@@ -158,8 +159,8 @@ export default function Premium() {
       {/* 완료 모달 */}
       <Modal open={done} onClose={() => setDone(false)}>
         <div className="text-center">
-          <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="text-[28px] leading-none">
-            🎉
+          <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="leading-none">
+            <Emoji e="🎉" size={28} className="align-top" />
           </motion.p>
           <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '프리미엄 활성화!', en: 'Premium activated!', ja: 'プレミアム有効化！' })}</h3>
           <p className="mt-1 break-keep text-[14px] font-bold text-mind-600">

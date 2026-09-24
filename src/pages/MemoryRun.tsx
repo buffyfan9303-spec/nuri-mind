@@ -8,6 +8,7 @@ import { scoreMemory, type SpanTrial } from '../lib/scoring'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 /** 숫자 폭 사다리 — 정방향(즉시 기억) / 역방향(작업기억) */
 const FWD_LENS = [3, 4, 5, 6, 7, 8]
@@ -182,7 +183,7 @@ export default function MemoryRun() {
           className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-extrabold text-white"
           style={{ background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
         >
-          {isBackward ? '🔄' : '➡️'} {blockLabel}
+          <Emoji e={isBackward ? '🔄' : '➡️'} inline />{blockLabel}
         </span>
       </div>
 
@@ -202,9 +203,9 @@ export default function MemoryRun() {
               <motion.div
                 animate={{ scale: [1, 1.12, 1] }}
                 transition={{ repeat: Infinity, duration: 1 }}
-                className="text-[28px] leading-none"
+                className="leading-none"
               >
-                {isBackward ? '🔄' : '👀'}
+                <Emoji e={isBackward ? '🔄' : '👀'} size={28} className="align-top" />
               </motion.div>
               <p className="mt-5 text-[20px] font-extrabold">
                 {l({ ko: `${seq.length}자리 숫자를 기억하세요`, en: `Memorize ${seq.length} digits`, ja: `${seq.length}桁の数字を覚えて` })}
@@ -295,7 +296,7 @@ export default function MemoryRun() {
                     animate={{ scale: 1, opacity: 1 }}
                     className="text-center"
                   >
-                    <div className="text-[28px] leading-none">{verdict ? '✅' : '❌'}</div>
+                    <div className="leading-none"><Emoji e={verdict ? '✅' : '❌'} size={28} className="align-top" /></div>
                     <p className="mt-2 text-[16px] font-extrabold" style={{ color: verdict ? '#10B981' : '#EF4444' }}>
                       {verdict
                         ? l({ ko: '정확해요!', en: 'Correct!', ja: '正解！' })
@@ -349,7 +350,7 @@ export default function MemoryRun() {
       {/* 중단 확인 */}
       <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
         <div className="text-center">
-          <div className="text-4xl">🥺</div>
+          <div className="leading-none"><Emoji e="🥺" size={36} className="align-top" /></div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
           <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}

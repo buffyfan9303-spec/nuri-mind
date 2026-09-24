@@ -11,6 +11,7 @@ import { TESTS } from '../data/tests'
 import { TEST_NAME_KEY, TEST_SHORT_KEY } from '../data/terms'
 import { PERSONA_VISUAL } from '../i18n/personaVisual'
 import type { L, TestId, TestResult } from '../data/types'
+import Emoji from '../components/Emoji'
 
 /**
  * 나에 관하여 — 흩어져 있던 '내 결과'(검사별 결과 화면), '머리 지도'(종합 인지 프로필),
@@ -167,7 +168,7 @@ export default function AboutMe() {
               const related = a.test && latest.has(a.test)
               return (
                 <Card key={a.id} onClick={() => nav(`/magazine/${a.id}`)} className="flex items-start gap-3 !p-3.5">
-                  <span className="shrink-0 text-[24px] leading-none" aria-hidden="true">{a.emoji}</span>
+                  <Emoji e={a.emoji} size={24} className="shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="break-keep text-[14px] font-extrabold leading-snug">{l(a.title)}</p>
                     <p className="mt-0.5 line-clamp-2 break-keep text-[12px] font-bold leading-relaxed text-ink-sub">{l(a.summary)}</p>

@@ -8,6 +8,7 @@ import { lifetimeOf } from '../data/rank'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import Emoji, { EmojiText } from './Emoji'
 
 /** 업적/뱃지 — 기존 활동(검사·출석·공유·도감 등)에 자동 평가되는 수집형 보상 */
 export default function Badges() {
@@ -67,7 +68,7 @@ export default function Badges() {
                   background: done ? '#4FA88214' : 'rgb(var(--surface-2))',
                 }}
               >
-                <span className={`text-[24px] leading-none ${done ? '' : 'opacity-25 grayscale'}`}>{a.emoji}</span>
+                <Emoji e={a.emoji} size={26} className={done ? '' : 'opacity-25 grayscale'} />
                 <span className={`max-w-full truncate px-1 text-[11px] font-extrabold ${done ? 'text-ink' : 'text-ink-faint'}`}>
                   {done ? l(a.title) : '???'}
                 </span>
@@ -83,9 +84,9 @@ export default function Badges() {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1, rotate: [0, -8, 6, 0] }}
-              className={`text-7xl ${selDone ? '' : 'opacity-30 grayscale'}`}
+              className={`flex justify-center ${selDone ? '' : 'opacity-30 grayscale'}`}
             >
-              {sel.emoji}
+              <Emoji e={sel.emoji} size={72} />
             </motion.div>
             <h3 className="mt-3 text-[20px] font-extrabold tracking-tight">{l(sel.title)}</h3>
             <p className="mt-1.5 text-[14px] font-bold leading-relaxed text-ink-sub">{l(sel.desc)}</p>
@@ -94,7 +95,7 @@ export default function Badges() {
                 selDone ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-faint'
               }`}
             >
-              {selDone ? `✅ ${t('ach.done')}` : `🔒 ${t('ach.locked')}`}
+              <EmojiText text={selDone ? `✅ ${t('ach.done')}` : `🔒 ${t('ach.locked')}`} />
             </p>
           </div>
         )}

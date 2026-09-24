@@ -7,6 +7,7 @@ import { Card, TopBar } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
+import Emoji from '../components/Emoji'
 
 const NEED = 3 // 종합 프로필 해금에 필요한 검사 수
 
@@ -46,14 +47,14 @@ export default function Insight() {
       <div className="min-h-dvh pb-36">
         <TopBar back="/profile" title={t('insight.title')} />
         <main className="mx-auto max-w-md px-5 pt-10 text-center">
-          <div className="text-6xl">🧬</div>
+          <div className="leading-none"><Emoji e="🧬" size={60} className="align-top" /></div>
           <h1 className="mt-4 text-[20px] font-extrabold tracking-tight">{t('insight.locked')}</h1>
           <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
             {t('insight.lockedSub', { n: NEED - count })}
           </p>
           <div className="mx-auto mt-6 max-w-[240px]">
             <Button color="mind" onClick={() => nav('/')}>
-              🧠 {t('insight.takeMore')}
+              <Emoji e="🧠" inline />{t('insight.takeMore')}
             </Button>
           </div>
         </main>
@@ -72,7 +73,7 @@ export default function Insight() {
           transition={SPRING.ui}
           className="rounded-3xl bg-gradient-to-br from-[#6E7BF2] to-[#9AA6FF] p-6 text-center text-white shadow-pop"
         >
-          <div className="text-[28px]">🧬</div>
+          <div className="leading-none"><Emoji e="🧬" size={28} className="align-top" /></div>
           <h1 className="mt-2 text-[20px] font-extrabold tracking-tight">{t('insight.headline', { n: count })}</h1>
           <div className="mt-3 flex flex-wrap justify-center gap-1.5">
             {personas.map((k) => (

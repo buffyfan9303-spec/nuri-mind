@@ -8,6 +8,7 @@ import type { TestId } from '../data/types'
 import { useT, useL } from '../i18n/useT'
 import { useStore, IQ_DIA_COST } from '../store/useStore'
 import { usePageMeta } from '../hooks/usePageMeta'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 export default function TestIntro() {
   const { id } = useParams<{ id: TestId }>()
@@ -36,7 +37,7 @@ export default function TestIntro() {
       <main className="mx-auto max-w-md px-5">
         {/* 마스코트 인사 — 검사 시작 전 긴장을 낮추는 톤(결과 스포 방지용 중립 아이콘) */}
         <div className="mt-3 flex items-start gap-2.5 rounded-3xl bg-surface2 px-4 py-3">
-          <span className="text-[20px] leading-none">🧠</span>
+          <Emoji e="🧠" size={20} />
           <p className="min-w-0 flex-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
             {/* 정밀검사(IQ·인지과제)는 정답이 있다 — '정답은 없어요'를 띄우면 안내가 검사와 정반대가 된다 */}
             {tm.precision
@@ -62,9 +63,8 @@ export default function TestIntro() {
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
-            className="text-6xl"
           >
-            {tm.emoji}
+            <Emoji e={tm.emoji} size={64} className="mx-auto block" />
           </motion.div>
           <h1 className="mt-3 text-[28px] font-extrabold leading-tight tracking-tight text-white">{t(`test.${id}.name`)}</h1>
           <p className="mt-2 text-[15px] font-bold leading-relaxed text-white/95">{t(`test.${id}.desc`)}</p>
@@ -73,7 +73,7 @@ export default function TestIntro() {
               {tm.count} {t('intro.questions')}
             </span>
             <span className="flex h-8 items-center rounded-full bg-white/25 px-3 leading-none tabular-nums text-white">
-              ⏱ {tm.minutes}
+              <Emoji e="⏱" inline />{tm.minutes}
               {t('common.min')}
             </span>
             {id === 'iq' && <span className="flex h-8 items-center rounded-full bg-white/25 px-3 leading-none tabular-nums text-white">{t('intro.timed')}</span>}
@@ -125,7 +125,7 @@ export default function TestIntro() {
                 onClick={() => nav('/test/iq/run?mode=fast')}
                 className="flex w-full items-center gap-3 rounded-3xl border-2 border-line bg-surface p-4 text-left shadow-card"
               >
-                <span className="text-[28px]">⚡</span>
+                <Emoji e="⚡" size={28} />
                 <div className="min-w-0 flex-1">
                   <h3 className="text-[15px] font-extrabold">{l({ ko: '빠른 IQ 테스트', en: 'Quick IQ test', ja: 'クイックIQ' })}</h3>
                   <p className="mt-0.5 break-keep text-[12px] font-bold text-ink-sub">{l({ ko: '10문항 · 약 5분 · 무료 · 결과 바로 공개', en: '10 Qs · ~5 min · free · instant result', ja: '10問・約5分・無料・即結果' })}</p>
@@ -139,15 +139,15 @@ export default function TestIntro() {
                 className="flex w-full items-center gap-3 rounded-3xl p-4 text-left text-white shadow-pop"
                 style={{ background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
               >
-                <span className="text-[28px]">🔬</span>
+                <Emoji e="🔬" size={28} />
                 <div className="min-w-0 flex-1">
                   <h3 className="text-[15px] font-extrabold">{l({ ko: '정밀 IQ 검사', en: 'Precision IQ test', ja: '精密IQ検査' })}</h3>
                   <p className="mt-0.5 break-keep text-[12px] font-bold text-white/90">
-                    {l({
+                    <EmojiText text={l({
                       ko: `20문항 · 약 12분 · 정밀 점수·인지영역 분석${iqUnlocked ? ' · 해제됨 ✅' : ` · 상세결과 💎${IQ_DIA_COST}`}`,
                       en: `20 Qs · ~12 min · precise score & breakdown${iqUnlocked ? ' · unlocked ✅' : ` · detail 💎${IQ_DIA_COST}`}`,
                       ja: `20問・約12分・精密スコア&分析${iqUnlocked ? '・解除済 ✅' : `・詳細💎${IQ_DIA_COST}`}`,
-                    })}
+                    })} />
                   </p>
                 </div>
                 <span className="shrink-0 text-lg text-white/80">›</span>
@@ -156,7 +156,7 @@ export default function TestIntro() {
             {/* 난이도별 제한시간 안내 — 검사 설계의 근거를 공개해 신뢰도↑ */}
             <div className="mt-3 rounded-2xl bg-surface2 px-4 py-3">
               <p className="break-keep text-center text-[12px] font-bold leading-relaxed text-ink-sub">
-                ⏱ {l({
+                <Emoji e="⏱" inline />{l({
                   ko: '제한시간은 문항 난이도에 따라 45·60·75초로 달라져요. 어려운 문항일수록 시간이 더 걸린다는 연구에 맞춰, 시간 압박이 아닌 실제 추론 능력을 재도록 설계했어요.',
                   en: 'Time limits scale with difficulty: 45·60·75s per item. Following research that harder items simply take longer, the test measures reasoning — not time pressure.',
                   ja: '制限時間は難易度に応じて45・60・75秒。難しい問題ほど時間がかかるという研究に沿い、時間圧でなく推論力を測る設計です。',
@@ -164,7 +164,7 @@ export default function TestIntro() {
               </p>
             </div>
             <p className="mt-2.5 px-2 text-center text-[11px] font-bold leading-relaxed text-ink-faint">
-              🔬 {l({ ko: '두뇌 능력 측정은 계속 새로 나와요.', en: 'More precision tests are coming soon.', ja: '精密検査シリーズは今後追加予定です。' })}
+              <Emoji e="🔬" inline />{l({ ko: '두뇌 능력 측정은 계속 새로 나와요.', en: 'More precision tests are coming soon.', ja: '精密検査シリーズは今後追加予定です。' })}
             </p>
           </>
         ) : id === 'memory' ? (
@@ -211,11 +211,11 @@ export default function TestIntro() {
             <Card className="mt-4">
               <h2 className="flex items-center gap-2 text-[17px] font-extrabold leading-tight">{l({ ko: '어떤 검사인가요?', en: 'What is this speed test?', ja: '精密処理速度検査とは？' })}</h2>
               <p className="mt-2 break-keep text-[14px] font-bold leading-[1.8] text-ink-sub">
-                {l({
+                <EmojiText text={l({
                   ko: '설문이 아니라 직접 손으로 반응하는 문제예요. 위에 있는 기호-숫자 표를 보고, 나오는 기호에 맞는 숫자를 최대한 빠르고 정확하게 눌러 40개를 풀어요. 보고 판단해서 손이 나가기까지 얼마나 빠른지 재요. 100을 평균으로 한 점수로 알려드리고, 1~2분이면 끝나요.',
                   en: 'Not a survey — a task where your hands react. Read the symbol↔digit key shown above and press the matching digit for each symbol as fast and accurately as you can, over 40 items. Modeled on the WAIS Digit-Symbol Coding, it measures processing speed as a Speed Quotient (SQ) centered on 100. About 1–2 minutes.',
                   ja: 'アンケートではなく、手が反応する認知課題です。上の記号↔数字対応表を見て、出てくる記号に合う数字を最速・正確に押し、40問を解きます。ウェクスラー知能検査の符号方式で処理速度を測り、100を基準にした処理速度指数(SQ)でお伝えします。約1〜2分。',
-                })}
+                })} />
               </p>
             </Card>
             <div className="mt-5">

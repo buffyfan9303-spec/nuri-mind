@@ -78,7 +78,8 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     await expect(page).toHaveURL('/')
 
     // 홈 자산 카드의 프로필 버튼. 여기 '누리'(스토어 기본 닉)가 뜨면 completeOnboarding이 입력을 버린 것
-    const profile = page.getByRole('button').filter({ hasText: '님 👋' })
+    // 👋는 SVG 아이콘(대체 텍스트 '👋') — 글자가 아니라 접근성 이름으로 찾는다
+    const profile = page.getByRole('button', { name: /님 👋/ })
     await expect(profile).toContainText(NICK)
 
     const st = await persisted(page)
@@ -209,7 +210,8 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
     expect(st.onboarded).toBe(false)
 
     // 저장소를 한 번 왕복하고 온 뒤라 카운트업 effect까지 끝났다 — 이제야 화면 값이 확정이다.
-    // 로케이터는 '잔액이 얼마든' 잡고(🪙로 시작하는 Pill) 값은 단언으로 못박는다.
-    await expect(page.getByText(/^🪙\s/)).toHaveText(/^🪙\s*100$/)
+    // 로케이터는 '잔액이 얼마든' 잡고(지갑 Pill) 값은 단언으로 못박는다.
+    // 🪙 아이콘은 SVG라 글자가 아니다 — 지갑 Pill을 data-testid로 잡고 값만 정확히 못 박는다
+    await expect(page.getByTestId('points-pill')).toHaveText(/^\s*100$/)
   })
 })

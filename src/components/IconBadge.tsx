@@ -1,12 +1,14 @@
 import { type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
 import { pastelOf } from '../lib/chipColor'
+import Emoji from './Emoji'
 
 /**
  * 입체 아이콘 타일 — 이모지를 글로시(상단 광택) 라운드 타일에 올려 입체감을 준다.
  *   tone='solid' : 흰 배경 카드용(브랜드색 파스텔 타일)
  *   tone='frost' : 컬러/그라데이션 카드용(반투명 흰 유리 타일)
  *   wiggle=true  : 이모지가 살짝 흔들리는 생기 애니메이션
+ *   아이콘은 <Emoji>(Fluent Flat SVG) — 기기마다 모양이 다른 글꼴 이모지 대신 어디서나 같은 그림
  */
 export default function IconBadge({
   emoji,
@@ -35,7 +37,8 @@ export default function IconBadge({
           background: c.badgeBg,
           boxShadow: `inset 0 2px 1px rgba(255,255,255,0.85), 0 3px 0 0 ${c.badgeEdge}, 0 5px 9px -3px rgba(31,41,48,0.2)`,
         }
-  const fontSize = Math.round(size * 0.54)
+  // 그림 크기는 타일의 60% — 글꼴 이모지(54%)는 글자 여백이 있어 실제 그림은 더 작았다. SVG는 여백 없이 꽉 차서 비슷하게 보이는 값
+  const icon = Math.round(size * 0.6)
   return (
     <span
       className="relative inline-flex shrink-0 items-center justify-center overflow-hidden"
@@ -50,17 +53,14 @@ export default function IconBadge({
       {wiggle ? (
         <motion.span
           aria-hidden="true"
-          className="relative z-[1] leading-none"
-          style={{ fontSize }}
+          className="relative z-[1] flex leading-none"
           animate={{ rotate: [0, -9, 9, -5, 5, 0] }}
           transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut', repeatDelay: 2 }}
         >
-          {emoji}
+          <Emoji e={emoji} size={icon} />
         </motion.span>
       ) : (
-        <span aria-hidden="true" className="relative z-[1] leading-none" style={{ fontSize }}>
-          {emoji}
-        </span>
+        <Emoji e={emoji} size={icon} className="relative z-[1]" />
       )}
     </span>
   )

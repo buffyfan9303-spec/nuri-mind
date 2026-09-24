@@ -9,6 +9,7 @@ import { mulberry32 } from '../lib/random'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 const TOTAL = 32
 const FB_MS = 320
@@ -135,7 +136,7 @@ export default function SwitchRun() {
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-extrabold text-white"
             style={{ background: cueColor }}
           >
-            {it.task === 'size' ? `🔢 ${l({ ko: '5보다 클까?', en: 'Size — vs 5?', ja: '大きさ — 5より？' })}` : `⚖️ ${l({ ko: '홀짝?', en: 'Odd / Even?', ja: '偶奇？' })}`}
+            <EmojiText text={it.task === 'size' ? `🔢 ${l({ ko: '5보다 클까?', en: 'Size — vs 5?', ja: '大きさ — 5より？' })}` : `⚖️ ${l({ ko: '홀짝?', en: 'Odd / Even?', ja: '偶奇？' })}`} />
           </motion.span>
         </div>
 
@@ -148,8 +149,8 @@ export default function SwitchRun() {
                   {it.num}
                 </motion.span>
               ) : (
-                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-[28px] leading-none">
-                  {verdict ? '✅' : '❌'}
+                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="leading-none">
+                  <Emoji e={verdict ? '✅' : '❌'} size={28} className="align-top" />
                 </motion.span>
               )}
             </AnimatePresence>
@@ -180,7 +181,7 @@ export default function SwitchRun() {
 
       <Modal open={quitOpen} onClose={closeQuit}>
         <div className="text-center">
-          <div className="text-4xl">🥺</div>
+          <div className="leading-none"><Emoji e="🥺" size={36} className="align-top" /></div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
           <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}

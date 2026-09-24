@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useT } from '../i18n/useT'
 import { haptic } from '../lib/haptic'
 import { prefetchRoute } from '../lib/prefetch'
+import Emoji from './Emoji'
 
 const TABS = [
   { to: '/', icon: '🏠', key: 'nav.home' },
@@ -114,7 +115,7 @@ export default function BottomNav() {
                   className="flex h-9 w-9 items-center justify-center rounded-full text-[20px]"
                   style={{ background: active ? 'linear-gradient(135deg, #9BC4B2, #8FB8E8)' : 'transparent' }}
                 >
-                  {tab.icon}
+                  <Emoji e={tab.icon} size={22} />
                 </motion.span>
                 <span
                   className={`mt-px text-[11px] font-extrabold leading-tight transition-colors ${

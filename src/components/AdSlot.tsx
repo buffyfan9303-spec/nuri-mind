@@ -3,6 +3,7 @@ import { ADSENSE_CLIENT, ADSENSE_SLOT_BANNER, ADSENSE_SLOT_RECT, adsEnabled, loa
 import { useStore, isPremium } from '../store/useStore'
 import { useNavigate } from 'react-router-dom'
 import { useT, useL } from '../i18n/useT'
+import Emoji from './Emoji'
 
 /**
  * 수익화 광고 슬롯.
@@ -66,7 +67,7 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
       <div>
         {adEl}
         <button onClick={() => nav('/premium')} className="mx-auto mt-1.5 block text-[11px] font-extrabold text-mind-500">
-          ✨ {l({ ko: '광고 없이 이용하기 · 프리미엄', en: 'Remove ads · Premium', ja: '広告なしで利用・プレミアム' })}
+          <Emoji e="✨" inline />{l({ ko: '광고 없이 이용하기 · 프리미엄', en: 'Remove ads · Premium', ja: '広告なしで利用・プレミアム' })}
         </button>
       </div>
     )

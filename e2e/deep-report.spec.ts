@@ -96,8 +96,9 @@ test.describe('/deep-report 게이트', () => {
     // 티저는 페르소나 집계로 만들어지는 문장 — 집계가 죽으면 staticCore가 ''이 되어 빈 카드만 남는다
     await expect(page.getByText('11개 검사가 공통으로 가리키는 건')).toBeVisible()
 
+    // 잠금 아이콘은 SVG(대체 텍스트 '잠김') — 장식용 🔒(alt 없음)는 세지 않는다
     // ⭐ 개수로 못 박는다: ORDER 8개 - core(무료 공개) - cognition(정밀검사 없음) = 6
-    await expect(page.getByText('🔒', { exact: true })).toHaveCount(6)
+    await expect(page.getByRole('img', { name: '잠김', exact: true })).toHaveCount(6)
     await expect(page.getByText('인지 프로필')).toHaveCount(0)
     // 유료 본문이 무료 화면에 렌더되면 구독 이유 자체가 없어진다
     await expect(page.getByText('E2E 캐시 본문 core')).toHaveCount(0)
@@ -124,7 +125,7 @@ test.describe('/deep-report 게이트', () => {
     await waitForApp(page)
 
     await expect(page.getByText('인지 프로필')).toBeVisible()
-    await expect(page.getByText('🔒', { exact: true })).toHaveCount(7)
+    await expect(page.getByRole('img', { name: '잠김', exact: true })).toHaveCount(7)
     // 정밀검사는 DEEP_IDS(비정밀 11종) 밖 — 완주 판정 분모에 섞이면 영원히 안 열린다
     await expect(page.getByText('심층검사 11종 완주')).toBeVisible()
 
@@ -148,7 +149,7 @@ test.describe('/deep-report 게이트', () => {
     await expect(page.getByText(LOADING)).toHaveCount(0)
 
     // 잠금 흔적이 남으면 결제한 사용자가 계속 페이월을 본다
-    await expect(page.getByText('🔒', { exact: true })).toHaveCount(0)
+    await expect(page.getByRole('img', { name: '잠김', exact: true })).toHaveCount(0)
     await expect(page.getByText('프리미엄으로 전체 해금')).toHaveCount(0)
 
     // 방금 만든 리포트라 재생성 쿨다운(24h) 안 — 버튼이 열려 있으면 엣지 호출이 무제한으로 샌다

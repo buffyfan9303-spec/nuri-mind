@@ -9,6 +9,7 @@ import { mulberry32 } from '../lib/random'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 /** 회전·반전 식별이 명확한 글자(회전 대칭 없음, 거울상 구분 가능) */
 const LETTERS = ['F', 'G', 'J', 'L', 'P', 'R', 'E', 'K']
@@ -146,8 +147,8 @@ export default function SpatialRun() {
                   </span>
                 </motion.div>
               ) : (
-                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-[28px] leading-none">
-                  {verdict ? '✅' : '❌'}
+                <motion.span key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="leading-none">
+                  <Emoji e={verdict ? '✅' : '❌'} size={28} className="align-top" />
                 </motion.span>
               )}
             </AnimatePresence>
@@ -162,7 +163,7 @@ export default function SpatialRun() {
             disabled={phase !== 'stim'}
             className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 border-line bg-surface text-[17px] font-extrabold shadow-card disabled:opacity-50"
           >
-            🔤 {l({ ko: '정상', en: 'Normal', ja: '正常' })}
+            <Emoji e="🔤" inline />{l({ ko: '정상', en: 'Normal', ja: '正常' })}
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.97 }}
@@ -171,7 +172,7 @@ export default function SpatialRun() {
             className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 text-[17px] font-extrabold text-white shadow-card disabled:opacity-50"
             style={{ borderColor: accent, background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
           >
-            🪞 {l({ ko: '거울상', en: 'Mirror', ja: '鏡像' })}
+            <Emoji e="🪞" inline />{l({ ko: '거울상', en: 'Mirror', ja: '鏡像' })}
           </motion.button>
         </div>
       </main>
@@ -179,7 +180,7 @@ export default function SpatialRun() {
       {/* 중단 확인 */}
       <Modal open={quitOpen} onClose={closeQuit}>
         <div className="text-center">
-          <div className="text-4xl">🥺</div>
+          <div className="leading-none"><Emoji e="🥺" size={36} className="align-top" /></div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
           <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}

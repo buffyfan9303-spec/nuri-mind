@@ -14,6 +14,7 @@ import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem, conf
 import { isAccountSwitchPending } from '../lib/economy'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 /** 만료까지 남은 일수(올림). */
 function expDays(iso: string): number {
@@ -196,7 +197,7 @@ export default function Mailbox() {
           </div>
         ) : !authReady() || loggedIn === false ? (
           <Card className="mt-6 text-center">
-            <div className="text-[28px]">📭</div>
+            <div className="leading-none"><Emoji e="📭" size={28} className="align-top" /></div>
             <h2 className="mt-2 break-keep text-[17px] font-extrabold">{l({ ko: '카카오로 로그인하면 우편을 받아요', en: 'Log in with Kakao to get mail', ja: 'カカオログインで郵便を受取' })}</h2>
             <p className="mt-1.5 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
               {l({ ko: '지금은 이 기기에만 저장돼요. 카카오 계정으로 로그인하면 운영자 지급·결제 다이아·개인 우편을 어느 기기에서나 받을 수 있어요.', en: "You're using this device locally. Log in with Kakao to claim operator gifts, purchased diamonds, and personal mail on any device.", ja: '今はこの端末のみ。カカオでログインすると、運営者ギフト・購入ダイヤ・個人郵便をどの端末でも受取れます。' })}
@@ -207,7 +208,7 @@ export default function Mailbox() {
           </Card>
         ) : mail.length === 0 ? (
           <Card className="mt-6 text-center">
-            <div className="text-[28px]">📭</div>
+            <div className="leading-none"><Emoji e="📭" size={28} className="align-top" /></div>
             <h2 className="mt-2 text-[16px] font-extrabold">{l({ ko: '받은 우편이 없어요', en: 'No mail yet', ja: '郵便はありません' })}</h2>
           </Card>
         ) : (
@@ -245,8 +246,8 @@ export default function Mailbox() {
                   >
                   <Card className={`!p-4 ${it.claimed ? 'opacity-60' : ''}`}>
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-iq-light text-[20px]">
-                        {it.kind === 'purchase' ? '🧾' : it.kind === 'personal' ? '✉️' : it.kind === 'system' ? '📢' : '🎁'}
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-iq-light">
+                        <Emoji e={it.kind === 'purchase' ? '🧾' : it.kind === 'personal' ? '✉️' : it.kind === 'system' ? '📢' : '🎁'} size={20} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
@@ -256,9 +257,9 @@ export default function Mailbox() {
                         {body && <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">{body}</p>}
                         {(it.amount > 0 || it.points > 0) && (
                           <p className="mt-1.5 text-[13px] font-extrabold text-mind-700">
-                            {it.amount > 0 && `💎 ${it.amount}`}
+                            {it.amount > 0 && <EmojiText text={`💎 ${it.amount}`} />}
                             {it.amount > 0 && it.points > 0 && ' · '}
-                            {it.points > 0 && `🪙 ${it.points}`}
+                            {it.points > 0 && <EmojiText text={`🪙 ${it.points}`} />}
                           </p>
                         )}
                         <div className="mt-2.5 flex items-center gap-2">
@@ -272,7 +273,7 @@ export default function Mailbox() {
                             </button>
                           ) : (
                             <span className="rounded-full bg-line px-3 py-1.5 text-[12px] font-extrabold text-ink-faint">
-                              ✅ {l({ ko: '수령 완료', en: 'Received', ja: '受取済み' })}
+                              <Emoji e="✅" inline />{l({ ko: '수령 완료', en: 'Received', ja: '受取済み' })}
                               {it.kind === 'purchase' && ` · ${l({ ko: '환불 불가', en: 'no refund', ja: '返金不可' })}`}
                             </span>
                           )}
@@ -287,7 +288,7 @@ export default function Mailbox() {
                           )}
                           {!it.claimed && it.expires_at && (
                             <span className={`ml-auto shrink-0 text-[11px] font-extrabold ${expDays(it.expires_at) <= 3 ? 'text-red-400' : 'text-ink-faint'}`}>
-                              ⏳ D-{Math.max(0, expDays(it.expires_at))}
+                              <Emoji e="⏳" inline />D-{Math.max(0, expDays(it.expires_at))}
                             </span>
                           )}
                         </div>

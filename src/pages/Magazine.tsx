@@ -10,6 +10,7 @@ import { useT, useL } from '../i18n/useT'
 import { useStore } from '../store/useStore'
 import { usePageMeta } from '../hooks/usePageMeta'
 import Footer from '../components/Footer'
+import Emoji from '../components/Emoji'
 
 export default function Magazine() {
   const t = useT()
@@ -65,8 +66,8 @@ export default function Magazine() {
                 transition={{ ...SPRING.ui, delay: Math.min(0.05 * i, 0.25) }}
               >
                 <Card href={`/magazine/${a.id}`} className="flex items-center gap-3.5 !p-4">
-                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-mind-50 text-[28px]">
-                    {a.emoji}
+                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-mind-50">
+                    <Emoji e={a.emoji} size={30} />
                     {read && (
                       <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-mind-600 text-[11px] font-extrabold text-white shadow-card">✓</span>
                     )}
@@ -74,7 +75,7 @@ export default function Magazine() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
                       <Chip tone="mind">{l(a.tag)}</Chip>
-                      <span className="text-[11px] font-bold text-ink-faint">📖 {t('mag.read', { n: a.readMin })}</span>
+                      <span className="text-[11px] font-bold text-ink-faint"><Emoji e="📖" inline />{t('mag.read', { n: a.readMin })}</span>
                     </div>
                     <h3 className="mt-1.5 break-keep text-[15px] font-extrabold leading-snug">{l(a.title)}</h3>
                     <p className="mt-1 line-clamp-2 break-keep text-[12px] font-bold leading-relaxed text-ink-faint">{l(a.summary)}</p>

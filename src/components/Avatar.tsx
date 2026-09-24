@@ -1,6 +1,7 @@
 import type { Avatar as AvatarT } from '../data/types'
 // ⚠️ 무거운 animalTranslations(185KB) 대신 경량 비주얼 모듈 — Avatar는 메인 번들에 포함되므로
 import { PERSONA_VISUAL } from '../i18n/personaVisual'
+import Emoji from './Emoji'
 
 /** 프로필 아바타 — 업로드 사진 / 동물 페르소나 / 기본(🧠) */
 export default function Avatar({
@@ -36,7 +37,8 @@ export default function Avatar({
         className={`flex shrink-0 items-center justify-center rounded-full shadow-card ${className}`}
         style={{ ...px, background: `linear-gradient(135deg, ${p.grad[0]}, ${p.grad[1]})` }}
       >
-        <span style={{ fontSize: size * emojiScale }}>{p.emoji}</span>
+        {/* SVG는 글자 여백이 없어 같은 비율이면 더 커 보인다 — 글꼴 시절 크기에 맞춰 1.1배 */}
+        <Emoji e={p.emoji} size={Math.round(size * emojiScale * 1.1)} />
       </div>
     )
   }
@@ -46,7 +48,7 @@ export default function Avatar({
       className={`flex shrink-0 items-center justify-center rounded-full shadow-card ${className}`}
       style={{ ...px, background: 'linear-gradient(135deg, #9BC4B2, #8FB8E8)' }}
     >
-      <span style={{ fontSize: size * emojiScale }}>🧠</span>
+      <Emoji e="🧠" size={Math.round(size * emojiScale * 1.1)} />
     </div>
   )
 }

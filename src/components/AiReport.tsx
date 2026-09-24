@@ -7,6 +7,7 @@ import type { TestResult } from '../data/types'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { FUNCTIONS_URL, ANON_KEY } from '../lib/supabase'
+import Emoji from './Emoji'
 
 /**
  * 정밀 분석 리포트 — 버튼 한 번으로 펼친다(예전엔 5초 대기 게이트를 거쳤으나 광고 없는 강제 대기라 없앰).
@@ -98,7 +99,7 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
       ) : (
         <>
           {cached && (
-            <span className="mt-3 inline-block rounded-full bg-dk/10 px-2.5 py-0.5 text-[11px] font-extrabold text-dk-deep">✨ AI</span>
+            <span className="mt-3 inline-block rounded-full bg-dk/10 px-2.5 py-0.5 text-[11px] font-extrabold text-dk-deep"><Emoji e="✨" inline />AI</span>
           )}
           <p className="mt-2 whitespace-pre-line text-[14px] font-bold leading-[1.8] text-ink">{cached || l(persona.desc)}</p>
         </>

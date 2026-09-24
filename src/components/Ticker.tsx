@@ -8,6 +8,7 @@ import { useL } from '../i18n/useT'
 import { moderateText, type ModReason } from '../lib/moderation'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import Emoji, { EmojiText } from './Emoji'
 
 /** 전광판 색 — 검사 8종 테마색으로 날짜별 회전(집중력/이기심/두뇌/연애/번아웃/도파민/멘탈회복/본성).
  *  grad=배경 그라데, shadow=3D그림자(deep), fade=우측 페이드 */
@@ -88,10 +89,10 @@ export default function Ticker() {
           <motion.div
             animate={{ rotate: [0, -13, 13, -8, 8, 0] }}
             transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut', repeatDelay: 1.5 }}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white text-[17px] shadow"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white shadow"
             style={{ transformOrigin: '50% 70%' }}
           >
-            📣
+            <Emoji e="📣" size={17} />
           </motion.div>
           <div className="relative min-w-0 flex-1 overflow-hidden">
             <motion.div
@@ -120,7 +121,7 @@ export default function Ticker() {
             className="relative z-10 shrink-0 rounded-2xl bg-white px-2.5 py-1.5 text-[12px] font-extrabold text-[#2F6B52] before:absolute before:-inset-x-1 before:-inset-y-2 before:content-['']"
             style={{ boxShadow: '0 2px 0 rgba(0,0,0,0.18)' }}
           >
-            📢 💎{TICKER_COST}
+            <Emoji e="📢" inline /><Emoji e="💎" inline />{TICKER_COST}
           </motion.button>
         </div>
       </div>
@@ -128,9 +129,9 @@ export default function Ticker() {
       {/* 게시 모달 */}
       <Modal open={open} onClose={() => { setOpen(false); setErr('') }}>
         <div className="text-center">
-          <p className="text-[28px] leading-none">📢</p>
+          <p className="leading-none"><Emoji e="📢" size={28} className="align-top" /></p>
           <h3 className="mt-1.5 text-[17px] font-extrabold">{l({ ko: '확성기 쏘기', en: 'Megaphone shout', ja: '拡声器を撃つ' })}</h3>
-          <p className="mx-auto mt-1 max-w-[280px] break-keep text-[12px] font-bold text-ink-faint">{l({ ko: `모두의 화면 상단 전광판에 흐르는 메시지 · 💎${TICKER_COST} · 그냥 글쓰기는 무료예요!`, en: `Scrolls on everyone's top board · 💎${TICKER_COST} · normal posts are free!`, ja: `全員の上部電光掲示に流れる · 💎${TICKER_COST} · 通常の投稿は無料！` })}</p>
+          <p className="mx-auto mt-1 max-w-[280px] break-keep text-[12px] font-bold text-ink-faint"><EmojiText text={l({ ko: `모두의 화면 상단 전광판에 흐르는 메시지 · 💎${TICKER_COST} · 그냥 글쓰기는 무료예요!`, en: `Scrolls on everyone's top board · 💎${TICKER_COST} · normal posts are free!`, ja: `全員の上部電光掲示に流れる · 💎${TICKER_COST} · 通常の投稿は無料！` })} /></p>
           <textarea
             value={text}
             onChange={(e) => { setText(e.target.value); setErr('') }}
@@ -141,18 +142,18 @@ export default function Ticker() {
             className="mt-3 w-full resize-none rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-bold leading-relaxed outline-none focus:border-[#8B7CF6]"
           />
           <div className="mt-1 flex items-center justify-between text-[11px] font-bold">
-            <span className="text-ink-faint">{l({ ko: '보유', en: 'You have', ja: '保有' })} 💎 {diamonds}</span>
+            <span className="text-ink-faint">{l({ ko: '보유', en: 'You have', ja: '保有' })} <Emoji e="💎" inline />{diamonds}</span>
             <span className="text-ink-faint">{text.length}/60</span>
           </div>
-          {err && <p className="mt-1.5 text-[12px] font-extrabold text-red-500">⚠️ {err}</p>}
+          {err && <p className="mt-1.5 text-[12px] font-extrabold text-red-500"><Emoji e="⚠️" inline />{err}</p>}
           <div className="mt-3.5">
             <Button color="burn" disabled={!text.trim()} onClick={submit}>
-              📢 💎{TICKER_COST} {l({ ko: '확성기 쏘기', en: 'Shout', ja: '撃つ' })}
+              <Emoji e="📢" inline /><Emoji e="💎" inline />{TICKER_COST} {l({ ko: '확성기 쏘기', en: 'Shout', ja: '撃つ' })}
             </Button>
           </div>
           <p className="mt-2 text-[11px] font-bold leading-relaxed text-ink-faint">
             {/* 실제 필터는 금칙어·패턴 검사(lib/moderation)라 'AI 필터'는 사실과 달랐다 */}
-            {l({ ko: '🤖 욕설·19금·광고/연락처는 자동 필터로 차단돼요', en: '🤖 Profanity, adult, ads/contacts are auto-blocked', ja: '🤖 暴言・アダルト・広告/連絡先は自動ブロック' })}
+            <EmojiText text={l({ ko: '🤖 욕설·19금·광고/연락처는 자동 필터로 차단돼요', en: '🤖 Profanity, adult, ads/contacts are auto-blocked', ja: '🤖 暴言・アダルト・広告/連絡先は自動ブロック' })} />
           </p>
         </div>
       </Modal>
@@ -160,13 +161,13 @@ export default function Ticker() {
       {/* 다이아 부족 */}
       <Modal open={needCharge} onClose={() => setNeedCharge(false)}>
         <div className="text-center">
-          <p className="text-[28px] leading-none">💎</p>
+          <p className="leading-none"><Emoji e="💎" size={28} className="align-top" /></p>
           <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
           <p className="mt-1 break-keep text-[13px] font-bold text-ink-faint">
-            {l({ ko: `전광판 게시에 ${TICKER_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Posting needs 💎${TICKER_COST} · you have ${diamonds}`, ja: `投稿に💎${TICKER_COST}必要・保有${diamonds}` })}
+            <EmojiText text={l({ ko: `전광판 게시에 ${TICKER_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Posting needs 💎${TICKER_COST} · you have ${diamonds}`, ja: `投稿に💎${TICKER_COST}必要・保有${diamonds}` })} />
           </p>
           <div className="mt-5">
-            <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
+            <Button color="iq" onClick={() => nav('/charge')}><Emoji e="💎" inline />{l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
             <button onClick={() => setNeedCharge(false)} className="mt-2 min-h-[44px] w-full py-2 text-[13px] font-bold text-ink-faint">{l({ ko: '닫기', en: 'Close', ja: '閉じる' })}</button>
           </div>
         </div>

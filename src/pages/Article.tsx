@@ -11,6 +11,7 @@ import { useStore } from '../store/useStore'
 import { celebrate } from '../lib/confetti'
 import { usePageMeta } from '../hooks/usePageMeta'
 import Footer from '../components/Footer'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 export default function Article() {
   const { id } = useParams<{ id: string }>()
@@ -43,11 +44,11 @@ export default function Article() {
           className="pt-1 text-center"
         >
           <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[28px] bg-mind-50 shadow-card">
-            <span className="floaty text-[28px]">{a.emoji}</span>
+            <Emoji e={a.emoji} size={28} className="floaty" />
           </div>
           <div className="mt-3.5 flex items-center justify-center gap-1.5">
             <Chip tone="mind">{l(a.tag)}</Chip>
-            <Chip tone="gray">📖 {t('mag.read', { n: a.readMin })}</Chip>
+            <Chip tone="gray"><Emoji e="📖" inline />{t('mag.read', { n: a.readMin })}</Chip>
           </div>
           <h1 className="mt-3 break-keep text-[24px] font-extrabold leading-tight tracking-tight">{l(a.title)}</h1>
           <p className="mx-auto mt-2.5 max-w-[19rem] break-keep text-[14px] font-bold leading-relaxed text-ink-sub">{l(a.intro)}</p>
@@ -76,7 +77,7 @@ export default function Article() {
                   <p className="mt-2.5 break-keep text-[15px] font-bold leading-[1.8] text-ink">{l(s.p)}</p>
                   {s.tip && (
                     <div className="mt-3 flex items-start gap-2 rounded-2xl bg-amber-50 px-3.5 py-2.5">
-                      <span className="text-[15px] leading-none">💡</span>
+                      <Emoji e="💡" size={15} />
                       <p className="break-keep text-[13px] font-bold leading-relaxed text-amber-700">
                         <span className="opacity-60">{t('mag.tip')} · </span>{l(s.tip)}
                       </p>
@@ -105,7 +106,7 @@ export default function Article() {
 
         {/* 마무리 한 줄 */}
         <div className="mt-4 rounded-3xl bg-gradient-to-br from-mind-100 to-mind-50 px-5 py-5 text-center">
-          <div className="sparkle text-[24px]">🌟</div>
+          <div className="sparkle leading-none"><Emoji e="🌟" size={24} className="align-top" /></div>
           <p className="mt-1.5 break-keep text-[15px] font-bold leading-relaxed text-mind-700">“{l(a.close)}”</p>
         </div>
 
@@ -119,14 +120,14 @@ export default function Article() {
             done ? 'bg-mind-100 text-mind-700' : 'bg-mind-600 text-white shadow-duo active:translate-y-0.5'
           }`}
         >
-          {done ? t('mag.readClaimed') : t('mag.readReward', { n: 8 })}
+          <EmojiText text={done ? t('mag.readClaimed') : t('mag.readReward', { n: 8 })} />
         </motion.button>
 
         {/* 검사 연결 CTA */}
         {a.test && (
           <div className="mt-3">
             <Button color="mind" onClick={() => nav(`/test/${a.test}`)}>
-              🔬 {t('mag.cta', { name: t(`test.${a.test}.name`) })}
+              <Emoji e="🔬" inline />{t('mag.cta', { name: t(`test.${a.test}.name`) })}
             </Button>
           </div>
         )}

@@ -12,6 +12,7 @@ import { toast } from '../lib/toast'
 import { buildFocuses, isTaskDone, pickFocusIds } from '../lib/growth'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { sfx } from '../lib/sound'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 /**
  * 🌱 성장 플래너 — 검사 결과가 알려준 방향을 "오늘 할 일"로 바꾸는 화면.
@@ -101,7 +102,7 @@ export default function GrowthPlan() {
       <div className="bg-dots min-h-dvh pb-36">
         <TopBar back="/" title={l({ ko: '성장 플랜', en: 'Growth plan', ja: '成長プラン' })} />
         <main className="mx-auto max-w-md px-5 pt-10 text-center">
-          <div className="text-6xl">🌱</div>
+          <div className="leading-none"><Emoji e="🌱" size={60} className="align-top" /></div>
           <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
             {l({ ko: '검사를 조금만 더 해주세요', en: 'A few more tests first', ja: 'もう少し検査を' })}
           </h1>
@@ -114,7 +115,7 @@ export default function GrowthPlan() {
           </p>
           <div className="mx-auto mt-6 max-w-[240px]">
             <Button color="mind" onClick={() => nav('/')}>
-              🧠 {l({ ko: '검사하러 가기', en: 'Take a test', ja: '検査に行く' })}
+              <Emoji e="🧠" inline />{l({ ko: '검사하러 가기', en: 'Take a test', ja: '検査に行く' })}
             </Button>
           </div>
         </main>
@@ -134,7 +135,7 @@ export default function GrowthPlan() {
             transition={SPRING.ui}
             className="mt-5 rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-6 text-center text-white shadow-pop"
           >
-            <div className="text-[28px] leading-none">🌱</div>
+            <div className="leading-none"><Emoji e="🌱" size={28} className="align-top" /></div>
             <h1 className="mt-3 break-keep text-[20px] font-extrabold leading-tight">
               {l({ ko: '검사 결과를 오늘 할 일로', en: 'Turn results into daily actions', ja: '結果を今日の行動に' })}
             </h1>
@@ -165,7 +166,7 @@ export default function GrowthPlan() {
                 className="mt-5 !bg-gradient-to-br from-[#6E7BF2] to-[#A88BF2] !p-5 text-white"
               >
                 <p className="flex items-center gap-2 text-[15px] font-extrabold">
-                  ✨ {l({ ko: '프리미엄에서 열려요', en: 'Available in Premium', ja: 'プレミアムで解放' })}
+                  <Emoji e="✨" inline />{l({ ko: '프리미엄에서 열려요', en: 'Available in Premium', ja: 'プレミアムで解放' })}
                 </p>
                 <p className="mt-1.5 break-keep text-[13px] font-bold leading-relaxed text-white/90">
                   {l({
@@ -208,7 +209,7 @@ export default function GrowthPlan() {
           <div className="flex items-end justify-between">
             <div>
               <p className="text-[13px] font-extrabold text-white/85">
-                🌱 {l({ ko: `성장 ${dayCount}일차`, en: `Day ${dayCount}`, ja: `成長${dayCount}日目` })}
+                <Emoji e="🌱" inline />{l({ ko: `성장 ${dayCount}일차`, en: `Day ${dayCount}`, ja: `成長${dayCount}日目` })}
               </p>
               <p className="mt-1 text-[24px] font-extrabold leading-none">
                 {doneToday}
@@ -216,9 +217,9 @@ export default function GrowthPlan() {
               </p>
             </div>
             <p className="pb-1 text-[12px] font-bold text-white/85">
-              {doneToday >= allTasks.length
+              <EmojiText text={doneToday >= allTasks.length
                 ? l({ ko: '오늘 완료! 🎉', en: 'All done today! 🎉', ja: '今日は完了！🎉' })
-                : l({ ko: '오늘의 실천', en: "Today's actions", ja: '今日の実践' })}
+                : l({ ko: '오늘의 실천', en: "Today's actions", ja: '今日の実践' })} />
             </p>
           </div>
           <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/25">
@@ -240,7 +241,7 @@ export default function GrowthPlan() {
           >
             <Card className="mt-3.5 !p-5">
               <h2 className="flex items-center gap-2 break-keep text-[15px] font-extrabold">
-                <span>{f.emoji}</span>
+                <Emoji e={f.emoji} inline />
                 {t(`test.${f.testId}.short`)}
               </h2>
               <div className="mt-2.5 space-y-1">

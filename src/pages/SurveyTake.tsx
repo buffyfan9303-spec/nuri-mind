@@ -8,6 +8,7 @@ import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { celebrate } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 type Ans = string | string[] | number | undefined
 
@@ -212,9 +213,9 @@ export default function SurveyTake() {
             initial={{ scale: 0 }}
             animate={{ scale: 1, rotate: [0, -10, 8, 0] }}
             transition={{ ...SPRING.flick, rotate: { duration: 0.5, ease: 'easeInOut' } }}
-            className="text-5xl"
+            className="leading-none"
           >
-            🎉
+            <Emoji e="🎉" size={48} className="align-top" />
           </motion.div>
           <h3 className="mt-3 text-xl font-extrabold">{t('take.thanks', { p: earned })}</h3>
           <div className="mt-5">

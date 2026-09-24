@@ -1,4 +1,5 @@
 /** 결과 공유 카드 — 캔버스로 "심리 동물" 카드 PNG 생성 (바이럴 루프 핵심) */
+import { emojiSrc } from './emoji'
 
 export interface CardSpec {
   emoji: string
@@ -41,6 +42,28 @@ function svgToImage(svg: string, size: number): Promise<HTMLImageElement> {
     img.onerror = reject
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
   })
+}
+
+/**
+ * 주인공 이모지를 앱 화면과 같은 Fluent SVG로 그린다 — 글꼴 이모지는 기기마다 그림이 달라
+ * 같은 결과 카드가 삼성·아이폰에서 다르게 공유됐다. 같은 오리진 파일이라 캔버스가 오염되지 않는다(toBlob 가능).
+ * 파일이 없거나 못 불러오면 false → 호출부가 글꼴 이모지로 그린다.
+ */
+async function drawEmojiImage(ctx: CanvasRenderingContext2D, emoji: string, cx: number, cy: number, size: number): Promise<boolean> {
+  const src = emojiSrc(emoji)
+  if (!src) return false
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const im = new Image()
+      im.onload = () => resolve(im)
+      im.onerror = reject
+      im.src = src
+    })
+    ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size)
+    return true
+  } catch {
+    return false
+  }
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -202,10 +225,12 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
       const cimg = await svgToImage(spec.charSvg, cs)
       ctx.drawImage(cimg, cx - cs / 2, heroY - cs / 2, cs, cs)
     } catch {
-      ctx.font = `300px ${EMOJI_FAM}`
-      ctx.fillText(spec.emoji, cx, heroY + 8)
+      if (!(await drawEmojiImage(ctx, spec.emoji, cx, heroY, 300))) {
+        ctx.font = `300px ${EMOJI_FAM}`
+        ctx.fillText(spec.emoji, cx, heroY + 8)
+      }
     }
-  } else {
+  } else if (!(await drawEmojiImage(ctx, spec.emoji, cx, heroY, 300))) {
     ctx.font = `300px ${EMOJI_FAM}`
     ctx.fillText(spec.emoji, cx, heroY + 8)
   }

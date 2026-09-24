@@ -13,6 +13,7 @@
  *  ⑨ 타이포 정책(듀오링고식) — UI 굵기는 bold/extrabold(+큰 숫자 black)만, 긴 본문은 bold, 크기는 10단계 스케일만
  *  ⑩ 제목·버튼·라벨에 장식 이모지 접두 없음(스탯 타일·뱃지의 내용 이모지는 대상 아님)
  *  ⑪ 만세력(사주팔자·음력·절기)이 공표 기준값과 맞는가 — scripts/saju-check.mjs
+ *  ⑫ 아이콘 이모지마다 Fluent SVG 파일이 있는가(동기화 누락·파일 누락) — scripts/emoji-sync.mjs
  *
  * 실행: npm run smoke   (실패 시 exit 1 — 배포 전 게이트로 사용)
  */
@@ -256,6 +257,49 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   const { runSajuCheck } = await import('./saju-check.mjs')
   const { passes, fails: bad } = await runSajuCheck()
   check(`만세력 기준값(${passes.length + bad.length}건)`, bad.length === 0, bad.slice(0, 3).join(' · '))
+}
+
+/* ⑫ 아이콘 이모지 — 쓰는 이모지마다 Fluent SVG 파일이 실제로 있는가 (scripts/emoji-sync.mjs)
+   목록(emojiManifest)에 없는 이모지는 <Emoji>가 기기 글꼴로 그린다 — 화면은 안 깨지지만 기기마다 다른 그림이 되돌아온다.
+   코드에 새 이모지를 적고 동기화를 잊으면 여기서 잡는다. 목록에 있는데 파일이 없으면 404 → 글꼴 폴백이라 역시 잡는다. */
+{
+  const man = read('src/data/emojiManifest.ts')
+  const dir = man.match(/EMOJI_DIR = '\/([^']+)'/)?.[1] ?? ''
+  const codes = (man.match(/EMOJI_CODES = '([^']*)'/)?.[1] ?? '').split(' ').filter(Boolean)
+  const table = new Map(codes.map((t) => (t.includes('=') ? t.split('=') : [t, t])))
+  const noFile = [...table].filter(([, f]) => !existsSync(join(ROOT, 'public', dir, `${f}.svg`))).map(([c]) => c)
+  const codeOf = (e) => [...e].map((c) => c.codePointAt(0)).filter((cp) => cp !== 0xfe0f && cp !== 0xfe0e).map((cp) => cp.toString(16)).join('-')
+  const RE = /\p{Regional_Indicator}{2}|[#*0-9]️?⃣|\p{Extended_Pictographic}(?:️|\p{Emoji_Modifier})?(?:‍\p{Extended_Pictographic}(?:️|\p{Emoji_Modifier})?)*/gu
+  // 아이콘 자리(문자열 리터럴): <Emoji e="…"> · IconBadge/JellyChip/SectionHead emoji="…" · StatTile icon="…" · 데이터의 emoji/icon/e 필드
+  const ICON = /(?:\be="|\bemoji="|\bicon="|\bemoji: ?'|\bicon: ?'|\be: ?')([^"']+)["']/g
+  const unsynced = new Set()
+  let iconCount = 0
+  const walk = (d) => {
+    for (const e of readdirSync(join(ROOT, d), { withFileTypes: true })) {
+      const rel = `${d}/${e.name}`
+      if (e.isDirectory()) walk(rel)
+      else if (/\.(ts|tsx)$/.test(e.name) && rel !== 'src/data/emojiManifest.ts') {
+        for (const m of read(rel).matchAll(ICON)) {
+          for (const g of m[1].matchAll(RE)) {
+            const c = codeOf(g[0])
+            if (['a9', 'ae', '2122'].includes(c)) continue
+            iconCount++
+            if (!table.has(c)) unsynced.add(`${g[0]}(${c}) ${rel}`)
+          }
+        }
+      }
+    }
+  }
+  walk('src')
+  check(
+    `아이콘 이모지 SVG(${table.size}종 · 아이콘 자리 ${iconCount}곳)`,
+    iconCount > 100 && noFile.length === 0 && unsynced.size === 0 && existsSync(join(ROOT, 'public/emoji/LICENSE-fluentui-emoji.txt')),
+    [
+      noFile.length && `목록엔 있는데 파일 없음: ${noFile.slice(0, 5).join(', ')}`,
+      unsynced.size && `동기화 안 됨(node scripts/emoji-sync.mjs): ${[...unsynced].slice(0, 5).join(' · ')}`,
+      !existsSync(join(ROOT, 'public/emoji/LICENSE-fluentui-emoji.txt')) && '라이선스 파일 없음',
+    ].filter(Boolean).join(' / '),
+  )
 }
 
 /* 결과 */

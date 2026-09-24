@@ -10,6 +10,7 @@ import { quickById } from '../data/quick'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { decodeDuel } from '../lib/duel'
+import Emoji from '../components/Emoji'
 
 const topOf = (p: number) => Math.max(0.5, Math.round((100 - p) * 10) / 10)
 /** 점수가 높을수록 '우세'로 볼 수 있는 검사(IQ·회복탄력성). 임상검사는 중립 비교만. */
@@ -27,7 +28,7 @@ export default function Duel() {
     <div className="min-h-dvh pb-20">
       <TopBar back="/" title={l({ ko: '결과 대결', en: 'Result duel', ja: '結果バトル' })} />
       <main className="mx-auto max-w-md px-5 pt-12 text-center">
-        <p className="text-[28px]">🤔</p>
+        <p className="leading-none"><Emoji e="🤔" size={28} className="align-top" /></p>
         <p className="mt-3 text-[15px] font-bold text-ink-sub">
           {l({ ko: '대결 링크가 올바르지 않아요.', en: 'This duel link is invalid.', ja: 'リンクが正しくありません。' })}
         </p>
@@ -55,7 +56,7 @@ export default function Duel() {
             className="mx-auto mt-3 flex w-full max-w-[280px] flex-col items-center rounded-3xl p-6 text-white"
             style={{ background: `linear-gradient(150deg, ${qt?.grad[0] ?? '#9AA6FF'}, ${qt?.grad[1] ?? '#C7B8FF'})` }}
           >
-            <span className="text-[28px] leading-none">{friend.e}</span>
+            <Emoji e={friend.e} size={28} />
             <span className="mt-2 text-[12px] font-extrabold text-white/85">
               {(friend.n || l({ ko: '친구', en: 'Friend', ja: '友達' })) + l({ ko: ' 님의 결과', en: '’s result', ja: 'の結果' })}
             </span>
@@ -66,7 +67,7 @@ export default function Duel() {
           </p>
           <div className="mt-5">
             <Button color="mind" onClick={() => nav(qt ? `/quick/${friend.qid}` : '/quick')}>
-              🆚 {l({ ko: '나도 해보기', en: 'Take it too', ja: '自分もやる' })}
+              <Emoji e="🆚" inline />{l({ ko: '나도 해보기', en: 'Take it too', ja: '自分もやる' })}
             </Button>
           </div>
           <button onClick={() => nav('/')} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">
@@ -107,7 +108,7 @@ export default function Duel() {
       style={{ background: `linear-gradient(150deg, ${p.grad[0]}, ${p.grad[1]})` }}
     >
       <span className="max-w-full truncate text-[11px] font-extrabold text-white/85">{label}</span>
-      <span className="mt-1 text-[28px] leading-none">{p.emoji}</span>
+      <Emoji e={p.emoji} size={28} className="mt-1" />
       <span className="mt-1.5 break-keep text-[13px] font-extrabold text-white">{l(p.name)}</span>
       <span className="mt-1.5 rounded-full bg-black/15 px-2 py-0.5 text-[11px] font-extrabold text-white">
         {l({ ko: `상위 ${top}%`, en: `top ${top}%`, ja: `上位${top}%` })}
@@ -130,7 +131,7 @@ export default function Duel() {
           transition={SPRING.ui}
           className="mt-3 break-keep text-center text-[20px] font-extrabold tracking-tight"
         >
-          {tm?.emoji} {testName} {l({ ko: '대결', en: 'duel', ja: 'バトル' })}
+          {tm && <Emoji e={tm.emoji} inline />} {testName} {l({ ko: '대결', en: 'duel', ja: 'バトル' })}
         </motion.h1>
 
         <div className="mt-5 flex items-stretch gap-2">
@@ -138,7 +139,7 @@ export default function Duel() {
             <Side label={l({ ko: '나', en: 'Me', ja: '私' })} p={myPersona} top={myTop!} win={iWin} />
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-line p-4 text-center">
-              <span className="text-[28px]">❔</span>
+              <Emoji e="❔" size={28} />
               <span className="mt-1.5 break-keep text-[12px] font-bold text-ink-faint">{l({ ko: '아직 안 했어요', en: 'Not yet', ja: '未実施' })}</span>
             </div>
           )}
@@ -164,7 +165,7 @@ export default function Duel() {
             </Button>
           ) : (
             <Button color="mind" onClick={() => nav(`/test/${friend.t}`)}>
-              🆚 {l({ ko: `나도 ${testName} 하고 비교하기`, en: `Take ${testName} & compare`, ja: `${testName}で比較する` })}
+              <Emoji e="🆚" inline />{l({ ko: `나도 ${testName} 하고 비교하기`, en: `Take ${testName} & compare`, ja: `${testName}で比較する` })}
             </Button>
           )}
         </div>

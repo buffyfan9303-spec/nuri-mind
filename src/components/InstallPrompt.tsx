@@ -3,6 +3,7 @@ import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
 import { canInstall, onInstallable, promptInstall } from '../lib/pwa'
 import { useL } from '../i18n/useT'
+import Emoji from './Emoji'
 
 const DISMISS_KEY = 'nuri-pwa-dismissed'
 
@@ -47,7 +48,7 @@ export default function InstallPrompt() {
         // 시트 아래쪽 버튼을 가리고, aria-modal 대화상자 밖인데도 눌렸다.
         className="fixed inset-x-3 bottom-[84px] z-40 mx-auto flex max-w-md items-center gap-3 rounded-3xl border border-line bg-surface px-4 py-3 shadow-pop"
       >
-        <span className="text-[24px] leading-none">📲</span>
+        <Emoji e="📲" size={24} />
         <div className="min-w-0 flex-1">
           <p className="text-[14px] font-extrabold">{l({ ko: '홈 화면에 앱 설치', en: 'Install the app', ja: 'ホームに追加' })}</p>
           <p className="truncate text-[12px] font-bold text-ink-faint">{l({ ko: '바로 열리고, 오프라인에서도 돼요', en: 'One tap · works offline', ja: 'ワンタップ・オフラインOK' })}</p>

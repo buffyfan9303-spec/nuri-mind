@@ -10,6 +10,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 const VALID = new Set(LOVE_ANIMALS.map((a) => a.key))
 
@@ -65,7 +66,7 @@ export default function Chemi() {
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border-2"
             style={{ borderColor: sel ? '#F25C8E' : 'rgb(var(--line))', background: sel ? '#F25C8E14' : 'rgb(var(--surface-2))' }}
           >
-            <span className={`text-[24px] leading-none ${sel ? '' : 'opacity-70'}`}>{p.emoji}</span>
+            <Emoji e={p.emoji} size={26} className={sel ? '' : 'opacity-70'} />
             <span className={`text-[11px] font-extrabold ${sel ? 'text-[#C2456B]' : 'text-ink-faint'}`}>{l(p.name)}</span>
           </motion.button>
         )
@@ -108,11 +109,11 @@ export default function Chemi() {
             className="mt-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#F25C8E] to-[#FF8AAE] p-6 text-center text-white shadow-pop"
           >
             <div className="flex items-center justify-center gap-2 text-[28px]">
-              <span>{PERSONAS[mine]?.emoji ?? '🐾'}</span>
-              <motion.span animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 1.6 }} className="text-[24px]">
-                ❤️
+              <Emoji e={PERSONAS[mine]?.emoji ?? '🐾'} size={30} />
+              <motion.span animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 1.6 }} className="leading-none">
+                <Emoji e="❤️" size={24} className="align-top" />
               </motion.span>
-              <span>{PERSONAS[theirs]?.emoji ?? '🐾'}</span>
+              <Emoji e={PERSONAS[theirs]?.emoji ?? '🐾'} size={30} />
             </div>
             <div className="mt-3 text-[28px] font-extrabold leading-none">{chemi.score}%</div>
             <div className="mx-auto mt-3 h-2.5 max-w-[220px] overflow-hidden rounded-full bg-white/30">

@@ -6,6 +6,7 @@ import { LEGAL_EFFECTIVE } from '../data/legal'
 import { TERMS, PRIVACY } from '../data/legalDocs'
 import { COMPANY } from '../data/company'
 import { usePageMeta } from '../hooks/usePageMeta'
+import Emoji from '../components/Emoji'
 
 /**
  * 이용약관 / 개인정보처리방침 — 엔에이치홀딩스(누리 마인드) 정식본 (2026-06-23 개정 시행).
@@ -32,7 +33,7 @@ export default function Legal() {
     <div className="min-h-dvh pb-36">
       <TopBar back={onboarded ? '/profile' : () => nav(-1)} title={t(isTerms ? 'legal.terms' : 'legal.privacy')} />
       <main className="mx-auto max-w-md px-5">
-        <Chip tone="mind">✅ {LEGAL_EFFECTIVE} 시행 · {COMPANY.name}</Chip>
+        <Chip tone="mind"><Emoji e="✅" inline />{LEGAL_EFFECTIVE} 시행 · {COMPANY.name}</Chip>
         <Card className="mt-3">
           <p className="whitespace-pre-line text-[14px] font-bold leading-[1.85] text-ink">
             {isTerms ? TERMS : PRIVACY}

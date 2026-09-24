@@ -26,6 +26,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx, startAmbient, stopAmbient } from '../lib/sound'
 import { haptic } from '../lib/haptic'
+import Emoji from '../components/Emoji'
 
 /**
  * IQ 문항별 제한시간 — 난이도 차등(문헌 기반).
@@ -371,7 +372,7 @@ export default function TestRun() {
       {/* 중단 확인 */}
       <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
         <div className="text-center">
-          <div className="text-4xl">🥺</div>
+          <div className="leading-none"><Emoji e="🥺" size={36} className="align-top" /></div>
           <h3 className="mt-2 text-lg font-extrabold">{t('run.quitTitle')}</h3>
           <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">{t('run.quitDesc')}</p>
           <div className="mt-5 space-y-2.5">

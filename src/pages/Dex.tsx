@@ -10,6 +10,7 @@ import type { TestId } from '../data/types'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 /** 검사별 페르소나 목록 (PERSONA_TEST 등록 순서 유지) */
 const BY_TEST: Record<string, string[]> = (() => {
@@ -63,7 +64,7 @@ export default function Dex() {
 
         {/* 친구 초대 수집 (소셜 컬렉션) */}
         <Card onClick={() => nav('/rewards')} className="mt-3.5 flex items-center gap-3.5 !bg-gradient-to-r from-amber-50 to-mind-50 dark:from-surface dark:to-surface !p-4">
-          <span className="text-[28px]">🤝</span>
+          <Emoji e="🤝" size={28} />
           <div className="min-w-0 flex-1">
             <h3 className="text-[15px] font-extrabold leading-tight">{t('dex.friendTitle')}</h3>
             <p className="mt-0.5 break-keep text-[12px] font-bold leading-snug text-ink-faint">{t('dex.friendDesc')}</p>
@@ -78,7 +79,7 @@ export default function Dex() {
           return (
             <section key={tm.id} className="mt-6">
               <div className="flex items-center gap-2 px-1">
-                <span className="text-[17px]">{tm.emoji}</span>
+                <Emoji e={tm.emoji} size={17} />
                 <h2 className="text-[16px] font-extrabold">{t(`test.${tm.id}.name`)}</h2>
                 <span className="ml-auto text-[12px] font-extrabold text-ink-faint">
                   {got}/{keys.length}
@@ -107,7 +108,7 @@ export default function Dex() {
                       }}
                     >
                       <span className={`text-[24px] leading-none ${has ? '' : 'opacity-25 grayscale'}`}>
-                        {has ? p.emoji : '❓'}
+                        <Emoji e={has ? p.emoji : '❓'} size={28} />
                       </span>
                       <span className={`max-w-full truncate px-1 text-[11px] font-extrabold ${has ? 'text-ink' : 'text-ink-faint'}`}>
                         {has ? l(p.name) : '???'}
@@ -144,7 +145,7 @@ export default function Dex() {
             </p>
             <div className="mt-5">
               <Button color="mind" onClick={() => nav(`/test/${PERSONA_TEST[detail]}`)}>
-                🔄 {t('dex.retake')}
+                <Emoji e="🔄" inline />{t('dex.retake')}
               </Button>
             </div>
           </div>

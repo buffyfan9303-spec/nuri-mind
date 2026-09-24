@@ -10,6 +10,7 @@ import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { sfx } from '../lib/sound'
 import { track } from '../lib/analytics'
 import { AXES, AXIS_LABEL, MBTI_DEEP, MBTI_QUICK, mbtiByKey, typeFromAxes } from '../data/mbti'
+import Emoji from '../components/Emoji'
 
 /**
  * 16가지 성격유형 — 일반(12문항 양자택일) · 심층(24문항 5점 척도) 공용 화면.
@@ -105,7 +106,7 @@ export default function MbtiTest() {
             className="mt-4 rounded-3xl p-6 text-center text-white shadow-pop"
             style={{ background: `linear-gradient(135deg, ${type.grad[0]}, ${type.grad[1]})` }}
           >
-            <div className="text-[28px] leading-none">{type.emoji}</div>
+            <div className="leading-none"><Emoji e={type.emoji} size={28} className="align-top" /></div>
             <p className="mt-2 text-[13px] font-extrabold tracking-[0.2em] text-white/85">{type.key}</p>
             <h1 className="mt-1 break-keep text-[20px] font-extrabold leading-tight">{l(type.name)}</h1>
             <p className="mt-2 break-keep text-[13px] font-bold leading-relaxed text-white/90">{l(type.tag)}</p>
@@ -171,7 +172,7 @@ export default function MbtiTest() {
           <div className="mt-4 space-y-2.5">
             {!deep && (
               <Button color="mind" onClick={() => nav('/mbti/deep', { replace: true })}>
-                🔬 {l({ ko: '24문항으로 더 정확하게', en: 'Go deeper — 24 items', ja: '24問の詳細版へ' })}
+                <Emoji e="🔬" inline />{l({ ko: '24문항으로 더 정확하게', en: 'Go deeper — 24 items', ja: '24問の詳細版へ' })}
               </Button>
             )}
             <Button
@@ -184,7 +185,7 @@ export default function MbtiTest() {
                 window.scrollTo(0, 0)
               }}
             >
-              🔄 {l({ ko: '다시 하기', en: 'Retake', ja: 'もう一度' })}
+              <Emoji e="🔄" inline />{l({ ko: '다시 하기', en: 'Retake', ja: 'もう一度' })}
             </Button>
           </div>
 

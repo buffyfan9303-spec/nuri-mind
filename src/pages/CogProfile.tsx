@@ -9,6 +9,7 @@ import { useL } from '../i18n/useT'
 import { makeCogCard, shareCardBlob } from '../lib/shareCard'
 import { sfx } from '../lib/sound'
 import type { TestResult } from '../data/types'
+import Emoji from '../components/Emoji'
 
 /** 정밀검사 6종 → 인지 영역 6축 */
 const METRICS: {
@@ -24,7 +25,7 @@ const METRICS: {
   { id: 'focus', label: { ko: '집중력', en: 'Focus', ja: '集中力' }, emoji: '👁️', color: '#14B8A6', route: '/test/focus', get: (r) => r.fq },
   { id: 'speed', label: { ko: '처리속도', en: 'Speed', ja: '処理速度' }, emoji: '⚡', color: '#8B5CF6', route: '/test/speed', get: (r) => r.sq },
   { id: 'spatial', label: { ko: '공간지각', en: 'Spatial', ja: '空間知覚' }, emoji: '🧭', color: '#3B82F6', route: '/test/spatial', get: (r) => r.xq },
-  { id: 'switch', label: { ko: '주의전환', en: 'Switching', ja: '注意切替' }, emoji: '🔀', color: '#0EA5E9', route: '/test/switch', get: (r) => r.wq },
+  { id: 'switch', label: { ko: '주의전환', en: 'Switching', ja: '注意切替' }, emoji: '🤹', color: '#0EA5E9', route: '/test/switch', get: (r) => r.wq },
 ]
 
 const CX = 150
@@ -229,8 +230,8 @@ export default function CogProfile() {
             const isStrong = i === strongest && s != null && doneCount >= 2 && !flat
             return (
               <Card key={m.id} className="flex items-center gap-3 !p-3.5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-[20px]" style={{ background: `${m.color}1A` }}>
-                  {m.emoji}
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl" style={{ background: `${m.color}1A` }}>
+                  <Emoji e={m.emoji} size={22} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-[14px] font-extrabold leading-tight">

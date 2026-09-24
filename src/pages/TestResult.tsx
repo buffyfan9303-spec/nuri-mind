@@ -22,6 +22,7 @@ import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
 import { encodeDuel } from '../lib/duel'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 /** 정밀검사 전용 실행 라우트 — 문항뱅크(/test/:id/run)가 아니라 인지과제 화면으로 보내야 한다 */
 const PRECISION_RUN: Partial<Record<TestId, string>> = {
@@ -272,12 +273,12 @@ export default function TestResult() {
                   <motion.span
                     key={i}
                     aria-hidden="true"
-                    className="absolute left-1/2 top-1/2 text-[17px] leading-none"
+                    className="absolute left-1/2 top-1/2 flex leading-none"
                     initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
                     animate={{ x: Math.cos(rad) * 82, y: Math.sin(rad) * 82, scale: [0, 1.1, 0], opacity: [0, 1, 0] }}
                     transition={{ duration: 0.95, delay: 0.34 + i * 0.025, ease: 'easeOut' }}
                   >
-                    {s.e}
+                    <Emoji e={s.e} size={18} />
                   </motion.span>
                 )
               })}
@@ -286,9 +287,9 @@ export default function TestResult() {
               animate={{ scale: 1, rotate: [0, -8, 6, 0] }}
               // 스프링은 첫·끝 키프레임만 보간한다(0→0) — 흔들기는 키프레임 트윈으로 따로 줘야 실제로 움직인다
               transition={{ ...SPRING.sheet, delay: 0.25, rotate: { duration: 0.5, delay: 0.25, ease: 'easeOut' } }}
-              className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 text-6xl shadow-pop"
+              className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 shadow-pop"
             >
-              {persona.emoji}
+              <Emoji e={persona.emoji} size={64} />
             </motion.div>
           </div>
           <motion.p
@@ -368,14 +369,14 @@ export default function TestResult() {
             transition={{ ...SPRING.flick, delay: 0.5 }}
             className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-mind-100 py-3.5 text-[15px] font-extrabold text-mind-700"
           >
-            🪙 {t('result.reward', { p: reward })}
+            <Emoji e="🪙" inline />{t('result.reward', { p: reward })}
           </motion.div>
         )}
 
         {/* 가면 지수 경고 (EGO) */}
         {result.maskFlag && (
           <Card className="mt-4 !bg-amber-50">
-            <h3 className="text-[16px] font-extrabold text-amber-700">{t('result.maskTitle')}</h3>
+            <h3 className="text-[16px] font-extrabold text-amber-700"><EmojiText text={t('result.maskTitle')} /></h3>
             <p className="mt-1.5 text-[14px] font-bold leading-[1.75] text-amber-700/90">{t('result.maskDesc')}</p>
           </Card>
         )}
@@ -485,8 +486,8 @@ export default function TestResult() {
             className="mt-4 flex w-full items-center gap-3 rounded-3xl p-4 text-left text-white shadow-pop"
             style={{ background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
           >
-            <motion.span animate={{ rotate: [0, -10, 8, 0] }} transition={{ repeat: Infinity, duration: 3, repeatDelay: 1.5 }} className="text-[28px]">
-              🔬
+            <motion.span animate={{ rotate: [0, -10, 8, 0] }} transition={{ repeat: Infinity, duration: 3, repeatDelay: 1.5 }} className="leading-none">
+              <Emoji e="🔬" size={28} className="align-top" />
             </motion.span>
             <div className="min-w-0 flex-1">
               <h3 className="text-[15px] font-extrabold leading-tight">
@@ -524,16 +525,16 @@ export default function TestResult() {
         {/* 연애 케미 매칭 — 공유 트리거 */}
         {chemi && (
           <Card className="mt-4">
-            <h2 className="text-[17px] font-extrabold leading-tight">{t('love.chemi')}</h2>
+            <h2 className="text-[17px] font-extrabold leading-tight"><EmojiText text={t('love.chemi')} /></h2>
             <div className="mt-3 grid grid-cols-2 gap-2.5">
               <div className="rounded-2xl bg-mind-50 px-3 py-3.5 text-center">
-                <p className="text-[12px] font-extrabold tracking-wide text-mind-600">💖 {t('love.best')}</p>
+                <p className="text-[12px] font-extrabold tracking-wide text-mind-600"><Emoji e="💖" inline />{t('love.best')}</p>
                 <p className="mt-1.5 text-[15px] font-extrabold">
                   {PERSONAS[chemi.best].emoji} {l(PERSONAS[chemi.best].name)}
                 </p>
               </div>
               <div className="rounded-2xl bg-red-50 px-3 py-3.5 text-center">
-                <p className="text-[12px] font-extrabold tracking-wide text-red-400">💥 {t('love.worst')}</p>
+                <p className="text-[12px] font-extrabold tracking-wide text-red-400"><Emoji e="💥" inline />{t('love.worst')}</p>
                 <p className="mt-1.5 text-[15px] font-extrabold">
                   {PERSONAS[chemi.worst].emoji} {l(PERSONAS[chemi.worst].name)}
                 </p>
@@ -541,7 +542,7 @@ export default function TestResult() {
             </div>
             <div className="mt-3">
               <Button color="love" onClick={() => nav('/chemi')}>
-                💌 {t('chemi.cta')}
+                <Emoji e="💌" inline />{t('chemi.cta')}
               </Button>
             </div>
           </Card>
@@ -628,7 +629,7 @@ export default function TestResult() {
         {ROUTINES[result.testId] && (
           <div className="mt-4">
             <Button color="mind" onClick={() => nav(`/routine/${result.testId}`)}>
-              🗓 {t('routine.cta')}
+              <Emoji e="🗓" inline />{t('routine.cta')}
             </Button>
           </div>
         )}
@@ -659,12 +660,12 @@ export default function TestResult() {
           <h2 className="text-[17px] font-extrabold leading-tight">{l({ ko: '이 검사의 과학', en: 'The science behind this test', ja: 'この検査の科学' })}</h2>
           {t(`intro.${result.testId}.basis`) !== `intro.${result.testId}.basis` && (
             <div className="mt-3">
-              <p className="text-[12px] font-extrabold text-mind-600">🧪 {l({ ko: '무엇을 재나요?', en: 'What does it measure?', ja: '何を測る？' })}</p>
+              <p className="text-[12px] font-extrabold text-mind-600"><Emoji e="🧪" inline />{l({ ko: '무엇을 재나요?', en: 'What does it measure?', ja: '何を測る？' })}</p>
               <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">{t(`intro.${result.testId}.basis`)}</p>
             </div>
           )}
           <div className="mt-3">
-            <p className="text-[12px] font-extrabold text-mind-600">📊 {l({ ko: '상위 %는 어떻게 읽나요?', en: 'How to read the top %', ja: '上位%の読み方' })}</p>
+            <p className="text-[12px] font-extrabold text-mind-600"><Emoji e="📊" inline />{l({ ko: '상위 %는 어떻게 읽나요?', en: 'How to read the top %', ja: '上位%の読み方' })}</p>
             <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
               {l({
                 ko: `"상위 ${topPercent}%"는 같은 검사를 본 사람 100명을 한 줄로 세웠을 때 내 위치예요. 점수는 정규분포(종 모양 곡선) 기반 추정치라, 응답 컨디션에 따라 몇 % 정도는 자연스럽게 오르내릴 수 있어요. 숫자 하나보다 "어느 구간에 있는가"를 보는 게 정확한 해석이에요.`,
@@ -674,7 +675,7 @@ export default function TestResult() {
             </p>
           </div>
           <div className="mt-3">
-            <p className="text-[12px] font-extrabold text-mind-600">🌱 {l({ ko: '결과, 이렇게 쓰세요', en: 'How to use your result', ja: '結果の活かし方' })}</p>
+            <p className="text-[12px] font-extrabold text-mind-600"><Emoji e="🌱" inline />{l({ ko: '결과, 이렇게 쓰세요', en: 'How to use your result', ja: '結果の活かし方' })}</p>
             <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
               {l({
                 ko: '심리 상태는 계절처럼 변해요. 결과는 "지금의 나"를 비추는 거울이지 낙인이 아니에요. 위의 솔루션 중 하나를 골라 2~3주 실천해 보고, 4~6주 뒤 재검사로 변화를 확인해 보세요. 같은 검사를 2회 이상 하면 결과지에 추이 그래프가 생겨요.',
@@ -703,7 +704,7 @@ export default function TestResult() {
         {/* 참고 절단점 (임상 척도, 정밀화 2차) */}
         {['adhd', 'burnout', 'dopamine'].includes(result.testId) && (
           <div className="mt-3 rounded-2xl bg-surface2 p-3.5">
-            <p className="text-[12px] font-extrabold text-ink-sub">📋 {t('result.cutoffTitle')}</p>
+            <p className="text-[12px] font-extrabold text-ink-sub"><Emoji e="📋" inline />{t('result.cutoffTitle')}</p>
             <p className="mt-1 break-keep text-[12px] font-bold leading-relaxed text-ink-faint">{t(`result.cutoff.${result.testId}`)}</p>
           </div>
         )}
@@ -711,7 +712,7 @@ export default function TestResult() {
         {/* IQ 추정 지표 안내 (정밀화 3차) */}
         {result.testId === 'iq' && (
           <div className="mt-3 rounded-2xl bg-surface2 p-3.5">
-            <p className="text-[12px] font-extrabold text-ink-sub">📋 {t('result.estTitle')}</p>
+            <p className="text-[12px] font-extrabold text-ink-sub"><Emoji e="📋" inline />{t('result.estTitle')}</p>
             <p className="mt-1 break-keep text-[12px] font-bold leading-relaxed text-ink-faint">{t('result.iqEstimate')}</p>
           </div>
         )}
@@ -719,7 +720,7 @@ export default function TestResult() {
           {locked && (
             <div className="absolute inset-x-0 top-4 flex justify-center px-3">
               <div className="w-full max-w-sm rounded-3xl border-2 border-[#D7DAF7] bg-surface/95 p-6 text-center shadow-pop">
-                <div className="text-[28px] leading-none">🔒</div>
+                <div className="leading-none"><Emoji e="🔒" size={28} className="align-top" /></div>
                 <h3 className="mt-2 text-[17px] font-extrabold">{lockedIq ? l({ ko: '정밀 IQ 결과 해제', en: 'Unlock full IQ result', ja: '精密IQ結果を解除' }) : l({ ko: '상세 분석 해제', en: 'Unlock full analysis', ja: '詳細分析を解除' })}</h3>
                 <p className="mx-auto mt-1.5 max-w-[280px] break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
                   {l({ ko: '인지영역별 분석부터 정밀 해석, 강점과 주의점까지. 한 번만 해제하면 결과지 전체를 계속 볼 수 있어요.', en: 'Cognitive breakdown, deep interpretation, strengths — unlock the full result once, kept forever.', ja: '認知領域分析・精密解釈・強み/注意まで結果全体を一度解除すればずっと見られます。' })}
@@ -730,7 +731,7 @@ export default function TestResult() {
                   </Button>
                 </div>
                 <p className="mt-2 text-[11px] font-bold text-ink-faint">
-                  {l({ ko: `보유 💎 ${diamonds} · 1회 해제 후 영구`, en: `You have 💎${diamonds} · one-time, permanent`, ja: `保有💎${diamonds}・一度で永久` })}
+                  <EmojiText text={l({ ko: `보유 💎 ${diamonds} · 1회 해제 후 영구`, en: `You have 💎${diamonds} · one-time, permanent`, ja: `保有💎${diamonds}・一度で永久` })} />
                 </p>
               </div>
             </div>
@@ -753,7 +754,7 @@ export default function TestResult() {
               animate={{ opacity: 1, scale: 1 }}
               className="mt-2 text-[14px] font-extrabold text-mind-700"
             >
-              ✅ {shareMsg}
+              <Emoji e="✅" inline />{shareMsg}
             </motion.p>
           )}
           {/* 카드 배경 테마 선택 */}
@@ -785,7 +786,7 @@ export default function TestResult() {
               }}
               className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-extrabold text-[#3A1D1D]"
             >
-              💬 카카오톡으로 공유
+              <Emoji e="💬" inline />카카오톡으로 공유
             </button>
           )}
           <div className="mt-2.5 grid grid-cols-2 gap-2.5">
@@ -793,7 +794,7 @@ export default function TestResult() {
               {t('share.card')}
             </Button>
             <Button color="white" onClick={share}>
-              {copied ? t('common.copied') : t('share.text')}
+              <EmojiText text={copied ? t('common.copied') : t('share.text')} />
             </Button>
           </div>
           <button
@@ -811,7 +812,7 @@ export default function TestResult() {
           className="mt-3 flex w-full items-center gap-3 rounded-2xl p-3.5 text-left shadow-card"
           style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)' }}
         >
-          <span className="text-[24px]">🎁</span>
+          <Emoji e="🎁" size={24} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-[14px] font-extrabold leading-tight text-white">{l({ ko: '친구 초대하면 둘 다 +100P', en: 'Invite a friend — you both get +100P', ja: '友達招待で二人とも+100P' })}</p>
             <p className="mt-0.5 truncate text-[11px] font-bold text-white/85">{l({ ko: '코드 공유하고 보너스 받기', en: 'Share your code & earn', ja: 'コードを共有してボーナス' })}</p>
@@ -830,7 +831,7 @@ export default function TestResult() {
               setTimeout(() => setAvatarSet(false), 2200)
             }}
           >
-            {avatarSet ? `✅ ${t('result.avatarSet')}` : t('result.setAvatar')}
+            <EmojiText text={avatarSet ? `✅ ${t('result.avatarSet')}` : t('result.setAvatar')} />
           </Button>
         </div>
 
@@ -843,7 +844,7 @@ export default function TestResult() {
             transition={{ ...SPRING.sheet, delay: 0.25 }}
             className="mt-3 flex items-center gap-2.5 rounded-3xl bg-gradient-to-r from-[#F2B01E] to-[#FF7E5F] px-4 py-3 text-white shadow-pop"
           >
-            <span className="text-[20px] leading-none">🎉</span>
+            <Emoji e="🎉" size={20} />
             <p className="min-w-0 flex-1 break-keep text-[13px] font-extrabold leading-snug">
               {t('result.newAnimal')}
             </p>
@@ -865,10 +866,10 @@ export default function TestResult() {
               )
             }
           >
-            🔄 {t('result.retake')}
+            <Emoji e="🔄" inline />{t('result.retake')}
           </Button>
           <Button color="mind" onClick={() => nav('/')}>
-            🏠 {t('result.home')}
+            <Emoji e="🏠" inline />{t('result.home')}
           </Button>
         </div>
 
@@ -883,13 +884,13 @@ export default function TestResult() {
         {/* 다이아 부족 → 충전 안내 (IQ 결과 해제) */}
         <Modal open={needCharge} onClose={() => setNeedCharge(false)}>
           <div className="text-center">
-            <p className="text-[28px] leading-none">💎</p>
+            <p className="leading-none"><Emoji e="💎" size={28} className="align-top" /></p>
             <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
             <p className="mt-1 break-keep text-[13px] font-bold text-ink-faint">
-              {l({ ko: `상세 결과 해제에 ${IQ_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Unlock needs 💎${IQ_DIA_COST} · you have ${diamonds}`, ja: `解除に💎${IQ_DIA_COST}必要・保有${diamonds}` })}
+              <EmojiText text={l({ ko: `상세 결과 해제에 ${IQ_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Unlock needs 💎${IQ_DIA_COST} · you have ${diamonds}`, ja: `解除に💎${IQ_DIA_COST}必要・保有${diamonds}` })} />
             </p>
             <div className="mt-5">
-              <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
+              <Button color="iq" onClick={() => nav('/charge')}><Emoji e="💎" inline />{l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
               <button onClick={() => setNeedCharge(false)} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">{l({ ko: '닫기', en: 'Close', ja: '閉じる' })}</button>
             </div>
           </div>

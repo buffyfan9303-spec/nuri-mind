@@ -8,6 +8,7 @@ import Footer from '../components/Footer'
 import TopStrip from '../components/TopStrip'
 import ScrollChips, { CHIP_W } from '../components/ScrollChips'
 import IconBadge from '../components/IconBadge'
+import Emoji, { EmojiText } from '../components/Emoji'
 import { SkeletonBlock } from '../components/Skeleton'
 import { PointsPill, Card } from '../components/ui'
 import { TESTS } from '../data/tests'
@@ -36,7 +37,7 @@ function StatTile({ icon, value, label, onClick }: { icon: string; value: string
   const inner = (
     <>
       <span className="inline-flex max-w-full items-center justify-center gap-1 text-[16px] font-extrabold leading-none text-white">
-        <span aria-hidden="true" className="shrink-0">{icon}</span>
+        <Emoji e={icon} size={17} />
         <span className="truncate tabular-nums">{value}</span>
       </span>
       <span className="mt-1.5 block max-w-full truncate text-center text-[11px] font-extrabold leading-none text-white/90">{label}</span>
@@ -61,7 +62,7 @@ function SectionHead({ emoji, title, onAll, allLabel }: { emoji: string; title: 
   return (
     <button onClick={onAll} className="-mb-1 mt-3 flex min-h-[44px] w-full items-center justify-between gap-3">
       <h2 className="flex min-w-0 items-center gap-2 text-[20px] font-extrabold leading-tight">
-        <span aria-hidden="true" className="shrink-0 text-[20px]">{emoji}</span>
+        <Emoji e={emoji} size={22} />
         <span className="truncate">{title}</span>
       </h2>
       <span className="shrink-0 text-[13px] font-extrabold leading-none text-mind-600">{allLabel} ›</span>
@@ -189,7 +190,7 @@ export default function Home() {
             className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface2 text-[16px] shadow-card"
             aria-label={l({ ko: '우편함', en: 'Mailbox', ja: 'メールボックス' })}
           >
-            📬
+            <Emoji e="📬" size={18} />
             {unreadMail > 0 && (
               <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-extrabold text-white">
                 {unreadMail > 9 ? '9+' : unreadMail}
@@ -213,7 +214,8 @@ export default function Home() {
               <Avatar avatar={s.avatar} size={38} emojiScale={0.55} className="ring-2 ring-white/40" />
               <p className="truncate text-[17px] font-extrabold leading-none text-white">
                 {s.nickname}
-                <span className="ml-1 text-[14px] font-bold text-white/90">님 👋</span>
+                {/* 👋는 아이콘(SVG)이라 label로 대체 텍스트를 남긴다 — 버튼 이름이 예전처럼 '닉네임 님 👋'으로 읽힌다 */}
+                <span className="ml-1 inline-flex items-center gap-1 text-[14px] font-bold text-white/90">님 <Emoji e="👋" size={16} label="👋" /></span>
               </p>
             </button>
             <motion.button
@@ -222,7 +224,7 @@ export default function Home() {
               onClick={() => nav('/rank')}
               className="flex h-8 shrink-0 items-center gap-1 rounded-full bg-white/20 px-3 text-[13px] font-extrabold leading-none text-white"
             >
-              {tier.emoji} {l(tier.name)} ›
+              <Emoji e={tier.emoji} size={16} /> {l(tier.name)} ›
             </motion.button>
           </div>
 
@@ -231,7 +233,7 @@ export default function Home() {
             {/* 숫자와 단위 P는 같은 기준선(items-baseline)에 — 아래끝 맞춤(items-end)은 글꼴 하단 여백 차이로 P가 떠 보였다 */}
             <div className="flex min-w-0 items-baseline gap-1">
               {/* 코인 이모지는 숫자와 따로 — 한 덩어리로 leading-none + truncate를 걸면 이모지 위아래가 잘린다 */}
-              <span aria-hidden="true" className="shrink-0 self-center text-[24px] leading-none">🪙</span>
+              <Emoji e="🪙" size={24} className="self-center" />
               <span className="truncate text-[28px] font-black leading-tight tracking-tight text-white tabular-nums">
                 {s.points.toLocaleString()}
               </span>
@@ -269,9 +271,7 @@ export default function Home() {
               />
             </div>
             <p className="mt-2 text-[12px] font-extrabold leading-none text-white/90">
-              {next
-                ? t('rank.next', { tier: `${next.emoji} ${l(next.name)}`, p: (next.min - lifetime).toLocaleString() })
-                : t('rank.max')}
+              <EmojiText text={next ? t('rank.next', { tier: `${next.emoji} ${l(next.name)}`, p: (next.min - lifetime).toLocaleString() }) : t('rank.max')} />
             </p>
           </div>
         </motion.div>
@@ -312,11 +312,13 @@ export default function Home() {
           items={[
             { id: 'fav-adhd', emoji: '🎯', label: 'ADHD', color: '#FFB020', onClick: () => nav('/test/adhd') },
             { id: 'fav-iq', emoji: '🧩', label: t('test.iq.short'), color: '#6E7BF2', onClick: () => nav('/test/iq') },
-            { id: 'fav-mbti', emoji: '🔠', label: l({ ko: '성격', en: 'Persona', ja: '性格' }), color: '#3B9EFF', onClick: () => nav('/mbti/quick') },
+            // 성격: 🔠(글자판)은 Fluent에서 파란 키캡이라 칩 사이에서 혼자 '버튼 속 버튼'처럼 보였다 → 🪪(내 유형 카드)
+            // 성격 심층: IQ와 같은 🧩가 한 줄에 두 번 나와 구분이 안 됐다 → 🔍(더 깊이 들여다보기)
+            { id: 'fav-mbti', emoji: '🪪', label: l({ ko: '성격', en: 'Persona', ja: '性格' }), color: '#3B9EFF', onClick: () => nav('/mbti/quick') },
             { id: 'fav-lovestyle', emoji: '💘', label: l({ ko: '연애', en: 'Love', ja: '恋愛' }), color: '#F25C8E', onClick: () => nav('/quick/lovestyle') },
             { id: 'fav-attach', emoji: '💞', label: l({ ko: '애착', en: 'Attach', ja: '愛着' }), color: '#E0567F', onClick: () => nav('/test/love') },
             { id: 'fav-stress', emoji: '🌋', label: l({ ko: '스트레스', en: 'Stress', ja: 'ストレス' }), color: '#8B7CF6', onClick: () => nav('/quick/stress') },
-            { id: 'fav-mbti-deep', emoji: '🧩', label: l({ ko: '성격 심층', en: 'Persona+', ja: '性格詳細' }), color: '#6E7BF2', onClick: () => nav('/mbti/deep') },
+            { id: 'fav-mbti-deep', emoji: '🔍', label: l({ ko: '성격 심층', en: 'Persona+', ja: '性格詳細' }), color: '#6E7BF2', onClick: () => nav('/mbti/deep') },
           ]}
         />
 
@@ -361,7 +363,7 @@ export default function Home() {
         {DEEP_CATS.map((cat) => (
           <div key={cat.key}>
             <p className="mb-1 mt-2 flex items-center gap-1.5 text-[14px] font-extrabold leading-none text-ink-sub">
-              <span aria-hidden="true">{cat.emoji}</span>
+              <Emoji e={cat.emoji} size={16} />
               {l(cat.label)}
             </p>
             <ScrollChips

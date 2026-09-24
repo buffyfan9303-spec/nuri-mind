@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { SPRING } from '../lib/motion'
 import { TopBar } from '../components/ui'
 import { JellyChip } from '../components/ScrollChips'
+import Emoji from '../components/Emoji'
 import { useL, useT } from '../i18n/useT'
 import { TESTS } from '../data/tests'
 import { TERMS, TEST_SHORT_KEY } from '../data/terms'
@@ -50,8 +51,9 @@ export default function AllTests() {
       chips: [
         { id: 'adhd', emoji: '🎯', label: 'ADHD', color: '#FFB020', go: '/test/adhd' },
         { id: 'iq', emoji: '🧩', label: t('test.iq.short'), color: '#6E7BF2', go: '/test/iq' },
-        { id: 'mbti', emoji: '🔠', label: l({ ko: '성격', en: 'Persona', ja: '性格' }), color: '#3B9EFF', go: '/mbti/quick' },
-        { id: 'mbti-deep', emoji: '🧩', label: l({ ko: '성격 심층', en: 'Persona+', ja: '性格詳細' }), color: '#6E7BF2', go: '/mbti/deep' },
+        // 아이콘은 홈 즐겨찾기와 같게(🪪 성격 · 🔍 성격 심층 — 이유는 Home.tsx)
+        { id: 'mbti', emoji: '🪪', label: l({ ko: '성격', en: 'Persona', ja: '性格' }), color: '#3B9EFF', go: '/mbti/quick' },
+        { id: 'mbti-deep', emoji: '🔍', label: l({ ko: '성격 심층', en: 'Persona+', ja: '性格詳細' }), color: '#6E7BF2', go: '/mbti/deep' },
         { id: 'fortune', emoji: '🔮', label: l({ ko: '운세', en: 'Fortune', ja: '運勢' }), color: '#6B4FB8', go: '/fortune' },
       ],
     },
@@ -84,7 +86,7 @@ export default function AllTests() {
             className="scroll-mt-20 pt-4"
           >
             <h2 className="flex items-center gap-2 text-[20px] font-extrabold leading-tight">
-              <span aria-hidden="true">{sec.emoji}</span>
+              <Emoji e={sec.emoji} size={22} />
               {typeof sec.title === 'string' ? sec.title : l(sec.title)}
             </h2>
             <div className="mt-2 flex flex-wrap gap-2.5 pb-2 pt-1">

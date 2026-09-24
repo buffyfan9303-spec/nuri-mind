@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
 import { useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
+import Emoji from '../components/Emoji'
 
 /**
  * 404 — 예전엔 `path="*"`가 홈으로 조용히 리다이렉트했다. 잘못 친 주소·바뀐 링크·오래된 공유 링크가
@@ -24,9 +25,7 @@ export default function NotFound() {
   return (
     <div className="bg-dots min-h-dvh pb-36">
       <main className="mx-auto flex min-h-[70dvh] max-w-md flex-col items-center justify-center px-6 text-center">
-        <div className="text-5xl" aria-hidden="true">
-          🧭
-        </div>
+        <div className="leading-none"><Emoji e="🧭" size={48} className="align-top" /></div>
         <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
           {l({ ko: '이 주소엔 아무것도 없어요', en: 'Nothing lives at this address', ja: 'このアドレスには何もありません' })}
         </h1>

@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
 import { useL } from '../../i18n/useT'
+import Emoji from '../Emoji'
 
 /** 숫자 카운터 전용 — lib/motion의 transition 프리셋과 API가 달라 여기 둔다(오버슈트 금지) */
 const COUNTER_SPRING = { stiffness: 110, damping: 22 }
@@ -35,7 +36,7 @@ export function DiamondPill() {
       aria-label={l({ ko: `다이아 ${diamonds}개 · 충전하기`, en: `${diamonds} diamonds · Top up`, ja: `ダイヤ${diamonds}個・チャージ` })}
       className="relative flex items-center gap-1 rounded-full bg-surface px-2 py-1 text-sm font-extrabold tabular-nums text-[#6E7BF2] shadow-card before:absolute before:-inset-y-2 before:inset-x-0 before:content-['']"
     >
-      💎 <motion.span>{diaText}</motion.span>
+      <Emoji e="💎" size={16} /> <motion.span>{diaText}</motion.span>
       <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#6E7BF2] text-[11px] leading-none text-white">+</span>
     </motion.button>
   )
@@ -51,12 +52,14 @@ export function PointsPill({ showStreak = true }: { showStreak?: boolean } = {})
         // 360px 폭에서는 연속 출석 알약을 접는다 — 세 알약이 제목 자리를 88px까지 먹어 '주의산…'처럼 잘렸다.
         // 연속 출석은 홈 대시보드에도 있으니 좁은 폰에서 상단바에서만 빠진다
         <span className="hidden items-center gap-0.5 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold tabular-nums text-orange-500 shadow-card min-[380px]:flex">
-          🔥{streak}
+          <Emoji e="🔥" size={15} />
+          {streak}
         </span>
       )}
       <DiamondPill />
-      <span className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold tabular-nums text-mind-700 shadow-card">
-        🪙 <motion.span>{pointsText}</motion.span>
+      {/* 아이콘은 SVG라 글자가 아니다 — 잔액을 잡는 테스트는 data-testid로 찾는다 */}
+      <span data-testid="points-pill" className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold tabular-nums text-mind-700 shadow-card">
+        <Emoji e="🪙" size={16} /> <motion.span>{pointsText}</motion.span>
       </span>
     </div>
   )

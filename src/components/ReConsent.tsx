@@ -9,6 +9,7 @@ import { sfx } from '../lib/sound'
 import { LEGAL_VERSION, LEGAL_EFFECTIVE } from '../data/legal'
 import { lockScroll, unlockScroll } from '../lib/scrollLock'
 import { useDialogFocus } from '../hooks/useDialogFocus'
+import Emoji from './Emoji'
 
 /**
  * 약관 개정 재동의 — 기존(가입완료) 이용자의 동의 버전이 현재와 다르면 표시.
@@ -58,7 +59,7 @@ export default function ReConsent() {
         transition={SPRING.ui}
         className="w-full max-w-sm rounded-3xl bg-surface p-6 shadow-pop"
       >
-        <div className="text-center text-[28px]" aria-hidden="true">📋</div>
+        <div className="text-center leading-none"><Emoji e="📋" size={28} className="align-top" /></div>
         <h2 id={titleId} className="mt-2 break-keep text-center text-[20px] font-extrabold leading-tight">{t('reconsent.title')}</h2>
         <p className="mt-2 break-keep text-center text-[14px] font-bold leading-relaxed text-ink-sub">{t('reconsent.body')}</p>
         <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-extrabold">

@@ -9,6 +9,7 @@ import { mulberry32 } from '../lib/random'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 /** 기호 9종 → 숫자 1~9 대응 (index 0 → 1) */
 const SYMBOLS = ['🔺', '🟢', '🟦', '🔶', '⭐', '❤️', '➕', '🟣', '🌙']
@@ -119,8 +120,8 @@ export default function SpeedRun() {
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5">
         {phase === 'ready' ? (
           <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="text-[28px] leading-none">
-              ⚡
+            <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 2.2 }} className="leading-none">
+              <Emoji e="⚡" size={28} className="align-top" />
             </motion.div>
             <h2 className="mt-4 text-[20px] font-extrabold">{l({ ko: '대응표를 외워두세요', en: 'Learn the key', ja: '対応表を覚えて' })}</h2>
             <p className="mt-1.5 break-keep text-[13px] font-bold text-ink-sub">
@@ -166,9 +167,9 @@ export default function SpeedRun() {
                     initial={{ opacity: 1, y: 0 }}
                     animate={{ opacity: 0, y: -18 }}
                     transition={{ duration: 0.4 }}
-                    className="absolute -top-2 text-[20px]"
+                    className="absolute -top-2 leading-none"
                   >
-                    {flash.ok ? '✅' : '❌'}
+                    <Emoji e={flash.ok ? '✅' : '❌'} size={20} className="align-top" />
                   </motion.span>
                 )}
               </div>
@@ -194,7 +195,7 @@ export default function SpeedRun() {
       {/* 중단 확인 */}
       <Modal open={quitOpen} onClose={closeQuit}>
         <div className="text-center">
-          <div className="text-4xl">🥺</div>
+          <div className="leading-none"><Emoji e="🥺" size={36} className="align-top" /></div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
           <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}

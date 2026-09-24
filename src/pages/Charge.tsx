@@ -13,6 +13,7 @@ import {
 import { useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 /**
  * 💎 다이아 충전 — 유료 디지털 재화(1다이아=100원).
@@ -69,9 +70,9 @@ export default function Charge() {
             transition={SPRING.flick}
             className="mt-1 text-[28px] font-extrabold leading-none"
           >
-            💎 {diamonds.toLocaleString()}
+            <Emoji e="💎" inline />{diamonds.toLocaleString()}
           </motion.p>
-          <p className="mt-2 text-[12px] font-extrabold text-white/80">1 💎 = 100원 상당</p>
+          <p className="mt-2 text-[12px] font-extrabold text-white/80">1 <Emoji e="💎" inline />= 100원 상당</p>
         </Card>
 
         {/* 다이아 사용처 */}
@@ -80,9 +81,9 @@ export default function Charge() {
           <div className="mt-3 space-y-2.5">
             {USES.map((u) => (
               <div key={u.emoji} className="flex items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EEF0FE] text-[17px]">{u.emoji}</span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EEF0FE]"><Emoji e={u.emoji} size={17} /></span>
                 <span className="min-w-0 flex-1 break-keep text-[13px] font-bold text-ink-sub">{u.label}</span>
-                <span className="shrink-0 rounded-full bg-[#EEF0FE] px-2.5 py-1 text-[12px] font-extrabold text-[#6E7BF2]">💎{u.cost}</span>
+                <span className="shrink-0 rounded-full bg-[#EEF0FE] px-2.5 py-1 text-[12px] font-extrabold text-[#6E7BF2]"><Emoji e="💎" inline />{u.cost}</span>
               </div>
             ))}
           </div>
@@ -110,7 +111,7 @@ export default function Charge() {
                       BEST
                     </span>
                   )}
-                  <p className="text-[28px] leading-none">💎</p>
+                  <p className="leading-none"><Emoji e="💎" size={28} className="align-top" /></p>
                   <p className="mt-1.5 text-[20px] font-extrabold text-ink">{b.dia.toLocaleString()}<span className="text-[13px] font-bold text-ink-faint"> 다이아</span></p>
                   {b.off ? (
                     <div className="mt-1">
@@ -129,7 +130,7 @@ export default function Charge() {
 
         {/* 베타 안내 */}
         <div className="rounded-2xl bg-[#FFF6E5] px-4 py-3 text-[12px] font-bold leading-relaxed text-[#9A6B00]">
-          🧪 {l({
+          <Emoji e="🧪" inline />{l({
             ko: '결제(PG) 연동 전 베타예요. 지금은 충전하면 바로 지급되고, 정식 오픈 때 카카오페이·신용카드·토스 결제로 바뀌어요.',
             en: 'Beta before payment gateway. Diamonds are granted instantly now; real KakaoPay/card/Toss checkout comes at launch.',
             ja: '決済連携前のベータです。今は即時付与され、正式公開時にカカオペイ・カード・Toss決済へ切り替わります。',
@@ -141,7 +142,7 @@ export default function Charge() {
       <Modal open={!!sel} onClose={close}>
         {sel && !done && (
           <div className="text-center">
-            <p className="text-[28px] leading-none">💎</p>
+            <p className="leading-none"><Emoji e="💎" size={28} className="align-top" /></p>
             <h3 className="mt-2 text-[20px] font-extrabold">{sel.dia.toLocaleString()} 다이아 충전</h3>
             <p className="mt-1 text-[14px] font-bold text-ink-faint">
               ₩{sel.krw.toLocaleString()}{sel.off ? ` · ${sel.off}% 할인` : ''}
@@ -174,11 +175,11 @@ export default function Charge() {
         )}
         {sel && done && (
           <div className="text-center">
-            <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="text-[28px] leading-none">
-              🎉
+            <motion.p initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={SPRING.flick} className="leading-none">
+              <Emoji e="🎉" size={28} className="align-top" />
             </motion.p>
             <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '충전 완료!', en: 'Charged!', ja: 'チャージ完了！' })}</h3>
-            <p className="mt-1 text-[15px] font-bold text-[#6E7BF2]">💎 +{sel.dia.toLocaleString()}</p>
+            <p className="mt-1 text-[15px] font-bold text-[#6E7BF2]"><Emoji e="💎" inline />+{sel.dia.toLocaleString()}</p>
             <div className="mt-5">
               <Button color="iq" onClick={close}>{l({ ko: '확인', en: 'Done', ja: '確認' })}</Button>
             </div>

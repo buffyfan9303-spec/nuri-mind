@@ -58,7 +58,8 @@ test('전체 초기화 — 2차 확인 전에는 버튼이 잠기고, 확인 후
 
   // 시드가 실제로 하이드레이트됐는지 먼저 못 박는다. 무과금 상태면 2차 확인 자체가 렌더되지 않아
   // 아래 disabled 검증이 "없는 버튼은 늘 통과"로 무력화된다.
-  await expect(page.getByText(`🧪 ${DEEP_TEST_IDS.length}`)).toBeVisible()
+  // 🧪 아이콘은 SVG(글자 아님) — 검사 수 칸을 data-testid로 잡고 값은 정확히 못 박는다
+  await expect(page.getByTestId('profile-results')).toHaveText(String(DEEP_TEST_IDS.length))
   // 마커도 같은 이유로 '있었음'을 먼저 못 박는다 — 키 이름이 바뀌면 아래 "지워졌다"가 공허하게 통과한다
   await expect.poll(() => page.evaluate((k) => localStorage.getItem(k), SYNC_UID_KEY)).toBe(PREV_UID)
 

@@ -8,6 +8,7 @@ import { expById, TIERS } from '../data/rank'
 import { sfx } from '../lib/sound'
 import { grantDiamondsNick, sendMailNick } from '../lib/mailbox'
 import { probeAi, type AiHealth, type AiFnName } from '../lib/aiHealth'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 type Tab = 'surveys' | 'redeem' | 'exp' | 'reports' | 'stats'
 
@@ -38,7 +39,7 @@ function PinGate() {
     <div className="min-h-dvh pb-28">
       <TopBar back="/profile" title={t('admin.title')} />
       <div className="mx-auto max-w-md px-5 pt-16 text-center">
-        <div className="text-5xl">🔐</div>
+        <div className="leading-none"><Emoji e="🔐" size={48} className="align-top" /></div>
         <h1 className="mt-4 text-lg font-extrabold">{t('admin.pinTitle')}</h1>
         <div className={`mx-auto mt-5 max-w-[260px] ${err ? 'shake' : ''}`}>
           <input
@@ -153,7 +154,7 @@ function Console() {
     <div className="min-h-dvh bg-[#2F4050] pb-28">
       <div className="sticky top-0 z-30 bg-[#2F4050]/95 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-md items-center gap-2 px-4">
-          <span className="text-lg font-extrabold text-white">🛠 {t('admin.title')}</span>
+          <span className="text-lg font-extrabold text-white"><Emoji e="🛠" inline />{t('admin.title')}</span>
           <div className="flex-1" />
           <button onClick={lockAdmin} className="rounded-xl bg-white/10 px-3 py-1.5 text-xs font-extrabold text-white">
             {t('admin.lock')}
@@ -181,12 +182,12 @@ function Console() {
         {tab === 'surveys' && (
           <div className="space-y-3">
             {pendingSurveys.length === 0 && (
-              <Card className="py-10 text-center text-sm font-bold text-ink-faint">{t('admin.emptyQueue')}</Card>
+              <Card className="py-10 text-center text-sm font-bold text-ink-faint"><EmojiText text={t('admin.emptyQueue')} /></Card>
             )}
             {pendingSurveys.map((sv) => (
               <Card key={sv.id} className="!p-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">{sv.emoji}</span>
+                  <Emoji e={sv.emoji} size={24} />
                   <div className="min-w-0 flex-1">
                     <h3 className="text-[15px] font-extrabold leading-snug">{sv.title}</h3>
                     <p className="mt-0.5 text-xs font-bold leading-relaxed text-ink-sub">{sv.desc}</p>
@@ -198,7 +199,7 @@ function Console() {
                       <Chip tone="mind">
                         {t('admin.rewardPer')} {sv.reward}P
                       </Chip>
-                      <Chip tone="gray">🎯 {sv.target}</Chip>
+                      <Chip tone="gray"><Emoji e="🎯" inline />{sv.target}</Chip>
                       {sv.mine && <Chip tone="amber">USER</Chip>}
                     </div>
                   </div>
@@ -239,7 +240,7 @@ function Console() {
                       sfx.coin()
                     }}
                   >
-                    ✅ {t('admin.approve')}
+                    <Emoji e="✅" inline />{t('admin.approve')}
                   </Button>
                   <Button
                     color="danger"
@@ -251,7 +252,7 @@ function Console() {
                       sfx.err()
                     }}
                   >
-                    ⛔ {t('admin.reject')}
+                    <Emoji e="⛔" inline />{t('admin.reject')}
                   </Button>
                 </div>
               </Card>
@@ -262,25 +263,25 @@ function Console() {
         {tab === 'redeem' && (
           <div className="space-y-3">
             {pendingRedeems.length === 0 && (
-              <Card className="py-10 text-center text-sm font-bold text-ink-faint">{t('admin.emptyQueue')}</Card>
+              <Card className="py-10 text-center text-sm font-bold text-ink-faint"><EmojiText text={t('admin.emptyQueue')} /></Card>
             )}
             {pendingRedeems.map((rd) => (
               <Card key={rd.id} className="!p-4">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{rd.emoji}</span>
+                  <Emoji e={rd.emoji} size={24} />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-[15px] font-extrabold">{rd.itemName}</h3>
                     <p className="text-xs font-bold text-ink-faint">
-                      🪙 {rd.cost.toLocaleString()}P · {new Date(rd.at).toLocaleString()}
+                      <Emoji e="🪙" inline />{rd.cost.toLocaleString()}P · {new Date(rd.at).toLocaleString()}
                     </p>
                   </div>
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <Button color="mind" size="sm" onClick={() => { decideRedemption(rd.id, true); sfx.coin() }}>
-                    ✅ {t('admin.approve')}
+                    <Emoji e="✅" inline />{t('admin.approve')}
                   </Button>
                   <Button color="danger" size="sm" onClick={() => { if (!window.confirm(`'${rd.itemName}' 교환을 반려하고 포인트를 돌려줄까요?`)) return; decideRedemption(rd.id, false); sfx.err() }}>
-                    ⛔ {t('admin.reject')}
+                    <Emoji e="⛔" inline />{t('admin.reject')}
                   </Button>
                 </div>
               </Card>
@@ -291,7 +292,7 @@ function Console() {
         {tab === 'exp' && (
           <div className="space-y-3">
             {pendingApps.length === 0 && (
-              <Card className="py-10 text-center text-[15px] font-bold text-ink-faint">{t('admin.emptyQueue')}</Card>
+              <Card className="py-10 text-center text-[15px] font-bold text-ink-faint"><EmojiText text={t('admin.emptyQueue')} /></Card>
             )}
             {pendingApps.map((ap) => {
               const ex = expById(ap.expId)
@@ -299,20 +300,20 @@ function Console() {
               return (
                 <Card key={ap.id} className="!p-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{ex?.emoji ?? '🎁'}</span>
+                    <Emoji e={ex?.emoji ?? '🎁'} size={24} />
                     <div className="min-w-0 flex-1">
                       <h3 className="truncate text-[16px] font-extrabold">{l(ex?.title)}</h3>
                       <p className="text-[13px] font-bold text-ink-faint">
-                        {need ? `${need.emoji} ${l(need.name)}+` : ''} · {new Date(ap.at).toLocaleString()}
+                        {need ? <><Emoji e={need.emoji} inline />{l(need.name)}+</> : ''} · {new Date(ap.at).toLocaleString()}
                       </p>
                     </div>
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <Button color="mind" size="sm" onClick={() => { decideApplication(ap.id, true); sfx.coin() }}>
-                      ✅ {t('admin.approve')}
+                      <Emoji e="✅" inline />{t('admin.approve')}
                     </Button>
                     <Button color="danger" size="sm" onClick={() => { if (!window.confirm('이 체험단 신청을 반려할까요?')) return; decideApplication(ap.id, false); sfx.err() }}>
-                      ⛔ {t('admin.reject')}
+                      <Emoji e="⛔" inline />{t('admin.reject')}
                     </Button>
                   </div>
                 </Card>
@@ -324,12 +325,12 @@ function Console() {
         {tab === 'reports' && (
           <div className="space-y-3">
             {openReports.length === 0 && (
-              <Card className="py-10 text-center text-[15px] font-bold text-ink-faint">{t('admin.emptyQueue')}</Card>
+              <Card className="py-10 text-center text-[15px] font-bold text-ink-faint"><EmojiText text={t('admin.emptyQueue')} /></Card>
             )}
             {openReports.map((rp) => (
               <Card key={rp.id} className="!p-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">🚩</span>
+                  <Emoji e="🚩" size={20} />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-[14px] font-extrabold">{rp.nick}</h3>
                     <p className="text-[11px] font-bold text-ink-faint">{new Date(rp.at).toLocaleString()}</p>
@@ -340,10 +341,10 @@ function Console() {
                 </p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <Button color="danger" size="sm" onClick={() => { if (!window.confirm(`${rp.nick}님의 글을 숨길까요?`)) return; resolveReport(rp.id, true); sfx.err() }}>
-                    🙈 {t('admin.report.hide')}
+                    <Emoji e="🙈" inline />{t('admin.report.hide')}
                   </Button>
                   <Button color="mind" size="sm" onClick={() => { resolveReport(rp.id, false); sfx.tap() }}>
-                    ✅ {t('admin.report.keep')}
+                    <Emoji e="✅" inline />{t('admin.report.keep')}
                   </Button>
                 </div>
               </Card>
@@ -361,7 +362,7 @@ function Console() {
               { label: t('admin.stat.responses'), value: totalResponses, icon: '🗳️' },
             ].map((st) => (
               <Card key={st.label} className="!p-5 text-center">
-                <div className="text-2xl">{st.icon}</div>
+                <div className="leading-none"><Emoji e={st.icon} size={24} className="align-top" /></div>
                 <div className="mt-2 text-2xl font-extrabold tracking-tight">{st.value}</div>
                 <div className="mt-0.5 text-[11px] font-bold tracking-wide text-ink-sub">{st.label}</div>
               </Card>
@@ -370,9 +371,9 @@ function Console() {
           {/* 정밀검사 상세 💎 게이팅 토글 (운영자) */}
           <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/10 p-4">
             <div className="min-w-0 pr-3">
-              <p className="text-[14px] font-extrabold text-white">💎 두뇌 측정 상세 게이팅</p>
+              <p className="text-[14px] font-extrabold text-white"><Emoji e="💎" inline />두뇌 측정 상세 게이팅</p>
               <p className="mt-0.5 break-keep text-[11px] font-bold text-white/60">
-                켜면 기억·집중·처리속도·공간 상세분석이 💎{PRECISION_DIA_COST}로 잠겨요 (IQ 정밀은 별도)
+                켜면 기억·집중·처리속도·공간 상세분석이 <Emoji e="💎" inline />{PRECISION_DIA_COST}로 잠겨요 (IQ 정밀은 별도)
               </p>
             </div>
             <button
@@ -388,7 +389,7 @@ function Console() {
 
           {/* AI 엣지 함수 진단 — 키가 실제로 먹었는지 확인할 유일한 수단 */}
           <div className="mt-3 rounded-2xl bg-white/10 p-4">
-            <h3 className="text-[14px] font-extrabold text-white">🩺 AI 연결 진단</h3>
+            <h3 className="text-[14px] font-extrabold text-white"><Emoji e="🩺" inline />AI 연결 진단</h3>
             <p className="mt-1 text-[11px] leading-relaxed text-white/50">
               키(ANTHROPIC_API_KEY 또는 GOOGLE_API_KEY)가 없으면 앱은 조용히 정적 요약으로 착지해요.
               키를 넣은 뒤 여기서 실제 동작과 어느 제공자가 붙었는지 확인하세요. (실호출 1회분이 과금됩니다)
@@ -431,7 +432,7 @@ function Console() {
               onClick={() => { addDiamonds(10000); setOpMsg('이 기기에 💎10,000 지급됨'); sfx.coin() }}
               className="mt-2 w-full rounded-xl bg-[#1ab394] py-2.5 text-[13px] font-extrabold text-white"
             >
-              내 기기에 💎10,000 지급 (로컬)
+              내 기기에 <Emoji e="💎" inline />10,000 지급 (로컬)
             </button>
             <div className="mt-2 flex gap-2">
               <input value={diaNick} onChange={(e) => setDiaNick(e.target.value)} placeholder="닉네임(서버 유저)" className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />

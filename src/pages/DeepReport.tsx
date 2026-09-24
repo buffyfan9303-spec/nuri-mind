@@ -11,6 +11,7 @@ import { track } from '../lib/analytics'
 import { useT, useL } from '../i18n/useT'
 import { SECTION_EMOJI, buildPayload, fetchDeepReport, type DeepReport as Report } from '../lib/deepReport'
 import { burst } from '../lib/confetti'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 /**
  * 🧬 AI 종합 심층 리포트 (프리미엄) — 심층검사 11종을 가로질러 "한 사람"으로 통합.
@@ -142,7 +143,7 @@ export default function DeepReport() {
       <div className="bg-dots min-h-dvh pb-36">
         <TopBar back="/" title={l({ ko: 'AI 종합 심층 리포트', en: 'AI Deep Report', ja: 'AI総合レポート' })} />
         <main className="mx-auto max-w-md px-5 pt-8 text-center">
-          <div className="text-6xl">🧬</div>
+          <div className="leading-none"><Emoji e="🧬" size={60} className="align-top" /></div>
           <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
             {l({ ko: '심층검사를 모두 마치면 열려요', en: 'Unlocks when all deep tests are done', ja: '深層検査を全て終えると解放' })}
           </h1>
@@ -188,7 +189,7 @@ export default function DeepReport() {
           </Card>
           <div className="mx-auto mt-6 max-w-[260px]">
             <Button color="mind" onClick={() => nav('/')}>
-              🧠 {l({ ko: '검사 이어서 하기', en: 'Continue tests', ja: '検査を続ける' })}
+              <Emoji e="🧠" inline />{l({ ko: '검사 이어서 하기', en: 'Continue tests', ja: '検査を続ける' })}
             </Button>
           </div>
         </main>
@@ -209,7 +210,7 @@ export default function DeepReport() {
           className="mt-4 rounded-3xl bg-gradient-to-br from-[#6E7BF2] to-[#A88BF2] p-5 text-white shadow-pop"
         >
           <div className="flex items-center gap-2.5">
-            <span className="text-[28px] leading-none">🧬</span>
+            <Emoji e="🧬" size={28} />
             <div className="min-w-0 flex-1">
               <h1 className="break-keep text-[17px] font-extrabold leading-tight">
                 {l({ ko: 'AI 종합 심층 리포트', en: 'AI Deep Report', ja: 'AI総合レポート' })}
@@ -224,7 +225,7 @@ export default function DeepReport() {
             </div>
           </div>
           <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-[12px] font-extrabold">
-            ✅ {l({ ko: `심층검사 ${DEEP_IDS.length}종 완주`, en: `All ${DEEP_IDS.length} deep tests done`, ja: `深層検査${DEEP_IDS.length}種完走` })}
+            <Emoji e="✅" inline />{l({ ko: `심층검사 ${DEEP_IDS.length}종 완주`, en: `All ${DEEP_IDS.length} deep tests done`, ja: `深層検査${DEEP_IDS.length}種完走` })}
           </div>
         </motion.div>
 
@@ -234,9 +235,9 @@ export default function DeepReport() {
             <motion.div
               animate={{ rotate: [0, 12, -12, 0] }}
               transition={{ repeat: Infinity, duration: 2.2 }}
-              className="text-[28px] leading-none"
+              className="leading-none"
             >
-              🧬
+              <Emoji e="🧬" size={28} className="align-top" />
             </motion.div>
             <p className="mt-3 break-keep text-[14px] font-extrabold">
               {l({ ko: '검사들을 하나로 엮는 중…', en: 'Weaving your tests together…', ja: '検査を一つに織り込み中…' })}
@@ -258,7 +259,7 @@ export default function DeepReport() {
             >
               <Card className="mt-3.5 !p-5">
                 <h2 className="flex items-center gap-2 break-keep text-[16px] font-extrabold">
-                  <span>{SECTION_EMOJI[s.key] ?? '📄'}</span>
+                  <Emoji e={SECTION_EMOJI[s.key] ?? '📄'} inline />
                   {s.title}
                 </h2>
                 <p className="mt-2.5 whitespace-pre-line break-keep text-[14px] font-bold leading-[1.85] text-ink-sub">
@@ -295,7 +296,7 @@ export default function DeepReport() {
             ariaLabel={l({ ko: '성장 플랜 열기', en: 'Open growth plan', ja: '成長プランを開く' })}
             className="mt-3.5 flex items-center gap-3 !bg-gradient-to-r from-mind-500 to-sky2-500 !p-4"
           >
-            <span className="text-[24px]">🌱</span>
+            <Emoji e="🌱" size={24} />
             <div className="min-w-0 flex-1">
               <h3 className="break-keep text-[15px] font-extrabold text-white">
                 {l({ ko: '읽었으면, 이제 실천으로', en: 'Now turn it into action', ja: '読んだら実践へ' })}
@@ -316,9 +317,9 @@ export default function DeepReport() {
               disabled={!canRegen}
               className={`text-[12px] font-extrabold ${canRegen ? 'text-mind-600' : 'text-ink-faint/60'}`}
             >
-              {canRegen
+              <EmojiText text={canRegen
                 ? `🔄 ${l({ ko: '리포트 다시 생성', en: 'Regenerate report', ja: 'レポート再生成' })}`
-                : l({ ko: '재생성은 하루 1회예요', en: 'Regenerate once a day', ja: '再生成は1日1回' })}
+                : l({ ko: '재생성은 하루 1회예요', en: 'Regenerate once a day', ja: '再生成は1日1回' })} />
             </button>
           </div>
         )}
@@ -335,7 +336,7 @@ export default function DeepReport() {
 
             <Card className="mt-3.5 !p-5">
               <p className="flex items-center gap-1.5 text-[12px] font-extrabold text-ink-faint">
-                🔒 {l({ ko: '프리미엄에서 전체 공개', en: 'Full report in Premium', ja: 'プレミアムで全公開' })}
+                <Emoji e="🔒" inline />{l({ ko: '프리미엄에서 전체 공개', en: 'Full report in Premium', ja: 'プレミアムで全公開' })}
               </p>
               <div className="mt-2.5">
                 {ORDER.filter((k) => k !== 'core' && (k !== 'cognition' || hasCognition)).map((k, i, arr) => (
@@ -343,7 +344,8 @@ export default function DeepReport() {
                     key={k}
                     className={`flex items-center gap-2.5 py-3 ${i < arr.length - 1 ? 'border-b border-line' : ''}`}
                   >
-                    <span className="text-[15px] opacity-40">🔒</span>
+                    {/* 잠긴 섹션 표시 — 아이콘이 곧 뜻이라 대체 텍스트('잠김')를 남긴다(개수 검증도 이 이름으로 한다) */}
+                    <Emoji e="🔒" size={15} className="opacity-40" label={l({ ko: '잠김', en: 'Locked', ja: 'ロック' })} />
                     <span className="flex-1 break-keep text-[14px] font-bold text-ink-sub">
                       {SECTION_EMOJI[k]}{' '}
                       {l(
@@ -376,7 +378,7 @@ export default function DeepReport() {
                 className="mt-3.5 !bg-gradient-to-br from-[#6E7BF2] to-[#A88BF2] !p-5 text-white"
               >
                 <p className="flex items-center gap-2 text-[15px] font-extrabold">
-                  ✨ {l({ ko: '프리미엄으로 전체 해금', en: 'Unlock everything with Premium', ja: 'プレミアムで全解放' })}
+                  <Emoji e="✨" inline />{l({ ko: '프리미엄으로 전체 해금', en: 'Unlock everything with Premium', ja: 'プレミアムで全解放' })}
                 </p>
                 <p className="mt-1.5 break-keep text-[13px] font-bold leading-relaxed text-white/90">
                   {l({

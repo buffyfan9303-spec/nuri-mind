@@ -15,6 +15,7 @@ import { shiftGrad } from '../lib/color'
 import { CHARACTERS } from '../lib/characters'
 import { encodeQuickDuel } from '../lib/duel'
 import { useStore } from '../store/useStore'
+import Emoji from '../components/Emoji'
 
 export default function QuickTest() {
   const { id } = useParams<{ id: string }>()
@@ -187,12 +188,12 @@ export default function QuickTest() {
                   <motion.span
                     key={i}
                     aria-hidden="true"
-                    className="absolute left-1/2 top-1/2 text-[17px] leading-none"
+                    className="absolute left-1/2 top-1/2 flex leading-none"
                     initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
                     animate={{ x: Math.cos(rad) * 86, y: Math.sin(rad) * 86, scale: [0, 1.1, 0], opacity: [0, 1, 0] }}
                     transition={{ duration: 0.95, delay: 0.3 + i * 0.025, ease: 'easeOut' }}
                   >
-                    {s.e}
+                    <Emoji e={s.e} size={18} />
                   </motion.span>
                 )
               })}
@@ -211,7 +212,7 @@ export default function QuickTest() {
                       className="h-[108px] w-[108px]"
                     />
                   ) : (
-                    <span className="block text-[28px] leading-none">{winner.emoji}</span>
+                    <Emoji e={winner.emoji} size={28} className="block" />
                   )}
                 </span>
               </motion.div>
@@ -244,7 +245,7 @@ export default function QuickTest() {
 
           {(copied || saved) && (
             <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">
-              ✅ {saved ? t('share.saved') : t('common.copied')}
+              <Emoji e="✅" inline />{saved ? t('share.saved') : t('common.copied')}
             </p>
           )}
 
@@ -274,7 +275,7 @@ export default function QuickTest() {
             </button>
             {test.funnel && (
               <Button color="white" onClick={() => nav(`/test/${test.funnel}`)}>
-                🔬 {t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}
+                <Emoji e="🔬" inline />{t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}
               </Button>
             )}
             <button onClick={reset} className="w-full py-2 text-[13px] font-extrabold text-ink-faint">

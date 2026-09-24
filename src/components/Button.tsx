@@ -3,6 +3,7 @@ import { press3d } from '../lib/motion'
 import { useRef, useState, type ReactNode } from 'react'
 import { haptic } from '../lib/haptic'
 import { canHover } from '../lib/device'
+import Emoji from './Emoji'
 
 export type BtnColor = 'mind' | 'sky' | 'adhd' | 'ego' | 'iq' | 'love' | 'burn' | 'dopa' | 'reso' | 'dk' | 'white' | 'danger'
 
@@ -112,13 +113,12 @@ export default function Button({
           {SPARKS.map((sp, i) => (
             <motion.span
               key={i}
-              className="absolute leading-none"
-              style={{ fontSize: 13 }}
+              className="absolute flex leading-none"
               initial={{ x: 0, y: 0, scale: 0.4, opacity: 0.95 }}
               animate={{ x: sp.x, y: sp.y, scale: 0, opacity: 0 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
             >
-              {sp.e}
+              <Emoji e={sp.e} size={14} />
             </motion.span>
           ))}
         </span>

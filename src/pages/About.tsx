@@ -7,6 +7,7 @@ import { COMPANY, CONTACT_EMAIL, CONTACT_PHONE, MAIL_ORDER_NO } from '../data/co
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { usePageMeta } from '../hooks/usePageMeta'
+import Emoji from '../components/Emoji'
 
 /**
  * 서비스 소개(About) — 누가·무엇을·어떤 근거로 만드는지와 운영 주체·문의처.
@@ -63,7 +64,7 @@ export default function About() {
             {selfTests.map((x) => (
               <li key={x.id}>
                 <Link to={`/test/${x.id}`} className="text-[15px] font-extrabold text-mind-700 underline-offset-2 hover:underline">
-                  {x.emoji} {t(`test.${x.id}.name`)}
+                  <Emoji e={x.emoji} inline />{t(`test.${x.id}.name`)}
                 </Link>
                 <p className="mt-0.5 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">{t(`intro.${x.id}.basis`)}</p>
               </li>
@@ -80,7 +81,7 @@ export default function About() {
             {taskTests.map((x) => (
               <li key={x.id}>
                 <Link to={`/test/${x.id}`} className="text-[15px] font-extrabold text-mind-700 underline-offset-2 hover:underline">
-                  {x.emoji} {t(`test.${x.id}.name`)}
+                  <Emoji e={x.emoji} inline />{t(`test.${x.id}.name`)}
                 </Link>
                 <p className="mt-0.5 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">{t(`intro.${x.id}.basis`)}</p>
               </li>
@@ -101,7 +102,7 @@ export default function About() {
             {ARTICLES.map((a) => (
               <li key={a.id}>
                 <Link to={`/magazine/${a.id}`} className="break-keep text-[14px] font-extrabold text-mind-700 underline-offset-2 hover:underline">
-                  {a.emoji} {l(a.title)}
+                  <Emoji e={a.emoji} inline />{l(a.title)}
                 </Link>
               </li>
             ))}
@@ -155,6 +156,26 @@ export default function About() {
             <Link to="/legal/privacy" className="py-1">{l({ ko: '개인정보처리방침', en: 'Privacy', ja: 'プライバシー' })}</Link>
             <Link to="/legal/terms" className="py-1">{l({ ko: '이용약관', en: 'Terms', ja: '利用規約' })}</Link>
           </div>
+        </Card>
+
+        {/* 오픈소스 라이선스 고지 — 라이선스 원문은 public/ 아래 파일로 함께 배포한다(링크는 그 파일 그대로) */}
+        <Card className="mt-4">
+          <h2 className="text-[17px] font-extrabold">{l({ ko: '오픈소스 라이선스', en: 'Open-source licenses', ja: 'オープンソースライセンス' })}</h2>
+          <ul className="mt-2 space-y-1.5 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
+            <li>
+              {l({ ko: '아이콘: Microsoft Fluent Emoji (Flat) — MIT License, © Microsoft Corporation', en: 'Icons: Microsoft Fluent Emoji (Flat) — MIT License, © Microsoft Corporation', ja: 'アイコン: Microsoft Fluent Emoji (Flat) — MIT License, © Microsoft Corporation' })}{' '}
+              <a href="/emoji/LICENSE-fluentui-emoji.txt" className="font-extrabold text-mind-700 underline underline-offset-2">
+                {l({ ko: '전문', en: 'Full text', ja: '全文' })}
+              </a>
+            </li>
+            <li>
+              {l({ ko: '한글 글꼴: 나눔스퀘어라운드 — SIL Open Font License 1.1, © NAVER Corp.', en: 'Korean font: NanumSquareRound — SIL Open Font License 1.1, © NAVER Corp.', ja: '韓国語フォント: NanumSquareRound — SIL Open Font License 1.1, © NAVER Corp.' })}{' '}
+              <a href="/fonts/LICENSE-NanumSquareRound.txt" className="font-extrabold text-mind-700 underline underline-offset-2">
+                {l({ ko: '전문', en: 'Full text', ja: '全文' })}
+              </a>
+            </li>
+            <li>{l({ ko: '라틴·일본어 글꼴: Nunito · Noto Sans JP — SIL Open Font License 1.1 (Google Fonts)', en: 'Latin & Japanese fonts: Nunito · Noto Sans JP — SIL Open Font License 1.1 (Google Fonts)', ja: 'ラテン文字・日本語フォント: Nunito · Noto Sans JP — SIL Open Font License 1.1 (Google Fonts)' })}</li>
+          </ul>
         </Card>
 
         <Footer />

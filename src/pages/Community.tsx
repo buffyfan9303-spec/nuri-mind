@@ -19,6 +19,7 @@ import { sfx } from '../lib/sound'
 import { burst } from '../lib/confetti'
 import { supabaseReady } from '../lib/supabase'
 import { checkRate, moderateText, recordAction } from '../lib/moderation'
+import Emoji from '../components/Emoji'
 import {
   createComment,
   createPost,
@@ -448,9 +449,9 @@ export default function Community() {
                  당김 거리만큼 따라 내려오는 움직임이 사라진다(제자리에서 회전만 한다). */
               animate={refreshing ? { rotate: 360, y: 8 } : { rotate: pulling * 4, y: pulling - 12 }}
               transition={refreshing ? { repeat: Infinity, duration: 0.8, ease: 'linear' } : { duration: 0 }}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-[20px] shadow-pop"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-surface shadow-pop"
             >
-              {refreshing ? '🐢' : pulling > 50 ? '🐰' : '🐢'}
+              <Emoji e={refreshing ? '🐢' : pulling > 50 ? '🐰' : '🐢'} size={20} />
             </motion.div>
           </motion.div>
         )}
@@ -468,7 +469,7 @@ export default function Community() {
           <Avatar avatar={avatar} size={34} emojiScale={0.52} />
           <span className="min-w-0 flex-1 truncate text-left text-[14px] font-bold text-ink-faint">{t('community.composer')}</span>
           <span className="shrink-0 rounded-full bg-mind-500 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
-            ✏️ {t('community.write')}
+            <Emoji e="✏️" inline />{t('community.write')}
           </span>
         </button>
 
@@ -480,16 +481,16 @@ export default function Community() {
           <motion.span
             animate={{ rotate: [0, -10, 10, -6, 6, 0] }}
             transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut', repeatDelay: 2 }}
-            className="text-[20px]"
+            className="leading-none"
           >
-            🗓️
+            <Emoji e="🗓️" size={20} className="align-top" />
           </motion.span>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-extrabold tracking-wide text-mind-600">{t('community.themeLabel')}</p>
             <p className="mt-0.5 break-keep text-[14px] font-extrabold leading-snug">{l(todayTheme())}</p>
           </div>
           <span className="shrink-0 whitespace-nowrap rounded-full bg-mind-500 px-3 py-1.5 text-[12px] font-extrabold text-white">
-            ✍️ {t('community.themeWrite')}
+            <Emoji e="✍️" inline />{t('community.themeWrite')}
           </span>
         </button>
 
@@ -509,7 +510,7 @@ export default function Community() {
                   color: active ? '#fff' : 'rgb(var(--text-sub))',
                 }}
               >
-                {tm ? `${tm.emoji} ${t(`test.${tm.id}.short`)}` : t('community.all')}
+                {tm ? <><Emoji e={tm.emoji} inline />{t(`test.${tm.id}.short`)}</> : t('community.all')}
               </button>
             )
           })}
@@ -566,16 +567,16 @@ export default function Community() {
             />
           )}
           {server === null ? (
-            showLoading && <p className="py-10 text-center text-3xl">🧠</p>
+            showLoading && <p className="py-10 text-center leading-none"><Emoji e="🧠" size={30} className="align-top" /></p>
           ) : posts.length === 0 ? (
             <Card className="py-10 text-center">
-              <div className="text-5xl">🌱</div>
+              <div className="leading-none"><Emoji e="🌱" size={48} className="align-top" /></div>
               <p className="mt-3 whitespace-pre-line text-[14px] font-bold leading-relaxed text-ink-faint">
                 {filter === 'all' ? t('community.empty') : t('community.emptyFilter')}
               </p>
               <div className="mx-auto mt-4 max-w-[200px]">
                 <Button color="mind" size="sm" onClick={() => setOpen(true)}>
-                  ✏️ {t('community.write')}
+                  <Emoji e="✏️" inline />{t('community.write')}
                 </Button>
               </div>
             </Card>
@@ -603,7 +604,7 @@ export default function Community() {
                             )}
                             {hot && (
                               <span className="shrink-0 rounded-full bg-ego-light px-1.5 py-0.5 text-[11px] font-extrabold text-ego-deep">
-                                🔥 {t('community.hot')}
+                                <Emoji e="🔥" inline />{t('community.hot')}
                               </span>
                             )}
                           </p>
@@ -631,7 +632,7 @@ export default function Community() {
                           }`}
                         >
                           <motion.span animate={p.liked ? { scale: [1, 1.4, 1] } : {}}>
-                            {p.liked ? '❤️' : '🤍'}
+                            <Emoji e={p.liked ? '❤️' : '🤍'} inline />
                           </motion.span>
                           {p.likes}
                         </motion.button>
@@ -644,7 +645,7 @@ export default function Community() {
                             openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-sub'
                           }`}
                         >
-                          💬 {comments.length || ''}
+                          <Emoji e="💬" inline />{comments.length || ''}
                         </motion.button>
                         <button
                           onClick={() => onShare(p)}
@@ -656,10 +657,10 @@ export default function Community() {
                         {!p.mine && (
                           <div className="ml-auto flex shrink-0 items-center gap-1">
                             <button onClick={() => onBlock(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-bold text-ink-faint">
-                              🚫 {t('community.block')}
+                              <Emoji e="🚫" inline />{t('community.block')}
                             </button>
                             <button onClick={() => onReport(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-bold text-ink-faint">
-                              🚩 {t('community.report')}
+                              <Emoji e="🚩" inline />{t('community.report')}
                             </button>
                           </div>
                         )}
@@ -805,7 +806,7 @@ export default function Community() {
         </div>
         {/* 이번 주 주제 힌트 */}
         <div className="mt-2.5 flex items-center gap-2 rounded-xl bg-mind-50 px-3 py-2">
-          <span className="shrink-0 text-[14px]">🗓️</span>
+          <Emoji e="🗓️" size={14} className="shrink-0" />
           <p className="break-keep text-[12px] font-bold leading-snug text-mind-700">
             {t('community.themeLabel')} · {l(todayTheme())}
           </p>

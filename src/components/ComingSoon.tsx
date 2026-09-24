@@ -3,6 +3,7 @@ import Button from './Button'
 import { TopBar } from './ui'
 import { useL } from '../i18n/useT'
 import type { L } from '../data/types'
+import Emoji from './Emoji'
 
 /**
  * '준비 중' 화면 — 꺼 둔 기능(지금은 리워드 설문)의 주소로 들어왔을 때.
@@ -24,9 +25,7 @@ export default function ComingSoon({
     <div className="min-h-dvh pb-36">
       <TopBar back={back} title={l(title)} />
       <main className="mx-auto flex min-h-[60dvh] max-w-md flex-col items-center justify-center px-6 text-center">
-        <div className="text-5xl" aria-hidden="true">
-          🛠️
-        </div>
+        <div className="leading-none"><Emoji e="🛠️" size={48} className="align-top" /></div>
         <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
           {l({ ko: '준비 중이에요', en: 'Coming soon', ja: '準備中です' })}
         </h1>

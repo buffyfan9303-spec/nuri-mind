@@ -16,6 +16,7 @@ import { useT, useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { SURVEYS_ENABLED } from '../data/features'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 export default function Rewards() {
   const t = useT()
@@ -88,7 +89,7 @@ export default function Rewards() {
         >
           <p className="text-[13px] font-extrabold text-white/80">{t('rewards.balance')}</p>
           <div className="mt-1 flex items-end gap-1.5">
-            <span className="text-4xl font-extrabold tracking-tight text-white">🪙 {points.toLocaleString()}</span>
+            <span className="text-4xl font-extrabold tracking-tight text-white"><Emoji e="🪙" inline />{points.toLocaleString()}</span>
             <span className="pb-1 text-sm font-extrabold text-white/80">P</span>
           </div>
           {/* 랭크 등급 진입점 */}
@@ -98,20 +99,20 @@ export default function Rewards() {
             className="mt-4 flex w-full items-center justify-between gap-2 rounded-2xl bg-white/20 px-4 py-3.5 text-left"
           >
             <span className="flex min-w-0 items-center gap-1.5 truncate text-[15px] font-extrabold text-white">
-              {tier.emoji} {t('rank.row')}: {l(tier.name)}
+              <Emoji e={tier.emoji} inline />{t('rank.row')}: {l(tier.name)}
             </span>
             <span className="shrink-0 whitespace-nowrap text-[13px] font-bold text-white/85">
-              {next ? `${next.emoji} +${(next.min - lifetime).toLocaleString()}P` : t('rank.max')} ›
+              {next ? <><Emoji e={next.emoji} inline />+{(next.min - lifetime).toLocaleString()}P</> : <EmojiText text={t('rank.max')} />} ›
             </span>
           </motion.button>
 
           <div className="mt-3">
             {checkedToday ? (
               <div className="flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3.5 text-[15px] font-extrabold text-white">
-                <span>✅ {t('rewards.checkinDone')}</span>
+                <span><Emoji e="✅" inline />{t('rewards.checkinDone')}</span>
                 <span>
-                  {streak > 0 && <>🔥 {t('rewards.streak', { n: streak })}</>}
-                  {streakFreezes > 0 && <span className="ml-2">❄️×{streakFreezes}</span>}
+                  {streak > 0 && <><Emoji e="🔥" inline />{t('rewards.streak', { n: streak })}</>}
+                  {streakFreezes > 0 && <span className="ml-2"><Emoji e="❄️" inline />×{streakFreezes}</span>}
                 </span>
               </div>
             ) : (
@@ -126,7 +127,7 @@ export default function Rewards() {
             onClick={() => setStreakInfo(true)}
             className="mt-2 flex w-full items-center justify-center gap-1 text-[12px] font-bold text-white/80"
           >
-            ⓘ {t('streak.title')}
+            ⓘ <EmojiText text={t('streak.title')} />
           </button>
 
           <DailyCapMeter />
@@ -135,10 +136,10 @@ export default function Rewards() {
         {/* 주간 리그 진입 */}
         <Card onClick={() => nav('/league')} className="mt-3.5 flex items-center gap-3.5 !p-4">
           <div
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
             style={{ background: `${lgTier.color}22` }}
           >
-            {lgTier.emoji}
+            <Emoji e={lgTier.emoji} size={26} />
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-[16px] font-extrabold">
@@ -162,9 +163,7 @@ export default function Rewards() {
         {!SURVEYS_ENABLED && (
           <Section title={l({ ko: '리워드 설문', en: 'Reward surveys', ja: 'リワードアンケート' })}>
             <Card className="flex items-center gap-3.5 !p-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-surface2 text-2xl" aria-hidden="true">
-                🛠️
-              </div>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-surface2"><Emoji e="🛠️" size={24} /></div>
               <div className="min-w-0 flex-1">
                 <h3 className="text-[16px] font-extrabold">{l({ ko: '준비 중이에요', en: 'Coming soon', ja: '準備中です' })}</h3>
                 <p className="mt-1 break-keep text-[13px] font-bold text-ink-faint">
@@ -198,9 +197,7 @@ export default function Rewards() {
               const done = taken.includes(sv.id)
               return (
                 <Card key={sv.id} className="flex items-center gap-3.5 !p-4" onClick={done ? undefined : () => nav(`/rewards/survey/${sv.id}`)}>
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-mind-50 text-2xl">
-                    {sv.emoji}
-                  </div>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-mind-50"><Emoji e={sv.emoji} size={24} /></div>
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-[16px] font-extrabold">{sv.title}</h3>
                     <p className="mt-1 text-[13px] font-bold text-ink-faint">
@@ -229,11 +226,11 @@ export default function Rewards() {
               {mine.map((sv) => (
                 <Card key={sv.id} className="!p-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-xl">{sv.emoji}</span>
+                    <Emoji e={sv.emoji} size={20} />
                     <h3 className="min-w-0 flex-1 truncate text-[15px] font-extrabold">{sv.title}</h3>
-                    {sv.status === 'pending' && <Chip tone="amber">⏳ {t('rewards.status.pending')}</Chip>}
-                    {sv.status === 'approved' && <Chip tone="mind">🟢 {t('rewards.status.approved')}</Chip>}
-                    {sv.status === 'rejected' && <Chip tone="red">⛔ {t('rewards.status.rejected')}</Chip>}
+                    {sv.status === 'pending' && <Chip tone="amber"><Emoji e="⏳" inline />{t('rewards.status.pending')}</Chip>}
+                    {sv.status === 'approved' && <Chip tone="mind"><Emoji e="🟢" inline />{t('rewards.status.approved')}</Chip>}
+                    {sv.status === 'rejected' && <Chip tone="red"><Emoji e="⛔" inline />{t('rewards.status.rejected')}</Chip>}
                   </div>
                   <p className="mt-2 text-xs font-bold text-ink-faint">
                     +{sv.reward}P · {t('rewards.respondents', { n: sv.responses })} / {sv.target}
@@ -259,9 +256,7 @@ export default function Rewards() {
           <div className="space-y-3">
             {OFFERS.map((of) => (
               <Card key={of.id} className="flex items-center gap-3.5 !p-4 opacity-75">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky2-100 text-2xl">
-                  {of.emoji}
-                </div>
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky2-100"><Emoji e={of.emoji} size={24} /></div>
                 <div className="min-w-0 flex-1">
                   <h3 className="truncate text-[16px] font-extrabold">{l(of.title)}</h3>
                   <p className="mt-1 truncate text-[13px] font-bold text-ink-faint">{l(of.desc)}</p>
@@ -303,8 +298,8 @@ export default function Rewards() {
       {/* 스트릭(연속 출석) 설명 모달 */}
       <Modal open={streakInfo} onClose={() => setStreakInfo(false)}>
         <div className="text-center">
-          <div className="text-5xl">🔥</div>
-          <h3 className="mt-3 text-[20px] font-extrabold tracking-tight">{t('streak.title')}</h3>
+          <div className="leading-none"><Emoji e="🔥" size={48} className="align-top" /></div>
+          <h3 className="mt-3 text-[20px] font-extrabold tracking-tight"><EmojiText text={t('streak.title')} /></h3>
           <p className="mt-3 whitespace-pre-line text-left text-[14px] font-bold leading-[1.85] text-ink-sub">
             {t('streak.body')}
           </p>

@@ -9,6 +9,7 @@ import { mulberry32, shuffle } from '../lib/random'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { sfx } from '../lib/sound'
+import Emoji from '../components/Emoji'
 
 const N_GO = 27
 const N_NOGO = 9
@@ -167,7 +168,7 @@ export default function FocusRun() {
             )}
             {phase === 'feedback' && (
               <motion.div key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
-                <div className="text-[28px] leading-none">{verdict === 'hit' || verdict === 'correctStop' ? '✅' : '❌'}</div>
+                <div className="leading-none"><Emoji e={verdict === 'hit' || verdict === 'correctStop' ? '✅' : '❌'} size={28} className="align-top" /></div>
                 <p className="mt-1.5 text-[14px] font-extrabold" style={{ color: verdict === 'hit' || verdict === 'correctStop' ? '#10B981' : '#EF4444' }}>
                   {verdict === 'hit'
                     ? l({ ko: '좋아요!', en: 'Nice!', ja: 'いいね！' })
@@ -194,7 +195,7 @@ export default function FocusRun() {
       {/* 중단 확인 */}
       <Modal open={quitOpen} onClose={() => setQuitOpen(false)}>
         <div className="text-center">
-          <div className="text-4xl">🥺</div>
+          <div className="leading-none"><Emoji e="🥺" size={36} className="align-top" /></div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
           <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}

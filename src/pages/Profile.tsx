@@ -20,6 +20,7 @@ import { moderateText } from '../lib/moderation'
 import { humanizeError } from '../lib/dbError'
 import { useStore, OPERATOR_NICKS, isPremium, PREMIUM_KRW } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
+import Emoji from '../components/Emoji'
 
 const LANGS: { key: Lang; label: string }[] = [
   { key: 'ko', label: '한국어' },
@@ -160,9 +161,7 @@ export default function Profile() {
             className="relative shrink-0"
           >
             <Avatar avatar={s.avatar} size={64} />
-            <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-surface text-[12px] shadow-card">
-              📷
-            </span>
+            <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-surface shadow-card"><Emoji e="📷" size={12} /></span>
           </button>
           <div className="min-w-0 flex-1">
             {editing ? (
@@ -197,9 +196,9 @@ export default function Profile() {
                     setEditing(false)
                   }}
                   aria-label={l({ ko: '닉네임 저장', en: 'Save nickname', ja: 'ニックネームを保存' })}
-                  className="text-lg"
+                  className="flex"
                 >
-                  ✅
+                  <Emoji e="✅" size={20} />
                 </button>
               </div>
               {/* 예전엔 편집 중이 아닐 때만 그려서, 걸러진 닉네임을 저장하면 아무 반응도 없어 보였다 */}
@@ -215,21 +214,22 @@ export default function Profile() {
                 <button
                   onClick={() => setEditing(true)}
                   aria-label={l({ ko: '닉네임 바꾸기', en: 'Edit nickname', ja: 'ニックネームを変更' })}
-                  className="text-sm opacity-60"
+                  className="flex opacity-60"
                 >
-                  ✏️
+                  <Emoji e="✏️" size={15} />
                 </button>
               </h2>
             )}
             <p className="mt-1 text-[13px] font-bold text-ink-faint">
-              🪙 {s.points.toLocaleString()}P · 🧪 {s.results.length} · 🔥 {s.streak}
+              {/* 아이콘은 SVG라 글자가 아니다 — 값을 잡는 테스트는 data-testid로 찾는다 */}
+              <Emoji e="🪙" inline />{s.points.toLocaleString()}P · <Emoji e="🧪" inline /><span data-testid="profile-results">{s.results.length}</span> · <Emoji e="🔥" inline />{s.streak}
             </p>
             <button
               onClick={() => nav('/rank')}
               className="mt-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-extrabold"
               style={{ background: `${tierOf(lifetimeOf(s.ledger)).color}1F`, color: tierOf(lifetimeOf(s.ledger)).color }}
             >
-              {tierOf(lifetimeOf(s.ledger)).emoji} {l(tierOf(lifetimeOf(s.ledger)).name)} ›
+              <Emoji e={tierOf(lifetimeOf(s.ledger)).emoji} size={15} /> {l(tierOf(lifetimeOf(s.ledger)).name)} ›
             </button>
           </div>
         </Card>
@@ -240,7 +240,7 @@ export default function Profile() {
             <h3 className="text-[14px] font-extrabold">
               {l({ ko: '최근 4주 출석', en: 'Last 4 weeks', ja: '直近4週の出席' })}
             </h3>
-            <span className="text-[12px] font-extrabold text-orange-500">🔥 {s.streak}</span>
+            <span className="text-[12px] font-extrabold text-orange-500"><Emoji e="🔥" inline />{s.streak}</span>
           </div>
           {/* 요일 머리글 — 칸이 세로로 같은 요일에 서야 '주말엔 안 오네' 같은 패턴이 보인다 */}
           <div className="mt-2.5 grid grid-cols-7 gap-1.5 px-0.5">
@@ -281,7 +281,7 @@ export default function Profile() {
 
         {/* 동물 도감 진입 */}
         <Card onClick={() => nav('/dex')} className="mt-3.5 flex items-center gap-3.5 !p-4">
-          <span className="text-[28px]">🗂</span>
+          <Emoji e="🗂" size={28} />
           <div className="min-w-0 flex-1">
             <h3 className="text-[15px] font-extrabold">{t('dex.title')}</h3>
             <p className="mt-0.5 text-[12px] font-bold text-ink-faint">
@@ -296,7 +296,7 @@ export default function Profile() {
 
         {/* 연애 궁합 진입 */}
         <Card onClick={() => nav('/chemi')} className="mt-3 flex items-center gap-3.5 !p-4">
-          <span className="text-[28px]">💞</span>
+          <Emoji e="💞" size={28} />
           <div className="min-w-0 flex-1">
             <h3 className="text-[15px] font-extrabold">{t('chemi.title')}</h3>
             <p className="mt-0.5 text-[12px] font-bold text-ink-faint">{t('chemi.entry')}</p>
@@ -306,7 +306,7 @@ export default function Profile() {
 
         {/* AI 종합 심리 프로필 */}
         <Card onClick={() => nav('/insight')} className="mt-3 flex items-center gap-3.5 !bg-gradient-to-r from-[#6E7BF2] to-[#9AA6FF] !p-4">
-          <span className="text-[28px]">🧬</span>
+          <Emoji e="🧬" size={28} />
           <div className="min-w-0 flex-1">
             <h3 className="text-[15px] font-extrabold text-white">{t('insight.title')}</h3>
             <p className="mt-0.5 text-[12px] font-bold text-white/90">{t('insight.entry')}</p>
@@ -439,7 +439,7 @@ export default function Profile() {
             {/* 푸시 알림 (VAPID 설정 시에만 노출) */}
             {pushSupported() && pushConfigured() && (
               <div className="flex items-center justify-between border-t border-line px-3 py-3">
-                <span className="text-[15px] font-bold">🔔 {l({ ko: '푸시 알림', en: 'Push notifications', ja: 'プッシュ通知' })}</span>
+                <span className="text-[15px] font-bold"><Emoji e="🔔" inline />{l({ ko: '푸시 알림', en: 'Push notifications', ja: 'プッシュ通知' })}</span>
                 <button
                   disabled={pushBusy}
                   onClick={async () => {
@@ -551,7 +551,7 @@ export default function Profile() {
                   }}
                   className="flex w-full items-center justify-between border-t border-line px-3 py-3"
                 >
-                  <span className="text-[15px] font-bold">🔓 {t('auth.logout')}{authUser.nickname ? ` · ${authUser.nickname}` : ''}</span>
+                  <span className="text-[15px] font-bold"><Emoji e="🔓" inline />{t('auth.logout')}{authUser.nickname ? ` · ${authUser.nickname}` : ''}</span>
                   <span className="text-ink-faint">›</span>
                 </button>
               ) : (
@@ -562,7 +562,7 @@ export default function Profile() {
                   }}
                   className="flex w-full items-center justify-between border-t border-line px-3 py-3"
                 >
-                  <span className="text-[15px] font-bold">💬 {t('auth.kakaoLogin')}</span>
+                  <span className="text-[15px] font-bold"><Emoji e="💬" inline />{t('auth.kakaoLogin')}</span>
                   <span className="text-ink-faint">›</span>
                 </button>
               ))}
@@ -570,14 +570,14 @@ export default function Profile() {
               onClick={() => nav('/legal/terms')}
               className="flex w-full items-center justify-between border-t border-line px-3 py-3"
             >
-              <span className="text-[15px] font-bold">📜 {t('legal.terms')}</span>
+              <span className="text-[15px] font-bold"><Emoji e="📜" inline />{t('legal.terms')}</span>
               <span className="text-ink-faint">›</span>
             </button>
             <button
               onClick={() => nav('/legal/privacy')}
               className="flex w-full items-center justify-between border-t border-line px-3 py-3"
             >
-              <span className="text-[15px] font-bold">🔐 {t('legal.privacy')}</span>
+              <span className="text-[15px] font-bold"><Emoji e="🔐" inline />{t('legal.privacy')}</span>
               <span className="text-ink-faint">›</span>
             </button>
             {isOperator && (
@@ -585,7 +585,7 @@ export default function Profile() {
                 onClick={() => nav('/admin')}
                 className="flex w-full items-center justify-between border-t border-line px-3 py-3"
               >
-                <span className="text-[15px] font-bold">🛠 {t('profile.adminMode')}</span>
+                <span className="text-[15px] font-bold"><Emoji e="🛠" inline />{t('profile.adminMode')}</span>
                 <span className="text-ink-faint">›</span>
               </button>
             )}
@@ -643,7 +643,7 @@ export default function Profile() {
               {t('profile.avatarPhoto')}
             </Button>
             <Button color="white" onClick={() => s.setAvatar(null)}>
-              🧠 {t('profile.avatarDefault')}
+              <Emoji e="🧠" inline />{t('profile.avatarDefault')}
             </Button>
           </div>
         </div>
@@ -651,7 +651,7 @@ export default function Profile() {
 
       <Modal open={resetOpen} onClose={closeReset}>
         <div className="text-center">
-          <div className="text-4xl">🗑</div>
+          <div className="leading-none"><Emoji e="🗑" size={36} className="align-top" /></div>
           <p className="mt-3 whitespace-pre-line text-sm font-bold leading-relaxed text-ink-sub">{t('profile.resetConfirm')}</p>
           {hasPaid && (
             // 복구 불가능한 유료 재화가 있을 때만 2차 확인 — 오탭 한 번으로 결제분이 날아가지 않게.
@@ -660,6 +660,7 @@ export default function Profile() {
               className="mt-4 flex w-full items-start gap-2.5 rounded-2xl bg-red-50 p-3.5 text-left"
             >
               <span className={`mt-px shrink-0 text-[15px] ${resetAck ? 'text-red-500' : 'text-red-300'}`}>
+                {/* 체크 표시는 아이콘이 아니라 글자(☑/☐) — 빈칸 ☐와 같은 글꼴이어야 켜고 끌 때 크기가 안 튄다 */}
                 {resetAck ? '☑' : '☐'}
               </span>
               <span className="break-keep text-[12px] font-bold leading-relaxed text-red-500">

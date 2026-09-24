@@ -11,6 +11,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { celebrate } from '../lib/confetti'
 import { sfx } from '../lib/sound'
+import Emoji, { EmojiText } from '../components/Emoji'
 
 const EMOJIS = ['📋', '☕', '🎮', '🛒', '💪', '🎬', '💄', '🍔', '✈️', '🐶', '📚', '💸']
 const TYPES: { type: SurveyQType; icon: string }[] = [
@@ -100,19 +101,19 @@ export default function SurveyCreate() {
             animate={{ scale: 1, rotate: [0, -8, 6, 0] }}
             // 스프링은 첫·끝 키프레임만 써서 흔들림이 0→0으로 뭉개졌다 — rotate만 트윈으로 분리
             transition={{ ...SPRING.sheet, rotate: { duration: 0.5, ease: 'easeInOut' } }}
-            className="text-6xl"
+            className="leading-none"
           >
-            🔒
+            <Emoji e="🔒" size={60} className="align-top" />
           </motion.div>
           <h1 className="mt-5 text-[20px] font-extrabold leading-tight tracking-tight">
-            {t('create.lock', { tier: `${bronze.emoji} ${l(bronze.name)}` })}
+            <EmojiText text={t('create.lock', { tier: `${bronze.emoji} ${l(bronze.name)}` })} />
           </h1>
           <p className="mt-3 text-[15px] font-bold leading-relaxed text-ink-sub">
             {t('create.lockDesc')}
           </p>
           <div className="mx-auto mt-7 max-w-[280px] space-y-3">
             <Button color="mind" size="lg" onClick={() => nav('/rank')}>
-              🏅 {t('create.lockGo')}
+              <Emoji e="🏅" inline />{t('create.lockGo')}
             </Button>
             <Button color="white" onClick={() => nav('/rewards')}>
               {t('common.back')}
@@ -205,7 +206,7 @@ export default function SurveyCreate() {
                       onClick={() => addQ(type)}
                       className="rounded-2xl border-2 border-line bg-surface px-1 py-3 text-center"
                     >
-                      <div className="text-xl">{icon}</div>
+                      <div className="leading-none"><Emoji e={icon} size={20} className="align-top" /></div>
                       <div className="mt-1 text-[11px] font-extrabold text-ink-sub">{t(`create.type.${type}`)}</div>
                     </motion.button>
                   ))}
@@ -213,7 +214,7 @@ export default function SurveyCreate() {
 
                 <div className="mt-4 space-y-3.5">
                   {questions.length === 0 && (
-                    <Card className="py-10 text-center text-sm font-bold text-ink-faint">⬆️ {t('create.addQ')}</Card>
+                    <Card className="py-10 text-center text-sm font-bold text-ink-faint"><Emoji e="⬆️" inline />{t('create.addQ')}</Card>
                   )}
                   {/* 문항 추가·삭제 — 뚝 생기고 사라지면 아래 문항이 순간이동한다 */}
                   <AnimatePresence initial={false}>
@@ -331,7 +332,7 @@ export default function SurveyCreate() {
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-extrabold">{t('create.target')}</label>
                     <span className="rounded-full bg-sky2-100 px-3 py-1 text-sm font-extrabold text-sky2-600">
-                      🎯 {target}
+                      <Emoji e="🎯" inline />{target}
                     </span>
                   </div>
                   <input
@@ -346,10 +347,10 @@ export default function SurveyCreate() {
                 </Card>
                 <Card className="!bg-gradient-to-r from-mind-500 to-sky2-500 text-center">
                   <p className="text-xs font-extrabold text-white/85">{t('create.budget')}</p>
-                  <p className="mt-1 text-3xl font-extrabold text-white">🪙 {(reward * target).toLocaleString()}P</p>
+                  <p className="mt-1 text-3xl font-extrabold text-white"><Emoji e="🪙" inline />{(reward * target).toLocaleString()}P</p>
                 </Card>
                 <p className="rounded-xl bg-amber-50 px-3.5 py-2.5 text-[12px] font-bold leading-relaxed text-amber-700">
-                  ⚠️ {t('create.policy')}
+                  <Emoji e="⚠️" inline />{t('create.policy')}
                 </p>
                 <Button color="mind" size="lg" onClick={submit}>
                   {t('create.review')}
@@ -362,8 +363,8 @@ export default function SurveyCreate() {
 
       <Modal open={doneOpen}>
         <div className="text-center">
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={SPRING.flick} className="text-5xl">
-            📨
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={SPRING.flick} className="leading-none">
+            <Emoji e="📨" size={48} className="align-top" />
           </motion.div>
           <h3 className="mt-3 text-xl font-extrabold">{t('create.submitted')}</h3>
           <p className="mt-1.5 text-sm font-bold leading-relaxed text-ink-sub">{t('create.submittedDesc')}</p>

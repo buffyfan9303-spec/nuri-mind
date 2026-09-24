@@ -10,6 +10,7 @@ import { useT, useL } from '../i18n/useT'
 import { compatOf, type Compat } from '../lib/saju'
 import { makeResultCard, shareCardBlob } from '../lib/shareCard'
 import { track } from '../lib/analytics'
+import Emoji from '../components/Emoji'
 
 export default function Compat() {
   const t = useT()
@@ -68,8 +69,8 @@ export default function Compat() {
       <TopBar back={() => nav(-1)} title={t('compat.title')} />
       <main className="mx-auto max-w-md px-5">
         <div className="mt-6 text-center">
-          <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.8 }} className="text-[28px] leading-none">
-            💞
+          <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.8 }} className="leading-none">
+            <Emoji e="💞" size={28} className="align-top" />
           </motion.div>
           <h1 className="mt-2 break-keep text-[20px] font-extrabold leading-tight">{t('compat.ask')}</h1>
         </div>
@@ -104,10 +105,10 @@ export default function Compat() {
             <div className="mt-3">
               <Button color="love" onClick={shareCompat}>{t('compat.share')}</Button>
             </div>
-            {saved && <p className="mt-2 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">✅ {t('share.saved')}</p>}
+            {saved && <p className="mt-2 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700"><Emoji e="✅" inline />{t('share.saved')}</p>}
             <p className="mt-3 px-2 text-center text-[11px] font-bold leading-relaxed text-ink-faint">{t('compat.disclaimer')}</p>
             <button onClick={() => setResult(null)} className="mt-1 w-full py-2 text-[13px] font-extrabold text-ink-faint">
-              🔁 {t('compat.again')}
+              <Emoji e="🔁" inline />{t('compat.again')}
             </button>
           </motion.div>
         )}
