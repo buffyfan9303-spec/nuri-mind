@@ -73,9 +73,13 @@ export default function Community() {
   const [serverComments, setServerComments] = useState<Record<string, CommunityComment[]>>({})
 
   /** 상단 리워드 배너 + 전역 토스트를 함께 — 호출부(수십 곳)는 그대로 flash()를 쓴다 */
+  const rewardTimer = useRef<ReturnType<typeof setTimeout>>()
+  useEffect(() => () => clearTimeout(rewardTimer.current), [])
   const flash = (msg: string) => {
     setReward(msg)
-    setTimeout(() => setReward(''), 2400)
+    // 연달아 뜨면 앞 타이머가 새 배너를 일찍 지우지 않게 갈아 끼운다
+    clearTimeout(rewardTimer.current)
+    rewardTimer.current = setTimeout(() => setReward(''), 2400)
     toast.ok(msg)
   }
 
@@ -103,8 +107,8 @@ export default function Community() {
   const [serverPosts, setServerPosts] = useState<CommunityPost[]>([])
   const [newCount, setNewCount] = useState(0)
   const [pulling, setPulling] = useState(0)
-  const pullRef = useRef(0)
-  const likeBusyRef = useRef<Set<string>>(new Set()) // 당겨서 새로고침 거리(px)
+  const pullRef = useRef(0) // 당겨서 새로고침 거리(px)
+  const likeBusyRef = useRef<Set<string>>(new Set())
   const [refreshing, setRefreshing] = useState(false)
 
   const reload = async () => {
@@ -230,8 +234,10 @@ export default function Community() {
   }, [raw, filter, sort, hiddenPosts, blockedNicks, pendingDelete])
 
   const submit = async () => {
-    if (!text.trim() || posting) return
-    if (!moderateText(text).ok) return flash(t('community.badword'))
+    // 앞뒤 빈 줄까지 그대로 올라가 카드 위아래가 휑하게 뜨던 자리 — 다듬은 본문만 올린다
+    const body = text.trim()
+    if (!body || posting) return
+    if (!moderateText(body).ok) return flash(t('community.badword'))
     const rl = checkRate('post')
     if (!rl.ok) return flash(t('community.tooFast', { n: rl.waitSec }))
     recordAction('post')
@@ -240,17 +246,17 @@ export default function Community() {
     setPostFailed(false)
     if (server) {
       try {
-        await createPost(deviceId, { nick: nickname, avatar, badge, text })
+        await createPost(deviceId, { nick: nickname, avatar, badge, text: body })
         await reload()
       } catch (e) {
         // 서버에 못 올렸어도 글은 이 기기에 남긴다 — 쓴 글이 통째로 사라지는 것보다 낫다.
         // 다만 조용히 넘기지 않는다: 다른 사람에게 안 보인다는 사실을 말해야 한다.
-        addPost(text, badge)
+        addPost(body, badge)
         setPostFailed(true)
         toast.err(humanizeError(e, lang, l({ ko: '이 기기에만 저장했어요', en: 'Saved on this device only', ja: 'この端末にのみ保存しました' })))
       }
     } else {
-      addPost(text, badge)
+      addPost(body, badge)
     }
     setPosting(false)
     setText('')
@@ -271,6 +277,8 @@ export default function Community() {
     }
   }
   const toggleComments = (postId: string) => {
+    // 다른 글을 펼치면 쓰던 댓글을 비운다 — 입력이 그대로 따라와 엉뚱한 글에 달리던 자리
+    if (openComments !== postId) setCommentText('')
     setOpenComments((v) => {
       const next = v === postId ? null : postId
       if (next && server) loadComments(postId)
@@ -291,8 +299,10 @@ export default function Community() {
       try {
         await createComment(deviceId, postId, { nick: nickname, avatar, badge, text: body })
         await loadComments(postId)
-      } catch {
+      } catch (e) {
         addComment(postId, body, badge) // 폴백: 로컬
+        // 글과 같은 원칙 — 다른 사람에게 안 보인다는 사실을 조용히 넘기지 않는다
+        toast.err(humanizeError(e, lang, l({ ko: '댓글을 이 기기에만 저장했어요', en: 'Comment saved on this device only', ja: 'コメントはこの端末にのみ保存しました' })))
       }
     } else {
       addComment(postId, body, badge)
@@ -614,6 +624,8 @@ export default function Community() {
                         <motion.button
                           whileTap={{ scale: 0.97 }}
                           onClick={() => onLike(p)}
+                          aria-pressed={!!p.liked}
+                          aria-label={l({ ko: `좋아요 ${p.likes}`, en: `Like ${p.likes}`, ja: `いいね ${p.likes}` })}
                           className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors ${
                             p.liked ? 'bg-red-50 text-red-500' : 'bg-surface2 text-ink-sub'
                           }`}
@@ -626,6 +638,8 @@ export default function Community() {
                         <motion.button
                           whileTap={{ scale: 0.97 }}
                           onClick={() => toggleComments(p.id)}
+                          aria-expanded={openComments === p.id}
+                          aria-label={l({ ko: `댓글 ${comments.length}`, en: `Comments ${comments.length}`, ja: `コメント ${comments.length}` })}
                           className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors ${
                             openComments === p.id ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-sub'
                           }`}
@@ -634,6 +648,7 @@ export default function Community() {
                         </motion.button>
                         <button
                           onClick={() => onShare(p)}
+                          aria-label={l({ ko: '공유', en: 'Share', ja: '共有' })}
                           className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-[12px] font-semibold text-ink-sub"
                         >
                           📤
@@ -769,7 +784,7 @@ export default function Community() {
         onClick={() => setOpen(true)}
         className="safe-bottom fixed bottom-24 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full text-[24px] text-white shadow-pop"
         style={{ background: 'linear-gradient(135deg, #4FA882, #6E9FDC)' }}
-        aria-label="write"
+        aria-label={t('community.write')}
       >
         <motion.span
           animate={{ rotate: [0, -12, 12, 0] }}

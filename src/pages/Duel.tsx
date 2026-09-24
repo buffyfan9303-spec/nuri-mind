@@ -62,7 +62,7 @@ export default function Duel() {
             <span className="mt-1 break-keep text-[20px] font-extrabold">{friend.nm}</span>
           </motion.div>
           <p className="mt-5 break-keep text-[15px] font-bold text-ink-sub">
-            {l({ ko: '너도 해보고 같은 결과인지 확인해봐!', en: 'Take it and see if you match!', ja: 'あなたもやって一致するか見てみて！' })}
+            {l({ ko: '직접 해 보고 같은 결과가 나오는지 확인해 보세요!', en: 'Take it and see if you match!', ja: 'あなたもやって一致するか見てみて！' })}
           </p>
           <div className="mt-5">
             <Button color="mind" onClick={() => nav(qt ? `/quick/${friend.qid}` : '/quick')}>
@@ -127,6 +127,7 @@ export default function Duel() {
         <motion.h1
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={SPRING.ui}
           className="mt-3 break-keep text-center text-[20px] font-extrabold tracking-tight"
         >
           {tm?.emoji} {testName} {l({ ko: '대결', en: 'duel', ja: 'バトル' })}

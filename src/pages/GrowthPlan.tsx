@@ -131,6 +131,7 @@ export default function GrowthPlan() {
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={SPRING.ui}
             className="mt-5 rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-6 text-center text-white shadow-pop"
           >
             <div className="text-[28px] leading-none">🌱</div>
@@ -223,7 +224,7 @@ export default function GrowthPlan() {
           <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/25">
             <motion.div
               animate={{ width: `${allTasks.length ? (doneToday / allTasks.length) * 100 : 0}%` }}
-              transition={SPRING.ui}
+              transition={SPRING.gauge}
               className="h-full rounded-full bg-white"
             />
           </div>
@@ -293,7 +294,7 @@ export default function GrowthPlan() {
                 style={{
                   background:
                     d.n === 0
-                      ? 'rgb(var(--surface2))'
+                      ? 'rgb(var(--surface-2))' // --surface2는 없는 변수라 빈 날이 투명하게 사라졌다
                       : `rgba(79, 168, 130, ${Math.min(0.25 + d.n * 0.25, 1)})`,
                   outline: d.key === todayKey ? '2px solid #4FA882' : undefined,
                   outlineOffset: d.key === todayKey ? '1px' : undefined,
@@ -306,7 +307,22 @@ export default function GrowthPlan() {
           </p>
         </Card>
 
-        <button onClick={resetPlan} className="mx-auto mt-5 block text-[12px] font-semibold text-ink-faint">
+        <button
+          onClick={() => {
+            // 다시 만들면 4주 실천 기록까지 지워진다 — 한 번 누른 실수로 날아가지 않게 묻는다
+            if (
+              window.confirm(
+                l({
+                  ko: '플랜을 다시 만들면 지금까지의 실천 기록이 지워져요. 다시 만들까요?',
+                  en: 'Rebuilding clears your action history. Continue?',
+                  ja: '作り直すと実践記録が消えます。作り直しますか？',
+                }),
+              )
+            )
+              resetPlan()
+          }}
+          className="mx-auto mt-5 block text-[12px] font-semibold text-ink-faint"
+        >
           {l({ ko: '플랜 다시 만들기', en: 'Rebuild plan', ja: 'プランを作り直す' })}
         </button>
       </main>

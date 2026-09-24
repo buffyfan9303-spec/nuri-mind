@@ -60,7 +60,7 @@ export default function Routine() {
             />
           </div>
           {complete && (
-            <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-3 text-center text-[14px] font-semibold">
+            <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={SPRING.flick} className="mt-3 text-center text-[14px] font-semibold">
               🎉 {t('routine.done')}
             </motion.p>
           )}
@@ -75,9 +75,10 @@ export default function Routine() {
                 key={i}
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.04 }}
+                transition={{ ...SPRING.ui, delay: i * 0.04 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onToggle(i)}
+                aria-pressed={checked}
                 className="flex w-full items-center gap-3.5 rounded-2xl border-2 bg-surface px-4 py-3.5 text-left transition-colors"
                 style={{ borderColor: checked ? '#4FA882' : 'rgb(var(--line))' }}
               >

@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { SPRING } from '../lib/motion'
 import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
 import Footer from '../components/Footer'
@@ -87,7 +88,7 @@ export default function ZodiacLanding() {
     document.title = `오늘의 ${page.ko}띠 운세 (${dateLabel}) | 누리 마인드`
     md?.setAttribute(
       'content',
-      `${dateLabel} ${page.ko}띠 운세 — 음양오행으로 보는 오늘의 기운과 ${page.ko}띠 성격·출생년도. 생년월일을 넣으면 사주(일주) 기반 상세 운세까지 무료.`,
+      `${dateLabel} ${page.ko}띠 운세 — 음양오행으로 보는 오늘의 기운과 ${page.ko}띠 성격·출생 연도. 생년월일을 넣으면 사주(일주) 기반 상세 운세까지 무료.`,
     )
     cl?.setAttribute('href', `${SITE}/zodiac/${page.slug}`)
     return () => {
@@ -105,7 +106,7 @@ export default function ZodiacLanding() {
       <TopBar back="/fortune" title={`${page.ko}띠 운세`} />
       <main className="mx-auto max-w-md px-5">
         {/* 히어로 */}
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="mt-6 text-center">
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={SPRING.ui} className="mt-6 text-center">
           <p className="text-[28px] leading-none">{page.emoji}</p>
           <h1 className="mt-3 break-keep text-[20px] font-extrabold leading-tight">오늘의 {page.ko}띠 운세</h1>
           <p className="mt-1.5 text-[13px] font-medium text-ink-faint">{dateLabel} · 음양오행 기준</p>
@@ -142,7 +143,7 @@ export default function ZodiacLanding() {
           </div>
           <p className="mt-3 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">{page.intro}</p>
           <p className="mt-3 break-keep text-[12px] font-medium leading-relaxed text-ink-faint">
-            {page.ko}띠 출생년도: {years.join(' · ')}년
+            {page.ko}띠 출생 연도: {years.join(' · ')}년
           </p>
           <p className="mt-2 text-[11px] font-medium leading-relaxed text-ink-faint">
             ⓘ 띠 성격과 운세는 전통 통설을 재미로 정리한 참고 콘텐츠로, 과학적 사실이 아닙니다.

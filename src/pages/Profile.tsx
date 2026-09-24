@@ -14,8 +14,8 @@ import type { Lang } from '../data/types'
 import { fileToAvatarDataUrl } from '../lib/image'
 import { scheduleStreakReminder } from '../lib/notify'
 import { enablePush, disablePush, pushSupported, pushConfigured, pushPermission } from '../lib/push'
-import { authReady, signInWithKakao, signOut, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
-import { leaveAccount } from '../lib/economy'
+import { authReady, signInWithKakao, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
+import { logoutAccount } from '../lib/economy'
 import { moderateText } from '../lib/moderation'
 import { humanizeError } from '../lib/dbError'
 import { useStore, OPERATOR_NICKS, isPremium, PREMIUM_KRW } from '../store/useStore'
@@ -93,11 +93,18 @@ export default function Profile() {
   const [authUser, setAuthUser] = useState<AuthUser | null>(null)
   useEffect(() => {
     if (!authReady()) return
-    getAuthUser().then(setAuthUser)
-    return onAuthChange(() => getAuthUser().then(setAuthUser))
+    getAuthUser().then(setAuthUser).catch(() => {})
+    return onAuthChange(() => void getAuthUser().then(setAuthUser).catch(() => {}))
   }, [])
   const [nickErr, setNickErr] = useState('')
   const [resetAck, setResetAck] = useState(false)
+  /** 푸시 구독 왕복 중 — 연타하면 켜기·끄기 요청이 엇갈려 스위치와 실제 구독이 달라졌다 */
+  const [pushBusy, setPushBusy] = useState(false)
+  // 초기화 시트를 그냥 닫아도 동의 체크를 푼다 — 다시 열면 이미 체크된 채라 2차 확인이 무의미해졌다
+  const closeReset = () => {
+    setResetOpen(false)
+    setResetAck(false)
+  }
   const hasPaid = s.diamonds > 0 || isPremium(s.premiumUntil)
 
   // OAuth 콜백 에러 표시 — Onboarding에만 있어 Profile에서 시작한 로그인 실패가 무음이던 문제
@@ -147,7 +154,11 @@ export default function Profile() {
         )}
         {/* 유저 카드 */}
         <Card className="flex items-center gap-4">
-          <button onClick={() => setAvatarOpen(true)} className="relative shrink-0">
+          <button
+            onClick={() => setAvatarOpen(true)}
+            aria-label={t('profile.avatarPick')}
+            className="relative shrink-0"
+          >
             <Avatar avatar={s.avatar} size={64} />
             <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-surface text-[12px] shadow-card">
               📷
@@ -155,6 +166,7 @@ export default function Profile() {
           </button>
           <div className="min-w-0 flex-1">
             {editing ? (
+              <>
               <div className="flex items-center gap-2">
                 <input
                   value={nick}
@@ -166,30 +178,45 @@ export default function Profile() {
                 />
                 <button
                   onClick={() => {
+                    const next = nick.trim()
+                    // 빈칸·공백만 넣으면 공백 닉네임이 그대로 저장됐다 — 바꾸지 않고 편집만 닫는다
+                    if (!next) {
+                      setNick(s.nickname)
+                      setNickErr('')
+                      setEditing(false)
+                      return
+                    }
                     // 온보딩과 같은 필터 — 여기만 열려 있으면 나중에 바꿔 우회할 수 있다
-                    if (!moderateText(nick).ok) {
+                    if (!moderateText(next).ok) {
                       setNickErr(t('community.badword'))
                       return
                     }
                     setNickErr('')
-                    s.setNickname(nick)
+                    s.setNickname(next)
+                    setNick(next)
                     setEditing(false)
                   }}
+                  aria-label={l({ ko: '닉네임 저장', en: 'Save nickname', ja: 'ニックネームを保存' })}
                   className="text-lg"
                 >
                   ✅
                 </button>
               </div>
-            ) : nickErr ? (
-              <div className="w-full">
-                <p role="alert" className="text-[12px] font-medium text-red-500">
+              {/* 예전엔 편집 중이 아닐 때만 그려서, 걸러진 닉네임을 저장하면 아무 반응도 없어 보였다 */}
+              {nickErr && (
+                <p role="alert" className="mt-1 text-[12px] font-medium text-red-500">
                   {nickErr}
                 </p>
-              </div>
+              )}
+              </>
             ) : (
               <h2 className="flex items-center gap-2 text-[20px] font-extrabold tracking-tight">
                 {s.nickname}
-                <button onClick={() => setEditing(true)} className="text-sm opacity-60">
+                <button
+                  onClick={() => setEditing(true)}
+                  aria-label={l({ ko: '닉네임 바꾸기', en: 'Edit nickname', ja: 'ニックネームを変更' })}
+                  className="text-sm opacity-60"
+                >
                   ✏️
                 </button>
               </h2>
@@ -378,7 +405,9 @@ export default function Profile() {
                 onClick={() => s.setSound(!s.sound)}
                 className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
                 style={{ background: s.sound ? '#4FA882' : '#D9E2DC' }}
-                aria-label="sound"
+                role="switch"
+                aria-checked={s.sound}
+                aria-label={t('profile.sound')}
               >
                 <motion.span
                   animate={{ x: s.sound ? 22 : 0 }}
@@ -395,7 +424,9 @@ export default function Profile() {
                 onClick={() => s.setTheme(s.theme === 'dark' ? 'light' : 'dark')}
                 className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
                 style={{ background: s.theme === 'dark' ? '#4FA882' : '#D9E2DC' }}
-                aria-label="dark mode"
+                role="switch"
+                aria-checked={s.theme === 'dark'}
+                aria-label={t('profile.darkMode')}
               >
                 <motion.span
                   animate={{ x: s.theme === 'dark' ? 22 : 0 }}
@@ -410,17 +441,28 @@ export default function Profile() {
               <div className="flex items-center justify-between border-t border-line px-3 py-3">
                 <span className="text-[15px] font-bold">🔔 {l({ ko: '푸시 알림', en: 'Push notifications', ja: 'プッシュ通知' })}</span>
                 <button
+                  disabled={pushBusy}
                   onClick={async () => {
-                    if (pushOn) {
-                      await disablePush()
-                      setPushOn(false)
-                    } else {
-                      setPushOn(await enablePush())
+                    if (pushBusy) return
+                    setPushBusy(true)
+                    try {
+                      if (pushOn) {
+                        await disablePush()
+                        setPushOn(false)
+                      } else {
+                        setPushOn(await enablePush())
+                      }
+                    } catch {
+                      /* 해제 실패 — 스위치는 그대로(실제 구독 상태와 맞춘다) */
+                    } finally {
+                      setPushBusy(false)
                     }
                   }}
                   className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
                   style={{ background: pushOn ? '#4FA882' : '#D9E2DC' }}
-                  aria-label="push"
+                  role="switch"
+                  aria-checked={pushOn}
+                  aria-label={l({ ko: '푸시 알림', en: 'Push notifications', ja: 'プッシュ通知' })}
                 >
                   <motion.span
                     animate={{ x: pushOn ? 22 : 0 }}
@@ -438,7 +480,9 @@ export default function Profile() {
                 onClick={() => s.setAmbient(!s.ambient)}
                 className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
                 style={{ background: s.ambient ? '#4FA882' : '#D9E2DC' }}
-                aria-label="ambient"
+                role="switch"
+                aria-checked={s.ambient}
+                aria-label={t('profile.ambient')}
               >
                 <motion.span
                   animate={{ x: s.ambient ? 22 : 0 }}
@@ -483,7 +527,9 @@ export default function Profile() {
                 }}
                 className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
                 style={{ background: s.notify ? '#4FA882' : '#D9E2DC' }}
-                aria-label="notify"
+                role="switch"
+                aria-checked={s.notify}
+                aria-label={t('profile.notify')}
               >
                 <motion.span
                   animate={{ x: s.notify ? 22 : 0 }}
@@ -497,10 +543,10 @@ export default function Profile() {
               (authUser ? (
                 <button
                   onClick={async () => {
-                    await signOut()
                     // 계정 경계는 로그아웃 시점에도 적용 — 안 하면 비로그인 사용자가
                     // 직전 계정의 지갑·유료재화·검사기록을 그대로 이어받는다(공유 기기).
-                    leaveAccount()
+                    // 다음 카카오 로그인은 계정 선택 화면부터 뜬다(auth.ts REAUTH_KEY).
+                    await logoutAccount()
                     setAuthUser(null)
                   }}
                   className="flex w-full items-center justify-between border-t border-line px-3 py-3"
@@ -603,7 +649,7 @@ export default function Profile() {
         </div>
       </Modal>
 
-      <Modal open={resetOpen} onClose={() => setResetOpen(false)}>
+      <Modal open={resetOpen} onClose={closeReset}>
         <div className="text-center">
           <div className="text-4xl">🗑</div>
           <p className="mt-3 whitespace-pre-line text-sm font-bold leading-relaxed text-ink-sub">{t('profile.resetConfirm')}</p>
@@ -631,13 +677,12 @@ export default function Profile() {
               disabled={hasPaid && !resetAck}
               onClick={() => {
                 s.resetAll()
-                setResetAck(false)
-                setResetOpen(false)
+                closeReset()
               }}
             >
               {t('profile.reset')}
             </Button>
-            <Button color="white" onClick={() => setResetOpen(false)}>
+            <Button color="white" onClick={closeReset}>
               {t('common.cancel')}
             </Button>
           </div>

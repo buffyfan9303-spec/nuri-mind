@@ -40,7 +40,15 @@ export default function NotFound() {
         <code className="mt-3 max-w-full truncate rounded-xl bg-surface2 px-3 py-1.5 text-[12px] font-medium text-ink-faint">{shown}</code>
         <div className="mt-6 flex w-full flex-col gap-2.5">
           <Button onClick={() => nav('/', { replace: true })}>{l({ ko: '홈으로', en: 'Go home', ja: 'ホームへ' })}</Button>
-          <Button color="white" onClick={() => nav(-1)}>
+          <Button
+            color="white"
+            onClick={() => {
+              // 공유 링크로 바로 들어온 경우엔 앱 안에 돌아갈 곳이 없다 — nav(-1)은 아무 반응이 없거나 앱을 떠난다
+              const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
+              if (idx > 0) nav(-1)
+              else nav('/', { replace: true })
+            }}
+          >
             {l({ ko: '뒤로 가기', en: 'Go back', ja: '戻る' })}
           </Button>
         </div>

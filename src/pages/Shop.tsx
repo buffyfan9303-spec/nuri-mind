@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -26,6 +26,9 @@ export default function Shop() {
   const premium = isPremium(premiumUntil)
   const [confirm, setConfirm] = useState<ShopItem | null>(null)
   const [requested, setRequested] = useState(false)
+  // 안내 배너 타이머 — 연달아 교환하면 앞 타이머가 새 배너를 일찍 지웠고, 화면을 떠나도 남아 있었다
+  const reqTimer = useRef<ReturnType<typeof setTimeout>>()
+  useEffect(() => () => clearTimeout(reqTimer.current), [])
 
   const doRedeem = () => {
     if (!confirm) return
@@ -34,7 +37,8 @@ export default function Shop() {
     if (ok) {
       fire('coin')
       setRequested(true)
-      setTimeout(() => setRequested(false), 2200)
+      clearTimeout(reqTimer.current)
+      reqTimer.current = setTimeout(() => setRequested(false), 2200)
     } else {
       sfx.err()
     }
@@ -115,7 +119,7 @@ export default function Shop() {
                       className="!px-2 whitespace-nowrap"
                     >
                       {maxed
-                        ? l({ ko: '보유중', en: 'Owned', ja: '保有中' })
+                        ? l({ ko: '보유 중', en: 'Owned', ja: '保有中' })
                         : afford
                           ? l({ ko: '교환', en: 'Redeem', ja: '交換' })
                           : l({ ko: '부족', en: 'Short', ja: '不足' })}

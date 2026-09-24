@@ -57,7 +57,7 @@ export default function Magazine() {
                 className="[content-visibility:auto] [contain-intrinsic-size:auto_150px]"
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ ...SPRING.ui, delay: 0.05 * i }}
+                transition={{ ...SPRING.ui, delay: Math.min(0.05 * i, 0.25) }}
               >
                 <Card onClick={() => nav(`/magazine/${a.id}`)} className="flex items-center gap-3.5 !p-4">
                   <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-mind-50 text-[28px]">

@@ -47,6 +47,7 @@ export default function Rank() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tier.id])
 
+  // 사용자 화면에 운영자 버튼 문구('승인')를 빌려 쓰면 '승인 대기'·'반려됨'과 짝이 안 맞아 '승인됨'으로 쓴다
   const onApply = (expId: string) => {
     if (applyExperience(expId)) fire('win')
   }
@@ -185,7 +186,7 @@ export default function Rank() {
                         {app.status === 'pending'
                           ? t('rewards.status.pending')
                           : app.status === 'approved'
-                            ? `🎉 ${t('admin.approve')}`
+                            ? `🎉 ${l({ ko: '승인됨', en: 'Approved', ja: '承認済み' })}`
                             : t('rewards.status.rejected')}
                       </div>
                     ) : ok ? (
@@ -220,7 +221,7 @@ export default function Rank() {
                       </div>
                     </div>
                     {a.status === 'pending' && <Chip tone="amber">⏳ {t('rewards.status.pending')}</Chip>}
-                    {a.status === 'approved' && <Chip tone="mind">🎉 {t('admin.approve')}</Chip>}
+                    {a.status === 'approved' && <Chip tone="mind">🎉 {l({ ko: '승인됨', en: 'Approved', ja: '承認済み' })}</Chip>}
                     {a.status === 'rejected' && <Chip tone="red">{t('rewards.status.rejected')}</Chip>}
                   </div>
                 )

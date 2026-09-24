@@ -48,7 +48,7 @@ export default function Dex() {
           <p className="text-[13px] font-semibold text-white/85">{t('dex.sub')}</p>
           <div className="mt-1 flex items-end gap-1.5">
             <span className="text-[28px] font-extrabold leading-none">{count}</span>
-            <span className="pb-1 text-[16px] font-semibold text-white/80">/ {TOTAL} 마리</span>
+            <span className="pb-1 text-[16px] font-semibold text-white/80">/ {TOTAL}{l({ ko: '마리', en: '', ja: '匹' })}</span>
             <span className="ml-auto pb-1 text-[15px] font-semibold text-white/90">{pct}%</span>
           </div>
           <div className="mt-2.5 h-2.5 overflow-hidden rounded-full bg-white/25">
@@ -129,7 +129,12 @@ export default function Dex() {
       <Modal open={detail !== null} onClose={() => setDetail(null)}>
         {detail && (
           <div className="text-center">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -8, 6, 0] }} className="text-7xl">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1, rotate: [0, -8, 6, 0] }}
+              transition={{ ...SPRING.flick, rotate: { duration: 0.5, ease: 'easeInOut' } }}
+              className="text-7xl"
+            >
               {PERSONAS[detail].emoji}
             </motion.div>
             <h3 className="mt-3 text-[20px] font-extrabold tracking-tight">{l(PERSONAS[detail].name)}</h3>

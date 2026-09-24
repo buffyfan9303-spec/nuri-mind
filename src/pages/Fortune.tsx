@@ -54,7 +54,8 @@ export default function Fortune() {
   // 오늘 이미 해제했다면 새로고침해도 열린 상태 유지(유료 결제 소멸 방지)
   const fortuneFullDate = useStore((st) => st.fortuneFullDate)
   const [unlocked, setUnlocked] = useState(fortuneFullDate === localDay())
-  const [needCharge, setNeedCharge] = useState(false)
+  /** 다이아 부족 시트 — 어느 해제에서 모자랐는지에 따라 필요한 개수가 다르다(종합 vs 상세) */
+  const [needCharge, setNeedCharge] = useState<null | 'full' | 'detail'>(null)
   const [showAd, setShowAd] = useState(false)
   // 생일 입력 전 띠 맛보기(12지 — 생일 불필요, 오늘 날짜만 사용)
   const zTaste = useMemo(() => {
@@ -274,7 +275,7 @@ export default function Fortune() {
   const openFull = () => {
     const r = viewFortuneFull()
     if (r === 'need') {
-      setNeedCharge(true)
+      setNeedCharge('full')
       return
     }
     setUnlocked(true)
@@ -295,7 +296,7 @@ export default function Fortune() {
       markFortuneDetail()
       burst()
     } else {
-      setNeedCharge(true)
+      setNeedCharge('detail')
     }
   }
   const gauges = [
@@ -484,7 +485,7 @@ export default function Fortune() {
                     📺 {l({ ko: '광고 보고 무료로 보기', en: 'Watch ad — free', ja: '広告を見て無料で見る' })}
                   </Button>
                   <Button color="white" size="lg" onClick={unlockDetailDia}>
-                    {l({ ko: `광고 없이 바로 보기 (${FORTUNE_DETAIL_DIA_COST}개)`, en: `Skip the ad (${FORTUNE_DETAIL_DIA_COST}💎)`, ja: `広告なしで見る (${FORTUNE_DETAIL_DIA_COST}💎)` })}
+                    {l({ ko: `광고 없이 바로 보기 (💎 ${FORTUNE_DETAIL_DIA_COST}개)`, en: `Skip the ad (${FORTUNE_DETAIL_DIA_COST}💎)`, ja: `広告なしで見る (${FORTUNE_DETAIL_DIA_COST}💎)` })}
                   </Button>
                 </div>
                 <p className="mt-2.5 text-[11px] font-medium text-ink-faint">{l({ ko: '보유', en: 'Balance', ja: '保有' })} 💎 {diamonds.toLocaleString()}</p>
@@ -558,7 +559,7 @@ export default function Fortune() {
                   >
                     <span className="shrink-0 text-[20px] leading-none">{z.zodiacEmoji}</span>
                     <div className="min-w-0">
-                      <p className="text-[11px] font-semibold">{z.zodiacKo}{t('fortune.zodiacSuffix')}{mine ? ' · 나' : ''}</p>
+                      <p className="text-[11px] font-semibold">{z.zodiacKo}{t('fortune.zodiacSuffix')}{mine ? ` · ${l({ ko: '나', en: 'me', ja: '私' })}` : ''}</p>
                       <p className="break-keep text-[11px] font-medium leading-tight text-ink-sub">{l(z.line)}</p>
                     </div>
                   </div>
@@ -620,16 +621,18 @@ export default function Fortune() {
           <Button color="sky" onClick={shareFortune}>{t('fortune.share')}</Button>
         </div>
         {saved && (
-          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">✅ {t('share.saved')}
+          <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">✅ {t('share.saved')}</p>
+        )}
+        {/* 예전엔 위 '저장됨' 안에 들어 있어 이미지 저장일 때만 보였다 — 공유 시트로 보낸 보상은 말없이 들어왔다 */}
         {shareBonus && (
           <motion.p
             initial={{ opacity: 0, y: 8, scale: 0.9, x: '-50%' }}
             animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
+            transition={SPRING.flick}
             className="fixed bottom-40 left-1/2 z-50 rounded-full bg-mind-600 px-4 py-2 text-[13px] font-semibold text-white shadow-pop"
           >
-            📤 공유 보상 +5P!
+            📤 {l({ ko: '공유 보상 +5P!', en: 'Share bonus +5P!', ja: 'シェア報酬 +5P！' })}
           </motion.p>
-        )}</p>
         )}
 
         <p className="mt-4 px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">{t('fortune.disclaimer')}</p>
@@ -637,16 +640,18 @@ export default function Fortune() {
           🔁 {t('fortune.changeBirth')}
         </button>
 
-        <Modal open={needCharge} onClose={() => setNeedCharge(false)}>
+        <Modal open={needCharge !== null} onClose={() => setNeedCharge(null)}>
           <div className="text-center">
             <p className="text-[28px] leading-none">💎</p>
             <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
             <p className="mt-1 break-keep text-[13px] font-medium text-ink-faint">
-              {l({ ko: `종합 운세 열람에 ${FORTUNE_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Full fortune needs 💎${FORTUNE_DIA_COST} · you have ${diamonds}`, ja: `総合運勢に💎${FORTUNE_DIA_COST}必要・保有${diamonds}` })}
+              {needCharge === 'detail'
+                ? l({ ko: `상세 운세 열람에 ${FORTUNE_DETAIL_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Detailed fortune needs 💎${FORTUNE_DETAIL_DIA_COST} · you have ${diamonds}`, ja: `詳細運勢に💎${FORTUNE_DETAIL_DIA_COST}必要・保有${diamonds}` })
+                : l({ ko: `종합 운세 열람에 ${FORTUNE_DIA_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Full fortune needs 💎${FORTUNE_DIA_COST} · you have ${diamonds}`, ja: `総合運勢に💎${FORTUNE_DIA_COST}必要・保有${diamonds}` })}
             </p>
             <div className="mt-5">
               <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
-              <button onClick={() => setNeedCharge(false)} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">{l({ ko: '다음에', en: 'Later', ja: '後で' })}</button>
+              <button onClick={() => setNeedCharge(null)} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">{l({ ko: '다음에', en: 'Later', ja: '後で' })}</button>
             </div>
           </div>
         </Modal>

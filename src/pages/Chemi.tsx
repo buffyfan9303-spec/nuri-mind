@@ -46,7 +46,9 @@ export default function Chemi() {
     }
   }
 
-  const Picker = ({ value, onPick }: { value: string | null; onPick: (k: string) => void }) => (
+  // 컴포넌트(<Picker />)가 아니라 함수로 부른다 — 렌더마다 새 컴포넌트 타입이 되어 고를 때마다 격자가 통째로
+  // 다시 마운트됐다(누름 모션이 끊기고 키보드 포커스가 사라진다)
+  const picker = (value: string | null, onPick: (k: string) => void) => (
     <div className="grid grid-cols-4 gap-2">
       {LOVE_ANIMALS.map((a) => {
         const p = PERSONAS[a.key]
@@ -59,6 +61,7 @@ export default function Chemi() {
               onPick(a.key)
               sfx.tap()
             }}
+            aria-pressed={sel}
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border-2"
             style={{ borderColor: sel ? '#F25C8E' : 'rgb(var(--line))', background: sel ? '#F25C8E14' : 'rgb(var(--surface-2))' }}
           >
@@ -81,7 +84,7 @@ export default function Chemi() {
         {/* 나 */}
         <h2 className="mt-5 px-1 text-[15px] font-semibold">{t('chemi.me')}</h2>
         <div className="mt-2.5">
-          <Picker value={mine} onPick={setMine} />
+          {picker(mine, setMine)}
         </div>
         {!myLove && (
           <button onClick={() => nav('/test/love')} className="mt-2 px-1 text-[12px] font-semibold text-mind-600">
@@ -92,7 +95,7 @@ export default function Chemi() {
         {/* 친구 */}
         <h2 className="mt-5 px-1 text-[15px] font-semibold">{t('chemi.friend')}</h2>
         <div className="mt-2.5">
-          <Picker value={theirs} onPick={setTheirs} />
+          {picker(theirs, setTheirs)}
         </div>
 
         {/* 궁합 결과 */}

@@ -76,20 +76,46 @@ function Console() {
   const [mailBody, setMailBody] = useState('')
   const [mailDia, setMailDia] = useState('')
   const [opMsg, setOpMsg] = useState('')
+  // 서버 지급·발송 진행 중 — 연타하면 같은 다이아가 두 번 나가던 자리
+  const [opBusy, setOpBusy] = useState(false)
   const opResult = (r: string, okMsg: string) =>
-    setOpMsg(r === 'ok' ? okMsg : r === 'no_user' ? '그 닉네임의 유저가 없어요' : '권한 없음/오류 — 운영자(WTA) 로그인이 필요해요')
+    setOpMsg(r === 'ok' ? okMsg : r === 'no_user' ? '그 닉네임의 유저가 없어요' : '권한이 없거나 오류가 났어요 — 운영자(WTA) 로그인이 필요해요')
   const onGrantNick = async () => {
+    if (opBusy) return
+    const nick = diaNick.trim()
     const n = parseInt(diaAmt, 10)
-    if (!diaNick.trim() || !n || n <= 0) return setOpMsg('닉네임과 개수를 확인하세요')
-    const r = await grantDiamondsNick(diaNick.trim(), n)
-    opResult(r, `${diaNick}님에게 💎${n} 지급(우편함으로)`)
-    if (r === 'ok') sfx.coin()
+    if (!nick || !n || n <= 0) return setOpMsg('닉네임과 개수를 확인해 주세요')
+    // 되돌릴 수 없는 지급이라 한 번 더 묻는다(오타 닉네임·자릿수 실수)
+    if (!window.confirm(`${nick}님에게 다이아 ${n.toLocaleString()}개를 지급할까요?`)) return
+    setOpBusy(true)
+    try {
+      const r = await grantDiamondsNick(nick, n)
+      opResult(r, `${nick}님에게 💎${n.toLocaleString()} 지급(우편함으로)`)
+      if (r === 'ok') {
+        sfx.coin()
+        setDiaAmt('')
+      }
+    } finally {
+      setOpBusy(false)
+    }
   }
   const onSendMail = async () => {
-    if (!mailNick.trim() || !mailTitle.trim()) return setOpMsg('받는 사람과 제목을 확인하세요')
-    const r = await sendMailNick(mailNick.trim(), mailTitle.trim(), mailBody.trim(), parseInt(mailDia, 10) || 0)
-    opResult(r, `${mailNick}님에게 우편을 보냈어요`)
-    if (r === 'ok') sfx.tap()
+    if (opBusy) return
+    const nick = mailNick.trim()
+    if (!nick || !mailTitle.trim()) return setOpMsg('받는 사람과 제목을 확인해 주세요')
+    const dia = parseInt(mailDia, 10) || 0
+    if (!window.confirm(dia > 0 ? `${nick}님에게 다이아 ${dia.toLocaleString()}개를 첨부해 보낼까요?` : `${nick}님에게 우편을 보낼까요?`)) return
+    setOpBusy(true)
+    try {
+      const r = await sendMailNick(nick, mailTitle.trim(), mailBody.trim(), dia)
+      opResult(r, `${nick}님에게 우편을 보냈어요`)
+      if (r === 'ok') {
+        sfx.tap()
+        setMailDia('')
+      }
+    } finally {
+      setOpBusy(false)
+    }
   }
   const surveys = useStore((s) => s.surveys)
   const redemptions = useStore((s) => s.redemptions)
@@ -219,6 +245,8 @@ function Console() {
                     color="danger"
                     size="sm"
                     onClick={() => {
+                      // 반려는 되돌릴 버튼이 없다 — 승인 옆 오탭 한 번으로 설문이 떨어지지 않게 묻는다
+                      if (!window.confirm(`'${sv.title}' 설문을 반려할까요?`)) return
                       rejectSurvey(sv.id, reasons[sv.id] ?? '')
                       sfx.err()
                     }}
@@ -251,7 +279,7 @@ function Console() {
                   <Button color="mind" size="sm" onClick={() => { decideRedemption(rd.id, true); sfx.coin() }}>
                     ✅ {t('admin.approve')}
                   </Button>
-                  <Button color="danger" size="sm" onClick={() => { decideRedemption(rd.id, false); sfx.err() }}>
+                  <Button color="danger" size="sm" onClick={() => { if (!window.confirm(`'${rd.itemName}' 교환을 반려하고 포인트를 돌려줄까요?`)) return; decideRedemption(rd.id, false); sfx.err() }}>
                     ⛔ {t('admin.reject')}
                   </Button>
                 </div>
@@ -283,7 +311,7 @@ function Console() {
                     <Button color="mind" size="sm" onClick={() => { decideApplication(ap.id, true); sfx.coin() }}>
                       ✅ {t('admin.approve')}
                     </Button>
-                    <Button color="danger" size="sm" onClick={() => { decideApplication(ap.id, false); sfx.err() }}>
+                    <Button color="danger" size="sm" onClick={() => { if (!window.confirm('이 체험단 신청을 반려할까요?')) return; decideApplication(ap.id, false); sfx.err() }}>
                       ⛔ {t('admin.reject')}
                     </Button>
                   </div>
@@ -311,7 +339,7 @@ function Console() {
                   {rp.excerpt}
                 </p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  <Button color="danger" size="sm" onClick={() => { resolveReport(rp.id, true); sfx.err() }}>
+                  <Button color="danger" size="sm" onClick={() => { if (!window.confirm(`${rp.nick}님의 글을 숨길까요?`)) return; resolveReport(rp.id, true); sfx.err() }}>
                     🙈 {t('admin.report.hide')}
                   </Button>
                   <Button color="mind" size="sm" onClick={() => { resolveReport(rp.id, false); sfx.tap() }}>
@@ -350,7 +378,9 @@ function Console() {
             <button
               onClick={() => setPrecisionGate(!precisionGate)}
               className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${precisionGate ? 'bg-[#1ab394]' : 'bg-white/20'}`}
-              aria-label="precision-gate"
+              role="switch"
+              aria-checked={precisionGate}
+              aria-label="두뇌 측정 상세 게이팅"
             >
               <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white transition-transform ${precisionGate ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
             </button>
@@ -366,15 +396,20 @@ function Console() {
             <button
               disabled={aiBusy}
               onClick={async () => {
+                if (aiBusy) return
                 setAiBusy(true)
                 setAiHealth([])
                 const fns: AiFnName[] = ['deep-report', 'ai-report', 'fortune-detail']
                 // 순차 실행 — 동시에 때리면 어느 함수가 느린지/막혔는지 구분이 안 된다
-                for (const f of fns) {
-                  const h = await probeAi(f)
-                  setAiHealth((prev) => [...prev, h])
+                try {
+                  for (const f of fns) {
+                    const h = await probeAi(f)
+                    setAiHealth((prev) => [...prev, h])
+                  }
+                } finally {
+                  // 진단 중 예외가 나도 버튼이 '진단 중…'에 영원히 묶이지 않게
+                  setAiBusy(false)
                 }
-                setAiBusy(false)
               }}
               className="mt-2.5 w-full rounded-xl bg-[#6E7BF2] py-2.5 text-[13px] font-semibold text-white disabled:opacity-50"
             >
@@ -401,7 +436,7 @@ function Console() {
             <div className="mt-2 flex gap-2">
               <input value={diaNick} onChange={(e) => setDiaNick(e.target.value)} placeholder="닉네임(서버 유저)" className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
               <input value={diaAmt} onChange={(e) => setDiaAmt(e.target.value.replace(/\D/g, ''))} placeholder="개수" inputMode="numeric" className="w-20 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
-              <button onClick={onGrantNick} className="shrink-0 rounded-xl bg-[#6E7BF2] px-4 py-2.5 text-[13px] font-semibold text-white">지급</button>
+              <button onClick={onGrantNick} disabled={opBusy} className="shrink-0 rounded-xl bg-[#6E7BF2] px-4 py-2.5 text-[13px] font-semibold text-white disabled:opacity-50">지급</button>
             </div>
 
             <h3 className="mt-4 text-[14px] font-semibold text-white">개인 우편 보내기</h3>
@@ -410,7 +445,7 @@ function Console() {
             <textarea value={mailBody} onChange={(e) => setMailBody(e.target.value)} placeholder="내용" rows={2} className="mt-2 w-full resize-none rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
             <div className="mt-2 flex gap-2">
               <input value={mailDia} onChange={(e) => setMailDia(e.target.value.replace(/\D/g, ''))} placeholder="첨부 💎(선택)" inputMode="numeric" className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
-              <button onClick={onSendMail} className="shrink-0 rounded-xl bg-[#6E7BF2] px-4 py-2.5 text-[13px] font-semibold text-white">보내기</button>
+              <button onClick={onSendMail} disabled={opBusy} className="shrink-0 rounded-xl bg-[#6E7BF2] px-4 py-2.5 text-[13px] font-semibold text-white disabled:opacity-50">보내기</button>
             </div>
 
             {opMsg && <p className="mt-2.5 text-[12px] font-medium text-white/90">{opMsg}</p>}

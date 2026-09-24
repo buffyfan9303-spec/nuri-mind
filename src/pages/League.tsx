@@ -77,8 +77,9 @@ export default function League() {
           <motion.div
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className={`mx-auto max-w-md px-5`}
+            exit={{ opacity: 0, y: -16 }}
+            transition={SPRING.ui}
+            className="mx-auto max-w-md px-5"
           >
             <p
               className={`rounded-2xl px-4 py-3.5 text-center text-[15px] font-semibold ${
@@ -169,7 +170,7 @@ export default function League() {
         </Card>
 
         <p className="mt-3 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
-          🏆 {t('league.sub')} · 현재 {rank}위
+          🏆 {t('league.sub')} · {l({ ko: `현재 ${rank}위`, en: `Now #${rank}`, ja: `現在${rank}位` })}
         </p>
       </main>
     </div>

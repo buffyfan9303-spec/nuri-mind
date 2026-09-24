@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SPRING } from '../lib/motion'
+import { SPRING, tapScale } from '../lib/motion'
 import { motion } from 'framer-motion'
 import { TopBar, Card, Modal } from '../components/ui'
 import Button from '../components/Button'
@@ -97,7 +97,7 @@ export default function Charge() {
               return (
                 <motion.button
                   key={b.dia}
-                  whileTap={{ scale: 0.97 }}
+                  whileTap={tapScale}
                   onClick={() => {
                     setSel(b)
                     sfx.tap()
@@ -150,14 +150,14 @@ export default function Charge() {
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               {['카카오페이', '신용카드', 'Toss'].map((m) => (
                 <span key={m} className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-[12px] font-medium text-ink-faint">
-                  {m} <span className="text-[11px] text-ink-faint/70">준비중</span>
+                  {m} <span className="text-[11px] text-ink-faint/70">준비 중</span>
                 </span>
               ))}
             </div>
 
             <div className="mt-5">
               <Button color="iq" busy={paying} onClick={onPay}>
-                {l({ ko: '충전하기 (베타 즉시지급)', en: 'Charge (beta · instant)', ja: 'チャージ（ベータ即時）' })}
+                {l({ ko: '충전하기 (베타 즉시 지급)', en: 'Charge (beta · instant)', ja: 'チャージ（ベータ即時）' })}
               </Button>
               <button onClick={close} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">
                 {l({ ko: '취소', en: 'Cancel', ja: 'キャンセル' })}

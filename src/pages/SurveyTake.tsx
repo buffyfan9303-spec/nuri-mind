@@ -43,6 +43,8 @@ export default function SurveyTake() {
   }).length
 
   const submit = () => {
+    // 완료 시트가 올라오는 사이 한 번 더 눌리면 두 번째 takeSurvey가 0을 돌려줘 '+0P'로 덮였다
+    if (doneOpen) return
     const missing = survey.questions.some((q) => {
       if (!q.required) return false
       const a = answers[q.id]
@@ -68,7 +70,7 @@ export default function SurveyTake() {
     <div className="min-h-dvh pb-12">
       <TopBar back="/rewards" title={`${survey.emoji} ${survey.title}`} />
       <div className="mx-auto max-w-md px-5">
-        <ProgressBar value={answeredCount / survey.questions.length} />
+        <ProgressBar value={answeredCount / Math.max(1, survey.questions.length)} />
         {err && (
           <p className="shake mt-3 rounded-xl bg-red-50 px-3 py-2 text-center text-sm font-extrabold text-red-500">
             {t('take.needRequired')}
@@ -187,6 +189,7 @@ export default function SurveyTake() {
                     onChange={(e) => setAns(q.id, e.target.value)}
                     placeholder={t('take.textPh')}
                     rows={3}
+                    maxLength={500}
                     className="mt-3 w-full rounded-xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-medium leading-relaxed outline-none focus:border-mind-400"
                   />
                 )}
@@ -204,7 +207,13 @@ export default function SurveyTake() {
 
       <Modal open={doneOpen}>
         <div className="text-center">
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -10, 8, 0] }} className="text-5xl">
+          {/* 스프링은 첫·끝 키프레임만 쓴다 — 흔들림(rotate 키프레임)은 따로 트윈으로 줘야 실제로 보인다 */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1, rotate: [0, -10, 8, 0] }}
+            transition={{ ...SPRING.flick, rotate: { duration: 0.5, ease: 'easeInOut' } }}
+            className="text-5xl"
+          >
             🎉
           </motion.div>
           <h3 className="mt-3 text-xl font-extrabold">{t('take.thanks', { p: earned })}</h3>

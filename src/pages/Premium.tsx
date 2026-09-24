@@ -37,6 +37,8 @@ export default function Premium() {
   ]
 
   const onSubscribe = () => {
+    // 확인 시트가 내려가는 동안에도 버튼이 눌린다 — 두 번째 탭이 30일을 한 번 더 쌓던 자리
+    if (!confirm) return
     // TODO(PG): 카카오페이/카드 정기결제 성공 콜백에서 subscribe() 호출로 교체
     // ⚠️ 지금은 베타 즉시지급이라 이 이벤트는 '결제'가 아니라 '구독 의사'를 뜻한다.
     //    PG가 붙으면 결제 성공 콜백으로 옮겨야 매출과 일치한다.
@@ -98,7 +100,13 @@ export default function Premium() {
 
         {/* CTA */}
         {active ? (
-          <button onClick={cancel} className="w-full py-2.5 text-[13px] font-medium text-ink-faint">
+          <button
+            onClick={() => {
+              // 해지는 남은 기간을 즉시 없앤다 — 잘못 눌러도 되돌릴 수 없어 한 번 더 묻는다
+              if (window.confirm(l({ ko: `남은 ${daysLeft}일이 바로 사라져요. 해지할까요?`, en: `Your remaining ${daysLeft} days end now. Cancel?`, ja: `残り${daysLeft}日がすぐに消えます。解約しますか？` }))) cancel()
+            }}
+            className="w-full py-2.5 text-[13px] font-medium text-ink-faint"
+          >
             {l({ ko: '구독 해지 (베타)', en: 'Cancel subscription (beta)', ja: '解約（ベータ）' })}
           </button>
         ) : (
@@ -129,13 +137,13 @@ export default function Premium() {
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             {['카카오페이', '신용카드', 'Toss'].map((m) => (
               <span key={m} className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-[12px] font-medium text-ink-faint">
-                {m} <span className="text-[11px] text-ink-faint/70">준비중</span>
+                {m} <span className="text-[11px] text-ink-faint/70">준비 중</span>
               </span>
             ))}
           </div>
           <div className="mt-5">
             <Button color="iq" onClick={onSubscribe}>
-              {l({ ko: '구독하기 (베타 즉시활성)', en: 'Subscribe (beta · instant)', ja: '購読（ベータ即時）' })}
+              {l({ ko: '구독하기 (베타 즉시 활성화)', en: 'Subscribe (beta · instant)', ja: '購読（ベータ即時）' })}
             </Button>
             <button onClick={() => setConfirm(false)} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">
               {l({ ko: '취소', en: 'Cancel', ja: 'キャンセル' })}
