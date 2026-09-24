@@ -1,5 +1,5 @@
 -- ════════════════════════════════════════════════════════════════
---  커뮤니티 글·댓글 소유권 수정 (2026-09) — ⚠️ 아직 라이브 미적용. 코디네이터가 적용.
+--  커뮤니티 글·댓글 소유권 수정 (2026-09) — ✅ 라이브 적용 완료(2026-09-24, 마이그레이션 community_owner_fix_2026_09).
 --  대상 구멍: advisor-fixes-2026-09.sql 섹션 D — "아무나 남의 글·댓글을 지울 수 있다".
 --   · posts/comments.device_id를 anon이 select로 읽는다
 --   · delete_my_post(pid, did)/delete_my_comment(cid, did)가 "device_id = did"만 본다
