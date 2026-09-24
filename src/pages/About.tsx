@@ -158,26 +158,8 @@ export default function About() {
           </div>
         </Card>
 
-        {/* 오픈소스 라이선스 고지 — 라이선스 원문은 public/ 아래 파일로 함께 배포한다(링크는 그 파일 그대로) */}
-        <Card className="mt-4">
-          <h2 className="text-[17px] font-extrabold">{l({ ko: '오픈소스 라이선스', en: 'Open-source licenses', ja: 'オープンソースライセンス' })}</h2>
-          <ul className="mt-2 space-y-1.5 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
-            <li>
-              {l({ ko: '아이콘: Microsoft Fluent Emoji (Flat) — MIT License, © Microsoft Corporation', en: 'Icons: Microsoft Fluent Emoji (Flat) — MIT License, © Microsoft Corporation', ja: 'アイコン: Microsoft Fluent Emoji (Flat) — MIT License, © Microsoft Corporation' })}{' '}
-              <a href="/emoji/LICENSE-fluentui-emoji.txt" className="font-extrabold text-mind-700 underline underline-offset-2">
-                {l({ ko: '전문', en: 'Full text', ja: '全文' })}
-              </a>
-            </li>
-            <li>
-              {l({ ko: '한글 글꼴: 나눔스퀘어라운드 — SIL Open Font License 1.1, © NAVER Corp.', en: 'Korean font: NanumSquareRound — SIL Open Font License 1.1, © NAVER Corp.', ja: '韓国語フォント: NanumSquareRound — SIL Open Font License 1.1, © NAVER Corp.' })}{' '}
-              <a href="/fonts/LICENSE-NanumSquareRound.txt" className="font-extrabold text-mind-700 underline underline-offset-2">
-                {l({ ko: '전문', en: 'Full text', ja: '全文' })}
-              </a>
-            </li>
-            <li>{l({ ko: '라틴·일본어 글꼴: Nunito · Noto Sans JP — SIL Open Font License 1.1 (Google Fonts)', en: 'Latin & Japanese fonts: Nunito · Noto Sans JP — SIL Open Font License 1.1 (Google Fonts)', ja: 'ラテン文字・日本語フォント: Nunito · Noto Sans JP — SIL Open Font License 1.1 (Google Fonts)' })}</li>
-          </ul>
-        </Card>
-
+        {/* 오픈소스 라이선스(아이콘 MIT·글꼴 OFL)는 화면 고지 의무가 없다 — 원문은 public/emoji·public/fonts의
+            LICENSE 파일로 에셋과 함께 배포해 조건을 충족한다(운영자 결정: 화면 표기는 두지 않음) */}
         <Footer />
       </main>
     </div>
