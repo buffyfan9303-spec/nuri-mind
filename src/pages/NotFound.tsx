@@ -30,14 +30,14 @@ export default function NotFound() {
         <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
           {l({ ko: '이 주소엔 아무것도 없어요', en: 'Nothing lives at this address', ja: 'このアドレスには何もありません' })}
         </h1>
-        <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+        <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
           {l({
             ko: '주소가 바뀌었거나 잘못 입력됐을 수 있어요.',
             en: 'The link may have moved or been typed wrong.',
             ja: 'リンクが移動したか、入力ミスの可能性があります。',
           })}
         </p>
-        <code className="mt-3 max-w-full truncate rounded-xl bg-surface2 px-3 py-1.5 text-[12px] font-medium text-ink-faint">{shown}</code>
+        <code className="mt-3 max-w-full truncate rounded-xl bg-surface2 px-3 py-1.5 text-[12px] font-bold text-ink-faint">{shown}</code>
         <div className="mt-6 flex w-full flex-col gap-2.5">
           <Button onClick={() => nav('/', { replace: true })}>{l({ ko: '홈으로', en: 'Go home', ja: 'ホームへ' })}</Button>
           <Button

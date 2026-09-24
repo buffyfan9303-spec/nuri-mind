@@ -66,7 +66,7 @@ export const JellyChip = memo(function JellyChip({
       aria-label={label}
       aria-pressed={selected}
       style={style}
-      className={`jelly-chip relative flex ${full ? 'h-[76px] w-full' : CHIP_SQUARE} flex-col items-center justify-center gap-1 overflow-hidden rounded-[20px] px-1 outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-current`}
+      className={`jelly-chip relative flex ${full ? 'h-[76px] w-full' : CHIP_SQUARE} flex-col items-center justify-center gap-1.5 overflow-hidden rounded-[20px] px-0.5 outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-current`}
     >
       {/* 글로시 상단 광택 — 단색감을 없애는 핵심 */}
       <span
@@ -76,7 +76,7 @@ export const JellyChip = memo(function JellyChip({
       />
       {badge && (
         <span
-          className="pointer-events-none absolute right-1 top-1 z-[2] rounded-full px-1 py-px text-[11px] font-semibold leading-none tracking-wide text-white"
+          className="pointer-events-none absolute right-1 top-1 z-[2] rounded-full px-1 pb-px pt-0.5 text-[11px] font-extrabold leading-none tracking-wide text-white"
           style={{ background: BADGE_BG[badge] }}
         >
           {badge}
@@ -85,7 +85,9 @@ export const JellyChip = memo(function JellyChip({
       <span className="relative z-[1]">
         <IconBadge emoji={emoji} color={color} size={30} radius={10} tone={selected ? 'frost' : 'solid'} />
       </span>
-      <span className="relative z-[1] block w-full truncate whitespace-nowrap text-center text-[11px] font-semibold leading-tight">{label}</span>
+      {/* 라벨: 한 줄·800·leading-none — 줄높이 여백이 없어야 아이콘과의 간격(gap)이 칸마다 같다.
+          좌우 여백은 칸 패딩(px-0.5)뿐. 380px 미만(칸 56px)은 11px — 12px면 "자기효능감"·"소울메이트"가 3px 넘쳐 잘린다 */}
+      <span className="relative z-[1] block w-full truncate whitespace-nowrap pb-px text-center text-[11px] font-extrabold leading-none min-[380px]:text-[12px]">{label}</span>
     </button>
   )
 })
@@ -97,13 +99,15 @@ export const JellyChip = memo(function JellyChip({
  */
 export default function ScrollChips({ items, baseDelay = 0 }: { items: ChipItem[]; baseDelay?: number }) {
   return (
-    <div className="no-scrollbar mt-2 flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-3 pt-1 [overscroll-behavior-x:contain]">
+    <div className="no-scrollbar flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-3 pt-1 [overscroll-behavior-x:contain]">
       {items.map((it, i) => (
+        // 첫 등장만 '톡'(SPRING.pop) — 작게 시작해 한 번 넘쳤다 앉는다. 옆으로 미끄러지던 예전 등장은
+        // 칸 경계가 흔들려 격자가 무너져 보였다. 제자리에서 커지면 격자는 처음부터 반듯하다
         <motion.div
           key={it.id}
-          initial={{ opacity: 0, x: 18 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ ...SPRING.ui, delay: baseDelay + 0.045 * i }}
+          initial={{ opacity: 0, scale: 0.82 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ ...SPRING.pop, delay: baseDelay + 0.035 * i, opacity: { duration: 0.16, delay: baseDelay + 0.035 * i } }}
           className="shrink-0 snap-start"
         >
           <JellyChip emoji={it.emoji} label={it.label} color={it.color} badge={it.badge} selected={it.selected} onClick={it.onClick} />

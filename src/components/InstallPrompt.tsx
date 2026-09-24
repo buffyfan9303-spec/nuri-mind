@@ -49,10 +49,10 @@ export default function InstallPrompt() {
       >
         <span className="text-[24px] leading-none">📲</span>
         <div className="min-w-0 flex-1">
-          <p className="text-[14px] font-semibold">{l({ ko: '홈 화면에 앱 설치', en: 'Install the app', ja: 'ホームに追加' })}</p>
-          <p className="truncate text-[12px] font-medium text-ink-faint">{l({ ko: '바로 열리고, 오프라인에서도 돼요', en: 'One tap · works offline', ja: 'ワンタップ・オフラインOK' })}</p>
+          <p className="text-[14px] font-extrabold">{l({ ko: '홈 화면에 앱 설치', en: 'Install the app', ja: 'ホームに追加' })}</p>
+          <p className="truncate text-[12px] font-bold text-ink-faint">{l({ ko: '바로 열리고, 오프라인에서도 돼요', en: 'One tap · works offline', ja: 'ワンタップ・オフラインOK' })}</p>
         </div>
-        <button onClick={install} className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-semibold text-white">
+        <button onClick={install} className="shrink-0 rounded-full bg-mind-500 px-4 py-2 text-[13px] font-extrabold text-white">
           {l({ ko: '설치', en: 'Install', ja: '追加' })}
         </button>
         <button onClick={close} aria-label={l({ ko: '닫기', en: 'Close', ja: '閉じる' })} className="-mr-2 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center text-[17px] font-bold text-ink-faint">

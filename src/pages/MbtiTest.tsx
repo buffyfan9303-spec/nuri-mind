@@ -106,20 +106,20 @@ export default function MbtiTest() {
             style={{ background: `linear-gradient(135deg, ${type.grad[0]}, ${type.grad[1]})` }}
           >
             <div className="text-[28px] leading-none">{type.emoji}</div>
-            <p className="mt-2 text-[13px] font-semibold tracking-[0.2em] text-white/85">{type.key}</p>
+            <p className="mt-2 text-[13px] font-extrabold tracking-[0.2em] text-white/85">{type.key}</p>
             <h1 className="mt-1 break-keep text-[20px] font-extrabold leading-tight">{l(type.name)}</h1>
-            <p className="mt-2 break-keep text-[13px] font-medium leading-relaxed text-white/90">{l(type.tag)}</p>
+            <p className="mt-2 break-keep text-[13px] font-bold leading-relaxed text-white/90">{l(type.tag)}</p>
           </motion.div>
 
           {/* 4축 게이지 */}
           <Card className="mt-3.5 !p-5">
-            <h2 className="text-[15px] font-semibold">
+            <h2 className="text-[15px] font-extrabold">
               {l({ ko: '나를 이루는 네 가지', en: 'Your four axes', ja: '4つの軸' })}
             </h2>
             <div className="mt-3 space-y-3">
               {AXES.map(([a, b]) => (
                 <div key={a}>
-                  <div className="flex items-center justify-between text-[12px] font-semibold">
+                  <div className="flex items-center justify-between text-[12px] font-extrabold">
                     <span className={pct[a] >= 50 ? 'text-mind-700' : 'text-ink-faint'}>
                       {a} · {l(AXIS_LABEL[a])}
                     </span>
@@ -135,7 +135,7 @@ export default function MbtiTest() {
                       className="h-full rounded-full bg-gradient-to-r from-mind-500 to-sky2-500"
                     />
                   </div>
-                  <p className="mt-1 text-right text-[11px] font-medium text-ink-faint">
+                  <p className="mt-1 text-right text-[11px] font-bold text-ink-faint">
                     {pct[a]}% · {pct[b]}%
                   </p>
                 </div>
@@ -144,24 +144,24 @@ export default function MbtiTest() {
           </Card>
 
           <Card className="mt-3.5 !p-5">
-            <p className="break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">{l(type.desc)}</p>
+            <p className="break-keep text-[14px] font-bold leading-[1.85] text-ink-sub">{l(type.desc)}</p>
           </Card>
 
           <Card className="mt-3.5 !p-5">
-            <h2 className="text-[15px] font-semibold">{l({ ko: '잘하는 것', en: 'Strengths', ja: '強み' })}</h2>
+            <h2 className="text-[15px] font-extrabold">{l({ ko: '잘하는 것', en: 'Strengths', ja: '強み' })}</h2>
             <ul className="mt-2 space-y-1.5">
               {type.strengths.map((x, i) => (
-                <li key={i} className="break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+                <li key={i} className="break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
                   · {l(x)}
                 </li>
               ))}
             </ul>
-            <h2 className="mt-4 text-[15px] font-semibold">
+            <h2 className="mt-4 text-[15px] font-extrabold">
               {l({ ko: '조심할 점', en: 'Watch-outs', ja: '注意点' })}
             </h2>
             <ul className="mt-2 space-y-1.5">
               {type.watch.map((x, i) => (
-                <li key={i} className="break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+                <li key={i} className="break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
                   · {l(x)}
                 </li>
               ))}
@@ -188,7 +188,7 @@ export default function MbtiTest() {
             </Button>
           </div>
 
-          <p className="mt-5 break-keep px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
+          <p className="mt-5 break-keep px-2 text-center text-[11px] font-bold leading-relaxed text-ink-faint">
             ⓘ {l({
               ko: '나를 알아가는 재미있는 도구예요. 사람을 16칸에 가두는 진단은 아니고, 병원에서 쓰는 검사와도 달라요.',
               en: 'Type theory is a fun lens for self-exploration — not a diagnosis, and different from clinical scales.',
@@ -217,14 +217,14 @@ export default function MbtiTest() {
               className="h-full rounded-full bg-gradient-to-r from-mind-500 to-sky2-500"
             />
           </div>
-          <span className="shrink-0 text-[12px] font-semibold text-ink-faint">
+          <span className="shrink-0 text-[12px] font-extrabold text-ink-faint">
             {step + 1}/{total}
           </span>
         </div>
 
         <motion.div key={step} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={SPRING.ui}>
           <Card className="mt-4 !p-6">
-            <p className="break-keep text-center text-[17px] font-semibold leading-tight">
+            <p className="break-keep text-center text-[17px] font-extrabold leading-tight">
               {deep ? l(MBTI_DEEP[step].text) : l(MBTI_QUICK[step].text)}
             </p>
           </Card>
@@ -235,7 +235,7 @@ export default function MbtiTest() {
                   <button
                     key={o.v}
                     onClick={() => pickDeep(o.v)}
-                    className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[15px] font-semibold transition-colors active:border-mind-400 active:bg-mind-50"
+                    className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[15px] font-extrabold transition-colors active:border-mind-400 active:bg-mind-50"
                   >
                     {l(o.label)}
                   </button>
@@ -244,7 +244,7 @@ export default function MbtiTest() {
                   <button
                     key={o.to}
                     onClick={() => pickQuick(o.to)}
-                    className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-4 text-[15px] font-semibold leading-relaxed transition-colors active:border-mind-400 active:bg-mind-50"
+                    className="w-full rounded-2xl border-2 border-line bg-surface px-4 py-4 text-[15px] font-bold leading-relaxed transition-colors active:border-mind-400 active:bg-mind-50"
                   >
                     {l(o.text)}
                   </button>
@@ -252,7 +252,7 @@ export default function MbtiTest() {
           </div>
         </motion.div>
 
-        <p className="mt-5 text-center text-[12px] font-medium text-ink-faint">
+        <p className="mt-5 text-center text-[12px] font-bold text-ink-faint">
           {nickname}
           {l({ ko: '님, 정답은 없어요. 지금의 나를 고르면 돼요', en: ', there are no right answers', ja: 'さん、正解はありません' })}
         </p>

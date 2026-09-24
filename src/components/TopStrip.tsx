@@ -51,14 +51,15 @@ function TopStripPremium() {
         <span className="shrink-0 text-[14px]" aria-hidden="true">
           ✨
         </span>
-        <span className="min-w-0 flex-1 truncate text-left text-[12px] font-semibold">
+        {/* 380px 미만은 11px — 굵은 글꼴(800)에선 12px 문구가 360px 폭에서 가격 앞에서 잘렸다. 줄높이 20px 고정이라 띠 높이는 같다 */}
+        <span className="min-w-0 flex-1 truncate text-left text-[11px] font-extrabold leading-5 min-[380px]:text-[12px]">
           {l({
             ko: `프리미엄 · 운세·두뇌 측정 무제한 월 ${PREMIUM_KRW.toLocaleString()}원`,
             en: `Premium · unlimited fortune & tests ₩${PREMIUM_KRW.toLocaleString()}/mo`,
             ja: `プレミアム・運勢と検査が無制限 月₩${PREMIUM_KRW.toLocaleString()}`,
           })}
         </span>
-        <span className="shrink-0 rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-semibold">
+        <span className="shrink-0 rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-extrabold">
           {l({ ko: '알아보기', en: 'See', ja: '見る' })} ›
         </span>
       </span>
@@ -75,10 +76,10 @@ export function TopStripSoon() {
         <span className="shrink-0 text-[14px]" aria-hidden="true">
           🛠️
         </span>
-        <span className="min-w-0 flex-1 truncate text-left text-[12px] font-semibold">
+        <span className="min-w-0 flex-1 truncate text-left text-[11px] font-extrabold leading-5 min-[380px]:text-[12px]">
           {l({ ko: '리워드 설문은 준비 중이에요', en: 'Reward surveys are coming soon', ja: 'リワードアンケートは準備中です' })}
         </span>
-        <span className="shrink-0 rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-semibold">
+        <span className="shrink-0 rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-extrabold">
           {l({ ko: '준비 중', en: 'Soon', ja: '準備中' })}
         </span>
       </span>
@@ -118,7 +119,7 @@ function TopStripLive() {
         <span className="shrink-0 text-[14px]" aria-hidden="true">
           💰
         </span>
-        <span className="min-w-0 flex-1 truncate text-left text-[12px] font-semibold">
+        <span className="min-w-0 flex-1 truncate text-left text-[11px] font-extrabold leading-5 min-[380px]:text-[12px]">
           {best
             ? l({
                 ko: `설문 참여하고 ${best.reward}P 받기`,
@@ -127,7 +128,7 @@ function TopStripLive() {
               })
             : l({ ko: '리워드 받으러 가기', en: 'Go earn rewards', ja: 'リワードを受け取る' })}
         </span>
-        <span className="shrink-0 rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-semibold">
+        <span className="shrink-0 rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-extrabold">
           {l({ ko: '참여하기', en: 'Start', ja: '参加' })} ›
         </span>
       </span>

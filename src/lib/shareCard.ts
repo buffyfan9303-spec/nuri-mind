@@ -27,7 +27,8 @@ export interface CardSpec {
   charSvg?: string
 }
 
-const FAM = 'Pretendard, Nunito, "Noto Sans JP", sans-serif'
+// 앱 본문과 같은 글꼴 스택 — Nunito(라틴·숫자) → 나눔스퀘어라운드(한글). 둘 다 700·800만 있어 600은 쓰지 않는다
+const FAM = 'Nunito, NanumSquareRound, "Noto Sans JP", sans-serif'
 const EMOJI_FAM = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif'
 
 /** 인라인 SVG 문자열 → 이미지(캔버스 drawImage용). 외부 참조 없는 SVG라 캔버스 오염 없음. */
@@ -233,7 +234,7 @@ export async function makeResultCard(spec: CardSpec): Promise<Blob> {
   ctx.fillText(spec.title, cx, 892)
   // 태그라인 인용구 (줄바꿈)
   if (spec.subtitle) {
-    ctx.font = `600 38px ${FAM}`
+    ctx.font = `700 38px ${FAM}`
     const lines = wrap(ctx, `“${spec.subtitle}”`, W - 180).slice(0, 2)
     ctx.fillStyle = 'rgba(255,255,255,0.92)'
     lines.forEach((ln, i) => ctx.fillText(ln, cx, 956 + i * 52))

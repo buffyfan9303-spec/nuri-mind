@@ -65,7 +65,7 @@ export default function Premium() {
           {active ? (
             <>
               <h2 className="mt-2 text-[20px] font-extrabold">{l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })}</h2>
-              <p className="mt-1.5 text-[13px] font-medium text-white/90">
+              <p className="mt-1.5 text-[13px] font-bold text-white/90">
                 {l({ ko: `${untilStr}까지 · D-${daysLeft}`, en: `Until ${untilStr} · D-${daysLeft}`, ja: `${untilStr}まで・D-${daysLeft}` })}
               </p>
             </>
@@ -76,23 +76,23 @@ export default function Premium() {
                 ₩{PREMIUM_KRW.toLocaleString()}
                 <span className="text-[14px] font-bold text-white/80"> / {l({ ko: '월', en: 'mo', ja: '月' })}</span>
               </p>
-              <p className="mt-1.5 text-[12px] font-semibold text-white/85">{l({ ko: '언제든 해지 가능', en: 'Cancel anytime', ja: 'いつでも解約可' })}</p>
+              <p className="mt-1.5 text-[12px] font-extrabold text-white/85">{l({ ko: '언제든 해지 가능', en: 'Cancel anytime', ja: 'いつでも解約可' })}</p>
             </>
           )}
         </Card>
 
         {/* 혜택 */}
         <Card className="!p-5">
-          <p className="text-[14px] font-semibold">{l({ ko: '프리미엄 혜택', en: 'What you get', ja: '特典' })}</p>
+          <p className="text-[14px] font-extrabold">{l({ ko: '프리미엄 혜택', en: 'What you get', ja: '特典' })}</p>
           <div className="mt-3 space-y-3">
             {BENEFITS.map((b) => (
               <div key={b.e} className="flex items-start gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EEF0FE] text-[17px]">{b.e}</span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[14px] font-semibold">{b.t}</p>
-                  <p className="mt-0.5 break-keep text-[12px] font-medium text-ink-faint">{b.d}</p>
+                  <p className="text-[14px] font-extrabold">{b.t}</p>
+                  <p className="mt-0.5 break-keep text-[12px] font-bold text-ink-faint">{b.d}</p>
                 </div>
-                <span className="shrink-0 text-[15px] font-semibold text-mind-500">✓</span>
+                <span className="shrink-0 text-[15px] font-extrabold text-mind-500">✓</span>
               </div>
             ))}
           </div>
@@ -105,7 +105,7 @@ export default function Premium() {
               // 해지는 남은 기간을 즉시 없앤다 — 잘못 눌러도 되돌릴 수 없어 한 번 더 묻는다
               if (window.confirm(l({ ko: `남은 ${daysLeft}일이 바로 사라져요. 해지할까요?`, en: `Your remaining ${daysLeft} days end now. Cancel?`, ja: `残り${daysLeft}日がすぐに消えます。解約しますか？` }))) cancel()
             }}
-            className="w-full py-2.5 text-[13px] font-medium text-ink-faint"
+            className="w-full py-2.5 text-[13px] font-bold text-ink-faint"
           >
             {l({ ko: '구독 해지 (베타)', en: 'Cancel subscription (beta)', ja: '解約（ベータ）' })}
           </button>
@@ -116,7 +116,7 @@ export default function Premium() {
         )}
 
         {/* 베타 안내 */}
-        <div className="rounded-2xl bg-[#FFF6E5] px-4 py-3 text-[12px] font-semibold leading-relaxed text-[#9A6B00]">
+        <div className="rounded-2xl bg-[#FFF6E5] px-4 py-3 text-[12px] font-bold leading-relaxed text-[#9A6B00]">
           🧪 {l({
             ko: '정기결제(PG) 연동 전 베타예요. 지금은 구독하면 30일 바로 활성화되고, 정식 오픈 때 카카오페이·카드 정기결제로 바뀌어요.',
             en: 'Beta before recurring billing. Subscribing activates 30 days instantly; real KakaoPay/card billing comes at launch.',
@@ -136,7 +136,7 @@ export default function Premium() {
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             {['카카오페이', '신용카드', 'Toss'].map((m) => (
-              <span key={m} className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-[12px] font-medium text-ink-faint">
+              <span key={m} className="rounded-full border border-line bg-surface2 px-3 py-1.5 text-[12px] font-bold text-ink-faint">
                 {m} <span className="text-[11px] text-ink-faint/70">준비 중</span>
               </span>
             ))}
@@ -145,11 +145,11 @@ export default function Premium() {
             <Button color="iq" onClick={onSubscribe}>
               {l({ ko: '구독하기 (베타 즉시 활성화)', en: 'Subscribe (beta · instant)', ja: '購読（ベータ即時）' })}
             </Button>
-            <button onClick={() => setConfirm(false)} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">
+            <button onClick={() => setConfirm(false)} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">
               {l({ ko: '취소', en: 'Cancel', ja: 'キャンセル' })}
             </button>
           </div>
-          <p className="mt-2 text-[11px] font-medium text-ink-faint">
+          <p className="mt-2 text-[11px] font-bold text-ink-faint">
             {l({ ko: '만 14세 미만 결제 불가 · 언제든 해지 가능', en: 'No purchase under 14 · cancel anytime', ja: '14歳未満不可・いつでも解約可' })}
           </p>
         </div>

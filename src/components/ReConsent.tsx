@@ -60,8 +60,8 @@ export default function ReConsent() {
       >
         <div className="text-center text-[28px]" aria-hidden="true">📋</div>
         <h2 id={titleId} className="mt-2 break-keep text-center text-[20px] font-extrabold leading-tight">{t('reconsent.title')}</h2>
-        <p className="mt-2 break-keep text-center text-[14px] font-medium leading-relaxed text-ink-sub">{t('reconsent.body')}</p>
-        <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-semibold">
+        <p className="mt-2 break-keep text-center text-[14px] font-bold leading-relaxed text-ink-sub">{t('reconsent.body')}</p>
+        <div className="mt-3 flex items-center justify-center gap-2 text-[13px] font-extrabold">
           <button onClick={() => nav('/legal/terms')} className="text-mind-700 underline underline-offset-2">
             {t('onboard.terms')}
           </button>
@@ -70,7 +70,7 @@ export default function ReConsent() {
             {t('onboard.privacy')}
           </button>
         </div>
-        <p className="mt-1.5 text-center text-[11px] font-medium text-ink-faint">{t('onboard.effective', { date: LEGAL_EFFECTIVE })}</p>
+        <p className="mt-1.5 text-center text-[11px] font-bold text-ink-faint">{t('onboard.effective', { date: LEGAL_EFFECTIVE })}</p>
         <div className="mt-4">
           <Button
             color="mind"

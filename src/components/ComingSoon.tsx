@@ -30,7 +30,7 @@ export default function ComingSoon({
         <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
           {l({ ko: '준비 중이에요', en: 'Coming soon', ja: '準備中です' })}
         </h1>
-        <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+        <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
           {l(
             body ?? {
               ko: '지금은 이용할 수 없는 기능이에요. 준비가 끝나면 다시 열어 둘게요.',

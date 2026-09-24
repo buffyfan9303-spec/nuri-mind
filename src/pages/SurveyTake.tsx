@@ -76,7 +76,7 @@ export default function SurveyTake() {
             {t('take.needRequired')}
           </p>
         )}
-        <p className="mt-3 text-[15px] font-medium leading-relaxed text-ink-sub">{survey.desc}</p>
+        <p className="mt-3 text-[15px] font-bold leading-relaxed text-ink-sub">{survey.desc}</p>
 
         <div className="mt-4 space-y-4">
           {survey.questions.map((q, qi) => (
@@ -88,7 +88,7 @@ export default function SurveyTake() {
               transition={SPRING.ui}
             >
               <Card>
-                <p className="text-[16px] font-semibold leading-[1.65]">
+                <p className="text-[16px] font-extrabold leading-[1.65]">
                   <span className="mr-1.5 text-mind-600">Q{qi + 1}.</span>
                   {q.text}
                   {q.required && <span className="ml-1 text-xs font-bold text-red-400">*</span>}
@@ -176,7 +176,7 @@ export default function SurveyTake() {
                         )
                       })}
                     </div>
-                    <div className="mt-2 flex justify-between text-[12px] font-medium text-ink-faint">
+                    <div className="mt-2 flex justify-between text-[12px] font-bold text-ink-faint">
                       <span>{t('take.scaleLow')}</span>
                       <span>{t('take.scaleHigh')}</span>
                     </div>
@@ -190,7 +190,7 @@ export default function SurveyTake() {
                     placeholder={t('take.textPh')}
                     rows={3}
                     maxLength={500}
-                    className="mt-3 w-full rounded-xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-medium leading-relaxed outline-none focus:border-mind-400"
+                    className="mt-3 w-full rounded-xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-bold leading-relaxed outline-none focus:border-mind-400"
                   />
                 )}
               </Card>

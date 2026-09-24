@@ -130,7 +130,7 @@ export default function FocusRun() {
       </div>
 
       {/* 규칙 안내 */}
-      <div className="mx-auto mt-3 flex w-full max-w-md items-center justify-center gap-3 px-5 text-[12px] font-semibold">
+      <div className="mx-auto mt-3 flex w-full max-w-md items-center justify-center gap-3 px-5 text-[12px] font-extrabold">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-surface2 px-3 py-1.5 text-ink-sub">
           <span className="inline-block h-3 w-3 rounded-full" style={{ background: GO_COLOR }} /> {l({ ko: '초록 = 탭', en: 'Green = tap!', ja: '緑 = タップ！' })}
         </span>
@@ -168,7 +168,7 @@ export default function FocusRun() {
             {phase === 'feedback' && (
               <motion.div key={`fb-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
                 <div className="text-[28px] leading-none">{verdict === 'hit' || verdict === 'correctStop' ? '✅' : '❌'}</div>
-                <p className="mt-1.5 text-[14px] font-semibold" style={{ color: verdict === 'hit' || verdict === 'correctStop' ? '#10B981' : '#EF4444' }}>
+                <p className="mt-1.5 text-[14px] font-extrabold" style={{ color: verdict === 'hit' || verdict === 'correctStop' ? '#10B981' : '#EF4444' }}>
                   {verdict === 'hit'
                     ? l({ ko: '좋아요!', en: 'Nice!', ja: 'いいね！' })
                     : verdict === 'correctStop'
@@ -182,11 +182,11 @@ export default function FocusRun() {
           </AnimatePresence>
 
           {phase === 'stim' && isGo && (
-            <span className="pointer-events-none absolute bottom-5 text-[13px] font-semibold text-white/90">{l({ ko: '탭!', en: 'TAP!', ja: 'タップ！' })}</span>
+            <span className="pointer-events-none absolute bottom-5 text-[13px] font-extrabold text-white/90">{l({ ko: '탭!', en: 'TAP!', ja: 'タップ！' })}</span>
           )}
         </button>
 
-        <p className="mb-4 text-center text-[13px] font-medium text-ink-faint">
+        <p className="mb-4 text-center text-[13px] font-bold text-ink-faint">
           {l({ ko: '초록이 뜨면 최대한 빠르게, 빨강이면 누르지 마세요', en: 'Tap as fast as you can on green; do nothing on red', ja: '緑は最速でタップ、赤は押さないで' })}
         </p>
       </main>
@@ -196,7 +196,7 @@ export default function FocusRun() {
         <div className="text-center">
           <div className="text-4xl">🥺</div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
-          <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">
+          <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">

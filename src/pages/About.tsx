@@ -45,7 +45,7 @@ export default function About() {
         <h1 className="mt-2 break-keep text-[24px] font-extrabold leading-tight tracking-tight">
           {l({ ko: '누리 마인드를 소개합니다', en: 'About Nuri Mind', ja: 'ヌリマインドのご紹介' })}
         </h1>
-        <p className="mt-3 break-keep text-[15px] font-medium leading-[1.8] text-ink-sub">
+        <p className="mt-3 break-keep text-[15px] font-bold leading-[1.8] text-ink-sub">
           {l({
             ko: '누리 마인드는 학술적으로 공개된 심리 척도와 인지 과제를 바탕으로, 지금의 나를 이해하도록 돕는 심리 콘텐츠 서비스입니다. 검사 결과는 백분위와 함께 동물 캐릭터로 풀이되고, 강점·주의할 점·오늘 해 볼 수 있는 한 걸음을 함께 안내합니다.',
             en: 'Nuri Mind is a psychology content service that helps you understand yourself, built on published psychological scales and cognitive tasks. Results come with a percentile and an animal persona, plus strengths, cautions and one small step for today.',
@@ -55,42 +55,42 @@ export default function About() {
 
         {/* 제공하는 것 — 목록은 데이터에서 그대로 */}
         <Card className="mt-5">
-          <h2 className="text-[17px] font-semibold">{l({ ko: '자기이해 검사', en: 'Self-report tests', ja: '自己理解検査' })}</h2>
-          <p className="mt-1 text-[13px] font-medium text-ink-faint">
+          <h2 className="text-[17px] font-extrabold">{l({ ko: '자기이해 검사', en: 'Self-report tests', ja: '自己理解検査' })}</h2>
+          <p className="mt-1 text-[13px] font-bold text-ink-faint">
             {l({ ko: `${selfTests.length}종 · 스스로 답하는 설문형`, en: `${selfTests.length} tests · self-report`, ja: `${selfTests.length}種・自己回答式` })}
           </p>
           <ul className="mt-3 space-y-3">
             {selfTests.map((x) => (
               <li key={x.id}>
-                <Link to={`/test/${x.id}`} className="text-[15px] font-semibold text-mind-700 underline-offset-2 hover:underline">
+                <Link to={`/test/${x.id}`} className="text-[15px] font-extrabold text-mind-700 underline-offset-2 hover:underline">
                   {x.emoji} {t(`test.${x.id}.name`)}
                 </Link>
-                <p className="mt-0.5 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{t(`intro.${x.id}.basis`)}</p>
+                <p className="mt-0.5 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">{t(`intro.${x.id}.basis`)}</p>
               </li>
             ))}
           </ul>
         </Card>
 
         <Card className="mt-4">
-          <h2 className="text-[17px] font-semibold">{l({ ko: '직접 풀어 보는 인지 과제', en: 'Cognitive tasks', ja: '認知課題' })}</h2>
-          <p className="mt-1 text-[13px] font-medium text-ink-faint">
+          <h2 className="text-[17px] font-extrabold">{l({ ko: '직접 풀어 보는 인지 과제', en: 'Cognitive tasks', ja: '認知課題' })}</h2>
+          <p className="mt-1 text-[13px] font-bold text-ink-faint">
             {l({ ko: `${taskTests.length}종 · 정답이 있는 과제형`, en: `${taskTests.length} tasks · with right answers`, ja: `${taskTests.length}種・正解のある課題` })}
           </p>
           <ul className="mt-3 space-y-3">
             {taskTests.map((x) => (
               <li key={x.id}>
-                <Link to={`/test/${x.id}`} className="text-[15px] font-semibold text-mind-700 underline-offset-2 hover:underline">
+                <Link to={`/test/${x.id}`} className="text-[15px] font-extrabold text-mind-700 underline-offset-2 hover:underline">
                   {x.emoji} {t(`test.${x.id}.name`)}
                 </Link>
-                <p className="mt-0.5 break-keep text-[13px] font-medium leading-relaxed text-ink-sub">{t(`intro.${x.id}.basis`)}</p>
+                <p className="mt-0.5 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">{t(`intro.${x.id}.basis`)}</p>
               </li>
             ))}
           </ul>
         </Card>
 
         <Card className="mt-4">
-          <h2 className="text-[17px] font-semibold">{l({ ko: '심리 매거진', en: 'Psychology magazine', ja: '心理マガジン' })}</h2>
-          <p className="mt-1 break-keep text-[13px] font-medium text-ink-faint">
+          <h2 className="text-[17px] font-extrabold">{l({ ko: '심리 매거진', en: 'Psychology magazine', ja: '心理マガジン' })}</h2>
+          <p className="mt-1 break-keep text-[13px] font-bold text-ink-faint">
             {l({
               ko: `집중력·번아웃·애착·자존감 같은 마음 상태를 짧게 풀어 쓴 글 ${ARTICLES.length}편`,
               en: `${ARTICLES.length} short reads on focus, burnout, attachment, self-esteem and more`,
@@ -100,7 +100,7 @@ export default function About() {
           <ul className="mt-3 space-y-2">
             {ARTICLES.map((a) => (
               <li key={a.id}>
-                <Link to={`/magazine/${a.id}`} className="break-keep text-[14px] font-semibold text-mind-700 underline-offset-2 hover:underline">
+                <Link to={`/magazine/${a.id}`} className="break-keep text-[14px] font-extrabold text-mind-700 underline-offset-2 hover:underline">
                   {a.emoji} {l(a.title)}
                 </Link>
               </li>
@@ -110,8 +110,8 @@ export default function About() {
 
         {/* 결과를 대하는 태도 + 도움 받을 곳 */}
         <Card className="mt-4">
-          <h2 className="text-[17px] font-semibold">{l({ ko: '결과를 볼 때 알아 둘 점', en: 'Before you read results', ja: '結果を見る前に' })}</h2>
-          <p className="mt-2 break-keep text-[14px] font-medium leading-[1.8] text-ink-sub">
+          <h2 className="text-[17px] font-extrabold">{l({ ko: '결과를 볼 때 알아 둘 점', en: 'Before you read results', ja: '結果を見る前に' })}</h2>
+          <p className="mt-2 break-keep text-[14px] font-bold leading-[1.8] text-ink-sub">
             {l({
               ko: '모든 검사는 자기 성찰을 돕는 참고 자료이며 의학적 진단을 대신하지 않습니다. 결과가 걱정되거나 일상이 힘들다면 정신건강의학과 전문의나 상담 전문가와 이야기해 보세요. 마음이 급하게 힘들 땐 자살예방 상담전화 109, 정신건강 위기상담전화 1577-0199에서 24시간 도움을 받을 수 있습니다.',
               en: 'All tests are for self-reflection and are not a medical diagnosis. If results worry you or daily life feels hard, please talk to a mental-health professional. In Korea, crisis lines 109 and 1577-0199 are available 24/7.',
@@ -122,12 +122,12 @@ export default function About() {
 
         {/* 운영 주체 — data/company.ts 한 곳에서 */}
         <Card className="mt-4">
-          <h2 className="text-[17px] font-semibold">{l({ ko: '운영 정보', en: 'Operator', ja: '運営情報' })}</h2>
+          <h2 className="text-[17px] font-extrabold">{l({ ko: '운영 정보', en: 'Operator', ja: '運営情報' })}</h2>
           <dl className="mt-3 space-y-2">
             {rows.map(([k, v]) => (
               <div key={k} className="flex gap-3">
-                <dt className="w-[6.5rem] shrink-0 text-[13px] font-semibold text-ink-faint">{k}</dt>
-                <dd className="min-w-0 flex-1 break-keep text-[13px] font-medium leading-relaxed text-ink">{v}</dd>
+                <dt className="w-[6.5rem] shrink-0 text-[13px] font-extrabold text-ink-faint">{k}</dt>
+                <dd className="min-w-0 flex-1 break-keep text-[13px] font-bold leading-relaxed text-ink">{v}</dd>
               </div>
             ))}
           </dl>
@@ -135,23 +135,23 @@ export default function About() {
 
         {/* 문의 — 전자우편이 비어 있으면 그 줄을 숨기고, 개인정보 문의처(처리방침의 보호책임자 안내)로 안내한다 */}
         <Card className="mt-4" >
-          <h2 className="text-[17px] font-semibold">{l({ ko: '문의', en: 'Contact', ja: 'お問い合わせ' })}</h2>
+          <h2 className="text-[17px] font-extrabold">{l({ ko: '문의', en: 'Contact', ja: 'お問い合わせ' })}</h2>
           {CONTACT_EMAIL && (
-            <p className="mt-2 text-[14px] font-medium text-ink">
+            <p className="mt-2 text-[14px] font-bold text-ink">
               {l({ ko: '전자우편', en: 'Email', ja: 'メール' })}{' '}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-mind-700 underline underline-offset-2">
+              <a href={`mailto:${CONTACT_EMAIL}`} className="font-extrabold text-mind-700 underline underline-offset-2">
                 {CONTACT_EMAIL}
               </a>
             </p>
           )}
-          <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+          <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
             {l({
               ko: '개인정보 관련 문의·열람·정정·삭제 요청은 개인정보처리방침의 ‘개인정보 보호책임자’ 안내를 참고해 주세요.',
               en: 'For privacy requests (access, correction, deletion), see the Privacy Officer section of our Privacy Policy.',
               ja: '個人情報に関するお問い合わせは、プライバシーポリシーの「個人情報保護責任者」をご参照ください。',
             })}
           </p>
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[13px] font-semibold text-mind-700">
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[13px] font-extrabold text-mind-700">
             <Link to="/legal/privacy" className="py-1">{l({ ko: '개인정보처리방침', en: 'Privacy', ja: 'プライバシー' })}</Link>
             <Link to="/legal/terms" className="py-1">{l({ ko: '이용약관', en: 'Terms', ja: '利用規約' })}</Link>
           </div>

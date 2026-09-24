@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { SPRING } from '../lib/motion'
+import { SPRING, press3d, tapPop } from '../lib/motion'
 import { motion } from 'framer-motion'
 import type { L } from '../data/types'
 import { useNavigate } from 'react-router-dom'
@@ -34,6 +34,9 @@ const LUCKY_COLOR_L: Record<string, L> = {
   남색: { ko: '남색', en: 'Navy', ja: '紺' },
 }
 
+/** 출석 버튼 — 흰 3D 버튼(아랫면 3px). 누르면 그 깊이만큼 내려앉고 떼면 살짝 튀어 올라온다 */
+const CHECKIN_PRESS = press3d(3, '#D8E0DA')
+
 /**
  * 대시보드 스탯 칸 — 높이를 고정(h-[50px])하고 내용 전체를 칸 정중앙에 둔다.
  * 아이콘과 숫자를 한 덩어리로 묶어야 '🔥 1'과 '🔥 1,234'가 같은 중심선에 선다(따로 두면 숫자 폭만큼 치우친다).
@@ -41,16 +44,16 @@ const LUCKY_COLOR_L: Record<string, L> = {
 function StatTile({ icon, value, label, onClick }: { icon: string; value: string; label: string; onClick?: () => void }) {
   const inner = (
     <>
-      <span className="inline-flex max-w-full items-center justify-center gap-1 text-[15px] font-semibold leading-none text-white">
+      <span className="inline-flex max-w-full items-center justify-center gap-1 text-[16px] font-extrabold leading-none text-white">
         <span aria-hidden="true" className="shrink-0">{icon}</span>
         <span className="truncate tabular-nums">{value}</span>
       </span>
-      <span className="mt-1 block max-w-full truncate text-center text-[11px] font-medium leading-none text-white/80">{label}</span>
+      <span className="mt-1.5 block max-w-full truncate text-center text-[11px] font-extrabold leading-none text-white/90">{label}</span>
     </>
   )
   const cls = 'flex h-[50px] min-w-0 flex-col items-center justify-center rounded-2xl bg-white/20 px-1.5 text-center'
   return onClick ? (
-    <motion.button whileTap={{ scale: 0.97 }} onClick={onClick} className={cls}>
+    <motion.button whileTap={tapPop} transition={SPRING.press} onClick={onClick} className={cls}>
       {inner}
     </motion.button>
   ) : (
@@ -58,15 +61,19 @@ function StatTile({ icon, value, label, onClick }: { icon: string; value: string
   )
 }
 
-/** 섹션 머리 — 모든 검사 묶음이 같은 모양(제목 + 오른쪽 '전체 ›')을 쓴다 */
+/**
+ * 섹션 머리 — 모든 검사 묶음이 같은 모양(제목 + 오른쪽 '전체 ›')을 쓴다.
+ * 좌우 여백 0: 제목 첫 글자(이모지)가 아래 칩 격자·카드의 왼쪽 모서리와 같은 선에 선다
+ * (예전 px-1은 제목만 4px 안으로 들어가 격자와 어긋났다). 높이 44px은 버튼 히트영역.
+ */
 function SectionHead({ emoji, title, onAll, allLabel }: { emoji: string; title: string; onAll: () => void; allLabel: string }) {
   return (
-    <button onClick={onAll} className="mt-4 flex w-full items-center justify-between px-1 py-1">
-      <h2 className="flex items-center gap-1.5 text-[17px] font-semibold">
-        <span aria-hidden="true">{emoji}</span>
-        {title}
+    <button onClick={onAll} className="-mb-1 mt-3 flex min-h-[44px] w-full items-center justify-between gap-3">
+      <h2 className="flex min-w-0 items-center gap-2 text-[20px] font-extrabold leading-tight">
+        <span aria-hidden="true" className="shrink-0 text-[20px]">{emoji}</span>
+        <span className="truncate">{title}</span>
       </h2>
-      <span className="text-[12px] font-semibold text-mind-600">{allLabel} ›</span>
+      <span className="shrink-0 text-[13px] font-extrabold leading-none text-mind-600">{allLabel} ›</span>
     </button>
   )
 }
@@ -185,18 +192,19 @@ export default function Home() {
       <header className="mx-auto flex max-w-md items-center justify-between gap-2 px-5 pt-5">
         <div className="flex shrink-0 items-center gap-2">
           <img src="/icon.svg" alt="" className="floaty h-8 w-8 rounded-2xl" />
-          <span className="whitespace-nowrap text-[16px] font-semibold text-mind-800">{t('app.name')}</span>
+          <span className="whitespace-nowrap text-[17px] font-extrabold leading-none text-mind-800">{t('app.name')}</span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <motion.button
-            whileTap={{ scale: 0.97 }}
+            whileTap={tapPop}
+            transition={SPRING.press}
             onClick={() => nav('/mail')}
             className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface2 text-[16px] shadow-card"
             aria-label={l({ ko: '우편함', en: 'Mailbox', ja: 'メールボックス' })}
           >
             📬
             {unreadMail > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-semibold text-white">
+              <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-extrabold text-white">
                 {unreadMail > 9 ? '9+' : unreadMail}
               </span>
             )}
@@ -208,23 +216,24 @@ export default function Home() {
       <main className="mx-auto max-w-md px-5">
         {/* ── 내 자산 대시보드 ── */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={SPRING.ui}
+          initial={{ opacity: 0, y: 10, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={SPRING.pop}
           className="mt-4 rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 px-4 pb-3.5 pt-4 shadow-pop"
         >
           <div className="flex items-center justify-between">
             <button onClick={() => nav('/profile')} className="flex min-w-0 items-center gap-2">
               <Avatar avatar={s.avatar} size={38} emojiScale={0.55} className="ring-2 ring-white/40" />
-              <p className="truncate text-[16px] font-semibold text-white">
+              <p className="truncate text-[17px] font-extrabold leading-none text-white">
                 {s.nickname}
-                <span className="ml-0.5 text-[13px] font-medium text-white/80">님 👋</span>
+                <span className="ml-1 text-[14px] font-bold text-white/90">님 👋</span>
               </p>
             </button>
             <motion.button
-              whileTap={{ scale: 0.97 }}
+              whileTap={tapPop}
+              transition={SPRING.press}
               onClick={() => nav('/rank')}
-              className="flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-3 py-1.5 text-[13px] font-semibold text-white"
+              className="flex h-8 shrink-0 items-center gap-1 rounded-full bg-white/20 px-3 text-[13px] font-extrabold leading-none text-white"
             >
               {tier.emoji} {l(tier.name)} ›
             </motion.button>
@@ -232,18 +241,22 @@ export default function Home() {
 
           {/* 잔액 줄 — 환산액·교환 가능 수는 뺐다(홈 첫 카드는 잔액과 출석만). 출석 버튼과 세로 중앙 정렬 */}
           <div className="mt-2.5 flex min-h-[40px] items-center justify-between gap-3">
-            <div className="flex min-w-0 items-end gap-1.5">
-              <span className="truncate text-[24px] font-extrabold leading-none tracking-tight text-white tabular-nums">
-                🪙 {s.points.toLocaleString()}
+            {/* 숫자와 단위 P는 같은 기준선(items-baseline)에 — 아래끝 맞춤(items-end)은 글꼴 하단 여백 차이로 P가 떠 보였다 */}
+            <div className="flex min-w-0 items-baseline gap-1">
+              {/* 코인 이모지는 숫자와 따로 — 한 덩어리로 leading-none + truncate를 걸면 이모지 위아래가 잘린다 */}
+              <span aria-hidden="true" className="shrink-0 self-center text-[24px] leading-none">🪙</span>
+              <span className="truncate text-[28px] font-black leading-tight tracking-tight text-white tabular-nums">
+                {s.points.toLocaleString()}
               </span>
-              <span className="pb-0.5 text-[14px] font-semibold text-white/80">P</span>
+              <span className="text-[16px] font-extrabold leading-none text-white/85">P</span>
             </div>
             {!checkedToday && (
               <motion.button
-                whileTap={{ y: 3, boxShadow: '0 0 0 #D8E0DA' }}
+                whileTap={CHECKIN_PRESS.whileTap}
+                transition={CHECKIN_PRESS.transition}
                 onClick={onCheckIn}
-                className="shrink-0 rounded-2xl bg-white px-4 py-2 text-[14px] font-semibold text-[#2F6B52]"
-                style={{ boxShadow: '0 3px 0 #D8E0DA' }}
+                className="flex h-10 shrink-0 items-center rounded-2xl bg-white px-4 text-[14px] font-extrabold leading-none text-[#2F6B52]"
+                style={{ boxShadow: CHECKIN_PRESS.rest }}
               >
                 {t('dash.checkin')}
               </motion.button>
@@ -268,7 +281,7 @@ export default function Home() {
                 className="h-full rounded-full bg-white"
               />
             </div>
-            <p className="mt-1.5 text-[11px] font-semibold text-white/85">
+            <p className="mt-2 text-[12px] font-extrabold leading-none text-white/90">
               {next
                 ? t('rank.next', { tier: `${next.emoji} ${l(next.name)}`, p: (next.min - lifetime).toLocaleString() })
                 : t('rank.max')}
@@ -278,46 +291,54 @@ export default function Home() {
 
         {/* ── 대시보드 바로 아래 두 칸: 나에 관하여 | 오늘의 운세 — 매일 다시 올 이유 두 개를 첫 화면에 ── */}
         <div className="mt-3 grid grid-cols-2 gap-2.5">
+          {/* 등장('톡', 지연 포함)은 바깥 칸이, 누름은 안쪽 버튼이 — 한 요소에 두면 등장 지연이 누름 복귀에도 붙는다 */}
+          <motion.div className="flex" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...SPRING.pop, delay: 0.06 }}>
           <motion.button
-            whileTap={{ scale: 0.97 }}
+            whileTap={tapPop}
+            transition={SPRING.press}
             onClick={() => nav('/me')}
-            className="flex min-h-[92px] flex-col justify-between rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#8B95F6] p-3.5 text-left shadow-card"
+            className="flex min-h-[92px] flex-1 flex-col justify-between rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#8B95F6] p-3.5 text-left shadow-card"
           >
             <span className="flex items-center justify-between">
               <IconBadge emoji="🪞" tone="frost" size={32} radius={11} />
-              <span className="text-[15px] text-white/80" aria-hidden="true">›</span>
+              <span className="text-[17px] font-extrabold leading-none text-white/85" aria-hidden="true">›</span>
             </span>
             <span>
-              <span className="block text-[15px] font-semibold leading-tight text-white">{l({ ko: '나에 관하여', en: 'About me', ja: '私について' })}</span>
-              <span className="mt-0.5 block truncate text-[12px] font-medium text-white/85">
+              <span className="block text-[17px] font-extrabold leading-tight text-white">{l({ ko: '나에 관하여', en: 'About me', ja: '私について' })}</span>
+              <span className="mt-1 block truncate text-[12px] font-bold leading-snug text-white/90">
                 {s.results.length > 0
                   ? l({ ko: `내 검사 ${new Set(s.results.map((r) => r.testId)).size}종 모아 보기`, en: `${new Set(s.results.map((r) => r.testId)).size} results in one place`, ja: `検査${new Set(s.results.map((r) => r.testId)).size}種まとめ` })
                   : l({ ko: '결과·머리 지도·읽을거리', en: 'Results · map · reads', ja: '結果・地図・読み物' })}
               </span>
             </span>
           </motion.button>
+          </motion.div>
+          {/* 등장('톡', 지연 포함)은 바깥 칸이, 누름은 안쪽 버튼이 — 한 요소에 두면 등장 지연이 누름 복귀에도 붙는다 */}
+          <motion.div className="flex" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...SPRING.pop, delay: 0.1 }}>
           <motion.button
-            whileTap={{ scale: 0.97 }}
+            whileTap={tapPop}
+            transition={SPRING.press}
             onClick={() => nav('/fortune')}
-            className="flex min-h-[92px] flex-col justify-between rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] p-3.5 text-left shadow-card"
+            className="flex min-h-[92px] flex-1 flex-col justify-between rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] p-3.5 text-left shadow-card"
           >
             <span className="flex items-center justify-between">
               <IconBadge emoji={fx?.zodiacEmoji ?? '🔮'} tone="frost" size={32} radius={11} />
               {fx ? (
-                <span className="rounded-full bg-white/25 px-2 py-0.5 text-[12px] font-semibold tabular-nums text-white">{fx.overall}{l({ ko: '점', en: 'pt', ja: '点' })}</span>
+                <span className="flex h-6 items-center rounded-full bg-white/25 px-2 text-[12px] font-extrabold leading-none tabular-nums text-white">{fx.overall}{l({ ko: '점', en: 'pt', ja: '点' })}</span>
               ) : (
-                <span className="text-[15px] text-white/80" aria-hidden="true">›</span>
+                <span className="text-[17px] font-extrabold leading-none text-white/85" aria-hidden="true">›</span>
               )}
             </span>
             <span>
-              <span className="block text-[15px] font-semibold leading-tight text-white">{t('fortune.title')}</span>
-              <span className="mt-0.5 block truncate text-[12px] font-medium text-white/85">
+              <span className="block text-[17px] font-extrabold leading-tight text-white">{t('fortune.title')}</span>
+              <span className="mt-1 block truncate text-[12px] font-bold leading-snug text-white/90">
                 {fx
                   ? l({ ko: `행운색 ${fx.luckyColorKo}`, en: `Lucky color: ${l(LUCKY_COLOR_L[fx.luckyColorKo] ?? { ko: fx.luckyColorKo, en: fx.luckyColorKo, ja: fx.luckyColorKo })}`, ja: `ラッキーカラー ${l(LUCKY_COLOR_L[fx.luckyColorKo] ?? { ko: fx.luckyColorKo, en: fx.luckyColorKo, ja: fx.luckyColorKo })}` })
                   : l({ ko: '생일로 오늘 흐름 보기', en: "See today's flow", ja: '誕生日で今日の流れ' })}
               </span>
             </span>
           </motion.button>
+          </motion.div>
         </div>
 
         {/* ── 즐겨찾는 심리검사 — 가장 많이 찾는 검사를 첫 줄에 모은다.
@@ -363,7 +384,7 @@ export default function Home() {
           />
         ) : (
           /* 데이터 로드 전 스켈레톤 칩 — 레이아웃 시프트 방지(실제 칩과 동일 규격) */
-          <div className="no-scrollbar mt-2 flex gap-2.5 overflow-x-hidden pb-3 pt-1">
+          <div className="no-scrollbar flex gap-2.5 overflow-x-hidden pb-3 pt-1">
             {[0, 1, 2, 3, 4].map((i) => (
               <SkeletonBlock key={i} className={`${CHIP_W} aspect-square shrink-0 !rounded-[20px]`} />
             ))}
@@ -376,7 +397,7 @@ export default function Home() {
         </div>
         {DEEP_CATS.map((cat) => (
           <div key={cat.key}>
-            <p className="mt-1 flex items-center gap-1 px-1 text-[13px] font-semibold text-ink-sub">
+            <p className="mb-1 mt-2 flex items-center gap-1.5 text-[14px] font-extrabold leading-none text-ink-sub">
               <span aria-hidden="true">{cat.emoji}</span>
               {l(cat.label)}
             </p>
@@ -404,14 +425,14 @@ export default function Home() {
           >
             <IconBadge emoji="🌱" color="#4FA882" size={40} radius={13} />
             <div className="min-w-0 flex-1">
-              <h3 className="break-keep text-[15px] font-semibold">{l({ ko: '오늘의 성장 실천', en: "Today's growth actions", ja: '今日の成長実践' })}</h3>
-              <p className="mt-0.5 break-keep text-[12px] font-medium text-ink-faint">
+              <h3 className="break-keep text-[16px] font-extrabold leading-tight">{l({ ko: '오늘의 성장 실천', en: "Today's growth actions", ja: '今日の成長実践' })}</h3>
+              <p className="mt-1 break-keep text-[12px] font-bold leading-snug text-ink-sub">
                 {growth.left > 0
                   ? l({ ko: `${growth.left}개 남았어요 · 하나씩 체크하면 +5P`, en: `${growth.left} left · +5P each`, ja: `残り${growth.left}件・1つ+5P` })
                   : l({ ko: '오늘 실천을 다 했어요', en: 'All done today', ja: '今日は完了' })}
               </p>
             </div>
-            <span className="shrink-0 rounded-full bg-mind-100 px-2.5 py-1 text-[12px] font-semibold text-mind-700">
+            <span className="shrink-0 rounded-full bg-mind-100 px-2.5 py-1 text-[12px] font-extrabold text-mind-700">
               {growth.total - growth.left}/{growth.total}
             </span>
           </Card>
@@ -422,39 +443,40 @@ export default function Home() {
           <Card onClick={() => nav('/self-report')} className="mt-3 flex items-center gap-3 !bg-gradient-to-r from-[#5B6CF0] to-[#9AA6FF] !p-3.5">
             <IconBadge emoji="🪞" tone="frost" size={40} radius={13} />
             <div className="min-w-0 flex-1">
-              <h3 className="text-[15px] font-semibold text-white">{l({ ko: '통합 자기 리포트', en: 'Integrated self report', ja: '統合自己レポート' })}</h3>
-              <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">{l({ ko: '자존감·완벽주의·자기효능감을 한 번에', en: 'Self-esteem · perfectionism · efficacy', ja: '自尊感情・完璧主義・自己効力感' })}</p>
+              <h3 className="text-[16px] font-extrabold leading-tight text-white">{l({ ko: '통합 자기 리포트', en: 'Integrated self report', ja: '統合自己レポート' })}</h3>
+              <p className="mt-1 truncate text-[12px] font-bold leading-snug text-white/90">{l({ ko: '자존감·완벽주의·자기효능감을 한 번에', en: 'Self-esteem · perfectionism · efficacy', ja: '自尊感情・完璧主義・自己効力感' })}</p>
             </div>
-            <span className="text-white/80">›</span>
+            <span className="text-[17px] font-extrabold leading-none text-white/85" aria-hidden="true">›</span>
           </Card>
         )}
         {deepAllDone && (
           <Card onClick={() => nav('/deep-report')} className="mt-3 flex items-center gap-3 !bg-gradient-to-r from-[#6E7BF2] to-[#A88BF2] !p-3.5">
             <IconBadge emoji="🧬" tone="frost" size={40} radius={13} />
             <div className="min-w-0 flex-1">
-              <h3 className="text-[15px] font-semibold text-white">{l({ ko: 'AI 종합 심층 리포트', en: 'AI deep report', ja: 'AI総合レポート' })}</h3>
-              <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">{l({ ko: '심층검사를 모두 마쳤어요. 한데 모아 읽어 드려요', en: 'All deep tests done — read as one', ja: '深層検査完走！一つに読み解きます' })}</p>
+              <h3 className="text-[16px] font-extrabold leading-tight text-white">{l({ ko: 'AI 종합 심층 리포트', en: 'AI deep report', ja: 'AI総合レポート' })}</h3>
+              <p className="mt-1 truncate text-[12px] font-bold leading-snug text-white/90">{l({ ko: '심층검사를 모두 마쳤어요. 한데 모아 읽어 드려요', en: 'All deep tests done — read as one', ja: '深層検査完走！一つに読み解きます' })}</p>
             </div>
-            <span className="text-white/80">›</span>
+            <span className="text-[17px] font-extrabold leading-none text-white/85" aria-hidden="true">›</span>
           </Card>
         )}
 
         {/* 친구 초대 — 둘 다 +100P */}
         <motion.button
-          whileTap={{ scale: 0.98 }}
+          whileTap={tapPop}
+          transition={SPRING.press}
           onClick={() => nav('/rewards', { state: { scrollTo: 'invite' } })}
           className="mt-4 flex w-full items-center gap-3 rounded-3xl p-3.5 text-left shadow-card"
           style={{ background: 'linear-gradient(135deg,#4FA882,#6E9FDC)' }}
         >
           <IconBadge emoji="🎁" tone="frost" size={40} radius={13} />
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15px] font-semibold text-white">{l({ ko: '친구 초대하고 +100P', en: 'Invite a friend, +100P', ja: '友達招待で+100P' })}</h3>
-            <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">{l({ ko: '친구도 나도 +100P', en: 'You both get +100P', ja: '二人とも+100P' })}</p>
+            <h3 className="text-[16px] font-extrabold leading-tight text-white">{l({ ko: '친구 초대하고 +100P', en: 'Invite a friend, +100P', ja: '友達招待で+100P' })}</h3>
+            <p className="mt-1 truncate text-[12px] font-bold leading-snug text-white/90">{l({ ko: '친구도 나도 +100P', en: 'You both get +100P', ja: '二人とも+100P' })}</p>
           </div>
-          <span className="text-white/80">›</span>
+          <span className="text-[17px] font-extrabold leading-none text-white/85" aria-hidden="true">›</span>
         </motion.button>
 
-        <p className="mt-6 px-2 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
+        <p className="mt-6 px-2 text-center text-[12px] font-bold leading-relaxed text-ink-faint">
           {t('home.disclaimer')}
         </p>
 

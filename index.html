@@ -35,8 +35,14 @@
     <link rel="apple-touch-icon" href="/icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+    <!--
+      글꼴(듀오링고식 둥글고 굵은 활자) — 라틴·숫자는 Nunito, 한글은 나눔스퀘어라운드(자체 호스팅, OFL 1.1).
+      Nunito에는 한글 글리프가 없어 한글은 자연스럽게 다음 글꼴(나눔스퀘어라운드)로 넘어간다.
+      UI 굵기는 700/800만 쓴다(900은 큰 숫자의 Nunito 전용) — 안 쓰는 굵기는 받지 않는다.
+      ExtraBold(800)는 제목·버튼·칩 라벨 등 첫 화면 대부분이 쓰는 굵기라 미리 받는다(preload).
+    -->
+    <link rel="preload" href="/fonts/NanumSquareRoundEB.woff2" as="font" type="font/woff2" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+JP:wght@700;800;900&display=swap" rel="stylesheet" />
     <!--
       [수익화] Google AdSense — 로더 스크립트는 src/lib/ads.ts(loadAdSenseScript)가
       광고 슬롯(AdSlot)이 있는 화면(매거진 아티클·검사 결과 하단)에 들어갈 때만 주입합니다.

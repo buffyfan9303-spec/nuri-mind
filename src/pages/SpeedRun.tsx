@@ -123,7 +123,7 @@ export default function SpeedRun() {
               ⚡
             </motion.div>
             <h2 className="mt-4 text-[20px] font-extrabold">{l({ ko: '대응표를 외워두세요', en: 'Learn the key', ja: '対応表を覚えて' })}</h2>
-            <p className="mt-1.5 break-keep text-[13px] font-medium text-ink-sub">
+            <p className="mt-1.5 break-keep text-[13px] font-bold text-ink-sub">
               {l({ ko: '기호에 맞는 숫자를 최대한 빠르고 정확하게 누르면 돼요. 표는 계속 위에 보여요.', en: 'Press the digit matching each symbol, fast and accurate. The key stays at the top.', ja: '記号に合う数字を最速・正確に。表はずっと上に表示されます。' })}
             </p>
             <div className="mt-5 w-full">
@@ -144,7 +144,7 @@ export default function SpeedRun() {
 
             {/* 현재 기호 */}
             <div className="flex flex-1 flex-col items-center justify-center">
-              <p className="text-[13px] font-semibold text-ink-faint">{l({ ko: '이 기호의 숫자는?', en: 'Which digit?', ja: 'この記号の数字は？' })}</p>
+              <p className="text-[13px] font-extrabold text-ink-faint">{l({ ko: '이 기호의 숫자는?', en: 'Which digit?', ja: 'この記号の数字は？' })}</p>
               <div className="relative mt-3 flex h-32 w-32 items-center justify-center rounded-3xl border-2 shadow-card" style={{ borderColor: accent, background: 'rgb(var(--surface))' }}>
                 {/* popLayout: 다음 기호가 바로 뜬다 — wait이면 이전 기호가 사라지는 0.1초 동안 이미 다음 문항에 답이
                     들어가는데(idxRef) 화면엔 아직 이전 기호가 보여, 빠르게 누르는 사람일수록 안 본 기호에 답했다 */}
@@ -196,7 +196,7 @@ export default function SpeedRun() {
         <div className="text-center">
           <div className="text-4xl">🥺</div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
-          <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">
+          <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">

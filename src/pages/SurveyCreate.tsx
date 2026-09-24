@@ -107,7 +107,7 @@ export default function SurveyCreate() {
           <h1 className="mt-5 text-[20px] font-extrabold leading-tight tracking-tight">
             {t('create.lock', { tier: `${bronze.emoji} ${l(bronze.name)}` })}
           </h1>
-          <p className="mt-3 text-[15px] font-medium leading-relaxed text-ink-sub">
+          <p className="mt-3 text-[15px] font-bold leading-relaxed text-ink-sub">
             {t('create.lockDesc')}
           </p>
           <div className="mx-auto mt-7 max-w-[280px] space-y-3">
@@ -186,7 +186,7 @@ export default function SurveyCreate() {
                     placeholder={t('create.descPh')}
                     rows={3}
                     maxLength={120}
-                    className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[14px] font-medium leading-relaxed outline-none focus:border-mind-400"
+                    className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[14px] font-bold leading-relaxed outline-none focus:border-mind-400"
                   />
                 </div>
                 <Button color="mind" size="lg" disabled={!step1Ok} onClick={() => setStep(1)}>
@@ -206,7 +206,7 @@ export default function SurveyCreate() {
                       className="rounded-2xl border-2 border-line bg-surface px-1 py-3 text-center"
                     >
                       <div className="text-xl">{icon}</div>
-                      <div className="mt-1 text-[11px] font-semibold text-ink-sub">{t(`create.type.${type}`)}</div>
+                      <div className="mt-1 text-[11px] font-extrabold text-ink-sub">{t(`create.type.${type}`)}</div>
                     </motion.button>
                   ))}
                 </div>
@@ -248,7 +248,7 @@ export default function SurveyCreate() {
                                 }
                                 placeholder={t('create.optPh')}
                                 maxLength={40}
-                                className="flex-1 rounded-xl border-2 border-line bg-surface px-3 py-2 text-[13px] font-medium outline-none focus:border-mind-400"
+                                className="flex-1 rounded-xl border-2 border-line bg-surface px-3 py-2 text-[13px] font-bold outline-none focus:border-mind-400"
                               />
                               {q.options!.length > 2 && (
                                 <button
@@ -263,7 +263,7 @@ export default function SurveyCreate() {
                           ))}
                           {/* 다음 버튼이 이유 없이 잠겨 보이지 않게 — 중복 보기는 여기서 바로 알려 준다 */}
                           {!optionsOk(q.options) && q.options!.filter((o) => o.trim()).length >= 2 && (
-                            <p className="text-[12px] font-medium text-red-400">
+                            <p className="text-[12px] font-bold text-red-400">
                               {l({ ko: '같은 보기가 두 번 있어요', en: 'Two options are the same', ja: '同じ選択肢が2つあります' })}
                             </p>
                           )}
@@ -278,7 +278,7 @@ export default function SurveyCreate() {
                         </div>
                       )}
                       <label className="mt-3 flex items-center justify-between">
-                        <span className="text-[13px] font-medium text-ink-sub">{t('create.required')}</span>
+                        <span className="text-[13px] font-bold text-ink-sub">{t('create.required')}</span>
                         <button
                           onClick={() => patchQ(q.id, { required: !q.required })}
                           role="switch"
@@ -348,7 +348,7 @@ export default function SurveyCreate() {
                   <p className="text-xs font-extrabold text-white/85">{t('create.budget')}</p>
                   <p className="mt-1 text-3xl font-extrabold text-white">🪙 {(reward * target).toLocaleString()}P</p>
                 </Card>
-                <p className="rounded-xl bg-amber-50 px-3.5 py-2.5 text-[12px] font-medium leading-relaxed text-amber-700">
+                <p className="rounded-xl bg-amber-50 px-3.5 py-2.5 text-[12px] font-bold leading-relaxed text-amber-700">
                   ⚠️ {t('create.policy')}
                 </p>
                 <Button color="mind" size="lg" onClick={submit}>
@@ -366,7 +366,7 @@ export default function SurveyCreate() {
             📨
           </motion.div>
           <h3 className="mt-3 text-xl font-extrabold">{t('create.submitted')}</h3>
-          <p className="mt-1.5 text-sm font-medium leading-relaxed text-ink-sub">{t('create.submittedDesc')}</p>
+          <p className="mt-1.5 text-sm font-bold leading-relaxed text-ink-sub">{t('create.submittedDesc')}</p>
           <div className="mt-5">
             <Button color="mind" onClick={() => nav('/rewards', { replace: true })}>
               {t('common.confirm')}

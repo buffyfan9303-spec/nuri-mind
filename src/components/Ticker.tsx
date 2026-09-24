@@ -100,7 +100,7 @@ export default function Ticker() {
               transition={{ repeat: Infinity, duration: Math.max(14, items.length * 5.5), ease: 'linear' }}
             >
               {loop.map((m, i) => (
-                <span key={i} className="text-[13px] font-semibold text-white">
+                <span key={i} className="text-[13px] font-extrabold text-white">
                   {m.text}
                   {m.nick ? <span className="font-bold text-white/75"> · {m.nick}</span> : null}
                 </span>
@@ -117,7 +117,7 @@ export default function Ticker() {
             }}
             // 글자가 이모지뿐이라 이름이 없으면 '확성기, 보석, 1'로 읽힌다. 히트영역은 before로 44px까지(모양은 그대로)
             aria-label={l({ ko: `확성기 쏘기 · 다이아 ${TICKER_COST}개`, en: `Megaphone shout · ${TICKER_COST} diamond`, ja: `拡声器 · ダイヤ${TICKER_COST}` })}
-            className="relative z-10 shrink-0 rounded-2xl bg-white px-2.5 py-1.5 text-[12px] font-semibold text-[#2F6B52] before:absolute before:-inset-x-1 before:-inset-y-2 before:content-['']"
+            className="relative z-10 shrink-0 rounded-2xl bg-white px-2.5 py-1.5 text-[12px] font-extrabold text-[#2F6B52] before:absolute before:-inset-x-1 before:-inset-y-2 before:content-['']"
             style={{ boxShadow: '0 2px 0 rgba(0,0,0,0.18)' }}
           >
             📢 💎{TICKER_COST}
@@ -129,8 +129,8 @@ export default function Ticker() {
       <Modal open={open} onClose={() => { setOpen(false); setErr('') }}>
         <div className="text-center">
           <p className="text-[28px] leading-none">📢</p>
-          <h3 className="mt-1.5 text-[17px] font-semibold">{l({ ko: '확성기 쏘기', en: 'Megaphone shout', ja: '拡声器を撃つ' })}</h3>
-          <p className="mx-auto mt-1 max-w-[280px] break-keep text-[12px] font-medium text-ink-faint">{l({ ko: `모두의 화면 상단 전광판에 흐르는 메시지 · 💎${TICKER_COST} · 그냥 글쓰기는 무료예요!`, en: `Scrolls on everyone's top board · 💎${TICKER_COST} · normal posts are free!`, ja: `全員の上部電光掲示に流れる · 💎${TICKER_COST} · 通常の投稿は無料！` })}</p>
+          <h3 className="mt-1.5 text-[17px] font-extrabold">{l({ ko: '확성기 쏘기', en: 'Megaphone shout', ja: '拡声器を撃つ' })}</h3>
+          <p className="mx-auto mt-1 max-w-[280px] break-keep text-[12px] font-bold text-ink-faint">{l({ ko: `모두의 화면 상단 전광판에 흐르는 메시지 · 💎${TICKER_COST} · 그냥 글쓰기는 무료예요!`, en: `Scrolls on everyone's top board · 💎${TICKER_COST} · normal posts are free!`, ja: `全員の上部電光掲示に流れる · 💎${TICKER_COST} · 通常の投稿は無料！` })}</p>
           <textarea
             value={text}
             onChange={(e) => { setText(e.target.value); setErr('') }}
@@ -140,17 +140,17 @@ export default function Ticker() {
             placeholder={l({ ko: '한 줄 외쳐보세요! (최대 60자)', en: 'Shout one line! (max 60)', ja: '一言どうぞ！(最大60字)' })}
             className="mt-3 w-full resize-none rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-bold leading-relaxed outline-none focus:border-[#8B7CF6]"
           />
-          <div className="mt-1 flex items-center justify-between text-[11px] font-medium">
+          <div className="mt-1 flex items-center justify-between text-[11px] font-bold">
             <span className="text-ink-faint">{l({ ko: '보유', en: 'You have', ja: '保有' })} 💎 {diamonds}</span>
             <span className="text-ink-faint">{text.length}/60</span>
           </div>
-          {err && <p className="mt-1.5 text-[12px] font-semibold text-red-500">⚠️ {err}</p>}
+          {err && <p className="mt-1.5 text-[12px] font-extrabold text-red-500">⚠️ {err}</p>}
           <div className="mt-3.5">
             <Button color="burn" disabled={!text.trim()} onClick={submit}>
               📢 💎{TICKER_COST} {l({ ko: '확성기 쏘기', en: 'Shout', ja: '撃つ' })}
             </Button>
           </div>
-          <p className="mt-2 text-[11px] font-medium leading-relaxed text-ink-faint">
+          <p className="mt-2 text-[11px] font-bold leading-relaxed text-ink-faint">
             {/* 실제 필터는 금칙어·패턴 검사(lib/moderation)라 'AI 필터'는 사실과 달랐다 */}
             {l({ ko: '🤖 욕설·19금·광고/연락처는 자동 필터로 차단돼요', en: '🤖 Profanity, adult, ads/contacts are auto-blocked', ja: '🤖 暴言・アダルト・広告/連絡先は自動ブロック' })}
           </p>
@@ -162,12 +162,12 @@ export default function Ticker() {
         <div className="text-center">
           <p className="text-[28px] leading-none">💎</p>
           <h3 className="mt-2 text-[20px] font-extrabold">{l({ ko: '다이아가 부족해요', en: 'Not enough diamonds', ja: 'ダイヤが足りません' })}</h3>
-          <p className="mt-1 break-keep text-[13px] font-medium text-ink-faint">
+          <p className="mt-1 break-keep text-[13px] font-bold text-ink-faint">
             {l({ ko: `전광판 게시에 ${TICKER_COST}다이아가 필요해요 · 보유 ${diamonds}`, en: `Posting needs 💎${TICKER_COST} · you have ${diamonds}`, ja: `投稿に💎${TICKER_COST}必要・保有${diamonds}` })}
           </p>
           <div className="mt-5">
             <Button color="iq" onClick={() => nav('/charge')}>💎 {l({ ko: '충전하러 가기', en: 'Go charge', ja: 'チャージへ' })}</Button>
-            <button onClick={() => setNeedCharge(false)} className="mt-2 min-h-[44px] w-full py-2 text-[13px] font-medium text-ink-faint">{l({ ko: '닫기', en: 'Close', ja: '閉じる' })}</button>
+            <button onClick={() => setNeedCharge(false)} className="mt-2 min-h-[44px] w-full py-2 text-[13px] font-bold text-ink-faint">{l({ ko: '닫기', en: 'Close', ja: '閉じる' })}</button>
           </div>
         </div>
       </Modal>

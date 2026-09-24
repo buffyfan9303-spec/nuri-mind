@@ -147,7 +147,7 @@ export default function Profile() {
             role="alert"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-3 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-medium text-red-500"
+            className="mb-3 break-keep rounded-2xl bg-red-50 px-4 py-2.5 text-center text-[12px] font-bold text-red-500"
           >
             {l({ ko: '카카오 로그인 실패', en: 'Kakao login failed', ja: 'カカオログイン失敗' })}: {oauthErr}
           </motion.p>
@@ -173,7 +173,7 @@ export default function Profile() {
                   onChange={(e) => setNick(e.target.value)}
                   maxLength={12}
                   placeholder={t('profile.nickPh')}
-                  className="min-w-0 flex-1 rounded-xl border-2 border-mind-300 px-3 py-1.5 text-[15px] font-semibold outline-none"
+                  className="min-w-0 flex-1 rounded-xl border-2 border-mind-300 px-3 py-1.5 text-[15px] font-extrabold outline-none"
                   autoFocus
                 />
                 <button
@@ -204,7 +204,7 @@ export default function Profile() {
               </div>
               {/* 예전엔 편집 중이 아닐 때만 그려서, 걸러진 닉네임을 저장하면 아무 반응도 없어 보였다 */}
               {nickErr && (
-                <p role="alert" className="mt-1 text-[12px] font-medium text-red-500">
+                <p role="alert" className="mt-1 text-[12px] font-bold text-red-500">
                   {nickErr}
                 </p>
               )}
@@ -221,12 +221,12 @@ export default function Profile() {
                 </button>
               </h2>
             )}
-            <p className="mt-1 text-[13px] font-medium text-ink-faint">
+            <p className="mt-1 text-[13px] font-bold text-ink-faint">
               🪙 {s.points.toLocaleString()}P · 🧪 {s.results.length} · 🔥 {s.streak}
             </p>
             <button
               onClick={() => nav('/rank')}
-              className="mt-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-semibold"
+              className="mt-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-extrabold"
               style={{ background: `${tierOf(lifetimeOf(s.ledger)).color}1F`, color: tierOf(lifetimeOf(s.ledger)).color }}
             >
               {tierOf(lifetimeOf(s.ledger)).emoji} {l(tierOf(lifetimeOf(s.ledger)).name)} ›
@@ -237,17 +237,17 @@ export default function Profile() {
         {/* 최근 4주 출석 — 스트릭을 '숫자'가 아니라 '흐름'으로(손실회피 시각화) */}
         <Card className="mt-3.5 !p-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-[14px] font-semibold">
+            <h3 className="text-[14px] font-extrabold">
               {l({ ko: '최근 4주 출석', en: 'Last 4 weeks', ja: '直近4週の出席' })}
             </h3>
-            <span className="text-[12px] font-semibold text-orange-500">🔥 {s.streak}</span>
+            <span className="text-[12px] font-extrabold text-orange-500">🔥 {s.streak}</span>
           </div>
           {/* 요일 머리글 — 칸이 세로로 같은 요일에 서야 '주말엔 안 오네' 같은 패턴이 보인다 */}
           <div className="mt-2.5 grid grid-cols-7 gap-1.5 px-0.5">
             {DOW.map((d, i) => (
               <span
                 key={d.en + i}
-                className={`text-center text-[11px] font-semibold ${i === 0 ? 'text-red-400' : i === 6 ? 'text-sky-400' : 'text-ink-faint'}`}
+                className={`text-center text-[11px] font-extrabold ${i === 0 ? 'text-red-400' : i === 6 ? 'text-sky-400' : 'text-ink-faint'}`}
               >
                 {l(d)}
               </span>
@@ -259,7 +259,7 @@ export default function Profile() {
                 key={c.key}
                 title={c.key}
                 aria-label={`${c.key}${c.on ? ' 출석' : ''}`}
-                className={`flex aspect-square items-center justify-center rounded-md border text-[11px] font-semibold ${
+                className={`flex aspect-square items-center justify-center rounded-md border text-[11px] font-extrabold ${
                   c.future
                     ? 'border-line/60 border-dashed text-transparent'
                     : c.on
@@ -271,7 +271,7 @@ export default function Profile() {
               </div>
             ))}
           </div>
-          <p className="mt-2 flex items-center justify-end gap-1.5 text-[11px] font-medium text-ink-faint">
+          <p className="mt-2 flex items-center justify-end gap-1.5 text-[11px] font-bold text-ink-faint">
             <span className="inline-block h-2.5 w-2.5 rounded-[3px] border border-line bg-surface2" />
             {l({ ko: '미출석', en: 'Missed', ja: '未出席' })}
             <span className="ml-1.5 inline-block h-2.5 w-2.5 rounded-[3px] bg-[#F2B01E]/85" />
@@ -283,8 +283,8 @@ export default function Profile() {
         <Card onClick={() => nav('/dex')} className="mt-3.5 flex items-center gap-3.5 !p-4">
           <span className="text-[28px]">🗂</span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15px] font-semibold">{t('dex.title')}</h3>
-            <p className="mt-0.5 text-[12px] font-medium text-ink-faint">
+            <h3 className="text-[15px] font-extrabold">{t('dex.title')}</h3>
+            <p className="mt-0.5 text-[12px] font-bold text-ink-faint">
               {t('dex.progress', {
                 c: new Set(s.results.map((r) => r.persona).filter((k) => PERSONA_TEST[k])).size,
                 t: Object.keys(PERSONA_TEST).length,
@@ -298,8 +298,8 @@ export default function Profile() {
         <Card onClick={() => nav('/chemi')} className="mt-3 flex items-center gap-3.5 !p-4">
           <span className="text-[28px]">💞</span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15px] font-semibold">{t('chemi.title')}</h3>
-            <p className="mt-0.5 text-[12px] font-medium text-ink-faint">{t('chemi.entry')}</p>
+            <h3 className="text-[15px] font-extrabold">{t('chemi.title')}</h3>
+            <p className="mt-0.5 text-[12px] font-bold text-ink-faint">{t('chemi.entry')}</p>
           </div>
           <span className="text-lg text-ink-faint">›</span>
         </Card>
@@ -308,8 +308,8 @@ export default function Profile() {
         <Card onClick={() => nav('/insight')} className="mt-3 flex items-center gap-3.5 !bg-gradient-to-r from-[#6E7BF2] to-[#9AA6FF] !p-4">
           <span className="text-[28px]">🧬</span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15px] font-semibold text-white">{t('insight.title')}</h3>
-            <p className="mt-0.5 text-[12px] font-medium text-white/90">{t('insight.entry')}</p>
+            <h3 className="text-[15px] font-extrabold text-white">{t('insight.title')}</h3>
+            <p className="mt-0.5 text-[12px] font-bold text-white/90">{t('insight.entry')}</p>
           </div>
           <span className="text-lg text-white/80">›</span>
         </Card>
@@ -323,12 +323,12 @@ export default function Profile() {
         >
           <IconBadge emoji="✨" tone="frost" size={42} radius={13} wiggle />
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15px] font-semibold text-white">
+            <h3 className="text-[15px] font-extrabold text-white">
               {isPremium(s.premiumUntil)
                 ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
                 : l({ ko: '프리미엄 · 운세 무제한', en: 'Premium · unlimited fortune', ja: 'プレミアム・運勢無制限' })}
             </h3>
-            <p className="mt-0.5 truncate text-[12px] font-medium text-white/90">
+            <p className="mt-0.5 truncate text-[12px] font-bold text-white/90">
               {isPremium(s.premiumUntil)
                 ? l({ ko: '눌러서 구독 관리', en: 'Manage subscription', ja: '購読を管理' })
                 : l({
@@ -361,10 +361,10 @@ export default function Profile() {
                       {p.emoji}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="break-keep text-[15px] font-semibold leading-tight">
+                      <p className="break-keep text-[15px] font-extrabold leading-tight">
                         {t(`test.${r.testId}.name`)}
                       </p>
-                      <p className="mt-1 break-keep text-[12px] font-medium leading-snug text-ink-faint">
+                      <p className="mt-1 break-keep text-[12px] font-bold leading-snug text-ink-faint">
                         {new Date(r.at).toLocaleDateString()} · {l(p.name)}
                         {r.iq ? ` · IQ ${r.iq}` : ''}
                       </p>
@@ -496,10 +496,10 @@ export default function Profile() {
             <div className="border-t border-line px-3 py-3">
               <div className="flex items-center justify-between">
                 <span className="text-[15px] font-bold">{t('profile.fontSize')}</span>
-                <span className="text-[13px] font-semibold text-mind-700 dark:text-mind-300">{Math.round(s.fontScale * 100)}%</span>
+                <span className="text-[13px] font-extrabold text-mind-700 dark:text-mind-300">{Math.round(s.fontScale * 100)}%</span>
               </div>
               <div className="mt-2 flex items-center gap-2.5">
-                <span className="text-[13px] font-medium text-ink-faint">가</span>
+                <span className="text-[13px] font-bold text-ink-faint">가</span>
                 <input
                   type="range"
                   min={0.9}
@@ -517,7 +517,7 @@ export default function Profile() {
             <div className="flex items-center justify-between border-t border-line px-3 py-3">
               <div className="min-w-0 pr-3">
                 <p className="text-[15px] font-bold">{t('profile.notify')}</p>
-                <p className="mt-0.5 text-[12px] font-medium leading-relaxed text-ink-faint">{t('profile.notifyDesc')}</p>
+                <p className="mt-0.5 text-[12px] font-bold leading-relaxed text-ink-faint">{t('profile.notifyDesc')}</p>
               </div>
               <button
                 onClick={() => {
@@ -599,14 +599,14 @@ export default function Profile() {
           </Card>
         </Section>
 
-        <p className="mt-6 text-center text-[12px] font-medium text-ink-faint">{t('profile.version')}</p>
+        <p className="mt-6 text-center text-[12px] font-bold text-ink-faint">{t('profile.version')}</p>
       </main>
 
       {/* 아바타 선택 */}
       <input ref={fileRef} type="file" accept="image/*" onChange={onPickPhoto} className="hidden" />
       <Modal open={avatarOpen} onClose={() => setAvatarOpen(false)}>
         <div>
-          <h3 className="text-center text-[17px] font-semibold">{t('profile.avatarPick')}</h3>
+          <h3 className="text-center text-[17px] font-extrabold">{t('profile.avatarPick')}</h3>
           <div className="mt-4 flex justify-center">
             <Avatar avatar={s.avatar} size={88} />
           </div>
@@ -633,7 +633,7 @@ export default function Profile() {
               })}
             </div>
           ) : (
-            <p className="mt-4 rounded-2xl bg-surface2 px-4 py-3 text-center text-[13px] font-medium text-ink-faint">
+            <p className="mt-4 rounded-2xl bg-surface2 px-4 py-3 text-center text-[13px] font-bold text-ink-faint">
               {t('profile.avatarNoAnimal')}
             </p>
           )}
@@ -662,7 +662,7 @@ export default function Profile() {
               <span className={`mt-px shrink-0 text-[15px] ${resetAck ? 'text-red-500' : 'text-red-300'}`}>
                 {resetAck ? '☑' : '☐'}
               </span>
-              <span className="break-keep text-[12px] font-medium leading-relaxed text-red-500">
+              <span className="break-keep text-[12px] font-bold leading-relaxed text-red-500">
                 {l({
                   ko: `다이아 ${s.diamonds}개${isPremium(s.premiumUntil) ? ' · 프리미엄 구독' : ''} 전부 사라지고 복구할 수 없다는 데 동의해요`,
                   en: `I understand ${s.diamonds} diamonds${isPremium(s.premiumUntil) ? ' and my premium subscription' : ''} will be lost permanently`,

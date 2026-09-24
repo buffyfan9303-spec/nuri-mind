@@ -228,7 +228,7 @@ export default function QuickTest() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.3 }}
-              className="mt-2 text-[15px] font-semibold text-white/90"
+              className="mt-2 text-[15px] font-extrabold text-white/90"
             >
               “{l(winner.tag)}”
             </motion.p>
@@ -236,14 +236,14 @@ export default function QuickTest() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.58, duration: 0.3 }}
-              className="mt-3 break-keep text-[14px] font-medium leading-relaxed text-white/95"
+              className="mt-3 break-keep text-[14px] font-bold leading-relaxed text-white/95"
             >
               {l(winner.desc)}
             </motion.p>
           </motion.div>
 
           {(copied || saved) && (
-            <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-semibold text-mind-700">
+            <p className="mt-3 rounded-xl bg-mind-100 py-2 text-center text-[13px] font-extrabold text-mind-700">
               ✅ {saved ? t('share.saved') : t('common.copied')}
             </p>
           )}
@@ -252,7 +252,7 @@ export default function QuickTest() {
             {kakaoEnabled() && (
               <button
                 onClick={shareKakaoQuick}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-semibold text-[#3A1D1D]"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-extrabold text-[#3A1D1D]"
               >
                 {t('quick.shareKakao')}
               </button>
@@ -267,7 +267,7 @@ export default function QuickTest() {
             </div>
             <button
               onClick={shareDuelQuick}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-semibold text-white"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-extrabold text-white"
               style={{ background: `linear-gradient(135deg, ${accent[0]}, ${accent[1]})` }}
             >
               {l({ ko: '친구와 대결', en: 'Challenge a friend', ja: '友達とバトル' })}
@@ -277,7 +277,7 @@ export default function QuickTest() {
                 🔬 {t('quick.deeper', { name: t(`test.${test.funnel}.name`) })}
               </Button>
             )}
-            <button onClick={reset} className="w-full py-2 text-[13px] font-semibold text-ink-faint">
+            <button onClick={reset} className="w-full py-2 text-[13px] font-extrabold text-ink-faint">
               {t('quick.again')}
             </button>
           </div>
@@ -294,7 +294,7 @@ export default function QuickTest() {
       <main className="mx-auto max-w-md px-5">
         <div className="mt-1">
           <ProgressBar value={(step + 1) / test.questions.length} />
-          <p className="mt-1.5 text-right text-[12px] font-semibold text-ink-faint">
+          <p className="mt-1.5 text-right text-[12px] font-extrabold text-ink-faint">
             {step + 1} / {test.questions.length}
           </p>
         </div>

@@ -81,9 +81,9 @@ export default function AllTests() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...SPRING.ui, delay: Math.min(0.04 * si, 0.2) }}
-            className="scroll-mt-20 pt-3"
+            className="scroll-mt-20 pt-4"
           >
-            <h2 className="flex items-center gap-1.5 px-1 text-[17px] font-semibold">
+            <h2 className="flex items-center gap-2 text-[20px] font-extrabold leading-tight">
               <span aria-hidden="true">{sec.emoji}</span>
               {typeof sec.title === 'string' ? sec.title : l(sec.title)}
             </h2>

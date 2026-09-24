@@ -10,7 +10,7 @@
  *  ⑥ 16유형 심층 문항의 극별 균형(불균형 시 채점 편향)
  *  ⑦ 엣지 함수가 공용 모듈(_shared)을 올바르게 참조하는가 · 사본이 남아 원본을 가리지 않는가
  *  ⑧ 모션이 lib/motion 프리셋을 우회하고 스프링을 하드코딩하지 않는가
- *  ⑨ 타이포 정책 — ≤17px에 extrabold/tracking-tight 금지, 크기는 10단계 스케일만
+ *  ⑨ 타이포 정책(듀오링고식) — UI 굵기는 bold/extrabold(+큰 숫자 black)만, 긴 본문은 bold, 크기는 10단계 스케일만
  *  ⑩ 제목·버튼·라벨에 장식 이모지 접두 없음(스탯 타일·뱃지의 내용 이모지는 대상 아님)
  *  ⑪ 만세력(사주팔자·음력·절기)이 공표 기준값과 맞는가 — scripts/saju-check.mjs
  *
@@ -141,31 +141,49 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   check('모션 프리셋 사용(하드코딩 스프링 0)', bad.length === 0, bad.slice(0, 5).join(', '))
 }
 
-/* ⑨ 타이포 정책 — 크기별 굵기·자간이 규칙을 지키는가 */
+/* ⑨ 타이포 정책 — 굵기·자간·크기가 규칙을 지키는가 (듀오링고식) */
 {
-  // AI 티의 실체는 '규칙 없음'이었다: extrabold 523개가 13px 캡션까지, 반픽셀 크기 42종, 13px에 tracking-tight.
-  // 정책(Apple §15): ≤17px는 semibold 이하·자간 0 / ≥20px만 extrabold·음수 자간. 크기는 10단계 스케일.
+  // 이력: 처음엔 '규칙 없음'(extrabold 523개가 13px 캡션까지, 반픽셀 크기 42종)이 문제였고,
+  // 이를 Apple식(≤17px는 semibold 이하)으로 묶었다. 그런데 운영자 판단(2026-09): 가늘고 얇은 글자는
+  // 이 앱의 캐릭터(둥근 칩·3D 버튼)와 따로 논다 → 듀오링고처럼 **모든 UI 글자를 굵게** 간다.
+  // 규칙이 없던 시절로 돌아가는 게 아니라 '굵은 쪽으로 옮긴 두 단계 체계'다:
+  //   · 700(bold)   = 본문·보조 문구·설명     · 800(extrabold) = 제목·버튼·칩 라벨·강조 숫자
+  //   · 900(black)  = 20px 이상의 큰 숫자(Nunito 900)에만
+  //   · 100~600(thin/extralight/light/normal/medium/semibold)은 금지 — 글꼴(나눔스퀘어라운드·Nunito)을
+  //     700/800만 받으므로 적어 봤자 700으로 뭉개져 '적힌 것과 보이는 것'이 달라진다.
+  //   · 여러 줄 본문(leading-relaxed/loose)은 800 금지 — 문단 전체가 800이면 강조가 사라진다.
+  //   · tracking-tight는 20px 이상 제목·숫자에만(작은 한글에 음수 자간은 자모가 붙는다). 크기는 10단계 스케일.
   const SCALE = new Set([11, 12, 13, 14, 15, 16, 17, 20, 24, 28])
+  const THIN = /(?:^|[\s:])font-(thin|extralight|light|normal|medium|semibold)(?=\s|$)/
   const bad = []
   const walk = (dir) => {
     for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
       const rel = `${dir}/${e.name}`
       if (e.isDirectory()) walk(rel)
       else if (/\.tsx$/.test(e.name)) {
-        for (const m of read(rel).matchAll(/className=(?:"([^"]*)"|\{`([^`]*)`\})/g)) {
+        const src = read(rel)
+        // 가는 굵기는 className 문자열·조건식 어디에 있든 막는다(삼항 안의 'font-medium'도 포함)
+        for (const m of src.matchAll(/['"`]([^'"`\n]*)['"`]/g)) {
+          const t = THIN.exec(m[1])
+          if (t) bad.push(`${rel}: font-${t[1]}(700 미만 금지)`)
+        }
+        const w = src.match(/fontWeight[:=]\s*\{?\s*['"]?([1-6]00)\b/)
+        if (w) bad.push(`${rel}: fontWeight ${w[1]}(700 미만 금지)`)
+        for (const m of src.matchAll(/className=(?:"([^"]*)"|\{`([^`]*)`\})/g)) {
           const cls = m[1] ?? m[2] ?? ''
           const sz = cls.match(/text-\[(\d+(?:\.\d+)?)px\]/)
           if (!sz) continue
           const px = parseFloat(sz[1])
           if (!SCALE.has(px)) bad.push(`${rel}: text-[${px}px] 스케일 외`)
-          if (px <= 17 && /font-(extrabold|black)/.test(cls)) bad.push(`${rel}: ${px}px에 extrabold`)
-          if (px <= 17 && /tracking-tight/.test(cls)) bad.push(`${rel}: ${px}px에 tracking-tight`)
+          if (px < 20 && /font-black/.test(cls)) bad.push(`${rel}: ${px}px에 black(20px 이상 숫자 전용)`)
+          if (px <= 17 && /tracking-tight/.test(cls)) bad.push(`${rel}: ${px}px에 tracking-tight`)
+          if (px <= 17 && /font-extrabold/.test(cls) && /leading-(relaxed|loose)/.test(cls)) bad.push(`${rel}: ${px}px 문단에 extrabold`)
         }
       }
     }
   }
   walk('src')
-  check('타이포 정책(굵기·자간·스케일)', bad.length === 0, bad.slice(0, 4).join(' · '))
+  check('타이포 정책(듀오링고 굵기·자간·스케일)', bad.length === 0, bad.slice(0, 4).join(' · '))
 }
 
 /* ⑩ 이모지 접두 — 제목·버튼·라벨 속성에 장식 이모지가 붙어 있는가 */

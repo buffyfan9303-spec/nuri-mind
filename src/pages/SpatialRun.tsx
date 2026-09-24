@@ -127,7 +127,7 @@ export default function SpatialRun() {
       </div>
 
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5">
-        <p className="mt-5 text-center text-[14px] font-semibold text-ink-sub">
+        <p className="mt-5 text-center text-[14px] font-extrabold text-ink-sub">
           {l({ ko: '이 글자, 정상일까요 거울상일까요?', en: 'Normal or mirror-image?', ja: 'この文字、正常？鏡像？' })}
         </p>
 
@@ -160,7 +160,7 @@ export default function SpatialRun() {
             whileTap={{ scale: 0.97 }}
             onClick={() => answer(false)}
             disabled={phase !== 'stim'}
-            className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 border-line bg-surface text-[17px] font-semibold shadow-card disabled:opacity-50"
+            className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 border-line bg-surface text-[17px] font-extrabold shadow-card disabled:opacity-50"
           >
             🔤 {l({ ko: '정상', en: 'Normal', ja: '正常' })}
           </motion.button>
@@ -168,7 +168,7 @@ export default function SpatialRun() {
             whileTap={{ scale: 0.97 }}
             onClick={() => answer(true)}
             disabled={phase !== 'stim'}
-            className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 text-[17px] font-semibold text-white shadow-card disabled:opacity-50"
+            className="flex h-16 items-center justify-center gap-2 rounded-2xl border-2 text-[17px] font-extrabold text-white shadow-card disabled:opacity-50"
             style={{ borderColor: accent, background: `linear-gradient(135deg, ${tm.gradFrom}, ${tm.gradTo})` }}
           >
             🪞 {l({ ko: '거울상', en: 'Mirror', ja: '鏡像' })}
@@ -181,7 +181,7 @@ export default function SpatialRun() {
         <div className="text-center">
           <div className="text-4xl">🥺</div>
           <h3 className="mt-2 text-lg font-extrabold">{l({ ko: '검사를 중단할까요?', en: 'Quit the test?', ja: '検査をやめますか？' })}</h3>
-          <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">
+          <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">
             {l({ ko: '지금까지의 기록은 저장되지 않아요.', en: 'Your progress will not be saved.', ja: 'これまでの記録は保存されません。' })}
           </p>
           <div className="mt-5 space-y-2.5">

@@ -14,6 +14,12 @@ import { type Transition, type Variants } from 'framer-motion'
  *     쓴다(플릭, 드래그 놓기, 보상 획득). 그냥 나타나는 카드가 통통 튀면
  *     '부드럽다'가 아니라 '장난감 같다'로 읽힌다 — 이전 프리셋의 문제가 정확히 이거였다.
  *
+ * 2026-09 듀오링고식 보정: 위 원칙(bounce + duration, 의미 없는 튐 금지)은 그대로 두고,
+ * '손에 닿는 것'에만 탄성을 조금 준다 —
+ *  · 3D 버튼·칩은 **누르는 순간 바닥까지 곧장**(pressIn, 튐 0) 내려가고, 손을 떼면 살짝 튀어 올라온다(press).
+ *  · 칩·카드는 처음 나타날 때 한 번 작게 '톡' 넘친다(pop, bounce 0.3 · 짧게). 스크롤·재렌더 때는 반복하지 않는다.
+ *  · 진행바·게이지·페이지·시트는 그대로 — 숫자를 넘치게 그리거나 화면 전환이 출렁이면 뜻이 틀어진다.
+ *
  * ⚠️ 새 모션을 넣을 때 stiffness/damping을 손으로 적지 말 것. 여기 없는 느낌이 필요하면
  *    프리셋을 추가해서 전 앱이 같이 쓰게 한다(하드코딩 97개가 제각각 튀던 상태로 돌아간다).
  */
@@ -28,14 +34,20 @@ export const SPRING = {
   flick: { type: 'spring', bounce: 0.3, duration: 0.45 },
   /** 오버슈트가 의미를 왜곡하는 곳 — 진행바·게이지·퍼센트(102%로 튀면 안 된다) */
   gauge: { type: 'spring', bounce: 0, duration: 0.55 },
+  /** 칩·카드의 첫 등장 — 작게 한 번 넘쳤다 앉는다(듀오링고식 '톡'). 짧아서 장난감처럼 출렁이지 않는다 */
+  pop: { type: 'spring', bounce: 0.3, duration: 0.42 },
+  /** 3D 버튼을 누르는 순간 — 바닥(그림자 깊이)까지 곧장. 누름에 튐이 있으면 '덜 눌렸다'로 읽힌다 */
+  pressIn: { type: 'spring', bounce: 0, duration: 0.1 },
+  /** 3D 버튼에서 손을 뗄 때 — 바닥에서 튀어 올라와 살짝 넘쳤다 제자리 */
+  press: { type: 'spring', bounce: 0.4, duration: 0.3 },
 } satisfies Record<string, Transition>
 
-/** 카드·섹션 등장. 위로 살짝 올라오며 정착 — 오버슈트 없음이 기본이다 */
+/** 카드·칩 등장. 조금 작은 상태에서 '톡' 커지며 정착(pop) — 위치 이동은 작게 둬서 출렁임이 아니라 탄력으로 읽힌다 */
 export const popIn: Variants = {
-  hidden: { opacity: 0, y: 14, scale: 0.98 },
-  show: { opacity: 1, y: 0, scale: 1, transition: SPRING.ui },
+  hidden: { opacity: 0, y: 8, scale: 0.94 },
+  show: { opacity: 1, y: 0, scale: 1, transition: SPRING.pop },
   // 나갈 때는 들어온 길로 되돌아간다(공간 일관성) — 아래로 사라지지 않는다
-  exit: { opacity: 0, y: 14, scale: 0.98, transition: SPRING.snap },
+  exit: { opacity: 0, y: 8, scale: 0.94, transition: SPRING.snap },
 }
 
 /** 바텀시트 — 아래에서 올라오고 아래로 내려간다(같은 경로) */
@@ -56,5 +68,23 @@ export const stagger = (gap = 0.04): Variants => ({
  * 0.94는 6% 수축이라 과하다 — 0.97이면 눌린 게 보이면서 요소가 흔들리지 않는다.
  */
 export const tapScale = { scale: 0.97 }
+/** 누르면 곧장 줄고(pressIn) — 컴포넌트 transition을 SPRING.press로 두면 뗄 때 살짝 튀며 복귀한다 */
+export const tapPop = { ...tapScale, transition: SPRING.pressIn }
 /** 물리 버튼처럼 눌러 들어가는 것(주 CTA) */
 export const tapPress = { y: 2, scale: 0.98 }
+
+/**
+ * 듀오링고식 3D 누름 — 아랫면(단색 그림자) 깊이만큼 **그대로 내려앉고** 그림자는 0으로 접힌다.
+ * 크기는 줄이지 않는다(눌린 게 아니라 작아진 것처럼 보인다). 누를 땐 pressIn, 뗄 땐 press(살짝 튐).
+ *
+ *   const p = press3d(4, '#2F6B52')
+ *   <motion.button whileTap={p.whileTap} transition={p.transition} style={{ boxShadow: p.rest }} />
+ */
+export function press3d(depth: number, edge: string, extra = '') {
+  const tail = extra ? `, ${extra}` : ''
+  return {
+    rest: `0 ${depth}px 0 ${edge}${tail}`,
+    whileTap: { y: depth, boxShadow: `0 0px 0 ${edge}${tail}`, transition: SPRING.pressIn },
+    transition: SPRING.press,
+  }
+}

@@ -146,7 +146,7 @@ export default function DeepReport() {
           <h1 className="mt-4 break-keep text-[20px] font-extrabold tracking-tight">
             {l({ ko: '심층검사를 모두 마치면 열려요', en: 'Unlocks when all deep tests are done', ja: '深層検査を全て終えると解放' })}
           </h1>
-          <p className="mt-2 break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+          <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
             {l({
               ko: `검사 하나씩이 아니라, ${DEEP_IDS.length}개를 가로질러 '한 사람'으로 읽어드려요. ${left}개 남았어요.`,
               en: `Not test by test — we read all ${DEEP_IDS.length} as one person. ${left} to go.`,
@@ -155,7 +155,7 @@ export default function DeepReport() {
           </p>
           <Card className="mt-6 !p-5">
             <div className="flex items-end justify-between">
-              <span className="text-[13px] font-semibold text-ink-sub">
+              <span className="text-[13px] font-extrabold text-ink-sub">
                 {l({ ko: '완주 진행', en: 'Progress', ja: '進捗' })}
               </span>
               <span className="text-[20px] font-extrabold text-mind-700">
@@ -178,7 +178,7 @@ export default function DeepReport() {
                   <button
                     key={id}
                     onClick={() => nav(`/test/${id}`)}
-                    className={`rounded-full px-2.5 py-1.5 text-[12px] font-semibold ${on ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-faint'}`}
+                    className={`rounded-full px-2.5 py-1.5 text-[12px] font-extrabold ${on ? 'bg-mind-100 text-mind-700' : 'bg-surface2 text-ink-faint'}`}
                   >
                     {on ? '✓' : meta.emoji} {t(`test.${id}.short`)}
                   </button>
@@ -211,10 +211,10 @@ export default function DeepReport() {
           <div className="flex items-center gap-2.5">
             <span className="text-[28px] leading-none">🧬</span>
             <div className="min-w-0 flex-1">
-              <h1 className="break-keep text-[17px] font-semibold leading-tight">
+              <h1 className="break-keep text-[17px] font-extrabold leading-tight">
                 {l({ ko: 'AI 종합 심층 리포트', en: 'AI Deep Report', ja: 'AI総合レポート' })}
               </h1>
-              <p className="mt-0.5 break-keep text-[12px] font-medium text-white/85">
+              <p className="mt-0.5 break-keep text-[12px] font-bold text-white/85">
                 {l({
                   ko: `${DEEP_IDS.length}개 검사를 하나로 읽은 ${nickname}님 설명서`,
                   en: `${DEEP_IDS.length} tests, read as one person`,
@@ -223,7 +223,7 @@ export default function DeepReport() {
               </p>
             </div>
           </div>
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-[12px] font-semibold">
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-[12px] font-extrabold">
             ✅ {l({ ko: `심층검사 ${DEEP_IDS.length}종 완주`, en: `All ${DEEP_IDS.length} deep tests done`, ja: `深層検査${DEEP_IDS.length}種完走` })}
           </div>
         </motion.div>
@@ -238,10 +238,10 @@ export default function DeepReport() {
             >
               🧬
             </motion.div>
-            <p className="mt-3 break-keep text-[14px] font-semibold">
+            <p className="mt-3 break-keep text-[14px] font-extrabold">
               {l({ ko: '검사들을 하나로 엮는 중…', en: 'Weaving your tests together…', ja: '検査を一つに織り込み中…' })}
             </p>
-            <p className="mt-1 text-[12px] font-medium text-ink-faint">
+            <p className="mt-1 text-[12px] font-bold text-ink-faint">
               {l({ ko: '20초 정도 걸려요', en: 'About 20 seconds', ja: '20秒ほどかかります' })}
             </p>
           </Card>
@@ -257,11 +257,11 @@ export default function DeepReport() {
               transition={{ ...SPRING.ui, delay: Math.min(i * 0.05, 0.3) }}
             >
               <Card className="mt-3.5 !p-5">
-                <h2 className="flex items-center gap-2 break-keep text-[16px] font-semibold">
+                <h2 className="flex items-center gap-2 break-keep text-[16px] font-extrabold">
                   <span>{SECTION_EMOJI[s.key] ?? '📄'}</span>
                   {s.title}
                 </h2>
-                <p className="mt-2.5 whitespace-pre-line break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">
+                <p className="mt-2.5 whitespace-pre-line break-keep text-[14px] font-bold leading-[1.85] text-ink-sub">
                   {s.body}
                 </p>
               </Card>
@@ -271,9 +271,9 @@ export default function DeepReport() {
         {/* 프리미엄: 엣지 실패 → 정적 폴백 */}
         {premium && failed && (
           <Card className="mt-3.5 !p-5">
-            <h2 className="flex items-center gap-2 text-[16px] font-semibold">{l({ ko: '핵심 성격 요약', en: 'Core summary', ja: '中核サマリー' })}</h2>
-            <p className="mt-2.5 break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">{staticCore}</p>
-            <p className="mt-3 rounded-2xl bg-surface2 px-3.5 py-2.5 text-[12px] font-medium leading-relaxed text-ink-faint">
+            <h2 className="flex items-center gap-2 text-[16px] font-extrabold">{l({ ko: '핵심 성격 요약', en: 'Core summary', ja: '中核サマリー' })}</h2>
+            <p className="mt-2.5 break-keep text-[14px] font-bold leading-[1.85] text-ink-sub">{staticCore}</p>
+            <p className="mt-3 rounded-2xl bg-surface2 px-3.5 py-2.5 text-[12px] font-bold leading-relaxed text-ink-faint">
               ⓘ {l({
                 ko: 'AI 생성이 일시적으로 어려워 기본 요약을 보여드렸어요. 잠시 후 다시 시도할 수 있어요.',
                 en: 'AI generation is temporarily unavailable, so here is the basic summary. You can retry shortly.',
@@ -297,10 +297,10 @@ export default function DeepReport() {
           >
             <span className="text-[24px]">🌱</span>
             <div className="min-w-0 flex-1">
-              <h3 className="break-keep text-[15px] font-semibold text-white">
+              <h3 className="break-keep text-[15px] font-extrabold text-white">
                 {l({ ko: '읽었으면, 이제 실천으로', en: 'Now turn it into action', ja: '読んだら実践へ' })}
               </h3>
-              <p className="mt-0.5 break-keep text-[12px] font-medium text-white/85">
+              <p className="mt-0.5 break-keep text-[12px] font-bold text-white/85">
                 {l({ ko: '오늘 할 일로 바꿔주는 성장 플랜', en: 'A growth plan with daily actions', ja: '今日の行動に変える成長プラン' })}
               </p>
             </div>
@@ -314,7 +314,7 @@ export default function DeepReport() {
             <button
               onClick={regen}
               disabled={!canRegen}
-              className={`text-[12px] font-semibold ${canRegen ? 'text-mind-600' : 'text-ink-faint/60'}`}
+              className={`text-[12px] font-extrabold ${canRegen ? 'text-mind-600' : 'text-ink-faint/60'}`}
             >
               {canRegen
                 ? `🔄 ${l({ ko: '리포트 다시 생성', en: 'Regenerate report', ja: 'レポート再生成' })}`
@@ -327,14 +327,14 @@ export default function DeepReport() {
         {!premium && (
           <>
             <Card className="mt-4 !p-5">
-              <h2 className="flex items-center gap-2 text-[16px] font-semibold">
+              <h2 className="flex items-center gap-2 text-[16px] font-extrabold">
                 {l({ ko: '핵심 성격 요약', en: 'Core summary', ja: '中核サマリー' })}
               </h2>
-              <p className="mt-2.5 break-keep text-[14px] font-medium leading-[1.85] text-ink-sub">{staticCore}</p>
+              <p className="mt-2.5 break-keep text-[14px] font-bold leading-[1.85] text-ink-sub">{staticCore}</p>
             </Card>
 
             <Card className="mt-3.5 !p-5">
-              <p className="flex items-center gap-1.5 text-[12px] font-semibold text-ink-faint">
+              <p className="flex items-center gap-1.5 text-[12px] font-extrabold text-ink-faint">
                 🔒 {l({ ko: '프리미엄에서 전체 공개', en: 'Full report in Premium', ja: 'プレミアムで全公開' })}
               </p>
               <div className="mt-2.5">
@@ -375,17 +375,17 @@ export default function DeepReport() {
                 }}
                 className="mt-3.5 !bg-gradient-to-br from-[#6E7BF2] to-[#A88BF2] !p-5 text-white"
               >
-                <p className="flex items-center gap-2 text-[15px] font-semibold">
+                <p className="flex items-center gap-2 text-[15px] font-extrabold">
                   ✨ {l({ ko: '프리미엄으로 전체 해금', en: 'Unlock everything with Premium', ja: 'プレミアムで全解放' })}
                 </p>
-                <p className="mt-1.5 break-keep text-[13px] font-medium leading-relaxed text-white/90">
+                <p className="mt-1.5 break-keep text-[13px] font-bold leading-relaxed text-white/90">
                   {l({
                     ko: `전 섹션 + 운세 무제한 + 광고 제거 · 월 ₩${PREMIUM_KRW.toLocaleString()}`,
                     en: `All sections + unlimited fortune + no ads · ₩${PREMIUM_KRW.toLocaleString()}/mo`,
                     ja: `全セクション+運勢無制限+広告除去・月₩${PREMIUM_KRW.toLocaleString()}`,
                   })}
                 </p>
-                <div className="mt-3 rounded-2xl bg-white px-4 py-2.5 text-center text-[14px] font-semibold text-[#5B4FD8]">
+                <div className="mt-3 rounded-2xl bg-white px-4 py-2.5 text-center text-[14px] font-extrabold text-[#5B4FD8]">
                   {l({ ko: '프리미엄 시작하기 →', en: 'Start Premium →', ja: 'プレミアム開始 →' })}
                 </div>
               </Card>
@@ -393,7 +393,7 @@ export default function DeepReport() {
           </>
         )}
 
-        <p className="mt-5 break-keep px-2 text-center text-[11px] font-medium leading-relaxed text-ink-faint">
+        <p className="mt-5 break-keep px-2 text-center text-[11px] font-bold leading-relaxed text-ink-faint">
           ⓘ {l({
             ko: '이 리포트는 나를 이해하는 데 참고하는 자료예요. 의학적 진단을 대신하지는 않아요.',
             en: 'This report supports self-understanding and does not replace medical diagnosis.',

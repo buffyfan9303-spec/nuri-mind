@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { SPRING } from '../lib/motion'
+import { press3d } from '../lib/motion'
 import { useRef, useState, type ReactNode } from 'react'
 import { haptic } from '../lib/haptic'
 import { canHover } from '../lib/device'
@@ -57,13 +57,21 @@ export default function Button({
   error = false,
 }: Props) {
   const c = COLORS[color]
-  // 본문 100%(16px) 기준에 맞춘 버튼 스케일 — 듀오링고식 3D 프레스는 유지하되 두께만 슬림하게
+  /**
+   * 버튼 스케일 — 높이를 min-h로 고정하고 글자는 leading-none + flex 가운데 정렬.
+   * 줄높이(1.65)에 기대던 예전 방식은 글꼴이 바뀌면(나눔스퀘어라운드는 위아래 여백 비율이 다르다)
+   * 글자가 위로 뜬다. 높이는 예전 값(sm 36 · md 48 · lg 54)을 그대로 지켜 레이아웃은 움직이지 않는다.
+   * 아랫면 깊이(depth)도 크기별로 — 누르면 정확히 그만큼 내려앉는다(듀오링고식).
+   */
   const pad =
     size === 'lg'
-      ? 'px-6 py-3.5 text-[16px]'
+      ? 'min-h-[54px] px-6 text-[16px]'
       : size === 'sm'
-        ? 'px-3.5 py-2 text-[13px]'
-        : 'px-5 py-3 text-[15px]'
+        ? 'min-h-[36px] px-3.5 text-[13px]'
+        : 'min-h-[48px] px-5 text-[15px]'
+  const depth = size === 'sm' ? 3 : 4
+  // 두 번째 그림자(글로우)는 평소 투명으로 자리만 잡아 둔다 — 그림자 개수가 같아야 framer가 호버↔평소를 보간한다
+  const p = press3d(depth, c.sh, '0 0 0 transparent')
   const idRef = useRef(0)
   const [bursts, setBursts] = useState<number[]>([])
   const handleClick = () => {
@@ -80,16 +88,17 @@ export default function Button({
       disabled={disabled || busy}
       aria-busy={busy || undefined}
       onClick={handleClick}
-      whileTap={disabled || busy ? undefined : { y: 3, boxShadow: `0 0px 0 ${c.sh}` }}
+      whileTap={disabled || busy ? undefined : p.whileTap}
       /**
-       * 호버: 2px 들리고 아랫면 그림자가 3→5px로 자란다(들린 만큼 바닥과 멀어진 것) + 자기 색 글로우.
+       * 호버: 2px 들리고 아랫면이 깊이+2px로 자란다(들린 만큼 바닥과 멀어진 것) + 자기 색 글로우.
        * 물체가 커지는 게 아니라 '떠오르는' 것으로 읽혀야 눌렀을 때의 내려앉음과 짝이 맞는다.
        * 터치 기기에서는 끈다 — 탭 뒤 호버가 눌어붙어 버튼 하나만 계속 떠 있는 것처럼 보인다.
        */
-      whileHover={canHover && !disabled && !busy ? { y: -2, boxShadow: `0 5px 0 ${c.sh}, 0 10px 22px -8px ${c.sh}` } : undefined}
-      transition={SPRING.flick}
-      className={`relative ${full ? 'w-full' : ''} ${pad} ${error ? 'shake' : ''} whitespace-nowrap rounded-2xl font-extrabold tracking-wide select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
-      style={{ background: c.bg, color: c.fg, boxShadow: `0 3px 0 ${c.sh}`, border: c.border ?? 'none' }}
+      whileHover={canHover && !disabled && !busy ? { y: -2, boxShadow: `0 ${depth + 2}px 0 ${c.sh}, 0 10px 22px -8px ${c.sh}` } : undefined}
+      // 누를 땐 pressIn(곧장 바닥까지), 떼면 press(살짝 튀며 복귀) — lib/motion.press3d
+      transition={p.transition}
+      className={`relative inline-flex items-center justify-center ${full ? 'w-full' : ''} ${pad} ${error ? 'shake' : ''} whitespace-nowrap rounded-2xl font-extrabold leading-none select-none outline-none disabled:opacity-40 disabled:saturate-50 ${className}`}
+      style={{ background: c.bg, color: c.fg, boxShadow: p.rest, border: c.border ?? 'none' }}
     >
       {/* 글자를 지우지 않고 투명하게만 둔다 — 지우면 버튼 폭이 줄어 옆 버튼까지 밀린다 */}
       <span className={busy ? 'invisible' : undefined}>{children}</span>

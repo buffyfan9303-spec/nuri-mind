@@ -34,7 +34,7 @@ export default function Legal() {
       <main className="mx-auto max-w-md px-5">
         <Chip tone="mind">✅ {LEGAL_EFFECTIVE} 시행 · {COMPANY.name}</Chip>
         <Card className="mt-3">
-          <p className="whitespace-pre-line text-[14px] font-medium leading-[1.85] text-ink">
+          <p className="whitespace-pre-line text-[14px] font-bold leading-[1.85] text-ink">
             {isTerms ? TERMS : PRIVACY}
           </p>
         </Card>

@@ -47,7 +47,7 @@ export default function Toast() {
             <span className="shrink-0 text-[14px]" aria-hidden="true">
               {GLYPH[it.variant]}
             </span>
-            <span className="min-w-0 flex-1 break-keep text-[13px] font-semibold leading-snug">{it.text}</span>
+            <span className="min-w-0 flex-1 break-keep text-[13px] font-extrabold leading-snug">{it.text}</span>
             {it.action && (
               <button
                 onClick={(e) => {
@@ -56,7 +56,7 @@ export default function Toast() {
                   dismiss(it.id)
                 }}
                 // 보이는 알약은 30px이지만 before로 위아래 8px씩 넓혀 44px 히트영역 — 토스트 높이는 그대로
-                className="relative -mr-1 shrink-0 rounded-full bg-white/15 px-3 py-1.5 text-[12px] font-semibold before:absolute before:-inset-2 before:content-['']"
+                className="relative -mr-1 shrink-0 rounded-full bg-white/15 px-3 py-1.5 text-[12px] font-extrabold before:absolute before:-inset-2 before:content-['']"
               >
                 {it.action.label}
               </button>

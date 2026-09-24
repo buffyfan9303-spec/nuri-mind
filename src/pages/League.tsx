@@ -82,7 +82,7 @@ export default function League() {
             className="mx-auto max-w-md px-5"
           >
             <p
-              className={`rounded-2xl px-4 py-3.5 text-center text-[15px] font-semibold ${
+              className={`rounded-2xl px-4 py-3.5 text-center text-[15px] font-extrabold ${
                 leagueMsg === 'up' ? 'bg-mind-100 text-mind-700' : leagueMsg === 'down' ? 'bg-red-50 text-red-500' : 'bg-sky2-100 text-sky2-600'
               }`}
             >
@@ -114,12 +114,12 @@ export default function League() {
             ))}
           </div>
           <h1 className="mt-2 text-[24px] font-extrabold tracking-tight text-white">{l(tier.name)}</h1>
-          <p className="mt-1 text-[13px] font-medium leading-relaxed text-white/90">{t('league.sub')}</p>
+          <p className="mt-1 text-[13px] font-bold leading-relaxed text-white/90">{t('league.sub')}</p>
           <div className="mt-3 flex items-center justify-center gap-2">
-            <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-semibold text-white">
+            <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
               {t('league.myWeek')} 🪙 {my.toLocaleString()}P
             </span>
-            <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-semibold text-white">
+            <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
               ⏳ {t('league.reset', { d: dLeft, h: hLeft })}
             </span>
           </div>
@@ -133,12 +133,12 @@ export default function League() {
             return (
               <div key={r.me ? 'me' : r.name}>
                 {i === 0 && inPromo && (
-                  <p className="px-3 pb-1.5 pt-1 text-[12px] font-semibold tracking-wide text-mind-600">
+                  <p className="px-3 pb-1.5 pt-1 text-[12px] font-extrabold tracking-wide text-mind-600">
                     {t('league.promo')}
                   </p>
                 )}
                 {i === rows.length - 3 && inDemo && (
-                  <p className="px-3 pb-1.5 pt-3 text-[12px] font-semibold tracking-wide text-red-400">
+                  <p className="px-3 pb-1.5 pt-3 text-[12px] font-extrabold tracking-wide text-red-400">
                     {t('league.demo')}
                   </p>
                 )}
@@ -151,25 +151,25 @@ export default function League() {
                   }`}
                 >
                   <span
-                    className={`w-7 text-center text-[16px] font-semibold ${
+                    className={`w-7 text-center text-[16px] font-extrabold ${
                       i === 0 ? 'text-amber-500' : i === 1 ? 'text-gray-400' : i === 2 ? 'text-amber-700' : 'text-ink-faint'
                     }`}
                   >
                     {i + 1}
                   </span>
                   <span className="text-2xl">{r.emoji}</span>
-                  <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">
+                  <span className="min-w-0 flex-1 truncate text-[15px] font-extrabold">
                     {r.name}
                     {r.me && <Chip tone="mind"> {t('league.me')}</Chip>}
                   </span>
-                  <span className="text-[15px] font-semibold text-ink-sub">{r.points.toLocaleString()}P</span>
+                  <span className="text-[15px] font-extrabold text-ink-sub">{r.points.toLocaleString()}P</span>
                 </motion.div>
               </div>
             )
           })}
         </Card>
 
-        <p className="mt-3 text-center text-[12px] font-medium leading-relaxed text-ink-faint">
+        <p className="mt-3 text-center text-[12px] font-bold leading-relaxed text-ink-faint">
           🏆 {t('league.sub')} · {l({ ko: `현재 ${rank}위`, en: `Now #${rank}`, ja: `現在${rank}位` })}
         </p>
       </main>

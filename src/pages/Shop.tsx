@@ -49,7 +49,7 @@ export default function Shop() {
     <div className="min-h-dvh pb-36">
       <TopBar title={t('shop.title')} />
       <main className="mx-auto max-w-md px-5">
-        <p className="px-1 text-[15px] font-medium leading-relaxed text-ink-sub">{t('shop.sub')}</p>
+        <p className="text-[15px] font-bold leading-relaxed text-ink-sub">{t('shop.sub')}</p>
 
         {/* 프리미엄 구독 CTA */}
         <button
@@ -59,12 +59,12 @@ export default function Shop() {
         >
           <IconBadge emoji="✨" tone="frost" size={42} radius={13} wiggle />
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15px] font-semibold text-white">
+            <h3 className="text-[15px] font-extrabold text-white">
               {premium
                 ? l({ ko: '프리미엄 이용 중', en: 'Premium active', ja: 'プレミアム利用中' })
                 : l({ ko: '광고 제거 · 프리미엄', en: 'Remove ads · Premium', ja: '広告除去・プレミアム' })}
             </h3>
-            <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">
+            <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
               {premium
                 ? l({ ko: '혜택 이용 중 · 눌러서 관리', en: 'Active · tap to manage', ja: '利用中・管理する' })
                 : l({
@@ -104,8 +104,8 @@ export default function Shop() {
                     {item.emoji}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="break-keep text-[15px] font-semibold leading-tight">{l(item.name)}</h3>
-                    <p className="mt-0.5 whitespace-nowrap text-[13px] font-semibold text-mind-700 dark:text-mind-300">
+                    <h3 className="break-keep text-[15px] font-extrabold leading-tight">{l(item.name)}</h3>
+                    <p className="mt-0.5 whitespace-nowrap text-[13px] font-extrabold text-mind-700 dark:text-mind-300">
                       🪙 {item.cost.toLocaleString()}P
                       {isFreeze && freezes > 0 && <span className="ml-1.5 text-[12px] text-sky2-600">❄️×{freezes}</span>}
                     </p>
@@ -140,7 +140,7 @@ export default function Shop() {
                     <span className="text-xl">{rd.emoji}</span>
                     <div className="min-w-0">
                       <p className="truncate text-[14px] font-bold">{rd.itemName}</p>
-                      <p className="mt-0.5 text-[12px] font-medium text-ink-faint">
+                      <p className="mt-0.5 text-[12px] font-bold text-ink-faint">
                         {new Date(rd.at).toLocaleDateString()} · {rd.cost.toLocaleString()}P
                       </p>
                     </div>
@@ -161,7 +161,7 @@ export default function Shop() {
           <div className="text-center">
             <div className="text-5xl">{confirm.emoji}</div>
             <h3 className="mt-3 text-lg font-extrabold">{t('shop.confirmTitle', { name: l(confirm.name) })}</h3>
-            <p className="mt-1.5 text-sm font-medium leading-relaxed text-ink-sub">
+            <p className="mt-1.5 text-sm font-bold leading-relaxed text-ink-sub">
               {t('shop.confirmDesc', { cost: confirm.cost.toLocaleString() })}
             </p>
             <div className="mt-5 space-y-2.5">

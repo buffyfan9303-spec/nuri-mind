@@ -33,7 +33,7 @@ export function DiamondPill() {
       // 이름이 없으면 '보석 12 더하기'로 읽힌다 — 누르면 무엇이 되는지(충전)를 말해 준다.
       // 알약은 28px 남짓이라 before로 위아래 8px 넓혀 44px 히트영역(모양·줄 높이는 그대로)
       aria-label={l({ ko: `다이아 ${diamonds}개 · 충전하기`, en: `${diamonds} diamonds · Top up`, ja: `ダイヤ${diamonds}個・チャージ` })}
-      className="relative flex items-center gap-1 rounded-full bg-surface px-2 py-1 text-sm font-extrabold text-[#6E7BF2] shadow-card before:absolute before:-inset-y-2 before:inset-x-0 before:content-['']"
+      className="relative flex items-center gap-1 rounded-full bg-surface px-2 py-1 text-sm font-extrabold tabular-nums text-[#6E7BF2] shadow-card before:absolute before:-inset-y-2 before:inset-x-0 before:content-['']"
     >
       💎 <motion.span>{diaText}</motion.span>
       <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#6E7BF2] text-[11px] leading-none text-white">+</span>
@@ -48,12 +48,14 @@ export function PointsPill({ showStreak = true }: { showStreak?: boolean } = {})
   return (
     <div className="flex items-center gap-1">
       {showStreak && streak > 0 && (
-        <span className="flex items-center gap-0.5 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold text-orange-500 shadow-card">
+        // 360px 폭에서는 연속 출석 알약을 접는다 — 세 알약이 제목 자리를 88px까지 먹어 '주의산…'처럼 잘렸다.
+        // 연속 출석은 홈 대시보드에도 있으니 좁은 폰에서 상단바에서만 빠진다
+        <span className="hidden items-center gap-0.5 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold tabular-nums text-orange-500 shadow-card min-[380px]:flex">
           🔥{streak}
         </span>
       )}
       <DiamondPill />
-      <span className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold text-mind-700 shadow-card">
+      <span className="flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-sm font-extrabold tabular-nums text-mind-700 shadow-card">
         🪙 <motion.span>{pointsText}</motion.span>
       </span>
     </div>

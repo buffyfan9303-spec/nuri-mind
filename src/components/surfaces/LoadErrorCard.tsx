@@ -38,11 +38,11 @@ export default function LoadErrorCard({
           ⚠️
         </div>
         <div className={compact ? 'min-w-0 flex-1' : undefined}>
-          <h3 className={`break-keep font-semibold ${compact ? 'text-[13px]' : 'mt-3 text-[15px]'}`}>
+          <h3 className={`break-keep font-extrabold ${compact ? 'text-[13px]' : 'mt-3 text-[15px]'}`}>
             {l({ ko: `${what}을 불러오지 못했어요`, en: `Couldn't load ${what}`, ja: `${what}を読み込めませんでした` })}
           </h3>
           <p
-            className={`break-keep font-medium leading-relaxed text-ink-faint ${
+            className={`break-keep font-bold leading-relaxed text-ink-faint ${
               compact ? 'mt-0.5 text-[12px]' : 'mx-auto mt-1.5 max-w-[260px] text-[12px]'
             }`}
           >
@@ -54,7 +54,7 @@ export default function LoadErrorCard({
               })}
           </p>
           {reason && (
-            <p className={`break-keep text-[11px] font-medium text-ink-faint/80 ${compact ? 'mt-0.5' : 'mt-1'}`}>{reason}</p>
+            <p className={`break-keep text-[11px] font-bold text-ink-faint/80 ${compact ? 'mt-0.5' : 'mt-1'}`}>{reason}</p>
           )}
         </div>
       </div>

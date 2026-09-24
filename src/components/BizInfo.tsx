@@ -10,7 +10,7 @@ export default function BizInfo({ className = '' }: { className?: string }) {
     MAIL_ORDER_NO && `통신판매업 신고 ${MAIL_ORDER_NO}`,
   ].filter(Boolean)
   return (
-    <p className={`text-[11px] font-medium leading-relaxed text-ink-faint ${className}`}>
+    <p className={`text-[11px] font-bold leading-relaxed text-ink-faint ${className}`}>
       {COMPANY_LINE}
       <br />
       {COMPANY.address}

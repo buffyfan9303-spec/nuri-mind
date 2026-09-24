@@ -311,7 +311,7 @@ export default function TestRun() {
           >
             {!isIq ? (
               <>
-                <p className="mt-8 text-[13px] font-semibold" style={{ color: tm.gradFrom }}>
+                <p className="mt-8 text-[13px] font-extrabold" style={{ color: tm.gradFrom }}>
                   Q{idx + 1}
                 </p>
                 <h1 className="mt-2.5 text-[20px] font-extrabold leading-[1.6] tracking-tight">
@@ -373,7 +373,7 @@ export default function TestRun() {
         <div className="text-center">
           <div className="text-4xl">🥺</div>
           <h3 className="mt-2 text-lg font-extrabold">{t('run.quitTitle')}</h3>
-          <p className="mt-1 text-sm font-medium leading-relaxed text-ink-sub">{t('run.quitDesc')}</p>
+          <p className="mt-1 text-sm font-bold leading-relaxed text-ink-sub">{t('run.quitDesc')}</p>
           <div className="mt-5 space-y-2.5">
             <Button color="mind" onClick={() => setQuitOpen(false)}>
               {t('run.quitNo')}
@@ -416,7 +416,7 @@ function IqQuestion({
           </div>
         )}
         {item.kind === 'verbal' && (
-          <div className="whitespace-pre-line rounded-2xl border-2 border-line bg-surface px-5 py-6 text-[17px] font-semibold leading-tight">
+          <div className="whitespace-pre-line rounded-2xl border-2 border-line bg-surface px-5 py-6 text-[17px] font-extrabold leading-tight">
             {l(item.prompt)}
           </div>
         )}

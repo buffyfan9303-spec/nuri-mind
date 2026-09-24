@@ -47,7 +47,7 @@ export default function Duel() {
       <div className="min-h-dvh pb-24">
         <TopBar back="/" title={l({ ko: '결과 대결', en: 'Result duel', ja: '結果バトル' })} />
         <main className="mx-auto max-w-md px-5 text-center">
-          <p className="mt-4 text-[13px] font-medium text-ink-faint">{qt ? l(qt.title) : l({ ko: '퀵 테스트', en: 'Quick test', ja: 'クイズ' })}</p>
+          <p className="mt-4 text-[13px] font-bold text-ink-faint">{qt ? l(qt.title) : l({ ko: '퀵 테스트', en: 'Quick test', ja: 'クイズ' })}</p>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -56,7 +56,7 @@ export default function Duel() {
             style={{ background: `linear-gradient(150deg, ${qt?.grad[0] ?? '#9AA6FF'}, ${qt?.grad[1] ?? '#C7B8FF'})` }}
           >
             <span className="text-[28px] leading-none">{friend.e}</span>
-            <span className="mt-2 text-[12px] font-semibold text-white/85">
+            <span className="mt-2 text-[12px] font-extrabold text-white/85">
               {(friend.n || l({ ko: '친구', en: 'Friend', ja: '友達' })) + l({ ko: ' 님의 결과', en: '’s result', ja: 'の結果' })}
             </span>
             <span className="mt-1 break-keep text-[20px] font-extrabold">{friend.nm}</span>
@@ -69,7 +69,7 @@ export default function Duel() {
               🆚 {l({ ko: '나도 해보기', en: 'Take it too', ja: '自分もやる' })}
             </Button>
           </div>
-          <button onClick={() => nav('/')} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">
+          <button onClick={() => nav('/')} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">
             {l({ ko: '홈으로', en: 'Home', ja: 'ホーム' })}
           </button>
         </main>
@@ -106,10 +106,10 @@ export default function Duel() {
       className={`flex flex-1 flex-col items-center rounded-3xl p-4 text-center ${win ? 'ring-4 ring-amber-300' : ''}`}
       style={{ background: `linear-gradient(150deg, ${p.grad[0]}, ${p.grad[1]})` }}
     >
-      <span className="max-w-full truncate text-[11px] font-semibold text-white/85">{label}</span>
+      <span className="max-w-full truncate text-[11px] font-extrabold text-white/85">{label}</span>
       <span className="mt-1 text-[28px] leading-none">{p.emoji}</span>
-      <span className="mt-1.5 break-keep text-[13px] font-semibold text-white">{l(p.name)}</span>
-      <span className="mt-1.5 rounded-full bg-black/15 px-2 py-0.5 text-[11px] font-semibold text-white">
+      <span className="mt-1.5 break-keep text-[13px] font-extrabold text-white">{l(p.name)}</span>
+      <span className="mt-1.5 rounded-full bg-black/15 px-2 py-0.5 text-[11px] font-extrabold text-white">
         {l({ ko: `상위 ${top}%`, en: `top ${top}%`, ja: `上位${top}%` })}
       </span>
     </div>
@@ -139,7 +139,7 @@ export default function Duel() {
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-line p-4 text-center">
               <span className="text-[28px]">❔</span>
-              <span className="mt-1.5 break-keep text-[12px] font-medium text-ink-faint">{l({ ko: '아직 안 했어요', en: 'Not yet', ja: '未実施' })}</span>
+              <span className="mt-1.5 break-keep text-[12px] font-bold text-ink-faint">{l({ ko: '아직 안 했어요', en: 'Not yet', ja: '未実施' })}</span>
             </div>
           )}
           <div className="flex shrink-0 items-center text-[20px] font-extrabold text-ink-faint">VS</div>
@@ -151,7 +151,7 @@ export default function Duel() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={SPRING.flick}
-            className="mt-4 rounded-2xl bg-mind-100 py-3 text-center text-[15px] font-semibold text-mind-700"
+            className="mt-4 rounded-2xl bg-mind-100 py-3 text-center text-[15px] font-extrabold text-mind-700"
           >
             {verdict}
           </motion.p>
@@ -168,7 +168,7 @@ export default function Duel() {
             </Button>
           )}
         </div>
-        <button onClick={() => nav('/')} className="mt-2 w-full py-2 text-[13px] font-medium text-ink-faint">
+        <button onClick={() => nav('/')} className="mt-2 w-full py-2 text-[13px] font-bold text-ink-faint">
           {l({ ko: '홈으로', en: 'Home', ja: 'ホーム' })}
         </button>
       </main>

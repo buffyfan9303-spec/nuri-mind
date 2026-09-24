@@ -75,7 +75,7 @@ export default function AboutMe() {
     <div className="bg-dots min-h-dvh pb-36">
       <TopBar back="/" title={l({ ko: '나에 관하여', en: 'About me', ja: '私について' })} />
       <main className="mx-auto max-w-md px-5">
-        <p className="px-1 text-[14px] font-medium leading-relaxed text-ink-sub">
+        <p className="text-[14px] font-bold leading-relaxed text-ink-sub">
           {l({
             ko: '내 검사 결과, 머리 지도, 나에게 맞는 읽을거리를 한곳에 모았어요.',
             en: 'Your results, mind map and reads picked for you — in one place.',
@@ -84,16 +84,16 @@ export default function AboutMe() {
         </p>
 
         {/* ── 1. 내 마음 결과 ── */}
-        <motion.section {...sec(0)} className="mt-5">
-          <h2 className="px-1 text-[17px] font-semibold">{l({ ko: '내 마음 결과', en: 'My results', ja: '心の結果' })}</h2>
+        <motion.section {...sec(0)} className="mt-6">
+          <h2 className="text-[20px] font-extrabold leading-tight">{l({ ko: '내 마음 결과', en: 'My results', ja: '心の結果' })}</h2>
           {deepDone.length === 0 ? (
-            <Card className="mt-2.5 !p-4">
-              <p className="break-keep text-[14px] font-medium leading-relaxed text-ink-sub">
+            <Card className="mt-3 !p-4">
+              <p className="break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
                 {l({ ko: '아직 해 본 심리검사가 없어요. 아래에서 하나 골라 시작해 보세요.', en: 'No tests yet. Pick one below to start.', ja: 'まだ検査がありません。下から選んで始めましょう。' })}
               </p>
             </Card>
           ) : (
-            <div className="mt-2.5 space-y-2">
+            <div className="mt-3 space-y-2">
               {deepDone.map((tm) => {
                 const r = latest.get(tm.id)!
                 const pv = PERSONA_VISUAL[r.persona]
@@ -101,8 +101,8 @@ export default function AboutMe() {
                   <Card key={tm.id} onClick={() => nav(`/result/${r.id}`)} className="flex items-center gap-3 !p-3.5">
                     <IconBadge emoji={pv?.emoji ?? tm.emoji} color={tm.gradFrom} size={40} radius={13} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[15px] font-semibold">{t(TEST_NAME_KEY(tm.id))}</p>
-                      <p className="mt-0.5 truncate text-[12px] font-medium text-ink-faint">
+                      <p className="truncate text-[15px] font-extrabold">{t(TEST_NAME_KEY(tm.id))}</p>
+                      <p className="mt-0.5 truncate text-[12px] font-bold text-ink-faint">
                         {l({ ko: `상위 ${Math.max(1, 100 - r.percentile)}% · ${new Date(r.at).toLocaleDateString('ko-KR')}`, en: `Top ${Math.max(1, 100 - r.percentile)}% · ${new Date(r.at).toLocaleDateString('en-US')}`, ja: `上位${Math.max(1, 100 - r.percentile)}%・${new Date(r.at).toLocaleDateString('ja-JP')}` })}
                       </p>
                     </div>
@@ -114,7 +114,7 @@ export default function AboutMe() {
           )}
           {deepLeft.length > 0 && (
             <>
-              <p className="mt-4 px-1 text-[13px] font-semibold text-ink-sub">{l({ ko: '아직 안 해 본 검사', en: 'Not taken yet', ja: 'まだの検査' })}</p>
+              <p className="mb-2 mt-4 text-[14px] font-extrabold leading-none text-ink-sub">{l({ ko: '아직 안 해 본 검사', en: 'Not taken yet', ja: 'まだの検査' })}</p>
               <ScrollChips
                 items={deepLeft.map((tm) => ({ id: tm.id, emoji: tm.emoji, label: t(TEST_SHORT_KEY(tm.id)), color: tm.gradFrom, onClick: () => nav(`/test/${tm.id}`) }))}
               />
@@ -123,16 +123,16 @@ export default function AboutMe() {
         </motion.section>
 
         {/* ── 2. 머리 지도(종합 인지 프로필) ── */}
-        <motion.section {...sec(0.05)} className="mt-4">
-          <h2 className="px-1 text-[17px] font-semibold">{l({ ko: '머리 지도', en: 'Mind map', ja: '頭の地図' })}</h2>
-          <Card onClick={() => nav('/cog')} className="mt-2.5 !bg-gradient-to-r from-[#5B6CF0] to-[#3B82F6] !p-4">
+        <motion.section {...sec(0.05)} className="mt-6">
+          <h2 className="text-[20px] font-extrabold leading-tight">{l({ ko: '머리 지도', en: 'Mind map', ja: '頭の地図' })}</h2>
+          <Card onClick={() => nav('/cog')} className="mt-3 !bg-gradient-to-r from-[#5B6CF0] to-[#3B82F6] !p-4">
             <div className="flex items-center gap-3">
               <IconBadge emoji="🧩" tone="frost" size={40} radius={13} />
               <div className="min-w-0 flex-1">
-                <p className="text-[15px] font-semibold text-white">
+                <p className="text-[15px] font-extrabold text-white">
                   {l({ ko: `두뇌 측정 ${brainDone.length}/${BRAIN.length}`, en: `Brain tests ${brainDone.length}/${BRAIN.length}`, ja: `脳の測定 ${brainDone.length}/${BRAIN.length}` })}
                 </p>
-                <p className="mt-0.5 truncate text-[12px] font-medium text-white/85">
+                <p className="mt-0.5 truncate text-[12px] font-bold text-white/85">
                   {brainDone.length === 0
                     ? l({ ko: '하나만 해도 지도가 그려지기 시작해요', en: 'One test starts your map', ja: '1つで地図が描かれ始めます' })
                     : l({ ko: '추론·기억·집중·속도·공간·전환 레이더 보기', en: 'See your 6-area radar', ja: '6領域レーダーを見る' })}
@@ -146,8 +146,8 @@ export default function AboutMe() {
                   const v = b.get(latest.get(b.id)!)
                   return (
                     <div key={b.id} className="rounded-xl bg-white/20 px-2 py-1.5 text-center">
-                      <p className="truncate text-[11px] font-medium text-white/85">{t(TEST_SHORT_KEY(b.id))}</p>
-                      <p className="text-[14px] font-semibold tabular-nums text-white">{v ?? '—'}</p>
+                      <p className="truncate text-[11px] font-bold text-white/85">{t(TEST_SHORT_KEY(b.id))}</p>
+                      <p className="text-[14px] font-extrabold tabular-nums text-white">{v ?? '—'}</p>
                     </div>
                   )
                 })}
@@ -158,20 +158,20 @@ export default function AboutMe() {
 
         {/* ── 3. 나에게 맞는 읽을거리(심리 매거진) ── */}
         <motion.section {...sec(0.1)} className="mt-4">
-          <button onClick={() => nav('/magazine')} className="flex w-full items-center justify-between px-1 py-1">
-            <h2 className="text-[17px] font-semibold">{l({ ko: '나에게 맞는 읽을거리', en: 'Reads for you', ja: 'あなた向けの読み物' })}</h2>
-            <span className="text-[12px] font-semibold text-mind-600">{t('community.all')} ›</span>
+          <button onClick={() => nav('/magazine')} className="flex min-h-[44px] w-full items-center justify-between">
+            <h2 className="text-[20px] font-extrabold leading-tight">{l({ ko: '나에게 맞는 읽을거리', en: 'Reads for you', ja: 'あなた向けの読み物' })}</h2>
+            <span className="text-[13px] font-extrabold leading-none text-mind-600">{t('community.all')} ›</span>
           </button>
-          <div className="mt-1.5 space-y-2">
+          <div className="mt-0.5 space-y-2">
             {picks.map((a) => {
               const related = a.test && latest.has(a.test)
               return (
                 <Card key={a.id} onClick={() => nav(`/magazine/${a.id}`)} className="flex items-start gap-3 !p-3.5">
                   <span className="shrink-0 text-[24px] leading-none" aria-hidden="true">{a.emoji}</span>
                   <div className="min-w-0 flex-1">
-                    <p className="break-keep text-[14px] font-semibold leading-snug">{l(a.title)}</p>
-                    <p className="mt-0.5 line-clamp-2 break-keep text-[12px] font-medium leading-relaxed text-ink-faint">{l(a.summary)}</p>
-                    <p className="mt-1 text-[11px] font-semibold text-mind-600">
+                    <p className="break-keep text-[14px] font-extrabold leading-snug">{l(a.title)}</p>
+                    <p className="mt-0.5 line-clamp-2 break-keep text-[12px] font-bold leading-relaxed text-ink-sub">{l(a.summary)}</p>
+                    <p className="mt-1 text-[11px] font-extrabold text-mind-600">
                       {related && a.test ? l({ ko: `${t(TEST_SHORT_KEY(a.test))} 결과와 연결 · `, en: `Linked to ${t(TEST_SHORT_KEY(a.test))} · `, ja: `${t(TEST_SHORT_KEY(a.test))}の結果と関連・` }) : ''}
                       {l({ ko: `${a.readMin}분`, en: `${a.readMin} min`, ja: `${a.readMin}分` })}
                     </p>

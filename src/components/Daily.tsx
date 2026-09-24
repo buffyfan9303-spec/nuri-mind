@@ -19,7 +19,7 @@ export function DailyCapMeter() {
   const freeAmount = useStore((s) => s.freeAmount)
   const used = freeDate === todayStr() ? freeAmount : 0
   return (
-    <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3 text-[13px] font-semibold text-white">
+    <div className="mt-3 flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3 text-[13px] font-extrabold text-white">
       <span>⚡ {t('daily.cap')}</span>
       <span className="rounded-full bg-white/25 px-2.5 py-0.5">
         {t('daily.unlimited')} · {used}P
@@ -71,8 +71,8 @@ export function DailySpin() {
           🎁
         </motion.div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[16px] font-semibold">{t('spin.title')}</h3>
-          <p className="mt-0.5 text-[13px] font-medium text-ink-faint">{t('spin.sub')}</p>
+          <h3 className="text-[16px] font-extrabold">{t('spin.title')}</h3>
+          <p className="mt-0.5 text-[13px] font-bold text-ink-faint">{t('spin.sub')}</p>
         </div>
       </div>
 
@@ -82,7 +82,7 @@ export function DailySpin() {
             {t('daily.capFull')}
           </p>
         ) : allDone ? (
-          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-semibold text-mind-700">
+          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-extrabold text-mind-700">
             {t('spin.done')}
           </p>
         ) : (
@@ -113,7 +113,7 @@ export function DailySpin() {
                   {t('spin.win', { p: reward.rolled })}
                 </h3>
                 {reward.granted < reward.rolled && (
-                  <p className="mt-1 text-[13px] font-medium text-amber-600">
+                  <p className="mt-1 text-[13px] font-bold text-amber-600">
                     {t('spin.capped', { p: reward.granted })}
                   </p>
                 )}
@@ -165,13 +165,13 @@ export function DailyQuiz() {
       <div className="flex items-center gap-3.5">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-iq-light text-3xl">🧠</div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[16px] font-semibold">{t('quiz.title')}</h3>
-          <p className="mt-0.5 text-[13px] font-medium text-ink-faint">{t('quiz.sub')}</p>
+          <h3 className="text-[16px] font-extrabold">{t('quiz.title')}</h3>
+          <p className="mt-0.5 text-[13px] font-bold text-ink-faint">{t('quiz.sub')}</p>
         </div>
       </div>
       <div className="mt-3.5">
         {done && !open ? (
-          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-semibold text-mind-700">
+          <p className="rounded-2xl bg-mind-50 py-3.5 text-center text-[14px] font-extrabold text-mind-700">
             {t('quiz.done')}
           </p>
         ) : (
@@ -183,7 +183,7 @@ export function DailyQuiz() {
 
       <Modal open={open} onClose={answered ? () => setOpen(false) : undefined}>
         <div>
-          <h3 className="text-[17px] font-semibold leading-[1.6]">{l(item.q)}</h3>
+          <h3 className="text-[17px] font-extrabold leading-[1.6]">{l(item.q)}</h3>
           <div className="mt-4 space-y-2.5">
             {item.options.map((op, i) => {
               const isAnswer = i === item.answer
@@ -209,14 +209,14 @@ export function DailyQuiz() {
 
           {answered && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
-              <p className="text-center text-[16px] font-semibold">
+              <p className="text-center text-[16px] font-extrabold">
                 {picked === item.answer
                   ? granted > 0
                     ? t('quiz.correct', { p: granted })
                     : t('quiz.correctCap')
                   : t('quiz.wrong', { a: l(item.options[item.answer]) })}
               </p>
-              <p className="mt-2 rounded-2xl bg-surface2 px-4 py-3 text-[14px] font-medium leading-relaxed text-ink-sub">
+              <p className="mt-2 rounded-2xl bg-surface2 px-4 py-3 text-[14px] font-bold leading-relaxed text-ink-sub">
                 💡 {l(item.fact)}
               </p>
               <div className="mt-4">
