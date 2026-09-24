@@ -8,6 +8,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { FUNCTIONS_URL, ANON_KEY } from '../lib/supabase'
 import Emoji from './Emoji'
+import { topPercentOf } from '../lib/format'
 
 /**
  * 정밀 분석 리포트 — 버튼 한 번으로 펼친다(예전엔 5초 대기 게이트를 거쳤으나 광고 없는 강제 대기라 없앰).
@@ -28,7 +29,7 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
   const cached = aiReportText[result.id]
   // 응답이 200ms 안에 오면 스켈레톤을 그리지 않는다 — 캐시 히트 직후의 번쩍임 방지
   const showLoading = useSkeletonGate(loading && !cached)
-  const topPercent = Math.max(0.5, Math.round((100 - result.percentile) * 10) / 10)
+  const topPercent = topPercentOf(result.percentile)
 
   // 해금됐고 캐시가 없으면 Edge Function으로 1회 생성(키 미설정/실패 시 정적 폴백)
   useEffect(() => {

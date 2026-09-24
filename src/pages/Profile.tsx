@@ -22,6 +22,7 @@ import { humanizeError } from '../lib/dbError'
 import { useStore, OPERATOR_NICKS, isPremium, PREMIUM_KRW } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import Emoji from '../components/Emoji'
+import { topPercentOf, shortDate } from '../lib/format'
 
 const LANGS: { key: Lang; label: string }[] = [
   { key: 'ko', label: '한국어' },
@@ -383,11 +384,11 @@ export default function Profile() {
                         {t(`test.${r.testId}.name`)}
                       </p>
                       <p className="mt-1 break-keep text-[12px] font-bold leading-snug text-ink-faint">
-                        {new Date(r.at).toLocaleDateString()} · {l(p.name)}
+                        {shortDate(r.at, s.lang)} · {l(p.name)}
                         {r.iq ? ` · IQ ${r.iq}` : ''}
                       </p>
                     </div>
-                    <Chip tone="mind">{t('result.topPercent', { p: Math.round((100 - r.percentile) * 10) / 10 })}</Chip>
+                    <Chip tone="mind">{t('result.topPercent', { p: topPercentOf(r.percentile) })}</Chip>
                   </Card>
                 )
               })}

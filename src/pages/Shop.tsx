@@ -12,11 +12,13 @@ import { useT, useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { sfx } from '../lib/sound'
 import Emoji from '../components/Emoji'
+import { shortDate } from '../lib/format'
 
 export default function Shop() {
   const t = useT()
   const l = useL()
   const points = useStore((s) => s.points)
+  const lang = useStore((s) => s.lang)
   const redemptions = useStore((s) => s.redemptions)
   const redeem = useStore((s) => s.redeem)
   const buyFreeze = useStore((s) => s.buyFreeze)
@@ -140,7 +142,7 @@ export default function Shop() {
                     <div className="min-w-0">
                       <p className="truncate text-[14px] font-bold">{rd.itemName}</p>
                       <p className="mt-0.5 text-[12px] font-bold text-ink-faint">
-                        {new Date(rd.at).toLocaleDateString()} · {rd.cost.toLocaleString()}P
+                        {shortDate(rd.at, lang)} · {rd.cost.toLocaleString()}P
                       </p>
                     </div>
                   </div>

@@ -4,11 +4,13 @@ import { Card } from './ui'
 import type { TestId } from '../data/types'
 import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
+import { shortDate, topPercentOf } from '../lib/format'
 
 /** 심리 날씨 — 같은 검사를 다시 받을수록 상위% 추이를 보여줘 변화를 체감하게 함 */
 export default function Trend({ testId }: { testId: TestId }) {
   const t = useT()
   const results = useStore((s) => s.results)
+  const lang = useStore((s) => s.lang)
 
   const series = useMemo(
     () =>
@@ -24,7 +26,7 @@ export default function Trend({ testId }: { testId: TestId }) {
   const W = 300
   const H = 80
   const PAD = 10
-  const vals = series.map((r) => Math.round((100 - r.percentile) * 10) / 10) // 상위% (낮을수록 상위)
+  const vals = series.map((r) => topPercentOf(r.percentile)) // 상위% (낮을수록 상위) — 결과 화면과 같은 규칙
   const min = Math.min(...vals)
   const max = Math.max(...vals)
   const span = Math.max(1, max - min)
@@ -63,7 +65,7 @@ export default function Trend({ testId }: { testId: TestId }) {
 
       <div className="mt-2 flex items-center justify-between">
         <span className="text-[12px] font-bold text-ink-faint">
-          {new Date(series[0].at).toLocaleDateString()} → {new Date(series[series.length - 1].at).toLocaleDateString()}
+          {shortDate(series[0].at, lang)} → {shortDate(series[series.length - 1].at, lang)}
         </span>
         <span className={`text-[13px] font-extrabold ${delta === 0 ? 'text-ink-faint' : up ? 'text-mind-700' : 'text-amber-600'}`}>
           {delta === 0 ? t('trend.same') : t(up ? 'trend.up' : 'trend.down', { p: Math.abs(delta) })}

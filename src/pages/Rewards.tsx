@@ -17,6 +17,7 @@ import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { SURVEYS_ENABLED } from '../data/features'
 import Emoji, { EmojiText } from '../components/Emoji'
+import { shortDate } from '../lib/format'
 
 export default function Rewards() {
   const t = useT()
@@ -281,7 +282,7 @@ export default function Rewards() {
                 <div className="min-w-0">
                   <p className="truncate text-[14px] font-bold">{e.memo}</p>
                   <p className="mt-0.5 text-[12px] font-bold text-ink-faint">
-                    {new Date(e.at).toLocaleDateString()} {new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {shortDate(e.at, lang)} {new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
                 <span className={`shrink-0 text-[15px] font-extrabold ${e.amount >= 0 ? 'text-mind-600' : 'text-red-400'}`}>

@@ -12,6 +12,7 @@ import { TEST_NAME_KEY, TEST_SHORT_KEY } from '../data/terms'
 import { PERSONA_VISUAL } from '../i18n/personaVisual'
 import type { L, TestId, TestResult } from '../data/types'
 import Emoji from '../components/Emoji'
+import { round1, shortDate, topPercentOf } from '../lib/format'
 
 /**
  * 나에 관하여 — 흩어져 있던 '내 결과'(검사별 결과 화면), '머리 지도'(종합 인지 프로필),
@@ -39,6 +40,7 @@ export default function AboutMe() {
   const nav = useNavigate()
   const results = useStore((s) => s.results)
   const readArticles = useStore((s) => s.readArticles)
+  const lang = useStore((s) => s.lang)
 
   /** 검사별 최신 결과 1개 */
   const latest = useMemo(() => {
@@ -104,7 +106,11 @@ export default function AboutMe() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[15px] font-extrabold">{t(TEST_NAME_KEY(tm.id))}</p>
                       <p className="mt-0.5 truncate text-[12px] font-bold text-ink-faint">
-                        {l({ ko: `상위 ${Math.max(1, 100 - r.percentile)}% · ${new Date(r.at).toLocaleDateString('ko-KR')}`, en: `Top ${Math.max(1, 100 - r.percentile)}% · ${new Date(r.at).toLocaleDateString('en-US')}`, ja: `上位${Math.max(1, 100 - r.percentile)}%・${new Date(r.at).toLocaleDateString('ja-JP')}` })}
+                        {l({
+                          ko: `상위 ${topPercentOf(r.percentile)}% · ${shortDate(r.at, lang)}`,
+                          en: `Top ${topPercentOf(r.percentile)}% · ${shortDate(r.at, lang)}`,
+                          ja: `上位${topPercentOf(r.percentile)}%・${shortDate(r.at, lang)}`,
+                        })}
                       </p>
                     </div>
                     <span className="text-ink-faint" aria-hidden="true">›</span>
@@ -148,7 +154,7 @@ export default function AboutMe() {
                   return (
                     <div key={b.id} className="rounded-xl bg-white/20 px-2 py-1.5 text-center">
                       <p className="truncate text-[11px] font-bold text-white/85">{t(TEST_SHORT_KEY(b.id))}</p>
-                      <p className="text-[14px] font-extrabold tabular-nums text-white">{v ?? '—'}</p>
+                      <p className="text-[14px] font-extrabold tabular-nums text-white">{v == null ? '—' : round1(v)}</p>
                     </div>
                   )
                 })}
@@ -174,7 +180,7 @@ export default function AboutMe() {
                     <p className="mt-0.5 line-clamp-2 break-keep text-[12px] font-bold leading-relaxed text-ink-sub">{l(a.summary)}</p>
                     <p className="mt-1 text-[11px] font-extrabold text-mind-600">
                       {related && a.test ? l({ ko: `${t(TEST_SHORT_KEY(a.test))} 결과와 연결 · `, en: `Linked to ${t(TEST_SHORT_KEY(a.test))} · `, ja: `${t(TEST_SHORT_KEY(a.test))}の結果と関連・` }) : ''}
-                      {l({ ko: `${a.readMin}분`, en: `${a.readMin} min`, ja: `${a.readMin}分` })}
+                      {l({ ko: `${a.readMin}분 읽기`, en: `${a.readMin} min read`, ja: `${a.readMin}分で読める` })}
                     </p>
                   </div>
                 </Card>

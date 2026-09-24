@@ -9,6 +9,7 @@ import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import Emoji, { EmojiText } from '../components/Emoji'
+import { shortDate } from '../lib/format'
 
 /** 마지막으로 '본' 등급 인덱스 — persist 스토어 비침습(별도 키). 상승 감지 시 축하 발동 */
 const SEEN_TIER_KEY = 'nuri-rank-seen-tier'
@@ -17,6 +18,7 @@ export default function Rank() {
   const t = useT()
   const l = useL()
   const ledger = useStore((s) => s.ledger)
+  const lang = useStore((s) => s.lang)
   const applications = useStore((s) => s.applications)
   const applyExperience = useStore((s) => s.applyExperience)
   const { fire } = useRewardAnimation()
@@ -215,7 +217,7 @@ export default function Rank() {
                       {ex && <Emoji e={ex.emoji} size={20} />}
                       <div className="min-w-0">
                         <p className="truncate text-[14px] font-bold">{l(ex?.title)}</p>
-                        <p className="text-[12px] font-bold text-ink-faint">{new Date(a.at).toLocaleDateString()}</p>
+                        <p className="text-[12px] font-bold text-ink-faint">{shortDate(a.at, lang)}</p>
                       </div>
                     </div>
                     {a.status === 'pending' && <Chip tone="amber"><Emoji e="⏳" inline />{t('rewards.status.pending')}</Chip>}
