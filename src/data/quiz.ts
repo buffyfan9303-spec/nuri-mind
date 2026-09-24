@@ -121,7 +121,7 @@ export const QUIZ_BANK: QuizItem[] = [
       { ko: '똑같다', en: 'The same', ja: '同じ' },
     ],
     answer: 0,
-    fact: { ko: '카너먼·트버스키의 손실 회피 — 스트릭이 무서운 이유죠 🔥', en: 'Kahneman & Tversky\'s loss aversion — why streaks work 🔥', ja: 'カーネマンらの損失回避。ストリークが怖い理由です🔥' },
+    fact: { ko: '카너먼·트버스키의 손실 회피 — 연속 출석을 끊기 싫은 이유죠 🔥', en: 'Kahneman & Tversky\'s loss aversion — why streaks work 🔥', ja: 'カーネマンらの損失回避。ストリークが怖い理由です🔥' },
   },
   {
     q: { ko: '거울 뉴런과 가장 관련 깊은 것은?', en: 'Mirror neurons relate most to…', ja: 'ミラーニューロンと最も関係深いのは？' },

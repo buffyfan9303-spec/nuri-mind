@@ -197,7 +197,7 @@ export const PERSONAS: Record<string, Persona> = {
     emoji: '🐺',
     grad: ['#6B7A8F', '#9AA8B8'],
     name: { ko: '늑대', en: 'Wolf', ja: '狼' },
-    title: { ko: '독고독립 생존가', en: 'The Lone Survivor', ja: '孤高独立のサバイバー' },
+    title: { ko: '홀로 서는 생존가', en: 'The Lone Survivor', ja: '孤高独立のサバイバー' },
     tagline: {
       ko: '내 몫은 내가 지킨다, 조용하고 단단하게',
       en: 'I guard what\'s mine — quietly, solidly',
@@ -528,7 +528,7 @@ export const PERSONAS: Record<string, Persona> = {
     solutions: [
       { ko: '홈 화면에서 숏폼 앱만 2페이지 뒤로 — 마찰 3초가 사용량을 20% 줄입니다', en: 'Move short-form apps two pages back — 3 seconds of friction cuts usage ~20%', ja: 'ショート動画アプリをホームから2ページ奥へ。摩擦3秒で使用量約20%減' },
       { ko: '하루 1회 "지루함 10분" 처방 — 폰 없이 걷기. 뇌의 기본모드가 복구됩니다', en: 'Prescribe 10 minutes of boredom daily — a phoneless walk reboots the brain\'s default mode', ja: '1日1回「退屈10分」処方。スマホなし散歩で脳のデフォルトモードが回復' },
-      { ko: '누리 마인드의 스트릭·데일리 퀴즈로 "절제 보상 루프"를 역설계해 보세요', en: 'Reverse-engineer the loop: use Nuri Mind\'s streak & daily quiz as restraint rewards', ja: 'ヌリマインドのストリークとクイズで「節制報酬ループ」を逆設計してみて' },
+      { ko: '누리 마인드의 연속 출석·데일리 퀴즈로 "절제 보상 루프"를 역설계해 보세요', en: 'Reverse-engineer the loop: use Nuri Mind\'s streak & daily quiz as restraint rewards', ja: 'ヌリマインドのストリークとクイズで「節制報酬ループ」を逆設計してみて' },
     ],
     strengths: [
       { ko: '트렌드 감지 속도는 동세대 최상위', en: 'Trend-detection speed: top of your generation', ja: 'トレンド感知速度は同世代最上位' },
@@ -559,7 +559,7 @@ export const PERSONAS: Record<string, Persona> = {
     solutions: [
       { ko: '의지가 아닌 환경: 침실에 폰 반입 금지 + 회색조 모드 + 앱 타이머 강제', en: 'Environment over willpower: no phone in bedroom, grayscale mode, hard app timers', ja: '意志ではなく環境：寝室持ち込み禁止＋グレースケール＋アプリタイマー強制' },
       { ko: '"디톡스 7일"보다 "취침 1시간 전 차단"이 성공률이 압도적으로 높습니다', en: '"No screens 1h before bed" beats "7-day detox" by a mile in success rate', ja: '「デトックス7日」より「就寝1時間前遮断」の方が成功率は圧倒的' },
-      { ko: '절제력 훈련은 보상이 필요합니다 — 누리 마인드 스트릭·퀴즈·랜덤박스를 대체 루프로', en: 'Restraint needs rewards — make Nuri Mind\'s streak, quiz and box your substitute loop', ja: '節制には報酬が必要。ヌリマインドのストリーク・クイズ・ボックスを代替ループに' },
+      { ko: '절제력 훈련은 보상이 필요합니다 — 누리 마인드 연속 출석·퀴즈·랜덤박스를 대체 루프로', en: 'Restraint needs rewards — make Nuri Mind\'s streak, quiz and box your substitute loop', ja: '節制には報酬が必要。ヌリマインドのストリーク・クイズ・ボックスを代替ループに' },
     ],
     strengths: [
       { ko: '정보 수집력과 밈 감각은 무기 — 방향만 생산으로 돌리면 콘텐츠 크리에이터 재능', en: 'Your info-gathering and meme sense are weapons — aimed at creation, that\'s creator talent', ja: '情報収集力とミーム感覚は武器。生産に向ければクリエイターの才能' },
@@ -836,7 +836,7 @@ export const PERSONAS: Record<string, Persona> = {
     },
     risks: [
       { ko: '정보를 너무 잘 붙잡아 불필요한 걱정·후회까지 오래 곱씹게 됨', en: 'You hold on so well that needless worries and regrets also linger', ja: '情報をよく掴むぶん、不要な心配や後悔まで長く反芻してしまう' },
-      { ko: '암기에 의존해 메모·기록 습관을 소홀히 하면 결정적 순간에 빈다', en: 'Leaning on memory and skipping notes leaves gaps at the worst moment', ja: '暗記に頼ってメモの習慣を怠ると、肝心な時に抜ける' },
+      { ko: '암기에 의존해 메모·기록 습관을 소홀히 하면 결정적 순간에 구멍이 남', en: 'Leaning on memory and skipping notes leaves gaps at the worst moment', ja: '暗記に頼ってメモの習慣を怠ると、肝心な時に抜ける' },
     ],
     solutions: [
       { ko: '외운 것을 남에게 설명·요약해 "인출"로 굳히면 장기기억으로 넘어가요', en: 'Explain or summarize what you learned — retrieval cements it into long-term memory', ja: '覚えたことを誰かに説明・要約し「想起」で固めると長期記憶へ移る' },
@@ -939,7 +939,7 @@ export const PERSONAS: Record<string, Persona> = {
     },
     risks: [
       { ko: '한 가지에 과몰입해 주변·시간·휴식을 놓치기 쉬움', en: 'Hyperfocus on one thing makes you lose track of people, time, and rest', ja: '一つに過集中して周囲・時間・休息を見落としやすい' },
-      { ko: '자극이 약한 단순반복 과제에선 금세 지루해 실수가 늘 수 있음', en: 'On dull, repetitive tasks you bore quickly and errors creep up', ja: '刺激の弱い単純反復課題ではすぐ退屈しミスが増える' },
+      { ko: '자극이 약한 단순 반복 과제에선 금세 지루해 실수가 늘 수 있음', en: 'On dull, repetitive tasks you bore quickly and errors creep up', ja: '刺激の弱い単純反復課題ではすぐ退屈しミスが増える' },
     ],
     solutions: [
       { ko: '몰입 전에 "지금 이게 가장 중요한가" 한 번만 확인하세요', en: 'Before diving in, ask once: "is this the most important thing right now?"', ja: '没入の前に「今これが一番大事か」を一度だけ確認' },
@@ -1114,7 +1114,7 @@ export const PERSONAS: Record<string, Persona> = {
     ],
     solutions: [
       { ko: '속도가 필요한 일은 미리 충분한 시간을 확보해 압박을 없애세요', en: 'For speed-critical work, secure ample time in advance to remove the pressure', ja: '速さが要る仕事は前もって十分な時間を確保し、圧力をなくす' },
-      { ko: '단순반복은 도구·자동화로 손을 덜고 본인은 검토에 집중하세요', en: 'Offload repetitive work to tools/automation and focus your effort on review', ja: '単純反復は道具・自動化に任せ、自分は確認に集中' },
+      { ko: '단순 반복은 도구·자동화로 손을 덜고 본인은 검토에 집중하세요', en: 'Offload repetitive work to tools/automation and focus your effort on review', ja: '単純反復は道具・自動化に任せ、自分は確認に集中' },
     ],
     strengths: [
       { ko: '서두르지 않아 만드는 높은 정확도와 꼼꼼함', en: 'High accuracy and thoroughness born of not rushing', ja: '焦らないことで生む高い正確さと丁寧さ' },
@@ -1421,7 +1421,7 @@ export const PERSONAS: Record<string, Persona> = {
   mouse: {
     emoji: '🐭',
     grad: ['#9AA0B5', '#C5C9D8'],
-    name: { ko: '조심스런 생쥐', en: 'Timid Mouse', ja: '臆病なネズミ' },
+    name: { ko: '조심스러운 생쥐', en: 'Timid Mouse', ja: '臆病なネズミ' },
     title: { ko: '나를 자꾸 깎아내리는 마음', en: 'A mind that keeps discounting itself', ja: '自分を削ってしまう心' },
     tagline: { ko: '"내가 뭐라고…"가 입버릇', en: '"Who am I to…" on repeat', ja: '「私なんて」が口癖' },
     desc: {
@@ -1601,8 +1601,8 @@ export const PERSONAS: Record<string, Persona> = {
   kangaroo: {
     emoji: '🦘',
     grad: ['#3EB97A', '#8FD9B4'],
-    name: { ko: '튀어오르는 캥거루', en: 'Bouncy Kangaroo', ja: '跳ねるカンガルー' },
-    title: { ko: '넘어져도 다시 튀어오른다', en: 'I stumble, then bounce right back', ja: 'つまずいても跳ね返る' },
+    name: { ko: '튀어 오르는 캥거루', en: 'Bouncy Kangaroo', ja: '跳ねるカンガルー' },
+    title: { ko: '넘어져도 다시 튀어 오른다', en: 'I stumble, then bounce right back', ja: 'つまずいても跳ね返る' },
     tagline: { ko: '일단 해보면 대개 된다', en: 'Give it a go — it usually works out', ja: 'とりあえずやれば大抵いける' },
     desc: {
       ko: '대부분의 일을 "노력하면 된다"고 믿고, 막혀도 곧 다른 길을 찾습니다. 무모하지 않으면서 도전을 즐기는, 건강한 효능감이에요.',
@@ -1610,7 +1610,7 @@ export const PERSONAS: Record<string, Persona> = {
       ja: '大抵の事は「努力すればいける」と信じ、塞がってもすぐ別の道を探す。無謀でなく挑戦を楽しむ健康な効力感です。',
     },
     slap: {
-      ko: '단, 잘 튀어오르는 만큼 가끔 너무 많은 일을 동시에 떠안진 않나요? 효능감이 높을수록 "안 할 일"을 고르는 결정도 똑같이 중요해요.',
+      ko: '단, 잘 튀어 오르는 만큼 가끔 너무 많은 일을 동시에 떠안진 않나요? 효능감이 높을수록 "안 할 일"을 고르는 결정도 똑같이 중요해요.',
       en: 'But do you sometimes take on too much at once because you bounce back so well? The higher your efficacy, the more "what not to do" matters too.',
       ja: 'ただ、よく跳ねる分つい多くを同時に抱えていませんか？効力感が高いほど「やらない事」を選ぶ決断も同じく重要です。',
     },
@@ -1751,7 +1751,7 @@ export const PERSONAS: Record<string, Persona> = {
   seal: {
     emoji: '🦭',
     grad: ['#6E8FC9', '#A9C2E8'],
-    name: { ko: '조심스런 물범', en: 'Wary Seal', ja: '慎重なアザラシ' },
+    name: { ko: '조심스러운 물범', en: 'Wary Seal', ja: '慎重なアザラシ' },
     title: { ko: '주목받는 순간이 버거운 마음', en: 'Being watched feels heavy', ja: '注目される瞬間が重い' },
     tagline: { ko: '사람들 앞에만 서면 작아져', en: 'I shrink in front of people', ja: '人前だと縮こまる' },
     desc: {
@@ -1804,7 +1804,7 @@ export const PERSONAS: Record<string, Persona> = {
     ],
     strengths: [
       { ko: '깊이 사고하고 공감하는 풍부한 내면', en: 'A rich inner world that thinks deeply and empathizes', ja: '深く考え共感する豊かな内面' },
-      { ko: '소수의 사람과 진하고 신뢰로운 관계를 맺는 힘', en: 'The power to form deep, trusting bonds with a few', ja: '少数と濃く信頼できる関係を結ぶ力' },
+      { ko: '소수의 사람과 깊고 믿음직한 관계를 맺는 힘', en: 'The power to form deep, trusting bonds with a few', ja: '少数と濃く信頼できる関係を結ぶ力' },
     ],
   },
 }

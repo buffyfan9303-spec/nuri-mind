@@ -177,7 +177,7 @@ export const QUICK_TESTS: QuickTest[] = [
     results: [
       { key: 'rooster', emoji: '🐓', name: { ko: '아침형 닭', en: 'Morning Rooster', ja: '朝型ニワトリ' }, tag: { ko: '새벽을 지배한다', en: 'Owns the dawn', ja: '朝を制す' }, desc: { ko: '생체시계가 아침에 최적화된 타입. 규칙적이고 생산적이지만, 저녁 약속엔 배터리가 빨리 닳아요.', en: 'Your clock peaks in the morning — regular and productive, but evenings drain you fast.', ja: '朝に最適化された体内時計。夜は電池切れ早め。' } },
       { key: 'owl', emoji: '🦉', name: { ko: '올빼미', en: 'Night Owl', ja: 'フクロウ' }, tag: { ko: '밤에 살아난다', en: 'Alive at night', ja: '夜に蘇る' }, desc: { ko: '밤에 집중력이 솟는 타입. 창의적이지만 사회의 아침 스케줄과 늘 시차 전쟁 중. 빛 관리가 핵심이에요.', en: 'You spark at night — creative, but always jet-lagged vs society. Manage light.', ja: '夜に冴える型。社会の朝とずれ続ける。光管理が鍵。' } },
-      { key: 'faint', emoji: '💤', name: { ko: '기절형', en: 'Insta-Sleeper', ja: '気絶型' }, tag: { ko: '눕는 순간 끝', en: 'Lights out instantly', ja: '横になれば終了' }, desc: { ko: '어디서든 빨리 잠드는 복 받은 타입. 다만 너무 쉽게 곯아떨어진다면 만성 수면부족 신호일 수도 있어요.', en: 'You sleep anywhere fast — lucky! But too-instant sleep can signal chronic deprivation.', ja: 'どこでも即寝の幸運型。即落ちすぎは寝不足のサインかも。' } },
+      { key: 'faint', emoji: '💤', name: { ko: '기절형', en: 'Insta-Sleeper', ja: '気絶型' }, tag: { ko: '눕는 순간 끝', en: 'Lights out instantly', ja: '横になれば終了' }, desc: { ko: '어디서든 빨리 잠드는 복 받은 타입. 다만 너무 쉽게 곯아떨어진다면 만성 수면 부족 신호일 수도 있어요.', en: 'You sleep anywhere fast — lucky! But too-instant sleep can signal chronic deprivation.', ja: 'どこでも即寝の幸運型。即落ちすぎは寝不足のサインかも。' } },
       { key: 'insomnia', emoji: '🌙', name: { ko: '불면 달', en: 'Restless Moon', ja: '不眠の月' }, tag: { ko: '몸은 피곤한데 잠은 안 와', en: 'Tired but wired', ja: '疲れてるのに眠れない' }, desc: { ko: '생각이 많아 잠들기 힘든 타입. 불안·각성이 높을 수 있어요. 자기 전 화면 끄기와 호흡이 도움 됩니다.', en: 'Your busy mind blocks sleep — likely high arousal. Screen-off + breathing help.', ja: '考えが多く眠れない型。就寝前の画面オフと呼吸を。' } },
     ],
   },
@@ -332,7 +332,7 @@ export const QUICK_TESTS: QuickTest[] = [
     ],
     results: [
       { key: 'leader', emoji: '👑', name: { ko: '리더형', en: 'The Leader', ja: 'リーダー型' }, tag: { ko: '모임은 내가 굴린다', en: 'I run the crew', ja: '集まりは私が回す' }, desc: { ko: '계획하고 이끄는 든든한 중심. 결단력이 강점이에요. 가끔은 친구들에게 키를 넘겨주면 더 편해져요.', en: 'A dependable center who plans and leads — decisive. Hand over the wheel sometimes to relax.', ja: '計画し導く頼れる中心。決断力が強み。時々友達に主導権を渡すと楽。' } },
-      { key: 'mood', emoji: '🎉', name: { ko: '분위기메이커', en: 'Mood Maker', ja: 'ムードメーカー' }, tag: { ko: '내가 있으면 텐션 업', en: 'I bring the energy', ja: '私がいれば盛り上がる' }, desc: { ko: '어디서나 분위기를 밝히는 에너지원. 함께 있으면 즐거워요. 가끔은 내 진짜 기분도 솔직히 나눠보세요.', en: 'The energy that lights up any room — fun to be with. Share your real feelings sometimes too.', ja: 'どこでも場を明るくするエネルギー源。たまには本音も共有を。' } },
+      { key: 'mood', emoji: '🎉', name: { ko: '분위기 메이커', en: 'Mood Maker', ja: 'ムードメーカー' }, tag: { ko: '내가 있으면 텐션 업', en: 'I bring the energy', ja: '私がいれば盛り上がる' }, desc: { ko: '어디서나 분위기를 밝히는 에너지원. 함께 있으면 즐거워요. 가끔은 내 진짜 기분도 솔직히 나눠보세요.', en: 'The energy that lights up any room — fun to be with. Share your real feelings sometimes too.', ja: 'どこでも場を明るくするエネルギー源。たまには本音も共有を。' } },
       { key: 'helper', emoji: '🫂', name: { ko: '상담사형', en: 'The Listener', ja: '相談役型' }, tag: { ko: '고민은 나한테', en: 'Bring me your worries', ja: '悩みは私に' }, desc: { ko: '잘 들어주고 챙기는 따뜻한 친구. 공감력이 최고예요. 남 챙기느라 내 마음을 미루지 않도록 해요.', en: 'A warm friend who listens and cares — top empathy. Don\'t put your own needs last.', ja: 'よく聞き気遣う温かい友達。共感力抜群。自分の心も後回しにしないで。' } },
       { key: 'chill', emoji: '🐢', name: { ko: '마이페이스', en: 'Easygoing', ja: 'マイペース' }, tag: { ko: '편한 거리감이 좋아', en: 'I like comfy distance', ja: '心地よい距離が好き' }, desc: { ko: '무리하지 않는 편안한 친구. 함께 있어도 부담이 없어요. 가끔 먼저 다가가면 관계가 더 깊어져요.', en: 'A relaxed, low-pressure friend. Reach out first now and then to go deeper.', ja: '無理しない気楽な友達。たまに自分から近づくと深まる。' } },
     ],
@@ -462,7 +462,7 @@ export const QUICK_TESTS: QuickTest[] = [
         text: { ko: '누가 말 걸면?', en: 'If someone talks to you?', ja: '話しかけられると？' },
         options: [
           { text: { ko: '나도 모르게 톡 쏨', en: 'Snap back', ja: 'つい刺々しく' }, to: 'tiger' },
-          { text: { ko: '"괜찮아"하고 회피', en: '"I\'m fine," dodge', ja: '「大丈夫」と回避' }, to: 'turtle' },
+          { text: { ko: '"괜찮아" 하고 회피', en: '"I\'m fine," dodge', ja: '「大丈夫」と回避' }, to: 'turtle' },
           { text: { ko: '같이 먹자고 함', en: 'Let\'s eat', ja: '一緒に食べよ' }, to: 'hamster' },
           { text: { ko: '건드리면 가시 세움', en: 'Quills go up', ja: 'トゲを立てる' }, to: 'hedgehog' },
         ],

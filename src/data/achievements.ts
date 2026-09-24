@@ -40,7 +40,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: 'master',
     emoji: '👑',
     title: { ko: '검사 마스터', en: 'Test Master', ja: '検査マスター' },
-    desc: { ko: '8종 검사를 전부 완료했어요', en: 'Completed all 8 tests', ja: '8種類すべて完了' },
+    desc: { ko: '검사 8종을 완료했어요', en: 'Completed 8 tests', ja: '8種類を完了' },
     check: (c) => c.testCount >= 8,
   },
   {
@@ -54,7 +54,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     id: 'dex_done',
     emoji: '🏆',
     title: { ko: '도감 완성', en: 'Dex Complete', ja: '図鑑コンプ' },
-    desc: { ko: '동물 25마리를 전부 모았어요', en: 'Collected all 25 animals', ja: '25匹すべて収集' },
+    desc: { ko: '동물 25마리를 모았어요', en: 'Collected 25 animals', ja: 'どうぶつ25匹を収集' },
     check: (c) => c.dexCount >= 25,
   },
   {

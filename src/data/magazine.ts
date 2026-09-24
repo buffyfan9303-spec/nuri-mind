@@ -52,7 +52,7 @@ export const ARTICLES: Article[] = [
       },
       {
         h: { ko: '뇌의 리듬을 존중하라', en: 'Respect your brain\'s rhythm', ja: '脳のリズムを尊重' },
-        key: { ko: '잘 되는 시간대에 중요한 일 배치', en: 'Do hard work at your peak hours', ja: '冴える時間に重要な事を' },
+        key: { ko: '잘되는 시간대에 중요한 일 배치', en: 'Do hard work at your peak hours', ja: '冴える時間に重要な事を' },
         p: { ko: '집중력은 하루 종일 일정하지 않습니다. 사람마다 머리가 가장 맑은 "골든타임"이 있어요. 그 시간에 가장 어려운 일을 배치하고, 에너지가 떨어지는 시간엔 단순 작업을 두면 같은 노력으로 훨씬 많은 걸 해냅니다. 수면 부족은 ADHD 성향을 그대로 증폭하니, 잘 자는 것 자체가 집중력 훈련이에요.', en: 'Focus isn\'t constant all day — everyone has a "golden hour" when the mind is clearest. Put your hardest task there and save routine work for low-energy windows; same effort, far more output. Sleep deprivation amplifies ADHD traits, so sleeping well is itself focus training.', ja: '集中力は一日中一定ではなく、人それぞれ頭が冴える「ゴールデンタイム」がある。そこに最難の仕事を、低エネルギー時間に単純作業を置けば同じ労力で成果倍増。睡眠不足はADHD傾向を増幅するので、よく眠る事自体が集中訓練。' },
         tip: { ko: '오늘 가장 머리가 맑았던 시간을 메모해, 내일 중요한 일을 그때로 옮겨보세요.', en: 'Note when you felt sharpest today, and move tomorrow\'s key task there.', ja: '今日最も冴えた時間をメモし、明日の重要事をそこへ。' },
       },
@@ -162,7 +162,7 @@ export const ARTICLES: Article[] = [
         h: { ko: '문제는 도파민이 아니다', en: 'Dopamine isn\'t the villain', ja: '問題はドーパミンではない' },
         key: { ko: '도파민 = 나쁜 게 아니라 동기의 연료', en: 'Dopamine isn\'t bad — it\'s motivation\'s fuel', ja: 'ドーパミンは悪でなく動機の燃料' },
         p: { ko: '"도파민 디톡스"라는 말 때문에 도파민이 나쁜 물질처럼 느껴지지만, 사실 도파민은 우리를 움직이게 하는 동기의 연료입니다. 진짜 문제는 숏폼·게임·알림처럼 즉각적이고 강한 자극에 뇌가 길들여지는 것이에요. 그러면 책 읽기나 산책처럼 잔잔한 보상은 "심심하게" 느껴지게 됩니다.', en: 'The phrase "dopamine detox" makes dopamine sound toxic, but it\'s actually the fuel of motivation. The real problem is the brain getting trained on instant, intense hits — short videos, games, notifications. Then quiet rewards like reading or a walk start to feel "boring."', ja: '「ドーパミンデトックス」の語感でドーパミンが悪物質に思えるが、実は動機の燃料。真の問題はショート·ゲーム·通知の即時·強刺激に脳が慣れる事。すると読書や散歩等の穏やかな報酬が「退屈」に感じられる。' },
-        tip: { ko: '오늘 숏폼을 본 총 시간을 화면 사용시간에서 확인해보세요.', en: 'Check your screen-time report for total short-video minutes today.', ja: 'スクリーンタイムで今日のショート視聴総時間を確認。' },
+        tip: { ko: '오늘 숏폼을 본 총 시간을 화면 사용 시간에서 확인해보세요.', en: 'Check your screen-time report for total short-video minutes today.', ja: 'スクリーンタイムで今日のショート視聴総時間を確認。' },
       },
       {
         h: { ko: '지루함을 견디는 연습', en: 'Practice tolerating boredom', ja: '退屈に耐える練習' },
@@ -282,7 +282,7 @@ export const ARTICLES: Article[] = [
     readMin: 4,
     title: { ko: '사람들 앞에서 떨리는 건, 고장이 아니에요', en: 'Trembling in front of people isn\'t a malfunction', ja: '人前で震えるのは故障ではない' },
     summary: { ko: '사회불안의 작동 원리(스포트라이트 착각·회피의 역설)와 조금씩 편해지는 검증된 연습', en: 'How social anxiety works (spotlight illusion, the avoidance paradox) and proven ways to ease it', ja: '社交不安の仕組み(スポットライト錯覚・回避の逆説)と楽になる練習' },
-    intro: { ko: '발표 전날 잠이 안 오고, 모임 약속이 다가올수록 취소하고 싶어지고, 말 한마디 하고 밤새 곱씹은 적이 있나요? 사회불안은 성격 결함이 아니라, 아주 흔하고 — 무엇보다 잘 좋아지는 마음의 패턴입니다.', en: 'Sleepless before a presentation, itching to cancel as the gathering nears, replaying one remark all night? Social anxiety isn\'t a character flaw — it\'s very common, and above all, very improvable.', ja: '発表前夜に眠れず、集まりが近づくほどキャンセルしたくなり、一言を夜通し反芻した事は？社交不安は性格の欠陥でなく、とても一般的で — 何より良くなりやすい心のパターンです。' },
+    intro: { ko: '발표 전날 잠이 안 오고, 모임 약속이 다가올수록 취소하고 싶어지고, 말 한마디 하고 밤새 곱씹은 적이 있나요? 사회불안은 성격 결함이 아니라, 아주 흔하고 — 무엇보다 잘 나아지는 마음의 패턴입니다.', en: 'Sleepless before a presentation, itching to cancel as the gathering nears, replaying one remark all night? Social anxiety isn\'t a character flaw — it\'s very common, and above all, very improvable.', ja: '発表前夜に眠れず、集まりが近づくほどキャンセルしたくなり、一言を夜通し反芻した事は？社交不安は性格の欠陥でなく、とても一般的で — 何より良くなりやすい心のパターンです。' },
     sections: [
       {
         h: { ko: '스포트라이트 착각', en: 'The spotlight illusion', ja: 'スポットライト錯覚' },
@@ -407,7 +407,7 @@ export const ARTICLES: Article[] = [
     tag: { ko: '감정 조절', en: 'Emotion regulation', ja: '感情調節' },
     readMin: 4,
     title: { ko: '감정은 파도예요 — 싸우지 말고 타는 법', en: 'Emotions are waves — ride them, don\'t fight them', ja: '感情は波 — 戦わず乗る方法' },
-    summary: { ko: '감정을 억누르면 커지는 이유와, 뇌과학이 검증한 감정 조절 4단계(이름 붙이기·재해석·몸부터 진정)', en: 'Why suppressing emotions backfires, and four brain-verified regulation moves (labeling, reappraisal, body-first calm)', ja: '感情を抑えると大きくなる理由と、脳科学が検証した感情調節4段階' },
+    summary: { ko: '감정을 억누르면 커지는 이유와, 뇌과학이 검증한 감정 조절 4단계(인정하기·이름 붙이기·재해석·몸부터 진정)', en: 'Why suppressing emotions backfires, and four brain-verified regulation moves (acknowledging, labeling, reappraisal, body-first calm)', ja: '感情を抑えると大きくなる理由と、脳科学が検証した感情調節4段階' },
     intro: { ko: '"화내지 말자, 불안해하지 말자"라고 다짐할수록 감정이 더 커진 적 있나요? 감정 조절은 감정을 없애는 기술이 아니라, 파도를 타는 기술에 가깝습니다. 그리고 이건 타고나는 게 아니라 배울 수 있는 능력이에요.', en: 'Ever notice that vowing "don\'t be angry, don\'t be anxious" makes the feeling bigger? Emotion regulation isn\'t the art of deleting feelings — it\'s the art of riding waves. And it\'s a learnable skill, not a born trait.', ja: '「怒らない、不安にならない」と誓うほど感情が大きくなった事は？感情調節は感情を消す技術でなく、波に乗る技術。そして生まれつきでなく学べる能力です。' },
     sections: [
       {
@@ -419,7 +419,7 @@ export const ARTICLES: Article[] = [
       {
         h: { ko: '이름을 붙이면 길들여진다', en: 'Name it to tame it', ja: '名付ければ手なずく' },
         key: { ko: '감정 라벨링 = 편도체 반응을 낮추는 검증된 스위치', en: 'Affect labeling measurably calms the amygdala', ja: '感情ラベリングは扁桃体反応を下げる' },
-        p: { ko: '뇌영상 연구에서, 지금 느끼는 감정에 단어를 붙이는 것만으로(정서 라벨링) 위협 반응을 담당하는 편도체 활성이 줄고 전전두엽(조절 담당)이 켜지는 게 관찰됐습니다. 핵심은 구체성이에요. "기분이 별로"보다 "발표를 망칠까 봐 불안하고, 준비 시간을 뺏겨서 짜증나"처럼 쪼개서 부를수록 효과가 큽니다. 감정 어휘가 풍부한 사람일수록 감정에 덜 휩쓸린다는 연구도 같은 맥락이에요. 말로 잡히는 감정은 더 이상 안개가 아닙니다.', en: 'Brain-imaging studies show that merely putting words to a feeling (affect labeling) reduces amygdala activity — the threat alarm — while engaging the prefrontal regulator. Specificity is the key: "I feel off" does less than "I\'m anxious about botching the talk, and irritated my prep time got taken." People with richer emotion vocabularies are swept away less — same principle. A feeling captured in words is no longer a fog.', ja: '脳画像研究では、感じている感情に言葉を付けるだけで(感情ラベリング)脅威反応を担う扁桃体の活動が減り、調節を担う前頭前野が働く事が観察されました。核心は具体性。「気分が悪い」より「発表を台無しにしそうで不安、準備時間を奪われて苛立つ」と刻むほど効果大。感情語彙が豊かな人ほど感情に流されにくいという研究も同じ文脈。言葉で捉えた感情はもう霧ではありません。' },
+        p: { ko: '뇌영상 연구에서, 지금 느끼는 감정에 단어를 붙이는 것만으로(정서 라벨링) 위협 반응을 담당하는 편도체 활성이 줄고 전전두엽(조절 담당)이 켜지는 게 관찰됐습니다. 핵심은 구체성이에요. "기분이 별로"보다 "발표를 망칠까 봐 불안하고, 준비 시간을 뺏겨서 짜증 나"처럼 쪼개서 부를수록 효과가 큽니다. 감정 어휘가 풍부한 사람일수록 감정에 덜 휩쓸린다는 연구도 같은 맥락이에요. 말로 잡히는 감정은 더 이상 안개가 아닙니다.', en: 'Brain-imaging studies show that merely putting words to a feeling (affect labeling) reduces amygdala activity — the threat alarm — while engaging the prefrontal regulator. Specificity is the key: "I feel off" does less than "I\'m anxious about botching the talk, and irritated my prep time got taken." People with richer emotion vocabularies are swept away less — same principle. A feeling captured in words is no longer a fog.', ja: '脳画像研究では、感じている感情に言葉を付けるだけで(感情ラベリング)脅威反応を担う扁桃体の活動が減り、調節を担う前頭前野が働く事が観察されました。核心は具体性。「気分が悪い」より「発表を台無しにしそうで不安、準備時間を奪われて苛立つ」と刻むほど効果大。感情語彙が豊かな人ほど感情に流されにくいという研究も同じ文脈。言葉で捉えた感情はもう霧ではありません。' },
         tip: { ko: '오늘 감정을 한 단어 말고 두세 단어로 쪼개 적어보세요(예: 서운함+피곤+기대).', en: 'Log today\'s feeling in two or three words, not one (e.g., hurt + tired + hopeful).', ja: '今日の感情を一語でなく2〜3語に刻んで書く(例：寂しさ＋疲れ＋期待)。' },
       },
       {
