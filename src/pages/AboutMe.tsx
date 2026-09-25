@@ -13,6 +13,9 @@ import { PERSONA_VISUAL } from '../i18n/personaVisual'
 import type { L, TestId, TestResult } from '../data/types'
 import Emoji from '../components/Emoji'
 import { round1, shortDate, topPercentOf } from '../lib/format'
+import { summarizePersonas } from '../lib/selfSummary'
+import { needsCare } from '../data/care'
+import type { Persona } from '../i18n/animalTranslations'
 
 /**
  * 나에 관하여 — 흩어져 있던 '내 결과'(검사별 결과 화면), '머리 지도'(종합 인지 프로필),
@@ -72,6 +75,36 @@ export default function AboutMe() {
       .map((x) => x.a)
   }, [articles, readArticles, latest])
 
+  /** 심리검사를 모두 마쳤을 때만 동물 캐릭터 데이터(큰 청크)를 불러와 종합 설명을 만든다 */
+  const deepTotal = deepDone.length + deepLeft.length
+  const allDone = deepLeft.length === 0 && deepTotal > 0
+  const [personas, setPersonas] = useState<Record<string, Persona> | null>(null)
+  useEffect(() => {
+    if (!allDone || personas) return
+    import('../i18n/animalTranslations')
+      .then((m) => setPersonas(m.PERSONAS))
+      .catch(() => setPersonas({}))
+  }, [allDone, personas])
+
+  const summary = useMemo(() => {
+    if (!allDone || !personas) return null
+    const rows = deepDone.map((tm) => ({ tm, r: latest.get(tm.id)! }))
+    const s = summarizePersonas(
+      rows.map(({ r }) => personas[r.persona]).filter((p): p is Persona => !!p),
+      rows.length,
+      l,
+    )
+    const areas = rows.map(({ tm, r }) => ({
+      id: tm.id,
+      emoji: tm.emoji,
+      color: tm.gradFrom,
+      band: t(`band.${tm.id}.${r.band}`),
+      line: personas[r.persona] ? l(personas[r.persona].tagline) : '',
+      care: needsCare(tm.id, r.band),
+    }))
+    return { ...s, areas, care: areas.filter((a) => a.care) }
+  }, [allDone, personas, deepDone, latest, l, t])
+
   const sec = (delay: number) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { ...SPRING.ui, delay } })
 
   return (
@@ -85,6 +118,135 @@ export default function AboutMe() {
             ja: '検査結果・頭の地図・あなた向けの読み物をまとめました。',
           })}
         </p>
+
+        {/* ── 0. 나에 대하여 한눈에 — 심리검사를 모두 마치면 열리는 종합 설명 ── */}
+        {deepTotal > 0 && (
+          <motion.section {...sec(0)} className="mt-5">
+            {!allDone ? (
+              <Card className="!p-4">
+                <div className="flex items-center gap-3">
+                  <IconBadge emoji="🔒" color="#8B5CF6" size={40} radius={13} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[15px] font-extrabold">
+                      {l({ ko: '나에 대하여 한눈에', en: 'You at a glance', ja: 'ひと目でわかる私' })}
+                    </p>
+                    <p className="mt-0.5 break-keep text-[12px] font-bold text-ink-faint">
+                      {l({
+                        ko: `심리검사 ${deepTotal}개를 모두 마치면 결과를 한데 모아 설명해 드려요 · ${deepDone.length}/${deepTotal}`,
+                        en: `Finish all ${deepTotal} tests to see them read together · ${deepDone.length}/${deepTotal}`,
+                        ja: `${deepTotal}件の検査を終えると結果をまとめて説明します・${deepDone.length}/${deepTotal}`,
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={deepTotal} aria-valuenow={deepDone.length}>
+                  <div className="h-full rounded-full bg-[#8B5CF6]" style={{ width: `${Math.round((deepDone.length / deepTotal) * 100)}%` }} />
+                </div>
+              </Card>
+            ) : (
+              <Card className="!p-5">
+                <h2 className="text-[20px] font-extrabold leading-tight">
+                  <Emoji e="🪞" inline />
+                  {l({ ko: '나에 대하여 한눈에', en: 'You at a glance', ja: 'ひと目でわかる私' })}
+                </h2>
+                {!summary ? (
+                  <p className="mt-3 text-[13px] font-bold text-ink-faint">{l({ ko: '결과를 모으는 중이에요…', en: 'Putting it together…', ja: 'まとめています…' })}</p>
+                ) : (
+                  <>
+                    {/* 심층 리포트 티저(summary.core)는 강점·약한 면을 문장으로 한 번 더 읊어 아래 목록과 겹친다 — 여기선 도입·마무리만 */}
+                    <p className="mt-3 break-keep text-[14px] font-bold leading-[1.85] text-ink-sub">
+                      {l({
+                        ko: `검사 ${deepTotal}개를 나란히 놓고 보면, 여러 결과에 걸쳐 되풀이되는 모습이 있어요.`,
+                        en: `Put all ${deepTotal} tests side by side and a few patterns keep showing up.`,
+                        ja: `${deepTotal}件の検査を並べてみると、繰り返し現れる姿があります。`,
+                      })}
+                    </p>
+
+                    {summary.strengths.length > 0 && (
+                      <>
+                        <p className="mt-4 text-[13px] font-extrabold text-ink-sub">{l({ ko: '나의 강점', en: 'Your strengths', ja: 'あなたの強み' })}</p>
+                        <ul className="mt-1.5 space-y-1">
+                          {summary.strengths.map((s) => (
+                            <li key={s} className="break-keep text-[13px] font-bold leading-relaxed text-ink">
+                              <Emoji e="💪" inline />{s}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                    {summary.risks.length > 0 && (
+                      <>
+                        <p className="mt-3 text-[13px] font-extrabold text-ink-sub">{l({ ko: '돌보면 좋은 점', en: 'Worth looking after', ja: 'いたわりたい点' })}</p>
+                        <ul className="mt-1.5 space-y-1">
+                          {summary.risks.map((s) => (
+                            <li key={s} className="break-keep text-[13px] font-bold leading-relaxed text-ink">
+                              <Emoji e="🌱" inline />{s}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+
+                    {summary.strengths.length > 0 && summary.risks.length > 0 && (
+                      <p className="mt-3 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
+                        {l({
+                          ko: '강점과 돌볼 점은 대개 같은 성향의 앞뒷면이에요. 하나만 떼어 고치기보다 둘을 함께 이해할 때 훨씬 다루기 쉬워요.',
+                          en: 'Strengths and soft spots are usually two sides of one trait — understanding both together works better than fixing one alone.',
+                          ja: '強みといたわりたい点は、たいてい同じ傾向の表と裏。片方だけ直すより、両方を一緒に理解するほうが扱いやすくなります。',
+                        })}
+                      </p>
+                    )}
+
+                    <p className="mt-4 text-[13px] font-extrabold text-ink-sub">{l({ ko: '영역별로 보면', en: 'Area by area', ja: '領域ごとに見ると' })}</p>
+                    <ul className="mt-1.5 divide-y divide-line">
+                      {summary.areas.map((a) => (
+                        <li key={a.id} className="flex items-start gap-2.5 py-2">
+                          <Emoji e={a.emoji} size={18} className="mt-0.5 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[13px] font-extrabold">
+                              {t(TEST_SHORT_KEY(a.id))} <span style={{ color: a.color }}>· {a.band}</span>
+                            </p>
+                            {a.line && <p className="mt-0.5 break-keep text-[12px] font-bold leading-relaxed text-ink-faint">{a.line}</p>}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {summary.care.length > 0 && (
+                      <div className="mt-3 rounded-2xl bg-mind-50 p-3.5">
+                        <p className="break-keep text-[13px] font-bold leading-relaxed text-ink">
+                          {l({
+                            ko: `${summary.care.map((a) => t(TEST_SHORT_KEY(a.id))).join('·')} 결과는 혼자 견디기보다 전문가와 한 번 이야기해 보면 좋은 구간이에요.`,
+                            en: `Your ${summary.care.map((a) => t(TEST_SHORT_KEY(a.id))).join(', ')} results are in a range where talking to a professional can help.`,
+                            ja: `${summary.care.map((a) => t(TEST_SHORT_KEY(a.id))).join('・')}の結果は、専門家に一度相談してみるとよい範囲です。`,
+                          })}
+                        </p>
+                      </div>
+                    )}
+
+                    <p className="mt-3 break-keep text-[11px] font-bold leading-relaxed text-ink-faint">
+                      {l({
+                        ko: '자기보고 검사를 모아 본 참고용 설명이에요. 의학적 진단이 아니에요.',
+                        en: 'A reference summary of self-report tests — not a medical diagnosis.',
+                        ja: '自己報告式検査をまとめた参考用の説明です。医学的な診断ではありません。',
+                      })}
+                    </p>
+                    <button
+                      onClick={() => nav('/deep-report')}
+                      className="mt-3 flex min-h-[44px] w-full items-center justify-between rounded-2xl bg-surface2 px-4 text-left"
+                    >
+                      <span className="text-[13px] font-extrabold">
+                        <Emoji e="🧭" inline />
+                        {l({ ko: 'AI 심층 리포트로 더 깊이 읽기', en: 'Read deeper with the AI report', ja: 'AI深層レポートでさらに詳しく' })}
+                      </span>
+                      <span className="text-ink-faint" aria-hidden="true">›</span>
+                    </button>
+                  </>
+                )}
+              </Card>
+            )}
+          </motion.section>
+        )}
 
         {/* ── 1. 내 마음 결과 ── */}
         <motion.section {...sec(0)} className="mt-6">

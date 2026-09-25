@@ -25,6 +25,7 @@ import { encodeDuel } from '../lib/duel'
 import { StatTile } from '../components/StatTile'
 import Emoji, { EmojiText } from '../components/Emoji'
 import { shareOrCopy } from '../lib/share'
+import { needsCare } from '../data/care'
 import { topPercentOf } from '../lib/format'
 
 /** 정밀검사 전용 실행 라우트 — 문항뱅크(/test/:id/run)가 아니라 인지과제 화면으로 보내야 한다 */
@@ -133,17 +134,8 @@ export default function TestResult() {
   }
   const axisDefs = AXIS_DEFS[result.testId]
 
-  /* 전문가(의사·상담) 권유가 필요한 심각 구간 */
-  const doctorBands: Partial<Record<string, string[]>> = {
-    adhd: ['high'],
-    burnout: ['high'],
-    dopamine: ['high'],
-    love: ['fearful'],
-    selfesteem: ['low'],
-    perfect: ['strain'],
-    socialanx: ['high'],
-  }
-  const needsDoctor = doctorBands[result.testId]?.includes(result.band) ?? false
+  /* 전문가(의사·상담) 권유가 필요한 구간 — data/care.ts(나에 관하여와 같은 기준) */
+  const needsDoctor = needsCare(result.testId, result.band)
 
   /* 연애 케미 / ADHD×번아웃 교차 분석 */
   const chemi = result.testId === 'love' ? LOVE_CHEMI[result.band] : null
