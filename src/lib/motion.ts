@@ -24,43 +24,50 @@ import { type Transition, type Variants } from 'framer-motion'
  *    프리셋을 추가해서 전 앱이 같이 쓰게 한다(하드코딩 97개가 제각각 튀던 상태로 돌아간다).
  */
 export const SPRING = {
-  /** 기본값. 화면 요소의 이동·등장·정착 대부분(Apple 'move/reposition': 감쇠 1.0 · 응답 0.4) */
-  ui: { type: 'spring', bounce: 0, duration: 0.4 },
+  /** 기본값. 화면 요소의 이동·등장·정착 대부분(Apple 'move/reposition': 감쇠 1.0). 0.4→0.46 — 끝이 더 길게 녹아든다 */
+  ui: { type: 'spring', bounce: 0, duration: 0.46 },
   /** 짧고 단정한 반응 — 토글·프레스 복귀·숫자 갱신처럼 즉답이 중요한 것 */
-  snap: { type: 'spring', bounce: 0, duration: 0.22 },
-  /** 바텀시트·모달(Apple 'drawer/sheet': 감쇠 0.8 · 응답 0.3). 손으로 끌어올린 느낌이라 살짝 넘어간다 */
-  sheet: { type: 'spring', bounce: 0.18, duration: 0.34 },
+  snap: { type: 'spring', bounce: 0, duration: 0.26 },
+  /** 바텀시트·모달(Apple 'drawer/sheet'). 넘침을 줄이고 조금 길게 — 출렁임 대신 미끄러져 앉는다 */
+  sheet: { type: 'spring', bounce: 0.1, duration: 0.42 },
   /** 운동량이 실린 순간에만 — 보상 획득, 플릭 착지, 성취 배지 */
-  flick: { type: 'spring', bounce: 0.3, duration: 0.45 },
+  flick: { type: 'spring', bounce: 0.24, duration: 0.5 },
   /** 오버슈트가 의미를 왜곡하는 곳 — 진행바·게이지·퍼센트(102%로 튀면 안 된다) */
-  gauge: { type: 'spring', bounce: 0, duration: 0.55 },
-  /** 칩·카드의 첫 등장 — 작게 한 번 넘쳤다 앉는다(듀오링고식 '톡'). 짧아서 장난감처럼 출렁이지 않는다 */
-  pop: { type: 'spring', bounce: 0.3, duration: 0.42 },
+  gauge: { type: 'spring', bounce: 0, duration: 0.6 },
+  /** 칩·카드의 첫 등장 — 작게 한 번 넘쳤다 앉는다(듀오링고식 '톡'). 0.3→0.18로 낮춰 '톡'보다 '폭신'에 가깝게 */
+  pop: { type: 'spring', bounce: 0.18, duration: 0.48 },
   /** 3D 버튼을 누르는 순간 — 바닥(그림자 깊이)까지 곧장. 누름에 튐이 있으면 '덜 눌렸다'로 읽힌다 */
-  pressIn: { type: 'spring', bounce: 0, duration: 0.1 },
-  /** 3D 버튼에서 손을 뗄 때 — 바닥에서 튀어 올라와 살짝 넘쳤다 제자리 */
-  press: { type: 'spring', bounce: 0.4, duration: 0.3 },
+  pressIn: { type: 'spring', bounce: 0, duration: 0.12 },
+  /** 3D 버튼에서 손을 뗄 때 — 바닥에서 올라와 살짝 넘쳤다 제자리. 0.4는 딱딱하게 튕겨 0.25로 */
+  press: { type: 'spring', bounce: 0.25, duration: 0.36 },
+  /**
+   * 사라질 때. 스프링은 끝 속도가 남은 채 opacity 0에 닿아 '뚝' 끊겨 보인다 —
+   * 나가는 건 목표가 바뀔 일이 없으니 ease-in-out 트윈으로 속도를 0까지 줄이며 흐려지게 한다.
+   * (문항 전환처럼 mode="wait"인 곳은 이 시간이 그대로 빈 시간이 되므로 0.2초를 넘기지 않는다)
+   */
+  exit: { type: 'tween', duration: 0.2, ease: [0.4, 0, 0.2, 1] },
 } satisfies Record<string, Transition>
 
 /** 카드·칩 등장. 조금 작은 상태에서 '톡' 커지며 정착(pop) — 위치 이동은 작게 둬서 출렁임이 아니라 탄력으로 읽힌다 */
 export const popIn: Variants = {
-  hidden: { opacity: 0, y: 8, scale: 0.94 },
+  // 0.94→0.965: 크기 변화가 작을수록 '튀어나온다'가 아니라 '떠오른다'로 읽힌다
+  hidden: { opacity: 0, y: 10, scale: 0.965 },
   show: { opacity: 1, y: 0, scale: 1, transition: SPRING.pop },
   // 나갈 때는 들어온 길로 되돌아간다(공간 일관성) — 아래로 사라지지 않는다
-  exit: { opacity: 0, y: 8, scale: 0.94, transition: SPRING.snap },
+  exit: { opacity: 0, y: 8, scale: 0.965, transition: SPRING.exit },
 }
 
 /** 바텀시트 — 아래에서 올라오고 아래로 내려간다(같은 경로) */
 export const modalSheet: Variants = {
   hidden: { y: '100%', opacity: 0 },
   show: { y: 0, opacity: 1, transition: SPRING.sheet },
-  exit: { y: '100%', opacity: 0, transition: SPRING.snap },
+  exit: { y: '100%', opacity: 0, transition: SPRING.exit },
 }
 
 /** 목록 자식들이 순차 등장 — 간격이 넓으면 느려 보인다 */
 export const stagger = (gap = 0.04): Variants => ({
   hidden: {},
-  show: { transition: { staggerChildren: gap, delayChildren: 0.02 } },
+  show: { transition: { staggerChildren: gap, delayChildren: 0.03 } },
 })
 
 /**

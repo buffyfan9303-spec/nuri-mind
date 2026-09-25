@@ -306,7 +306,7 @@ export default function TestRun() {
             initial={{ x: 70, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             // 나갈 때는 짧게(popIn과 같은 규칙) — mode="wait"라 exit 시간이 그대로 문항 사이 빈 시간이 된다
-            exit={{ x: -70, opacity: 0, transition: SPRING.snap }}
+            exit={{ x: -70, opacity: 0, transition: SPRING.exit }}
             transition={SPRING.ui}
           >
             {!isIq ? (

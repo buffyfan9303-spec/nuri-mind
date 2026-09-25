@@ -216,10 +216,12 @@ export default function App() {
       >
         <motion.div
           key={location.pathname}
-          initial={{ opacity: 0, y: 14, scale: 0.985 }}
+          // 이동 폭을 줄이고(14→10px) 길게 풀어(0.26→0.34s) '밀려 들어온다'보다 '떠오른다'로.
+          // 퇴장은 easeIn이면 최고 속도에서 끊겨 깜빡임처럼 보인다 — 속도를 0으로 줄이며 흐려지게 한다
+          initial={{ opacity: 0, y: 10, scale: 0.99 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -8, scale: 0.99, transition: { duration: 0.14, ease: 'easeIn' } }}
-          transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+          exit={{ opacity: 0, y: -6, scale: 0.995, transition: { duration: 0.16, ease: [0.4, 0, 0.2, 1] } }}
+          transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* 라우트 경계: 한 화면의 크래시·청크 실패가 앱 전체(내비 포함)를 지우지 않게. motion.div가 경로별 key라 이동하면 자동 리셋 */}
           <SentryErrorBoundary fallback={({ resetError }) => <RouteFallback onReset={resetError} />}>

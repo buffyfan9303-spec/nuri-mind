@@ -243,7 +243,7 @@ export default function Mailbox() {
                   <motion.div
                     key={it.id}
                     layout="position"
-                    exit={{ opacity: 0, scale: 0.98, transition: SPRING.snap }}
+                    exit={{ opacity: 0, scale: 0.98, transition: SPRING.exit }}
                     transition={SPRING.ui}
                   >
                   <Card className={`!p-4 ${it.claimed ? 'opacity-60' : ''}`}>

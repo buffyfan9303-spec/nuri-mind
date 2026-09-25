@@ -20,8 +20,8 @@ import { SPRING } from '../../lib/motion'
 const EXIT = {
   exit: (flung: boolean) =>
     flung
-      ? { y: '100%', opacity: 0, transition: SPRING.snap }
-      : { y: 90, opacity: 0, scale: 0.96, transition: SPRING.snap },
+      ? { y: '100%', opacity: 0, transition: SPRING.snap } // 던진 경우는 손가락 속도를 이어받아야 해서 스프링 유지
+      : { y: 90, opacity: 0, scale: 0.96, transition: SPRING.exit },
 }
 
 export function Modal({
