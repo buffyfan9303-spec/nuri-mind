@@ -308,7 +308,7 @@ export default function QuickTest() {
             key={step}
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -24, transition: SPRING.snap }}
+            exit={{ opacity: 0, x: -24, transition: SPRING.exit }}
             transition={SPRING.ui}
           >
             <p className="mt-5 text-[13px] font-extrabold" style={{ color: darken(test.grad[0], 0.2) }}>

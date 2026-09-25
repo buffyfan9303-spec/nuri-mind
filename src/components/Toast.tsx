@@ -34,10 +34,10 @@ export default function Toast() {
             layout
             // role="status"를 따로 달지 않는다 — 바깥 컨테이너가 이미 aria-live라, 안쪽에 또 라이브 영역을 두면
             // 일부 스크린리더(VoiceOver)가 같은 문장을 두 번 읽는다
-            initial={{ opacity: 0, y: 16, scale: 0.94 }}
+            initial={{ opacity: 0, y: 14, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.96, transition: { duration: 0.16 } }}
-            transition={SPRING.snap}
+            exit={{ opacity: 0, y: 8, scale: 0.97, transition: SPRING.exit }}
+            transition={SPRING.ui}
             /* 되돌리기가 달린 토스트는 본문 탭으로 닫지 않는다 — 알림을 치우려다 유일한 되돌리기 수단을 버리게 된다 */
             onClick={it.action ? undefined : () => dismiss(it.id)}
             className={`pointer-events-auto flex w-full max-w-[340px] items-center gap-2.5 rounded-2xl px-4 py-3 shadow-pop backdrop-blur-md ${

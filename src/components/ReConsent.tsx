@@ -55,7 +55,7 @@ export default function ReConsent() {
         data-scroll-lock
         initial={{ y: 28, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 28, opacity: 0, transition: SPRING.snap }}
+        exit={{ y: 28, opacity: 0, transition: SPRING.exit }}
         transition={SPRING.ui}
         className="w-full max-w-sm rounded-3xl bg-surface p-6 shadow-pop"
       >
