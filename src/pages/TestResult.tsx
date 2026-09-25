@@ -25,6 +25,7 @@ import { encodeDuel } from '../lib/duel'
 import { StatTile } from '../components/StatTile'
 import Emoji, { EmojiText } from '../components/Emoji'
 import { shareOrCopy } from '../lib/share'
+import { topPercentOf } from '../lib/format'
 
 /** 정밀검사 전용 실행 라우트 — 문항뱅크(/test/:id/run)가 아니라 인지과제 화면으로 보내야 한다 */
 const PRECISION_RUN: Partial<Record<TestId, string>> = {
@@ -90,7 +91,7 @@ export default function TestResult() {
     { label: '다크', grad: ['#27343A', '#46607A'], swatch: ['#27343A', '#46607A'] },
     { label: '파스텔', grad: ['#FBD3E9', '#A9C9EE'], swatch: ['#FBD3E9', '#A9C9EE'] },
   ]
-  const topPercent = Math.max(0.5, Math.round((100 - result.percentile) * 10) / 10)
+  const topPercent = topPercentOf(result.percentile)
   const reward = state.reward ?? 0
 
   /* 정밀검사 결과지 게이팅 — 앞(히어로·점수·게이지)은 무료, 상세 분석은 블러 → 10다이아 영구해제.
