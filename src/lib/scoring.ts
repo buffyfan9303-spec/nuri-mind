@@ -76,6 +76,9 @@ export function scoreAdhd(items: LikertItem[], answers: Record<string, number>):
 /* ───────────────────────── EGO (LSRP + SVO 기반) ───────────────────── */
 /** 1~5점 동의 척도. SELF+STR 10문항: μ=26, σ=6.5 / EMP 5문항: μ=18, σ=3.4 / STR 5문항: μ=13, σ=3.8.
  *  근거: LSRP 1차/2차 사이코패시(Levenson, Kiehl & Fitzpatrick 1995) + SVO(사회적 가치지향) 일반표본 근사. */
+/*  ⚠️ 역채점 미적용은 의도된 현재 동작이다(확인 안 됨): ego.ts의 EMP 5문항(e09-e12, e18)에 reverse:true가 있지만
+ *  여기서는 6−v를 하지 않는다(scoreLove·scoreSelfEsteem은 한다). EMP μ=18이 어느 방향 기준인지 출처가 없어,
+ *  EMP의 μ/σ를 다시 도출하기 전에는 바꾸지 말 것 — 문항 문구 검토는 검사팀 과제(2026-09-25 심리측정 검토). */
 export function scoreEgo(items: LikertItem[], answers: Record<string, number>): TestResult {
   const ax: Record<string, { s: number; m: number; n: number }> = {}
   for (const it of items) {
@@ -134,6 +137,8 @@ const IQ_MU = 14.75
 const IQ_SIGMA = 5.2
 /** 정밀판 20문항 전체 난이도합 — 빠른판(부분 문항)을 동일 척도로 환산하는 기준 */
 const IQ_FULL_DIFF = 29.5
+/** 문항 신뢰도(α) — 빠른판 오차 보정에만 쓴다 */
+const IQ_RELIABILITY = 0.81
 
 export function scoreIq(items: IqItem[], answers: Record<string, string | null>): TestResult {
   let weighted = 0
@@ -149,7 +154,10 @@ export function scoreIq(items: IqItem[], answers: Record<string, string | null>)
   // 빠른판(부분 문항)도 정밀판과 동일 척도로 — 응답한 문항 난이도합 기준으로 전체 환산
   const totalDiff = items.reduce((a, it) => a + it.difficulty, 0)
   const weightedScaled = totalDiff > 0 ? weighted * (IQ_FULL_DIFF / totalDiff) : weighted
-  const z = (weightedScaled - IQ_MU) / IQ_SIGMA
+  // 문항이 적으면 환산 점수가 더 흔들린다 — 고전검사이론: Var(환산) = σ²(ρ + (1−ρ)/r), ρ = 위 근거의 α≈.81.
+  // 정밀판(r=1)은 그대로, 빠른판(r≈.5)은 σ≈5.67로 넓혀 극단값 과장을 줄인다. 실측 규준이 생기면 교체(2026-09-25 심리측정 검토).
+  const ratio = totalDiff > 0 ? Math.min(1, totalDiff / IQ_FULL_DIFF) : 1
+  const z = (weightedScaled - IQ_MU) / (IQ_SIGMA * Math.sqrt(IQ_RELIABILITY + (1 - IQ_RELIABILITY) / ratio))
   const iq = Math.max(60, Math.min(145, Math.round(100 + 15 * z)))
   const pct = Math.min(99.5, Math.max(0.5, Math.round(normalCdf(z) * 1000) / 10))
   const band = iq >= 130 ? 'top' : iq >= 115 ? 'high' : iq >= 105 ? 'upper' : iq >= 95 ? 'avg' : 'grow'
@@ -325,7 +333,10 @@ export function scorePerfection(items: LikertItem[], answers: Record<string, num
   let band: string
   let persona: string
   if (pct >= 68) {
-    if (maladRatio >= 0.6) { band = 'strain'; persona = 'beaver' }
+    // 부적응 15문항:기준 5문항이라 비율 0.75 = '부적응 문항 평균 ≥ 기준 문항 평균'.
+    // 예전 0.6은 pct≥68(총점≥65)과 동시에 만족할 수 없어 driven(건강한 높은 기준)이 한 번도 나오지 않았다.
+    // 평균이 같으면 주의 쪽(strain)으로 — 2026-09-25 심리측정 검토
+    if (maladRatio >= 0.75) { band = 'strain'; persona = 'beaver' }
     else { band = 'driven'; persona = 'eagle' }
   } else if (pct >= 38) {
     band = 'balanced'

@@ -383,6 +383,15 @@ export default function TestResult() {
               <>
                 <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.iq}</div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.iqLabel')}</p>
+                {result.iqMode === 'fast' && (
+                  <p className="mt-1 break-keep text-[12px] font-bold text-ink-faint">
+                    {l({
+                      ko: '10문항으로 낸 어림값이라 오차가 더 커요',
+                      en: 'A rough estimate from 10 questions — wider margin of error',
+                      ja: '10問からの概算なので誤差が大きめです',
+                    })}
+                  </p>
+                )}
                 <div className="mt-4">
                   <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
                 </div>

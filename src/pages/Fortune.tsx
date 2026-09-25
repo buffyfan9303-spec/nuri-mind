@@ -122,6 +122,8 @@ export default function Fortune() {
     }
   }, [profile])
   const pKey = profile ? profileKey(profile) : ''
+  // AI 운세 캐시는 사람 + 언어별 — 언어를 바꿨는데 다른 언어로 받아 둔 풀이가 그대로 나오던 문제
+  const aiKey = `${pKey}|${lang}`
   const timeLabel = (tm: string) => fmtTime(tm, lang, t('fortune.timeUnknown'))
 
   const submit = (p: FortuneProfile) => {
@@ -155,7 +157,7 @@ export default function Fortune() {
     const today = localDay()
     // 결과 화면이 아니거나 잠금 상태면 호출 안 함(과금 절약). 프리미엄은 날짜 마킹 없이 상시 해제라 별도 허용(#19)
     if (view !== 'result' || !data || !profile || (fortuneDetailDate !== today && !premium)) return
-    if (fortuneAiDate === today && fortuneAiData && fortuneAiKey === pKey) return // 이 사람 오늘 캐시 있음
+    if (fortuneAiDate === today && fortuneAiData && fortuneAiKey === aiKey) return // 이 사람 오늘 캐시 있음
     if (!FUNCTIONS_URL) return // 엣지 함수 미배포 → 결정론 폴백
     let cancelled = false
     const c = data.chart
@@ -176,7 +178,7 @@ export default function Fortune() {
       todayTenGod: data.fortune.tenGod,
       todayIlju: data.fortune.todayIljuKo,
     }).then((res) => {
-      if (res && !cancelled) setFortuneAi(today, res, pKey)
+      if (res && !cancelled) setFortuneAi(today, res, aiKey)
     })
     return () => {
       cancelled = true
@@ -199,10 +201,18 @@ export default function Fortune() {
         grad: fortune.grad,
         appName: t('app.name'),
         heroLabel: t('fortune.title'),
-        ctaTop: '내 오늘의 운세는? 🔮',
-        ctaSub: '지금 누리 마인드에서 무료로 →',
+        ctaTop: l({ ko: '내 오늘의 운세는? 🔮', en: "What's my fortune today? 🔮", ja: '今日の運勢は？🔮' }),
+        ctaSub: l({ ko: '지금 누리 마인드에서 무료로 →', en: 'Free on NURI MIND →', ja: 'NURI MINDで無料 →' }),
       })
-      const how = await shareCardBlob(blob, `[누리 마인드] 오늘의 운세 · ${saju.zodiacKo}띠 ${saju.iljuKo}`, 'nurimind-fortune.png')
+      const how = await shareCardBlob(
+        blob,
+        l({
+          ko: `[누리 마인드] 오늘의 운세 · ${saju.zodiacKo}띠 ${saju.iljuKo}`,
+          en: `[NURI MIND] Today's fortune · ${saju.iljuKo}`,
+          ja: `[NURI MIND] 今日の運勢 · ${saju.iljuKo}`,
+        }),
+        'nurimind-fortune.png',
+      )
       rewardShare(how)
       if (how === 'downloaded') {
         setSaved(true)
@@ -217,7 +227,7 @@ export default function Fortune() {
   const shareDetail = async () => {
     if (!data) return
     const { saju, fortune, detail } = data
-    const aiT = fortuneAiDate === localDay() && fortuneAiKey === pKey ? fortuneAiData : null
+    const aiT = fortuneAiDate === localDay() && fortuneAiKey === aiKey ? fortuneAiData : null
     track('share', { channel: 'fortune_detail' })
     try {
       const blob = await makeResultCard({
@@ -284,7 +294,7 @@ export default function Fortune() {
   }
   const todayStr = localDay()
   const detailUnlocked = fortuneDetailDate === todayStr || premium
-  const aiDetail = fortuneAiDate === todayStr && fortuneAiKey === pKey ? fortuneAiData : null
+  const aiDetail = fortuneAiDate === todayStr && fortuneAiKey === aiKey ? fortuneAiData : null
   const usingAi = !!aiDetail
   const v: FortuneDetailText = aiDetail ?? {
     morning: l(detail.morning), noon: l(detail.noon), evening: l(detail.evening),
@@ -523,17 +533,17 @@ export default function Fortune() {
               <div className="flex items-end justify-between gap-1.5">
                 {week.map((w, i) => (
                   <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-                    <span className="text-[11px] font-extrabold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.overall}</span>
+                    <span className="text-[11px] font-extrabold" style={{ color: w.isToday ? fortune.grad[0] : 'rgb(var(--text-faint))' }}>{w.overall}</span>
                     <div className="flex h-[72px] w-full items-end justify-center">
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${w.overall}%` }}
                         transition={{ ...SPRING.ui, delay: 0.04 * i }}
                         className="w-[58%] rounded-full"
-                        style={{ background: w.isToday ? `linear-gradient(${fortune.grad[0]}, ${fortune.grad[1]})` : '#DCE4DF' }}
+                        style={{ background: w.isToday ? `linear-gradient(${fortune.grad[0]}, ${fortune.grad[1]})` : 'rgb(var(--text-faint) / 0.25)' }}
                       />
                     </div>
-                    <span className="text-[11px] font-bold" style={{ color: w.isToday ? fortune.grad[0] : '#9AA5A0' }}>{w.isToday ? t('fortune.today') : w.weekdayKo}</span>
+                    <span className="text-[11px] font-bold" style={{ color: w.isToday ? fortune.grad[0] : 'rgb(var(--text-faint))' }}>{w.isToday ? t('fortune.today') : w.weekdayKo}</span>
                   </div>
                 ))}
               </div>

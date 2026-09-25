@@ -295,7 +295,11 @@ export default function TestRun() {
       </AnimatePresence>
 
       {/* 문항 카드 */}
-      <main className="mx-auto w-full max-w-md flex-1 px-5 pb-6">
+      {/* IQ는 중단 창이 떠 있는 동안 타이머가 멈춘다 — 그동안 문제를 볼 수 있으면 시간 제한이 무의미해져 가린다 */}
+      <main
+        className={`mx-auto w-full max-w-md flex-1 px-5 pb-6 transition-[filter] ${isIq && quitOpen ? 'blur-md' : ''}`}
+        aria-hidden={isIq && quitOpen ? true : undefined}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={idx}

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import { LEGAL_VERSION } from '../data/legal'
 import { PAYMENTS_ENABLED } from '../data/features'
 import type { FortuneDetailText } from '../lib/fortuneAi'
@@ -370,6 +370,38 @@ const initial = () => ({
   growthDone: {} as Record<string, string[]>,
   paidKeys: [] as string[],
 })
+
+/**
+ * 저장소 보호 — localStorage.setItem은 용량 초과·사생활 모드에서 예외를 던진다. persist는 그 예외를 set() 밖으로 흘려
+ * 적립 직후의 서버 미러(mirrorEarn)·화면 처리까지 건너뛰게 만든다. 저장만 포기하고 앱 상태는 계속 간다(메모리 상태 유지).
+ */
+let storageWarned = false
+const safeLocalStorage = {
+  getItem: (k: string): string | null => {
+    try {
+      return localStorage.getItem(k)
+    } catch {
+      return null
+    }
+  },
+  setItem: (k: string, v: string): void => {
+    try {
+      localStorage.setItem(k, v)
+    } catch (e) {
+      if (!storageWarned) {
+        storageWarned = true
+        console.warn('[store] 저장 공간에 쓰지 못했어요 — 이번 방문 동안만 유지돼요', e)
+      }
+    }
+  },
+  removeItem: (k: string): void => {
+    try {
+      localStorage.removeItem(k)
+    } catch {
+      /* ignore */
+    }
+  },
+}
 
 export const useStore = create<State>()(
   persist(
@@ -917,6 +949,7 @@ export const useStore = create<State>()(
     },
     {
       name: 'nuri-mind-v1',
+      storage: createJSONStorage(() => safeLocalStorage),
       version: 5,
       migrate: (persisted, version) => {
         const s = persisted as Partial<State> | undefined
