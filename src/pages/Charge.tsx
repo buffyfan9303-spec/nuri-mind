@@ -74,7 +74,7 @@ export default function Charge() {
           >
             <Emoji e="💎" inline />{diamonds.toLocaleString()}
           </motion.p>
-          <p className="mt-2 text-[12px] font-extrabold text-white/80">1 <Emoji e="💎" inline />= 100원 상당</p>
+          <p className="mt-2 text-[12px] font-extrabold text-white/80">1 <Emoji e="💎" inline />{l({ ko: '= 100원 상당', en: '≈ ₩100', ja: '≈ 100ウォン相当' })}</p>
         </Card>
 
         {/* 다이아 사용처 */}
