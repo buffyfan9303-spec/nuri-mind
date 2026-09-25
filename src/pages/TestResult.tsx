@@ -406,7 +406,7 @@ export default function TestResult() {
               <>
                 <div className="text-5xl font-extrabold tracking-tight text-reso-deep">{result.fq}</div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.fqLabel')}</p>
-                {result.axes && (
+                {result.axes?.rt != null && result.axes.acc != null && (
                   <p className="mt-1 text-[12px] font-bold text-ink-faint">
                     {l({
                       ko: `평균 반응 ${result.axes.rt}ms · 정확도 ${result.axes.acc}%`,
@@ -423,7 +423,7 @@ export default function TestResult() {
               <>
                 <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.wq}</div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.wqLabel')}</p>
-                {result.axes && (
+                {result.axes?.rt != null && result.axes.acc != null && result.axes.cost != null && (
                   <p className="mt-1 text-[12px] font-bold text-ink-faint">
                     {l({
                       ko: `평균 ${(result.axes.rt / 1000).toFixed(1)}초 · 정확도 ${result.axes.acc}% · 전환비용 ${result.axes.cost}ms`,
@@ -440,7 +440,7 @@ export default function TestResult() {
               <>
                 <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.xq}</div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.xqLabel')}</p>
-                {result.axes && (
+                {result.axes?.rt != null && result.axes.acc != null && (
                   <p className="mt-1 text-[12px] font-bold text-ink-faint">
                     {l({
                       ko: `평균 ${(result.axes.rt / 1000).toFixed(1)}초 · 정확도 ${result.axes.acc}%`,
@@ -457,7 +457,7 @@ export default function TestResult() {
               <>
                 <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.sq}</div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.sqLabel')}</p>
-                {result.axes && (
+                {result.axes?.count != null && result.axes.ms != null && result.axes.acc != null && (
                   <p className="mt-1 text-[12px] font-bold text-ink-faint">
                     {l({
                       ko: `${result.axes.count}개 정답 · 개당 ${result.axes.ms}ms · 정확도 ${result.axes.acc}%`,
@@ -787,7 +787,7 @@ export default function TestResult() {
               }}
               className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FEE500] py-3.5 text-[15px] font-extrabold text-[#3A1D1D]"
             >
-              <Emoji e="💬" inline />카카오톡으로 공유
+              <Emoji e="💬" inline />{t('quick.shareKakao')}
             </button>
           )}
           <div className="mt-2.5 grid grid-cols-2 gap-2.5">

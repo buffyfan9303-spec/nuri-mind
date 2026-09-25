@@ -140,6 +140,13 @@ export default function App() {
   const fontScale = useStore((s) => s.fontScale)
   const onboarded = useStore((s) => s.onboarded)
   const theme = useStore((s) => s.theme)
+  const lang = useStore((s) => s.lang)
+
+  // 문서 언어를 화면 언어와 맞춘다 — index.html은 ko 고정이라 일본어·영어 화면도 'ko'로 선언돼
+  // 화면 낭독기가 한국어 발음으로 읽었고, CSS가 언어별 줄바꿈(:lang(ja))을 고를 수 없었다
+  useEffect(() => {
+    document.documentElement.lang = lang
+  }, [lang])
 
   // 글자 크기: 루트 zoom으로 전체 UI 배율 조정
   useEffect(() => {

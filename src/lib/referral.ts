@@ -28,6 +28,8 @@ export async function redeemReferralServer(code: string): Promise<ReferralResult
 export async function ensureReferralCodeServer(): Promise<string | null> {
   if (!supabase) return null
   try {
+    // 비로그인이면 부르지 않는다 — 로그인 전용 RPC(anon 실행권 회수)라 리워드 화면 방문마다 401이 콘솔에 찍혔다
+    if (!(await supabase.auth.getSession()).data.session) return null
     const { data, error } = await supabase.rpc('ensure_my_referral_code')
     if (error || typeof data !== 'string' || !data) return null
     return data
