@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { useBackClose, useLeaveNav } from '../lib/backstack'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+
 import Button from '../components/Button'
 import { Modal, ProgressBar } from '../components/ui'
 import { testMeta } from '../data/tests'
@@ -38,7 +39,7 @@ function buildItems(): Item[] {
 
 export default function SpatialRun() {
   const l = useL()
-  const nav = useNavigate()
+  const leave = useLeaveNav()
   const addResult = useStore((s) => s.addResult)
   const tm = testMeta('spatial')
   const accent = tm.gradFrom
@@ -48,6 +49,8 @@ export default function SpatialRun() {
   const [phase, setPhase] = useState<'stim' | 'feedback'>('stim')
   const [verdict, setVerdict] = useState<boolean | null>(null)
   const [quitOpen, setQuitOpen] = useState(false)
+  // 안드로이드·브라우저 뒤로가기도 X와 같이 '중단 확인'을 연다(확인 없이 검사가 끊기던 문제)
+  useBackClose(!quitOpen, () => openQuit())
 
   const correctRef = useRef(0)
   const rtSumRef = useRef(0)
@@ -84,7 +87,7 @@ export default function SpatialRun() {
     const result = scoreSpatial(correctRef.current, TOTAL, rtSumRef.current)
     result.durationMs = Date.now() - startRef.current
     const reward = addResult(result)
-    nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
+    leave(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
   /** 중단 확인 창이 떠 있던 시간은 반응시간에서 뺀다 — 창을 열었다 '계속하기'를 누르면 그 시간이 통째로 RT에 더해졌다 */
@@ -138,7 +141,7 @@ export default function SpatialRun() {
             <AnimatePresence mode="wait">
               {phase === 'stim' ? (
                 /* 회전/반전은 정적 inner span에 — framer가 transform을 덮어쓰지 않도록 entrance 애니는 outer div */
-                <motion.div key={`g-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
+                <motion.div key={`g-${idx}`} initial={false} exit={{ opacity: 0, transition: { duration: 0 } }}>
                   <span
                     className="rot-glyph text-[28px] font-extrabold leading-none"
                     style={{ display: 'inline-block', color: accent, transform: `rotate(${it.deg}deg) scaleX(${it.mirror ? -1 : 1})` }}
@@ -189,7 +192,7 @@ export default function SpatialRun() {
             <Button color="iq" onClick={closeQuit}>
               {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
-            <Button color="white" onClick={() => nav('/test/spatial', { replace: true })}>
+            <Button color="white" onClick={() => leave('/test/spatial', { replace: true })}>
               {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>

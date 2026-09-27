@@ -11,7 +11,7 @@ import IconBadge from '../components/IconBadge'
 import Emoji, { EmojiText } from '../components/Emoji'
 import { SkeletonBlock } from '../components/Skeleton'
 import { PointsPill, Card } from '../components/ui'
-import { TESTS } from '../data/tests'
+import { GATED_DEEP, TESTS } from '../data/tests'
 import { DEEP_CATS } from '../data/testGroups'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
@@ -141,7 +141,7 @@ export default function Home() {
 
   const trioDone = (['selfesteem', 'perfect', 'efficacy'] as const).every((id) => s.results.some((r) => r.testId === id))
   // 심층검사 전 종목 완주 시 AI 종합 심층 리포트 진입 노출(프리미엄 가치 상단 노출)
-  const deepAllDone = TESTS.filter((tm) => !tm.precision).every((tm) => s.results.some((r) => r.testId === tm.id))
+  const deepAllDone = GATED_DEEP.every((tm) => s.results.some((r) => r.testId === tm.id))
   // 🌱 성장 플랜 — 오늘 남은 실천 수(플랜이 있을 때만 홈에 노출)
   /**
    * 🌱 성장 플랜 배너 — 오늘 남은 실천 수.
@@ -285,7 +285,7 @@ export default function Home() {
               whileTap={tapPop}
               transition={SPRING.press}
               onClick={() => nav('/me')}
-              className="flex h-[64px] min-w-0 flex-1 items-center gap-2.5 rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#8B95F6] px-3.5 text-left shadow-card"
+              className="flex h-[64px] min-w-0 flex-1 items-center gap-2 rounded-3xl bg-gradient-to-br from-[#5B6CF0] to-[#8B95F6] px-3.5 text-left shadow-card"
             >
               <IconBadge emoji="🪞" tone="frost" size={36} radius={12} />
               <span className="min-w-0 flex-1 truncate text-[16px] font-extrabold leading-none text-white">{l({ ko: '나에 관하여', en: 'About me', ja: '私について' })}</span>
@@ -296,7 +296,7 @@ export default function Home() {
               whileTap={tapPop}
               transition={SPRING.press}
               onClick={() => nav('/fortune')}
-              className="flex h-[64px] min-w-0 flex-1 items-center gap-2.5 rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] px-3.5 text-left shadow-card"
+              className="flex h-[64px] min-w-0 flex-1 items-center gap-2 rounded-3xl bg-gradient-to-br from-[#6B4FB8] to-[#A88BF2] px-3.5 text-left shadow-card"
             >
               <IconBadge emoji={fx?.zodiacEmoji ?? '🔮'} tone="frost" size={36} radius={12} />
               <span className="min-w-0 flex-1 truncate text-[16px] font-extrabold leading-none text-white">{t('fortune.title')}</span>

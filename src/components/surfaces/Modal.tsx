@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useDragControls, type PanInfo } from 'framer-motion'
 import { useEffect, useId, useRef, useState } from 'react'
 import { lockScroll, unlockScroll } from '../../lib/scrollLock'
@@ -89,12 +90,13 @@ export function Modal({
   }
 
   return (
+    createPortal(
     <AnimatePresence custom={flung}>
       {open && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          exit={{ opacity: 0, transition: SPRING.exit }}
           className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 sm:items-center"
           onClick={onClose}
         >
@@ -135,6 +137,8 @@ export function Modal({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
+  )
   )
 }

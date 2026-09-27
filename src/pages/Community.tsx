@@ -1,3 +1,4 @@
+import { shareOrigin } from '../lib/platform'
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useSkeletonGate } from '../hooks/useSkeletonGate'
 import LoadErrorCard from '../components/surfaces/LoadErrorCard'
@@ -424,7 +425,7 @@ export default function Community() {
 
   const onShare = async (p: CommunityPost) => {
     const txt = `[${t('app.name')}] ${p.nick}${p.badge ? ' ' + p.badge : ''}: ${p.text}`
-    if ((await shareOrCopy({ text: txt, url: window.location.origin })) === 'copied') {
+    if ((await shareOrCopy({ text: txt, url: shareOrigin() })) === 'copied') {
       setCopied(true)
       setTimeout(() => setCopied(false), 1600)
     }

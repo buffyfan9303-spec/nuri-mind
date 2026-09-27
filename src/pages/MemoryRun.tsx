@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { useBackClose, useLeaveNav } from '../lib/backstack'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+
 import Button from '../components/Button'
 import { Modal, ProgressBar } from '../components/ui'
 import { testMeta } from '../data/tests'
@@ -29,7 +30,7 @@ function genSeq(len: number): number[] {
 
 export default function MemoryRun() {
   const l = useL()
-  const nav = useNavigate()
+  const leave = useLeaveNav()
   const addResult = useStore((s) => s.addResult)
   const tm = testMeta('memory')
   const accent = tm.gradFrom
@@ -43,6 +44,8 @@ export default function MemoryRun() {
   const [phase, setPhase] = useState<Phase>('ready')
   const [verdict, setVerdict] = useState<boolean | null>(null)
   const [quitOpen, setQuitOpen] = useState(false)
+  // 안드로이드·브라우저 뒤로가기도 X와 같이 '중단 확인'을 연다(확인 없이 검사가 끊기던 문제)
+  useBackClose(!quitOpen, () => setQuitOpen(true))
 
   const fwdRef = useRef<SpanTrial[]>([])
   const bwdRef = useRef<SpanTrial[]>([])
@@ -150,7 +153,7 @@ export default function MemoryRun() {
     const result = scoreMemory(fwdRef.current, bwdRef.current)
     result.durationMs = Date.now() - startRef.current
     const reward = addResult(result)
-    nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
+    leave(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
   const blockLabel = isBackward
@@ -200,13 +203,9 @@ export default function MemoryRun() {
               exit={{ opacity: 0, transition: { duration: 0 } }}
               className="flex flex-1 flex-col items-center justify-center text-center"
             >
-              <motion.div
-                animate={{ scale: [1, 1.12, 1] }}
-                transition={{ repeat: Infinity, duration: 1 }}
-                className="leading-none"
-              >
+              <div className="leading-none">
                 <Emoji e={isBackward ? '🔄' : '👀'} size={28} className="align-top" />
-              </motion.div>
+              </div>
               <p className="mt-5 text-[20px] font-extrabold">
                 {l({ ko: `${seq.length}자리 숫자를 기억하세요`, en: `Memorize ${seq.length} digits`, ja: `${seq.length}桁の数字を覚えて` })}
               </p>
@@ -231,10 +230,9 @@ export default function MemoryRun() {
                   {shown !== null ? (
                     <motion.span
                       key={`d-${shown.i}`}
-                      initial={{ scale: 0.5, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.7, opacity: 0 }}
-                      transition={{ duration: 0.18 }}
+                      // 제시 시간(켬 600/꺼짐 200ms)을 그대로 지키려고 등장·퇴장 효과 없이 즉시 켜고 끈다
+                      initial={false}
+                      exit={{ opacity: 0, transition: { duration: 0 } }}
                       className="text-[28px] font-extrabold leading-none"
                       style={{ color: accent }}
                     >
@@ -359,7 +357,7 @@ export default function MemoryRun() {
             <Button color="iq" onClick={() => setQuitOpen(false)}>
               {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
-            <Button color="white" onClick={() => nav('/test/memory', { replace: true })}>
+            <Button color="white" onClick={() => leave('/test/memory', { replace: true })}>
               {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>

@@ -1,3 +1,4 @@
+import { isNativeApp, shareOrigin } from '../lib/platform'
 import { useMemo, useRef, useState } from 'react'
 import { SPRING, press3d } from '../lib/motion'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
@@ -77,7 +78,7 @@ export default function QuickTest() {
   const share = async () => {
     if (!winner) return
     track('share', { channel: 'quick', id: test.id })
-    const url = `${location.origin}/quick/${test.id}`
+    const url = `${shareOrigin()}/quick/${test.id}`
     const txt = `[누리 마인드] 나의 ${l(test.title)}: ${winner.emoji} ${l(winner.name)} — ${l(winner.tag)}`
     if ((await shareOrCopy({ text: txt, url })) === 'copied') {
       setCopied(true)
@@ -123,7 +124,7 @@ export default function QuickTest() {
     const ok = shareKakao({
       title: `나는 "${l(winner.name)}" ${winner.emoji} | 누리 마인드`,
       description: l(winner.tag),
-      link: `${location.origin}/quick/${test.id}`,
+      link: `${shareOrigin()}/quick/${test.id}`,
     })
     track('share', { channel: 'kakao', id: test.id })
     if (!ok) share()
@@ -132,7 +133,7 @@ export default function QuickTest() {
   const shareDuelQuick = async () => {
     if (!winner || !test) return
     const enc = encodeQuickDuel({ qid: test.id, key: winner.key, nm: l(winner.name), e: winner.emoji, n: nickname })
-    const url = `${location.origin}/api/duel?r=${enc}` // 크롤러=동적 OG, 사람=/vs로 리다이렉트
+    const url = `${shareOrigin()}/api/duel?r=${enc}` // 크롤러=동적 OG, 사람=/vs로 리다이렉트
     const text = l({
       ko: `나는 ${l(test.title)}에서 "${winner.emoji} ${l(winner.name)}"! 너도 해볼래? 🆚`,
       en: `I got "${winner.emoji} ${l(winner.name)}" on ${l(test.title)}! Your turn 🆚`,
@@ -244,7 +245,8 @@ export default function QuickTest() {
           )}
 
           <div className="mt-4 space-y-2.5">
-            {kakaoEnabled() && (
+            {/* 앱 WebView에선 카카오 JS 공유가 조용히 실패한다 — 앱은 네이티브 공유 시트에서 카카오톡을 고른다 */}
+            {kakaoEnabled() && !isNativeApp() && (
               <motion.button
                 onClick={shareKakaoQuick}
                 whileTap={KAKAO_3D.whileTap}

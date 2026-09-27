@@ -1,3 +1,4 @@
+import { isNativeApp, shareOrigin } from '../lib/platform'
 import { useEffect, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
@@ -11,7 +12,8 @@ import { ROUTINES } from '../data/routines'
 import type { TestId } from '../data/types'
 import { Card, Chip, TopBar, Modal } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
-import { testMeta } from '../data/tests'
+import { hasNorm, testMeta } from '../data/tests'
+import { HOLLAND_CAREERS, type HollandType } from '../data/career'
 import { LOVE_CHEMI } from '../data/love'
 import { useStore, IQ_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
@@ -26,7 +28,7 @@ import { StatTile } from '../components/StatTile'
 import Emoji, { EmojiText } from '../components/Emoji'
 import { shareOrCopy } from '../lib/share'
 import { needsCare } from '../data/care'
-import { topPercentOf } from '../lib/format'
+import { hollandCode, topPercentOf } from '../lib/format'
 
 /** 정밀검사 전용 실행 라우트 — 문항뱅크(/test/:id/run)가 아니라 인지과제 화면으로 보내야 한다 */
 const PRECISION_RUN: Partial<Record<TestId, string>> = {
@@ -93,6 +95,25 @@ export default function TestResult() {
     { label: '파스텔', grad: ['#FBD3E9', '#A9C9EE'], swatch: ['#FBD3E9', '#A9C9EE'] },
   ]
   const topPercent = topPercentOf(result.percentile)
+  /* 규준 없는 프로필형(진로 흥미) — percentile은 자리 채움값이라 '상위 %'·게이지·대결을 숨기고 흥미 코드를 보인다 */
+  const norm = hasNorm(result.testId)
+  const code = norm ? '' : hollandCode(result)
+  const subs = result.subscales
+  // 1·2순위나 3·4순위가 동점이거나 유형 간 차이가 작으면(최고−최저 ≤ 3점) 코드가 흔들린다 — 코드만 믿지 않게 알린다
+  // ponytail: 3점·15점은 20점 범위의 경험적 임계값(규준 연구 없음). 차별도(differentiation) 연구가 생기면 그 기준으로 교체
+  const flatProfile =
+    !norm &&
+    subs.length >= 4 &&
+    (subs[0].score === subs[1].score || subs[2].score === subs[3].score || subs[0].score - subs[subs.length - 1].score <= 3)
+  // 1순위 합이 15점(문항 평균 3 '잘 모르겠다') 이하 — 좋아하는 활동 자체가 아직 적다
+  const lowInterest = !norm && subs.length > 0 && subs[0].score <= 15
+  const shareText = norm
+    ? t('result.shareText', { test: t(`test.${result.testId}.name`), persona: l(persona.name), p: topPercent })
+    : l({
+        ko: `[누리 마인드] ${t(`test.${result.testId}.name`)} 결과: 나는 ${l(persona.name)}, 흥미 코드 ${code}! 너는 어떤 일에 끌려? 👉`,
+        en: `[Nuri Mind] ${t(`test.${result.testId}.name`)}: I'm ${l(persona.name)}, interest code ${code}! What draws you? 👉`,
+        ja: `[ヌリマインド] ${t(`test.${result.testId}.name`)}の結果：私は${l(persona.name)}、興味コード${code}！あなたは？ 👉`,
+      })
   const reward = state.reward ?? 0
 
   /* 정밀검사 결과지 게이팅 — 앞(히어로·점수·게이지)은 무료, 상세 분석은 블러 → 10다이아 영구해제.
@@ -159,12 +180,8 @@ export default function TestResult() {
   }
 
   const share = async () => {
-    const text = t('result.shareText', {
-      test: t(`test.${result.testId}.name`),
-      persona: l(persona.name),
-      p: topPercent,
-    })
-    const outcome = await shareOrCopy({ text, url: window.location.origin })
+    const text = shareText
+    const outcome = await shareOrCopy({ text, url: shareOrigin() })
     // 공유 시트를 닫은 것(취소)은 실패가 아니다 — 클립보드를 덮어쓰거나 공유 보상을 주지 않는다
     if (outcome === 'cancelled') return
     if (outcome === 'copied') {
@@ -200,12 +217,10 @@ export default function TestResult() {
                   : result.wq != null
                     ? `${t('result.wqLabel')} ${result.wq}`
                     : undefined,
+        chipText: norm ? undefined : `${t('result.gauge.career')} ${code}`,
         appName: t('app.name'),
       })
-      const how = await shareCardBlob(
-        blob,
-        t('result.shareText', { test: t(`test.${result.testId}.name`), persona: l(persona.name), p: topPercent }),
-      )
+      const how = await shareCardBlob(blob, shareText)
       if (how === 'cancelled') return // 취소는 공유가 아니다 — 보상 없음
       if (how === 'downloaded') {
         setShareMsg(t('share.saved'))
@@ -219,7 +234,7 @@ export default function TestResult() {
 
   const shareDuel = async () => {
     const enc = encodeDuel({ t: result.testId, p: result.percentile, b: result.band, n: nickname, a: result.persona })
-    const url = `${window.location.origin}/api/duel?r=${enc}` // 크롤러=동적 OG, 사람=/vs로 리다이렉트
+    const url = `${shareOrigin()}/api/duel?r=${enc}` // 크롤러=동적 OG, 사람=/vs로 리다이렉트
     const text = l({
       ko: `나랑 ${t(`test.${result.testId}.name`)} 대결할래? 누가 이기나 보자! 🆚`,
       en: `Beat my ${t(`test.${result.testId}.name`)} result? 🆚`,
@@ -305,7 +320,7 @@ export default function TestResult() {
               {t(`band.${result.testId}.${result.band}`)}
             </span>
             <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
-              {t('result.topPercent', { p: topPercent })}
+              {norm ? t('result.topPercent', { p: topPercent }) : `${t('result.gauge.career')} ${code}`}
             </span>
             {result.testId === 'adhd' && result.screener !== undefined && (
               <span className="rounded-full bg-white/25 px-3.5 py-1.5 text-[13px] font-extrabold text-white">
@@ -375,7 +390,54 @@ export default function TestResult() {
           </Card>
         )}
 
+        {/* 흥미 코드 — 규준 없는 프로필형(진로 흥미)은 백분위 게이지 대신 상위 3유형과 직업 예시 */}
+        {!norm && (
+          <Card className="mt-4 text-center">
+            <h2 className="text-[17px] font-extrabold leading-tight">{gaugeTitle}</h2>
+            <div className="mt-3 text-5xl font-extrabold tracking-tight" style={{ color: tm.gradFrom }}>{code}</div>
+            <p className="mt-1 break-keep text-[13px] font-bold text-ink-sub">
+              {code.split('').map((k) => t(`band.career.${k}`)).join(' · ')}
+            </p>
+            {flatProfile && (
+              <p className="mt-2 break-keep text-[12px] font-bold leading-relaxed text-ink-faint">
+                {l({
+                  ko: '유형 사이 점수 차이가 작아요. 흥미가 아직 한쪽으로 뚜렷하지 않을 수 있으니, 코드보다 아래 막대 전체를 함께 보세요.',
+                  en: 'Your type scores are close together. Your interests may not have settled yet — look at all the bars below, not just the code.',
+                  ja: 'タイプ間の点差が小さめです。興味がまだはっきりしていない可能性があるので、コードより下の棒グラフ全体を見てください。',
+                })}
+              </p>
+            )}
+            {lowInterest && (
+              <p className="mt-2 break-keep text-[12px] font-bold leading-relaxed text-ink-faint">
+                {l({
+                  ko: '뚜렷하게 좋아하는 활동이 아직 적어요. 여러 경험을 해 본 뒤 다시 해 보세요.',
+                  en: 'There are not many activities you clearly enjoy yet. Try a range of experiences, then take this again.',
+                  ja: 'はっきり好きと言える活動がまだ少なめです。いろいろ経験してから、もう一度試してみてください。',
+                })}
+              </p>
+            )}
+            <div className="mt-4 space-y-2.5 text-left">
+              {code.split('').map((k) => (
+                <div key={k} className="rounded-2xl bg-surface2 p-3.5">
+                  <p className="text-[13px] font-extrabold">{t(`sub.${k}`)}</p>
+                  <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
+                    {l(HOLLAND_CAREERS[k as HollandType])}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 break-keep text-[12px] font-bold leading-relaxed text-ink-faint">
+              {l({
+                ko: '직업 예시는 이 흥미를 가진 사람이 많이 찾는 분야일 뿐이에요. 성별과 상관없이 누구나 고를 수 있고, 적성·능력·합격을 뜻하지 않으며, 진단 도구도 아니에요.',
+                en: 'Job examples are simply fields people with this interest often choose. They are open to anyone regardless of gender, say nothing about aptitude, ability, or getting hired, and this is not a diagnostic tool.',
+                ja: '職業例はこの興味を持つ人がよく選ぶ分野にすぎません。性別に関係なく誰でも選べ、適性・能力・合格を意味せず、診断ツールでもありません。',
+              })}
+            </p>
+          </Card>
+        )}
+
         {/* 백분위 게이지 */}
+        {norm && (
         <Card className="mt-4 text-center">
           <h2 className="text-[17px] font-extrabold leading-tight">{gaugeTitle}</h2>
           <div className="mt-3">
@@ -477,6 +539,7 @@ export default function TestResult() {
             )}
           </div>
         </Card>
+        )}
 
         {/* 빠른 IQ → 정밀 IQ 업셀 (더 정확한 측정으로 유도) */}
         {result.testId === 'iq' && result.iqMode === 'fast' && (
@@ -603,21 +666,27 @@ export default function TestResult() {
         </motion.div>
 
         {/* 정밀 분석 리포트 (광고 시청 잠금 해제) */}
-        <AiReport result={result} persona={persona} />
+        {/* AI 리포트 서버 프롬프트는 '상위 %'를 전제한다 — 규준 없는 검사엔 붙이지 않는다 */}
+        {norm && <AiReport result={result} persona={persona} />}
 
         {/* 위험 신호 + 솔루션 (압축: 한 카드 2섹션) */}
         <Card className="mt-4">
-          <h2 className="text-[17px] font-extrabold leading-tight text-red-500">{t('result.riskTitle')}</h2>
+          {/* 규준 없는 흥미 검사는 '위험'이 아니라 환경 적합도 — 중립색 */}
+          <h2 className={`text-[17px] font-extrabold leading-tight ${norm ? 'text-red-500' : 'text-ink'}`}>
+            {norm ? t('result.riskTitle') : l({ ko: '잘 안 맞을 수 있는 환경', en: 'Settings that may not fit', ja: '合わないかもしれない環境' })}
+          </h2>
           <ul className="mt-2.5 space-y-2">
             {persona.risks.slice(0, 2).map((r, i) => (
               <li key={i} className="flex items-start gap-2.5 text-[14px] font-bold leading-[1.7] text-ink">
-                <span className="mt-0.5 shrink-0 text-red-400">•</span>
+                <span className={`mt-0.5 shrink-0 ${norm ? 'text-red-400' : 'text-ink-faint'}`}>•</span>
                 {l(r)}
               </li>
             ))}
           </ul>
           <div className="my-3 h-px bg-line" />
-          <h2 className="text-[17px] font-extrabold leading-tight text-mind-700">{t('result.solutionTitle')}</h2>
+          <h2 className="text-[17px] font-extrabold leading-tight text-mind-700">
+            {norm ? t('result.solutionTitle') : l({ ko: '이렇게 알아보세요', en: 'Ways to explore', ja: '確かめ方' })}
+          </h2>
           <ul className="mt-2.5 space-y-2">
             {persona.solutions.slice(0, 3).map((r, i) => (
               <li key={i} className="flex items-start gap-2.5 text-[14px] font-bold leading-[1.7] text-ink">
@@ -647,7 +716,9 @@ export default function TestResult() {
         )}
 
         <Card className="mt-4">
-          <h2 className="text-[17px] font-extrabold leading-tight text-sky2-600">{t('result.strengthTitle')}</h2>
+          <h2 className="text-[17px] font-extrabold leading-tight text-sky2-600">
+            {norm ? t('result.strengthTitle') : l({ ko: '이 흥미가 잘 드러나는 순간', en: 'When this interest shows', ja: 'この興味が表れる瞬間' })}
+          </h2>
           <ul className="mt-2.5 space-y-2">
             {persona.strengths.slice(0, 2).map((r, i) => (
               <li key={i} className="flex items-start gap-2.5 text-[14px] font-bold leading-[1.7] text-ink">
@@ -667,6 +738,18 @@ export default function TestResult() {
               <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">{t(`intro.${result.testId}.basis`)}</p>
             </div>
           )}
+          {!norm ? (
+          <div className="mt-3">
+            <p className="text-[12px] font-extrabold text-mind-600"><Emoji e="📊" inline />{l({ ko: '흥미 코드는 어떻게 읽나요?', en: 'How to read your interest code', ja: '興味コードの読み方' })}</p>
+            <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
+              {l({
+                ko: `"${code}"는 내 안에서 가장 강한 흥미 세 가지를 순서대로 적은 거예요. 다른 사람과 비교한 순위가 아니라 나만의 흥미 모양이에요. 앞 글자일수록 대체로 더 끌린다는 뜻이지만, 점수가 비슷하면 순서는 쉽게 바뀌어요. 한 글자보다 세 글자를 함께 참고해 보세요.`,
+                en: `"${code}" lists your three strongest interests in order. It is not a ranking against other people — it is the shape of your own interests. Earlier letters generally mean a stronger pull, but close scores can easily swap places — use all three letters together as a guide, not just one.`,
+                ja: `「${code}」はあなたの中で最も強い興味3つを順に並べたものです。他人と比べた順位ではなく、あなた自身の興味の形です。前の文字ほどおおむね強く惹かれるという意味ですが、点数が近いと順番は入れ替わりやすいです。1文字より3文字を合わせて参考にしてください。`,
+              })}
+            </p>
+          </div>
+          ) : (
           <div className="mt-3">
             <p className="text-[12px] font-extrabold text-mind-600"><Emoji e="📊" inline />{l({ ko: '상위 %는 어떻게 읽나요?', en: 'How to read the top %', ja: '上位%の読み方' })}</p>
             <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
@@ -677,10 +760,17 @@ export default function TestResult() {
               })}
             </p>
           </div>
+          )}
           <div className="mt-3">
             <p className="text-[12px] font-extrabold text-mind-600"><Emoji e="🌱" inline />{l({ ko: '결과, 이렇게 쓰세요', en: 'How to use your result', ja: '結果の活かし方' })}</p>
             <p className="mt-1 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
-              {l({
+              {!norm
+                ? l({
+                    ko: '순서는 대략적이에요. 막대 전체를 보고, 끌리는 분야를 직접 체험해 보세요. 반년~1년 뒤 다시 해 보세요.',
+                    en: 'The order is approximate. Look at all the bars, try out the fields that pull you in person, and retake this in six months to a year.',
+                    ja: '順番はおおよそです。棒グラフ全体を見て、惹かれる分野を実際に体験してみてください。半年〜1年後にもう一度どうぞ。',
+                  })
+                : l({
                 ko: '심리 상태는 계절처럼 변해요. 결과는 "지금의 나"를 비추는 거울이지 낙인이 아니에요. 위의 솔루션 중 하나를 골라 2~3주 실천해 보고, 4~6주 뒤 재검사로 변화를 확인해 보세요. 같은 검사를 2회 이상 하면 결과지에 추이 그래프가 생겨요.',
                 en: "Your mind shifts like seasons. This result mirrors the present you — it isn't a label. Pick one solution above, practice it for 2–3 weeks, then retest in 4–6 weeks; take the same test twice or more and a trend graph appears here.",
                 ja: '心の状態は季節のように変わります。結果は「今の自分」を映す鏡でありレッテルではありません。上のソリューションを一つ選び2〜3週間実践し、4〜6週間後に再検査を。同じ検査を2回以上受けると推移グラフが表示されます。',
@@ -776,7 +866,8 @@ export default function TestResult() {
               />
             ))}
           </div>
-          {kakaoEnabled() && (
+          {/* 앱 WebView에선 카카오 JS 공유가 조용히 실패한다 — 앱은 네이티브 공유 시트에서 카카오톡을 고른다 */}
+            {kakaoEnabled() && !isNativeApp() && (
             <button
               onClick={() => {
                 const ok = shareKakao({
@@ -800,6 +891,8 @@ export default function TestResult() {
               <EmojiText text={copied ? t('common.copied') : t('share.text')} />
             </Button>
           </div>
+          {/* 대결은 '상위 %' 비교다 — 규준 없는 검사엔 없다 */}
+          {norm && (
           <button
             onClick={shareDuel}
             className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[15px] font-extrabold text-white"
@@ -807,6 +900,7 @@ export default function TestResult() {
           >
             {l({ ko: '친구와 결과 대결', en: 'Challenge a friend', ja: '友達と結果バトル' })}
           </button>
+          )}
         </Card>
 
         {/* 친구 초대 CTA — 결과 공유 직후 바이럴 (둘 다 +100P) */}

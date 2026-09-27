@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { useBackClose, useLeaveNav } from '../lib/backstack'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+
 import Button from '../components/Button'
 import { Modal, ProgressBar } from '../components/ui'
 import { testMeta } from '../data/tests'
@@ -31,7 +32,7 @@ function buildTrials(): boolean[] {
 
 export default function FocusRun() {
   const l = useL()
-  const nav = useNavigate()
+  const leave = useLeaveNav()
   const addResult = useStore((s) => s.addResult)
   const tm = testMeta('focus')
 
@@ -41,6 +42,8 @@ export default function FocusRun() {
   const [phase, setPhase] = useState<Phase>('fixation')
   const [verdict, setVerdict] = useState<Verdict | null>(null)
   const [quitOpen, setQuitOpen] = useState(false)
+  // 안드로이드·브라우저 뒤로가기도 X와 같이 '중단 확인'을 연다(확인 없이 검사가 끊기던 문제)
+  useBackClose(!quitOpen, () => openQuit())
 
   const resultsRef = useRef<GoTrial[]>([])
   const onsetRef = useRef(0)
@@ -68,7 +71,7 @@ export default function FocusRun() {
     const result = scoreFocus(resultsRef.current)
     result.durationMs = Date.now() - startRef.current
     const reward = addResult(result)
-    nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
+    leave(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
   // 시행 흐름: 응시점 → 자극 → 피드백 → 다음
@@ -158,10 +161,9 @@ export default function FocusRun() {
             {phase === 'stim' && (
               <motion.span
                 key={`stim-${idx}`}
-                initial={{ scale: 0.6, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.12 }}
+                // 페이드인 없이 즉시 — 반응시간은 자극이 보인 순간부터 재야 한다
+                initial={false}
+                exit={{ opacity: 0, transition: { duration: 0 } }}
                 className="h-40 w-40 rounded-full shadow-pop"
                 style={{ background: isGo ? GO_COLOR : NOGO_COLOR }}
               />
@@ -204,7 +206,7 @@ export default function FocusRun() {
             <Button color="reso" onClick={() => setQuitOpen(false)}>
               {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
-            <Button color="white" onClick={() => nav('/test/focus', { replace: true })}>
+            <Button color="white" onClick={() => leave('/test/focus', { replace: true })}>
               {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>

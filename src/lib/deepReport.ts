@@ -10,6 +10,7 @@
 import { FUNCTIONS_URL, ANON_KEY } from './supabase'
 import { PERSONAS } from '../i18n/animalTranslations'
 import type { Lang, TestResult } from '../data/types'
+import { hasNorm } from '../data/tests'
 
 export interface DeepSection {
   key: string
@@ -58,7 +59,8 @@ export function buildPayload(
   for (const r of [...results].sort((a, b) => b.at - a.at)) {
     if (!latest.has(r.testId)) latest.set(r.testId, r)
   }
-  const rows = [...latest.values()]
+  // 규준 없는 프로필형(진로 흥미)은 넣지 않는다 — 서버 프롬프트가 '상위 %'를 전제한다
+  const rows = [...latest.values()].filter((r) => hasNorm(r.testId))
 
   const tests = rows.map((r) => {
     const p = PERSONAS[r.persona]

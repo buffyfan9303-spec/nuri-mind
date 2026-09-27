@@ -1,5 +1,6 @@
 import type { LikertItem, IqItem, SubscaleScore, TestResult, TestId } from '../data/types'
 import { uid } from './random'
+import { HOLLAND, HOLLAND_PERSONA } from '../data/career'
 
 /* ───────────────────────── 통계 엔진 (백서 §2) ─────────────────────────
  * ① 정규 분포 누적 알고리즘 (Normal CDF) — 원점수를 인류 전체 좌표(백분위)로 변환
@@ -391,6 +392,37 @@ export function scoreSocialAnx(items: LikertItem[], answers: Record<string, numb
     return { key, score: a.s, max: a.m, ratio: laplace(a.s - a.n, a.m - a.n) }
   })
   return base('socialanx', raw, pct, band, persona, subscales, {})
+}
+
+/* ──────────── CAREER INTEREST (Holland RIASEC, 자체 문항) ──────────── */
+/** 1~5 좋아함, 6유형 × 5문항. 유형 점수 = 5문항 합(5~25). 규준 없음 → percentile은 자리 채움값 50(화면에 안 보임, tests.ts noNorm).
+ *  순위: ① 유형 점수 높은 순 → ② '매우 좋아함(5)' 개수 많은 순(같은 합이면 강한 선호가 더 많은 쪽) → ③ R·I·A·S·E·C 고정 순서.
+ *  ③은 결정적이지만 R 쪽으로 기우는 임의 규칙이다 — 결과 화면은 1·2순위 동점, 3·4순위 동점, 최고−최저 ≤ 3점이면
+ *  '흥미가 아직 뚜렷하지 않음'을, 1순위 합이 15점 이하면 '뚜렷하게 좋아하는 활동이 아직 적음'을 함께 알린다(TestResult).
+ *  subscales는 순위 순서로 담는다 → 흥미 코드 = 앞 3개 키(hollandCode). band = 1순위 유형, persona = 그 유형의 동물. */
+export function scoreCareer(items: LikertItem[], answers: Record<string, number>): TestResult {
+  const acc: Record<string, { s: number; n: number; strong: number }> = {}
+  for (const k of HOLLAND) acc[k] = { s: 0, n: 0, strong: 0 }
+  let raw = 0
+  for (const it of items) {
+    const a = acc[it.sub]
+    if (!a) continue
+    const v = answers[it.id] ?? 3
+    raw += v
+    a.s += v
+    a.n++
+    if (v === 5) a.strong++
+  }
+  const ranked = [...HOLLAND].sort(
+    (x, y) => acc[y].s - acc[x].s || acc[y].strong - acc[x].strong || HOLLAND.indexOf(x) - HOLLAND.indexOf(y),
+  )
+  const subscales: SubscaleScore[] = ranked.map((key) => {
+    const { s, n } = acc[key]
+    return { key, score: s, max: n * 5, ratio: laplace(s - n, n * 4) }
+  })
+  const top = ranked[0]
+  const axes = Object.fromEntries(HOLLAND.map((k) => [k, acc[k].s]))
+  return base('career', raw, 50, top, HOLLAND_PERSONA[top], subscales, { axes })
 }
 
 /* ──────────── DARK TRIAD (SD3 3요인) ──────────── */

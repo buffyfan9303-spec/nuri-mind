@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Button from '../components/Button'
 import { Card, TopBar } from '../components/ui'
 import { PERSONAS } from '../i18n/animalTranslations'
-import { TESTS } from '../data/tests'
+import { GATED_DEEP, TESTS } from '../data/tests'
 import { useStore, isPremium, PREMIUM_KRW } from '../store/useStore'
 import { track } from '../lib/analytics'
 import { useT, useL } from '../i18n/useT'
@@ -22,8 +22,8 @@ import Emoji, { EmojiText } from '../components/Emoji'
  * 비용 가드: 비프리미엄은 엣지를 호출하지 않는다(정적 티저만).
  */
 
-/** 심층검사(비정밀) 목록 — 완주 판정 기준 */
-const DEEP_IDS = TESTS.filter((t) => !t.precision).map((t) => t.id)
+/** 심층검사 목록 — 완주 판정 기준(기존 11종, 진로 흥미 제외 — data/tests.ts GATED_DEEP) */
+const DEEP_IDS = GATED_DEEP.map((t) => t.id)
 /** 캐시 키(store.aiReportText) · 재생성 쿨다운 */
 const CACHE_KEY = 'deep'
 const REGEN_COOLDOWN_MS = 24 * 3600e3

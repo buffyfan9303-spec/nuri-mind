@@ -20,7 +20,7 @@ export function TopBar({
   return (
     <div
       className={`sticky top-[env(safe-area-inset-top)] z-30 flex h-14 items-center gap-2 px-3 ${
-        transparent ? '' : 'bg-cream/90 backdrop-blur'
+        transparent ? '' : 'bg-cream'
       }`}
     >
       {back !== undefined && (

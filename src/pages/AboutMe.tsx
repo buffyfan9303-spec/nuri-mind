@@ -7,7 +7,7 @@ import IconBadge from '../components/IconBadge'
 import ScrollChips from '../components/ScrollChips'
 import { useStore } from '../store/useStore'
 import { useL, useT } from '../i18n/useT'
-import { TESTS } from '../data/tests'
+import { GATED_DEEP } from '../data/tests'
 import { TEST_NAME_KEY, TEST_SHORT_KEY } from '../data/terms'
 import { PERSONA_VISUAL } from '../i18n/personaVisual'
 import type { L, TestId, TestResult } from '../data/types'
@@ -52,8 +52,9 @@ export default function AboutMe() {
     return m
   }, [results])
 
-  const deepDone = TESTS.filter((tm) => !tm.precision && latest.has(tm.id))
-  const deepLeft = TESTS.filter((tm) => !tm.precision && !latest.has(tm.id))
+  // 진로 흥미(규준 없는 추가 검사)는 '모두 마침'·종합 설명 묶음에 넣지 않는다 — data/tests.ts GATED_DEEP
+  const deepDone = GATED_DEEP.filter((tm) => latest.has(tm.id))
+  const deepLeft = GATED_DEEP.filter((tm) => !latest.has(tm.id))
   const brainDone = BRAIN.filter((b) => latest.has(b.id))
 
   // 매거진 본문은 무거워(별도 청크) 목록에 필요한 머리글만 뽑는다

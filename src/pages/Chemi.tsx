@@ -1,3 +1,4 @@
+import { shareOrigin } from '../lib/platform'
 import { useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -34,7 +35,7 @@ export default function Chemi() {
   const share = async () => {
     if (!mine) return
     track('share', { channel: 'chemi' })
-    const url = `${location.origin}/chemi?a=${mine}`
+    const url = `${shareOrigin()}/chemi?a=${mine}`
     const txt = `[누리 마인드] 나랑 연애 궁합 볼래? 내 연애 동물은 ${l(PERSONAS[mine]?.name ?? { ko: '', en: '', ja: '' })} ${PERSONAS[mine]?.emoji ?? '🐾'}!`
     if ((await shareOrCopy({ text: txt, url })) === 'copied') {
       setCopied(true)

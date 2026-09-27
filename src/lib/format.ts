@@ -17,6 +17,11 @@ export function topPercentOf(percentile: number): number {
   return Math.max(0.5, round1(100 - percentile))
 }
 
+/** 진로 흥미 코드(상위 3유형, 예: 'SAE') — scoreCareer가 subscales를 순위 순으로 저장한다. 규준 없는 검사라 '상위 %' 대신 이걸 보인다 */
+export function hollandCode(r: { subscales?: { key: string }[] }): string {
+  return (r.subscales ?? []).slice(0, 3).map((s) => s.key).join('')
+}
+
 /**
  * 결과 날짜 — '9월 24일'처럼 짧게. 올해가 아니면 연도를 붙인다.
  * toLocaleDateString 기본값('2026. 9. 24.')은 문장 가운데서 끝의 마침표가 어색하다.

@@ -1807,6 +1807,214 @@ export const PERSONAS: Record<string, Persona> = {
       { ko: '소수의 사람과 깊고 믿음직한 관계를 맺는 힘', en: 'The power to form deep, trusting bonds with a few', ja: '少数と濃く信頼できる関係を結ぶ力' },
     ],
   },
+  /* ── 진로 흥미(Holland RIASEC) — 1순위 유형별. 흥미 ≠ 적성·능력, 직업 예시는 결과 화면(data/career.ts)에 ──
+     규준 없는 흥미 검사라 성격 단정을 하지 않는다: risks = '잘 안 맞을 수 있는 환경'(환경 적합도만),
+     strengths = '이 흥미가 잘 드러나는 순간'(능력이 아니라 선호), slap = 직접 해 보고 확인하는 한 걸음.
+     동물은 성별 고정관념이 없는 것으로(수탉·암탉 → 조랑말·돼지, 2026-09-27 측정검증 검토) */
+  ox: {
+    emoji: '🐮',
+    grad: ['#B7793A', '#E3B27A'],
+    name: { ko: '뚝딱 소', en: 'Handy Ox', ja: 'てきぱき牛' },
+    title: { ko: '손으로 만드는 현실형', en: 'The Hands-on Realist (R)', ja: '手で作る現実型' },
+    tagline: {
+      ko: '말보다 손이 먼저 움직이는 사람',
+      en: 'Hands move before words do',
+      ja: '言葉より先に手が動く人',
+    },
+    desc: {
+      ko: '직접 만지고, 고치고, 만들어 볼 때 흥미가 살아나요. 눈에 보이는 결과가 나오는 일, 몸을 쓰는 활동, 도구·기계·자연과 가까운 일에 끌리는 편이에요.',
+      en: 'Your interest comes alive when you touch, fix, and build. You lean toward work with visible results, physical activity, and tools, machines, or nature.',
+      ja: '直接触れて、直して、作るときに興味が湧きます。目に見える成果が出る仕事、体を使う活動、道具・機械・自然に近い仕事に惹かれがちです。',
+    },
+    slap: {
+      ko: '흥미를 확인해 주는 건 생각이 아니라 직접 해 본 경험이에요. 이번 달에 하나를 손으로 만들어 보세요. 해 보고 좋으면 그게 진짜 흥미예요.',
+      en: 'What confirms an interest is doing, not thinking. Build one thing with your hands this month — if you enjoy it, that is the real signal.',
+      ja: '興味を確かめるのは考えではなく実際の経験です。今月ひとつ手で作ってみて。楽しければ、それが本物の興味です。',
+    },
+    risks: [
+      { ko: '하루 대부분이 회의와 서류로 채워지는 환경', en: 'Settings where most of the day is meetings and paperwork', ja: '一日の大半が会議と書類で埋まる環境' },
+      { ko: '몸을 거의 쓰지 않고 결과물이 눈에 보이지 않는 일', en: 'Work with little physical activity and no visible result', ja: '体をほとんど使わず、成果が目に見えない仕事' },
+    ],
+    solutions: [
+      { ko: '공방·원데이 클래스·정비 체험처럼 손으로 해 보는 경험을 한 번 잡아 보기', en: 'Book one hands-on experience — a workshop, a one-day class, a repair session', ja: '工房・体験教室・整備体験など手を動かす機会を一度作る' },
+      { ko: '끌리는 분야의 자격증·실습 과정이 무엇인지 찾아보기', en: 'Look up the certificates and practical courses in a field that pulls you', ja: '惹かれる分野の資格や実習コースを調べてみる' },
+      { ko: '그 분야에서 실제로 일하는 사람의 하루를 직접 들어 보기', en: 'Hear from someone who actually works in that field about their day', ja: 'その分野で実際に働く人の一日を直接聞いてみる' },
+    ],
+    strengths: [
+      { ko: '눈에 보이는 결과물을 만들어 가는 걸 즐기는 편', en: 'You tend to enjoy making something you can see and touch', ja: '目に見える物を作っていくのを楽しむほう' },
+      { ko: '직접 해 보면서 방법을 찾는 걸 좋아하는 편', en: 'You tend to like figuring things out by trying them', ja: '実際にやりながらやり方を見つけるのが好きなほう' },
+    ],
+  },
+  monkey: {
+    emoji: '🐵',
+    grad: ['#3E7CC9', '#8FB8E8'],
+    name: { ko: '호기심 원숭이', en: 'Curious Monkey', ja: '好奇心ザル' },
+    title: { ko: '왜?를 파고드는 탐구형', en: 'The Curious Investigator (I)', ja: '「なぜ？」を掘る研究型' },
+    tagline: {
+      ko: '답보다 이유가 더 궁금한 사람',
+      en: 'More curious about the why than the answer',
+      ja: '答えより理由が気になる人',
+    },
+    desc: {
+      ko: '원리를 이해하고, 자료를 분석하고, 어려운 문제를 논리로 풀어낼 때 즐거움을 느껴요. 혼자 깊게 생각할 시간이 있는 일에 끌리는 편이에요.',
+      en: 'You enjoy understanding how things work, analyzing data, and solving hard problems with logic. You lean toward work that leaves room to think deeply.',
+      ja: '原理を理解し、データを分析し、難しい問題を論理で解くときに楽しさを感じます。一人で深く考える時間のある仕事に惹かれがちです。',
+    },
+    slap: {
+      ko: '궁금한 걸 검색만 하고 넘기면 흥미는 쌓이지 않아요. 한 가지 주제를 정해 끝까지 파 본 기록을 남겨 보세요. 그 기록이 흥미를 진로로 바꿔요.',
+      en: 'Searching and moving on does not build an interest. Pick one topic, dig all the way, and keep notes — that record is what turns curiosity into a path.',
+      ja: '検索して終わりでは興味は積み上がりません。テーマを一つ決めて最後まで掘り、記録を残して。その記録が興味を進路に変えます。',
+    },
+    risks: [
+      { ko: '생각할 틈 없이 빠른 결정만 계속 요구되는 환경', en: 'Settings that demand constant snap decisions with no time to think', ja: '考える間もなく素早い決断ばかり求められる環境' },
+      { ko: '하루 종일 사람을 상대해야 하는 일', en: 'Work that means dealing with people all day', ja: '一日中人と接する必要がある仕事' },
+    ],
+    solutions: [
+      { ko: '궁금한 주제 하나를 골라 2주 동안 조사 노트를 만들어 보기', en: 'Pick one question and keep a two-week research notebook', ja: '気になるテーマを一つ選び、2週間の調査ノートを作る' },
+      { ko: '과학관·강연·온라인 강좌로 관심 분야를 깊이 맛보기', en: 'Go deeper through a science museum, a talk, or an online course', ja: '科学館・講演・オンライン講座で関心分野を深く味わう' },
+      { ko: '연구·분석 일을 하는 사람의 실제 하루를 인터뷰나 영상으로 확인하기', en: 'See a real day in research or analysis work via an interview or video', ja: '研究・分析職の実際の一日をインタビューや動画で確かめる' },
+    ],
+    strengths: [
+      { ko: '복잡한 문제를 쪼개 보는 걸 즐기는 편', en: 'You tend to enjoy breaking a complex problem into pieces', ja: '複雑な問題を分解してみるのを楽しむほう' },
+      { ko: '궁금한 걸 스스로 찾아 배우는 걸 좋아하는 편', en: 'You tend to like looking things up and learning on your own', ja: '気になることを自分で調べて学ぶのが好きなほう' },
+    ],
+  },
+  dragon: {
+    emoji: '🐲',
+    grad: ['#8B5CF6', '#C4B5FD'],
+    name: { ko: '상상하는 용', en: 'Dreaming Dragon', ja: '想像する竜' },
+    title: { ko: '표현하는 예술형', en: 'The Expressive Artist (A)', ja: '表現する芸術型' },
+    tagline: {
+      ko: '세상에 없던 것을 떠올리는 사람',
+      en: 'Imagines what does not exist yet',
+      ja: 'この世にないものを思い描く人',
+    },
+    desc: {
+      ko: '그림·글·음악·영상처럼 나만의 방식으로 표현할 때 가장 몰입해요. 정해진 틀보다 자유롭게 시도할 수 있는 환경에 끌리는 편이에요.',
+      en: 'You get most absorbed expressing things your own way — art, writing, music, video. You lean toward settings with freedom rather than fixed formats.',
+      ja: '絵・文章・音楽・映像など自分なりの表現をするとき一番没頭します。決まった型より自由に試せる環境に惹かれがちです。',
+    },
+    slap: {
+      ko: '영감을 기다리기만 하면 작품은 쌓이지 않아요. 흥미를 키우는 건 꾸준히 만들어 본 양이에요. 작게라도 매주 하나를 완성해 보세요.',
+      en: 'Waiting for inspiration does not build a body of work. Interest grows with how much you make — finish one small piece every week.',
+      ja: 'ひらめきを待つだけでは作品は増えません。興味を育てるのは作った量。小さくても毎週一つ完成させてみて。',
+    },
+    risks: [
+      { ko: '정해진 규칙과 반복이 대부분인 환경', en: 'Settings run mostly on fixed rules and repetition', ja: '決まった規則と繰り返しが大半の環境' },
+      { ko: '내 방식대로 시도해 볼 여지가 거의 없는 일', en: 'Work with little room to try things your own way', ja: '自分なりに試す余地がほとんどない仕事' },
+    ],
+    solutions: [
+      { ko: '작은 작품을 정해진 주기로 완성해 모아 보기(포트폴리오의 시작)', en: 'Finish small pieces on a schedule and collect them — a portfolio starts here', ja: '小さな作品を決まった周期で完成させ集める(ポートフォリオの第一歩)' },
+      { ko: '관심 분야의 수업이나 모임에서 다른 사람의 작업 방식을 보기', en: 'Join a class or group to see how others work', ja: '関心分野の授業やサークルで他の人の作り方を見る' },
+      { ko: '창작을 직업으로 하는 사람의 실제 수입 구조와 하루를 알아보기', en: 'Learn how working creators actually earn and spend their days', ja: '創作を仕事にする人の実際の収入構造と一日を調べる' },
+    ],
+    strengths: [
+      { ko: '남다른 방식으로 떠올려 보는 걸 즐기는 편', en: 'You tend to enjoy imagining things in your own way', ja: '人と違うやり方で思い描くのを楽しむほう' },
+      { ko: '생각과 느낌을 글·그림·소리로 옮기는 걸 좋아하는 편', en: 'You tend to like turning thoughts and feelings into words, images, or sound', ja: '考えや気持ちを文章・絵・音にするのが好きなほう' },
+    ],
+  },
+  llama: {
+    emoji: '🦙',
+    grad: ['#E0788F', '#F4B4C2'],
+    name: { ko: '다정한 라마', en: 'Caring Llama', ja: 'やさしいラマ' },
+    title: { ko: '사람을 돕는 사회형', en: 'The Helpful Socializer (S)', ja: '人を助ける社会型' },
+    tagline: {
+      ko: '누군가 나아지는 걸 볼 때 힘이 나는 사람',
+      en: 'Energized by seeing someone get better',
+      ja: '誰かが良くなるのを見ると元気が出る人',
+    },
+    desc: {
+      ko: '가르치고, 돌보고, 이야기를 들어 주며 사람과 함께할 때 흥미가 커져요. 내 일이 누군가에게 도움이 된다고 느끼는 환경에 끌리는 편이에요.',
+      en: 'Your interest grows when you teach, care for, and listen to people. You lean toward settings where your work clearly helps someone.',
+      ja: '教え、世話をし、話を聞くなど人と関わるときに興味が高まります。自分の仕事が誰かの役に立つと感じられる環境に惹かれがちです。',
+    },
+    slap: {
+      ko: '돕는 흥미는 실제로 누군가를 도와 본 경험에서 확인돼요. 작은 역할 하나를 맡아 보고, 끝난 뒤 힘이 났는지 지쳤는지 살펴보세요.',
+      en: 'An interest in helping is confirmed by actually helping. Take one small role, then notice afterward whether it energized or drained you.',
+      ja: '助けたい興味は、実際に誰かを助けた経験で確かめられます。小さな役割を一つ担い、終わった後に元気が出たか疲れたかを見てみて。',
+    },
+    risks: [
+      { ko: '혼자 기계나 자료만 다루는 환경', en: 'Settings where you work alone with only machines or data', ja: '一人で機械や資料だけを扱う環境' },
+      { ko: '내 일이 누구에게 도움이 되는지 보이지 않는 일', en: 'Work where you cannot see who it helps', ja: '自分の仕事が誰の役に立つのか見えない仕事' },
+    ],
+    solutions: [
+      { ko: '멘토링·봉사·스터디 운영처럼 사람을 돕는 역할을 작게 맡아 보기', en: 'Take a small helping role — mentoring, volunteering, running a study group', ja: 'メンター・ボランティア・勉強会運営など人を助ける役割を小さく担う' },
+      { ko: '교육·상담·보건 분야의 실습이나 자원봉사 기회를 알아보기', en: 'Look into internships or volunteering in education, counseling, or health', ja: '教育・相談・保健分野の実習やボランティアを調べる' },
+      { ko: '교사·상담사·간호사처럼 돕는 일을 하는 사람에게 실제 하루를 물어보기', en: 'Ask a teacher, counselor, or nurse what their real day looks like', ja: '教師・カウンセラー・看護師など人を助ける仕事の人に実際の一日を聞く' },
+    ],
+    strengths: [
+      { ko: '다른 사람의 이야기를 듣고 함께하는 걸 즐기는 편', en: 'You tend to enjoy listening to people and doing things together', ja: '人の話を聞き、一緒に何かするのを楽しむほう' },
+      { ko: '사람들을 서로 이어 주는 걸 좋아하는 편', en: 'You tend to like bringing people together', ja: '人と人をつなぐのが好きなほう' },
+    ],
+  },
+  pony: {
+    emoji: '🐴',
+    grad: ['#E4572E', '#F59E7A'],
+    name: { ko: '앞장서는 조랑말', en: 'Leading Pony', ja: '先頭を走るポニー' },
+    title: { ko: '이끄는 진취형', en: 'The Bold Enterpriser (E)', ja: '率いる企業型' },
+    tagline: {
+      ko: '새 판을 먼저 벌이고 싶은 사람',
+      en: 'Wants to be the one who gets things started',
+      ja: '真っ先に新しいことを始めたい人',
+    },
+    desc: {
+      ko: '목표를 세우고, 사람들을 설득해 움직이고, 새 일을 시작할 때 흥미가 커져요. 경쟁과 도전이 있는 환경에 끌리는 편이에요.',
+      en: 'Your interest grows when you set goals, persuade people, and launch new things. You lean toward settings with challenge and competition.',
+      ja: '目標を立て、人を説得して動かし、新しいことを始めるときに興味が高まります。競争や挑戦のある環境に惹かれがちです。',
+    },
+    slap: {
+      ko: '이끄는 흥미는 실제로 한 번 맡아 볼 때 확인돼요. 작은 모임 하나를 처음부터 끝까지 꾸려 보고, 어떤 순간이 즐거웠는지 적어 보세요.',
+      en: 'An interest in leading is confirmed by actually leading. Run one small group from start to finish and write down which moments you enjoyed.',
+      ja: '率いる興味は、実際に一度任されてみて確かめられます。小さな集まりを最初から最後まで運営し、どの瞬間が楽しかったか書き出してみて。',
+    },
+    risks: [
+      { ko: '세밀한 반복 업무가 대부분인 환경', en: 'Settings made up mostly of detailed, repetitive tasks', ja: '細かい繰り返し作業が大半の環境' },
+      { ko: '결정할 권한이나 도전할 목표가 거의 없는 일', en: 'Work with little say in decisions and no goals to chase', ja: '決める権限や挑戦する目標がほとんどない仕事' },
+    ],
+    solutions: [
+      { ko: '모임이나 팀 프로젝트에서 이끄는 역할이나 발표를 맡아 보기', en: 'Take the lead or the presentation in a club or team project', ja: 'サークルやチームで率いる役や発表を担ってみる' },
+      { ko: '중고 거래·플리마켓 같은 작은 판매 실험으로 흥미를 확인하기', en: 'Test the interest with a small selling experiment, like a flea market', ja: 'フリマなど小さな販売の実験で興味を確かめる' },
+      { ko: '경영·영업·기획 일의 실제 성과 압박까지 함께 알아보기', en: 'Learn the real performance pressure in management, sales, or planning roles', ja: '経営・営業・企画職の実際の成果プレッシャーまで調べる' },
+    ],
+    strengths: [
+      { ko: '목표를 세우고 사람들과 밀고 나가는 걸 즐기는 편', en: 'You tend to enjoy setting a goal and pushing toward it with others', ja: '目標を立てて仲間と進めていくのを楽しむほう' },
+      { ko: '새로운 기회를 찾아보는 걸 좋아하는 편', en: 'You tend to like looking for new opportunities', ja: '新しいチャンスを探すのが好きなほう' },
+    ],
+  },
+  pig: {
+    emoji: '🐷',
+    grad: ['#5E8C6A', '#A7CBB0'],
+    name: { ko: '알뜰살뜰 돼지', en: 'Tidy Piggy', ja: 'きっちりブタ' },
+    title: { ko: '질서를 만드는 관습형', en: 'The Orderly Organizer (C)', ja: '秩序を作る慣習型' },
+    tagline: {
+      ko: '정리된 것을 보면 마음이 편해지는 사람',
+      en: 'Feels calm when things are in order',
+      ja: '整っているのを見ると落ち着く人',
+    },
+    desc: {
+      ko: '기록·숫자·일정·절차를 정확하게 다루고 체계를 세울 때 흥미를 느껴요. 해야 할 일과 기준이 분명한 환경에 끌리는 편이에요.',
+      en: 'You enjoy handling records, numbers, schedules, and procedures precisely and building systems. You lean toward settings with clear tasks and standards.',
+      ja: '記録・数字・日程・手順を正確に扱い、仕組みを作るときに興味を感じます。やるべき事と基準がはっきりした環境に惹かれがちです。',
+    },
+    slap: {
+      ko: '정리하는 흥미는 실제로 체계를 만들어 볼 때 확인돼요. 이번 달 가계부나 일정표 하나를 직접 만들어 보고, 그 과정이 즐거웠는지 살펴보세요.',
+      en: 'An interest in organizing is confirmed by actually building a system. Make one budget or schedule this month and notice whether you enjoyed the process.',
+      ja: '整理する興味は、実際に仕組みを作ってみて確かめられます。今月、家計簿や予定表を一つ作ってみて、その過程が楽しかったか見てみて。',
+    },
+    risks: [
+      { ko: '규칙이나 기준 없이 즉흥으로 돌아가는 환경', en: 'Settings that run on improvisation with no rules or standards', ja: '規則や基準なしに即興で回る環境' },
+      { ko: '할 일과 책임이 자주 바뀌는 일', en: 'Work where tasks and responsibilities keep changing', ja: 'やる事と責任がよく変わる仕事' },
+    ],
+    solutions: [
+      { ko: '가계부·일정표·자료 정리처럼 체계를 만드는 일을 맡아 보기', en: 'Take on something that needs a system — a budget, a schedule, a file cleanup', ja: '家計簿・スケジュール表・資料整理など仕組み作りを担ってみる' },
+      { ko: '회계·사무·데이터 관리 분야의 자격증이나 실무 과정을 알아보기', en: 'Look into certificates or practical courses in accounting, admin, or data management', ja: '会計・事務・データ管理分野の資格や実務コースを調べる' },
+      { ko: '스프레드시트 같은 도구를 익혀 흥미를 실제 쓸모로 이어 보기', en: 'Learn tools like spreadsheets to put the interest to practical use', ja: '表計算などのツールを覚え、興味を実際の役立ちにつなげる' },
+    ],
+    strengths: [
+      { ko: '정리된 체계를 만드는 걸 즐기는 편', en: 'You tend to enjoy setting up an orderly system', ja: '整った仕組みを作るのを楽しむほう' },
+      { ko: '숫자와 기록을 맞춰 보는 걸 좋아하는 편', en: 'You tend to like checking that numbers and records line up', ja: '数字や記録を照らし合わせるのが好きなほう' },
+    ],
+  },
 }
 
 /** 페르소나 → 검사 매핑 (커뮤니티 주제 필터용) */
@@ -1823,6 +2031,7 @@ export const PERSONA_TEST: Record<string, TestId> = {
   beaver: 'perfect', eagle: 'perfect', butterfly: 'perfect', duck: 'perfect',
   horse: 'efficacy', kangaroo: 'efficacy', chick: 'efficacy', jellyfish: 'efficacy',
   parrot: 'socialanx', giraffe: 'socialanx', seal: 'socialanx', badger: 'socialanx',
+  ox: 'career', monkey: 'career', dragon: 'career', llama: 'career', pony: 'career', pig: 'career',
   elephant: 'memory', octopus: 'memory', goldfish: 'memory',
   hawk: 'focus', bee: 'focus', otter: 'focus',
   cheetah: 'speed', rabbit: 'speed', tortoise: 'speed',

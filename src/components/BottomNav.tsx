@@ -88,7 +88,7 @@ export default function BottomNav() {
 
       {/* 숨은 채로도 Tab 순서엔 남아 있다 — 키보드 포커스가 들어오면 다시 보여 준다(화면 밖 요소에 포커스가 가면 위치를 잃는다) */}
       <nav className="safe-bottom pointer-events-none relative z-40" onFocusCapture={() => hidden && setHidden(false)}>
-        <div className="pointer-events-auto mx-auto mb-1 flex max-w-[380px] items-center justify-around rounded-[26px] border border-line bg-surface/95 px-1.5 py-1.5 shadow-pop backdrop-blur-md">
+        <div className="pointer-events-auto mx-auto mb-1 flex max-w-[380px] items-center justify-around rounded-[26px] border border-line bg-surface px-1.5 py-1.5 shadow-pop-md">
           {TABS.map((tab) => {
             const active = tab.to === '/' ? loc.pathname === '/' : loc.pathname.startsWith(tab.to)
             return (

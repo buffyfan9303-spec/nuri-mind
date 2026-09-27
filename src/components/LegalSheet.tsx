@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion, useDragControls, type PanInfo } from 'framer-motion'
@@ -66,14 +67,15 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
   }
 
   return (
+    createPortal(
     <AnimatePresence>
       {doc && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          exit={{ opacity: 0, transition: SPRING.exit }}
           onClick={onClose}
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 backdrop-blur-[2px]"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/45"
         >
           <motion.div
             ref={panelRef}
@@ -121,7 +123,7 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
                 showSkeleton && (
                   <div className="space-y-2.5 pt-2">
                     {Array.from({ length: 8 }, (_, i) => (
-                      <div key={i} className="h-3.5 animate-pulse rounded-full bg-surface2" style={{ width: `${95 - i * 6}%` }} />
+                      <div key={i} className="h-3.5 motion-safe:animate-pulse rounded-full bg-surface2" style={{ width: `${95 - i * 6}%` }} />
                     ))}
                   </div>
                 )
@@ -141,6 +143,8 @@ export default function LegalSheet({ doc, onClose }: { doc: 'terms' | 'privacy' 
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
+  )
   )
 }

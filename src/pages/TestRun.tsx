@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useBackClose, useLeaveNav } from '../lib/backstack'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Navigate, useParams, useSearchParams } from 'react-router-dom'
 import Button from '../components/Button'
 import { AnswerCard, LessonHeader, Modal } from '../components/ui'
 import { FigCell, FoldStrip, MatrixGrid } from '../components/Fig'
@@ -16,12 +17,13 @@ import { SELFESTEEM_ITEMS } from '../data/selfesteem'
 import { PERFECTION_ITEMS } from '../data/perfection'
 import { EFFICACY_ITEMS } from '../data/efficacy'
 import { SOCIALANX_ITEMS } from '../data/socialanx'
+import { CAREER_ITEMS } from '../data/career'
 import { IQ_ITEMS, IQ_PROMPTS } from '../data/iq'
 import { testMeta } from '../data/tests'
 import type { IqItem, LikertItem, TestId } from '../data/types'
 import { mulberry32, shuffle } from '../lib/random'
-import { scoreAdhd, scoreBurnout, scoreDark, scoreDopamine, scoreEgo, scoreIq, scoreLove, scoreResilience, scoreSelfEsteem, scorePerfection, scoreEfficacy, scoreSocialAnx } from '../lib/scoring'
-import { LIKERT_AGREE, LIKERT_FREQ } from '../i18n/translations'
+import { scoreAdhd, scoreBurnout, scoreDark, scoreDopamine, scoreEgo, scoreIq, scoreLove, scoreResilience, scoreSelfEsteem, scorePerfection, scoreEfficacy, scoreSocialAnx, scoreCareer } from '../lib/scoring'
+import { LIKERT_AGREE, LIKERT_FREQ, LIKERT_LIKE } from '../i18n/translations'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { sfx, startAmbient, stopAmbient } from '../lib/sound'
@@ -52,9 +54,12 @@ const BANKS: Partial<Record<TestId, LikertItem[]>> = {
   perfect: PERFECTION_ITEMS,
   efficacy: EFFICACY_ITEMS,
   socialanx: SOCIALANX_ITEMS,
+  career: CAREER_ITEMS,
 }
 /** 1~5 동의 척도를 쓰는 검사 (나머지 리커트는 0~4 빈도) */
 const AGREE_TESTS: TestId[] = ['ego', 'love', 'resilience', 'dark', 'selfesteem', 'perfect', 'efficacy', 'socialanx']
+/** 1~5 선호 척도(싫다~좋다)를 쓰는 흥미 검사 — 활동 문항이라 '동의'보다 '좋아함'이 맞다 */
+const LIKE_TESTS: TestId[] = ['career']
 
 export default function TestRun() {
   const { id } = useParams<{ id: TestId }>()
@@ -69,7 +74,7 @@ export default function TestRun() {
   const lang = useStore((s) => s.lang)
   const ambient = useStore((s) => s.ambient)
   const addResult = useStore((s) => s.addResult)
-  const nav = useNavigate()
+  const leave = useLeaveNav()
 
   /* 차분한 배경음 (설정 ON 시 검사 동안 재생) */
   useEffect(() => {
@@ -95,6 +100,8 @@ export default function TestRun() {
   const [sel, setSel] = useState<number | string | null>(null)
   const [answers, setAnswers] = useState<Record<string, number | string | null>>({})
   const [quitOpen, setQuitOpen] = useState(false)
+  // 안드로이드·브라우저 뒤로가기도 X와 같이 '중단 확인'을 연다(확인 없이 검사가 끊기던 문제)
+  useBackClose(!quitOpen, () => setQuitOpen(true))
   const [bubble, setBubble] = useState<string | null>(null)
   const [timeLeft, setTimeLeft] = useState(() => (iqItems[0] ? iqTimeFor(iqItems[0].difficulty) : 45))
   const startRef = useRef(Date.now())
@@ -113,9 +120,10 @@ export default function TestRun() {
   }
   useEffect(() => () => timersRef.current.forEach((h) => window.clearTimeout(h)), [])
 
-  const isAgree = AGREE_TESTS.includes(testId)
+  const isLike = LIKE_TESTS.includes(testId)
+  const isAgree = isLike || AGREE_TESTS.includes(testId)
   const likertBase = isAgree ? 1 : 0
-  const likertLabels = isAgree ? LIKERT_AGREE[lang] : LIKERT_FREQ[lang]
+  const likertLabels = isLike ? LIKERT_LIKE[lang] : isAgree ? LIKERT_AGREE[lang] : LIKERT_FREQ[lang]
 
   const finish = (map: Record<string, number | string | null>) => {
     if (finishedRef.current) return
@@ -143,11 +151,13 @@ export default function TestRun() {
                         ? scorePerfection(PERFECTION_ITEMS, likertMap)
                         : testId === 'efficacy'
                           ? scoreEfficacy(EFFICACY_ITEMS, likertMap)
-                          : scoreSocialAnx(SOCIALANX_ITEMS, likertMap)
+                          : testId === 'career'
+                            ? scoreCareer(CAREER_ITEMS, likertMap)
+                            : scoreSocialAnx(SOCIALANX_ITEMS, likertMap)
     result.durationMs = Date.now() - startRef.current
     if (isIq) result.iqMode = iqMode
     const reward = addResult(result)
-    nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
+    leave(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
   const advance = (map: Record<string, number | string | null>) => {
@@ -160,6 +170,8 @@ export default function TestRun() {
     setSel(null)
     advancingRef.current = false
     // 넘김/시간초과엔 소리 없음(조급함 방지). 사운드는 답변 선택 시에만.
+    // IQ(시간 제한 문항)는 측정 중이라 응원 말풍선을 띄우지 않는다
+    if (isIq) return
     if (next === Math.floor(total / 2)) flash(t('run.halfway'))
     else if (next === total - 2) flash(t('run.almost'))
   }
@@ -188,7 +200,6 @@ export default function TestRun() {
     if (idx !== idxRef.current || finishedRef.current) return
     setSel(optId)
     sfx.tap()
-    haptic(7)
   }
   const confirmIq = () => {
     if (sel === null || advancingRef.current) return
@@ -297,7 +308,7 @@ export default function TestRun() {
       {/* 문항 카드 */}
       {/* IQ는 중단 창이 떠 있는 동안 타이머가 멈춘다 — 그동안 문제를 볼 수 있으면 시간 제한이 무의미해져 가린다 */}
       <main
-        className={`mx-auto w-full max-w-md flex-1 px-5 pb-6 transition-[filter] ${isIq && quitOpen ? 'blur-md' : ''}`}
+        className={`mx-auto w-full max-w-md flex-1 px-5 pb-6 ${isIq && quitOpen ? 'invisible' : ''}`}
         aria-hidden={isIq && quitOpen ? true : undefined}
       >
         <AnimatePresence mode="wait">
@@ -353,7 +364,7 @@ export default function TestRun() {
 
       {/* IQ 확인 버튼 */}
       {isIq && (
-        <div className="sticky bottom-0 border-t border-line bg-cream/95 px-5 pb-7 pt-3 backdrop-blur">
+        <div className="sticky bottom-0 border-t border-line bg-cream px-5 pb-7 pt-3">
           <div className="mx-auto max-w-md">
             <Button color="iq" size="lg" disabled={sel === null} onClick={confirmIq}>
               {t('common.next')} →
@@ -372,7 +383,7 @@ export default function TestRun() {
             <Button color="mind" onClick={() => setQuitOpen(false)}>
               {t('run.quitNo')}
             </Button>
-            <Button color="white" onClick={() => nav(`/test/${testId}`, { replace: true })}>
+            <Button color="white" onClick={() => leave(`/test/${testId}`, { replace: true })}>
               {t('run.quitYes')}
             </Button>
           </div>

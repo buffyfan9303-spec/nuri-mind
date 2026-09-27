@@ -1,3 +1,4 @@
+import { shareOrigin } from '../lib/platform'
 import { useEffect, useState } from 'react'
 import { Card } from './ui'
 import Button from './Button'
@@ -63,7 +64,7 @@ export default function Invite() {
   const share = async () => {
     // 링크에 코드를 실어 보낸다 — 온보딩 화면엔 코드 입력란이 없어서
     // '가입할 때 코드 입력' 안내는 실제로 따라갈 수 없는 동선이었다.
-    const text = `🧠 누리 마인드 — 심리검사로 진짜 나 찾기! 이 링크로 시작하면 너도 나도 +100P 🎁 ${window.location.origin}/?invite=${referralCode}`
+    const text = `🧠 누리 마인드 — 심리검사로 진짜 나 찾기! 이 링크로 시작하면 너도 나도 +100P 🎁 ${shareOrigin()}/?invite=${referralCode}`
     if ((await shareOrCopy({ text })) === 'copied') {
       setCopied(true)
       setTimeout(() => setCopied(false), 1600)

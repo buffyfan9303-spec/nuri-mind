@@ -64,4 +64,48 @@ test.describe('뒤로가기 스택', () => {
     await page.goBack()
     await expect(page).toHaveURL(/\/$/)
   })
+
+  // 검사 중 하드웨어/브라우저 뒤로가기 — 확인 없이 검사가 끊기던 문제. 중단·완료 이동이 되감기에 되돌려지지 않는가도 함께
+  test('검사 중 뒤로가기 → 중단 확인, 계속하면 다시 지켜지고, 중단하면 소개 화면에 머문다', async ({ page }) => {
+    await seedOnboarded(page, { consent: CONSENT })
+    await page.goto('/test/burnout')
+    await waitForApp(page)
+    await page.getByText('시작하기 →').click()
+    await expect(page).toHaveURL(/\/test\/burnout\/run$/)
+    await expect(page.getByText('1/20')).toBeVisible()
+
+    const dialog = page.getByRole('dialog')
+    await page.goBack()
+    await expect(dialog).toBeVisible()
+    await expect(page).toHaveURL(/\/run$/)
+
+    await dialog.getByRole('button', { name: '계속하기' }).click()
+    await expect(dialog).toHaveCount(0)
+    await page.goBack()
+    await expect(dialog).toBeVisible()
+
+    await dialog.getByRole('button', { name: '중단하기' }).click()
+    await expect(page).toHaveURL(/\/test\/burnout$/)
+    await expect(page.getByText('시작하기 →')).toBeVisible()
+    await expect(dialog).toHaveCount(0)
+    // 되감기가 이동을 되돌렸다면 잠시 뒤 /run으로 돌아가 있다
+    await page.waitForTimeout(800)
+    await expect(page).toHaveURL(/\/test\/burnout$/)
+    await expect(page.getByText('시작하기 →')).toBeVisible()
+  })
+
+  test('검사를 끝까지 하면 결과 화면으로 가고 그대로 머문다', async ({ page }) => {
+    await seedOnboarded(page, { consent: CONSENT })
+    await page.goto('/test/burnout')
+    await waitForApp(page)
+    await page.getByText('시작하기 →').click()
+    for (let i = 1; i <= 20; i++) {
+      await expect(page.getByText(`${i}/20`)).toBeVisible()
+      await page.getByRole('button', { name: '가끔 있다' }).click()
+    }
+    await expect(page).toHaveURL(/\/result\//)
+    await page.waitForTimeout(800)
+    await expect(page).toHaveURL(/\/result\//)
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+  })
 })

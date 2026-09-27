@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { useBackClose, useLeaveNav } from '../lib/backstack'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+
 import Button from '../components/Button'
 import { Modal, ProgressBar } from '../components/ui'
 import { testMeta } from '../data/tests'
@@ -36,7 +37,7 @@ function buildItems(): Item[] {
 
 export default function SwitchRun() {
   const l = useL()
-  const nav = useNavigate()
+  const leave = useLeaveNav()
   const addResult = useStore((s) => s.addResult)
   const tm = testMeta('switch')
   const accent = tm.gradFrom
@@ -46,6 +47,8 @@ export default function SwitchRun() {
   const [phase, setPhase] = useState<'stim' | 'feedback'>('stim')
   const [verdict, setVerdict] = useState<boolean | null>(null)
   const [quitOpen, setQuitOpen] = useState(false)
+  // 안드로이드·브라우저 뒤로가기도 X와 같이 '중단 확인'을 연다(확인 없이 검사가 끊기던 문제)
+  useBackClose(!quitOpen, () => openQuit())
 
   const trialsRef = useRef<SwitchTrial[]>([])
   const onsetRef = useRef(Date.now())
@@ -81,7 +84,7 @@ export default function SwitchRun() {
     const result = scoreSwitch(trialsRef.current)
     result.durationMs = Date.now() - startRef.current
     const reward = addResult(result)
-    nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
+    leave(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
   /** 중단 확인 창이 떠 있던 시간은 반응시간에서 뺀다 — 창을 열었다 '계속하기'를 누르면 그 시간이 통째로 RT에 더해졌다 */
@@ -129,15 +132,13 @@ export default function SwitchRun() {
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5">
         {/* 규칙 신호 */}
         <div className="mt-5 flex justify-center">
-          <motion.span
-            key={`cue-${idx}`}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          {/* 매 시행 다시 튀어나오면 과제에 없는 주의 단서가 된다 — 정적으로 둔다 */}
+          <span
             className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-[15px] font-extrabold text-white"
             style={{ background: cueColor }}
           >
             <EmojiText text={it.task === 'size' ? `🔢 ${l({ ko: '5보다 클까?', en: 'Size — vs 5?', ja: '大きさ — 5より？' })}` : `⚖️ ${l({ ko: '홀짝?', en: 'Odd / Even?', ja: '偶奇？' })}`} />
-          </motion.span>
+          </span>
         </div>
 
         {/* 숫자 */}
@@ -145,7 +146,7 @@ export default function SwitchRun() {
           <div className="flex h-36 w-36 items-center justify-center rounded-3xl border-2 shadow-card" style={{ borderColor: accent, background: 'rgb(var(--surface))' }}>
             <AnimatePresence mode="wait">
               {phase === 'stim' ? (
-                <motion.span key={`n-${idx}`} initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }} className="text-[28px] font-extrabold leading-none" style={{ color: accent }}>
+                <motion.span key={`n-${idx}`} initial={false} exit={{ opacity: 0, transition: { duration: 0 } }} className="text-[28px] font-extrabold leading-none" style={{ color: accent }}>
                   {it.num}
                 </motion.span>
               ) : (
@@ -190,7 +191,7 @@ export default function SwitchRun() {
             <Button color="iq" onClick={closeQuit}>
               {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
-            <Button color="white" onClick={() => nav('/test/switch', { replace: true })}>
+            <Button color="white" onClick={() => leave('/test/switch', { replace: true })}>
               {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>

@@ -41,12 +41,9 @@ function TopStripPremium() {
       whileHover={canHover ? { filter: 'brightness(1.06)' } : undefined}
       className="relative block w-full overflow-hidden bg-gradient-to-r from-[#6E7BF2] via-[#8B7CF6] to-[#A88BF2] py-2 text-white"
     >
-      <motion.span
+      <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-white/25 to-transparent"
-        initial={{ x: '-30%' }}
-        animate={{ x: '130vw' }}
-        transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 3.6, ease: 'easeInOut' }}
+        className="sweep pointer-events-none absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-white/25 to-transparent"
       />
       <span className="relative mx-auto flex max-w-md items-center gap-2 px-5">
         <Emoji e="✨" size={16} />
@@ -105,12 +102,9 @@ function TopStripLive() {
       aria-label={l({ ko: '설문 참여하러 가기', en: 'Go to surveys', ja: 'アンケートへ' })}
     >
       {/* 광택 스윕 — 띠가 '살아 있는 링크'로 읽히게. 위치만 움직여 리페인트가 없다 */}
-      <motion.span
+      <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-white/25 to-transparent"
-        initial={{ x: '-30%' }}
-        animate={{ x: '130vw' }}
-        transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 3.6, ease: 'easeInOut' }}
+        className="sweep pointer-events-none absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-white/25 to-transparent"
       />
       <span className="relative mx-auto flex max-w-md items-center gap-2 px-5">
         <Emoji e="💰" size={16} />

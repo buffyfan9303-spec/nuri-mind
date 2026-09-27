@@ -22,6 +22,7 @@ import { track } from '../lib/analytics'
 import { localDay } from '../lib/date'
 import { burst } from '../lib/confetti'
 import Emoji, { EmojiText } from '../components/Emoji'
+import { FortuneMoreLinks } from './FortuneMoreLinks'
 
 /** 오행 색 — 사주표 칸 배경/테두리(글자는 ink로 두어 다크 모드 대비 유지) */
 const EL_HEX: Record<El, string> = { 목: '#36B37E', 화: '#FF5630', 토: '#FFAB00', 금: '#8E99AB', 수: '#2B4C7E' }
@@ -268,6 +269,7 @@ export default function Fortune() {
             onRemoveRecent={removeFortuneRecent}
             onSubmit={submit}
           />
+          <FortuneMoreLinks />
         </main>
       </div>
     )
@@ -659,6 +661,8 @@ export default function Fortune() {
             <Emoji e="📤" inline />{l({ ko: '공유 보상 +5P!', en: 'Share bonus +5P!', ja: 'シェア報酬 +5P！' })}
           </motion.p>
         )}
+
+        <FortuneMoreLinks />
 
         <p className="mt-4 px-2 text-center text-[11px] font-bold leading-relaxed text-ink-faint">{t('fortune.disclaimer')}</p>
         <div className="mt-1 grid grid-cols-2 gap-2">
