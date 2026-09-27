@@ -8,6 +8,6 @@ export function burst() {
 
 export function celebrate() {
   burst()
-  setTimeout(() => confetti({ particleCount: 50, angle: 60, spread: 60, origin: { x: 0, y: 0.8 }, colors: BRAND }), 180)
-  setTimeout(() => confetti({ particleCount: 50, angle: 120, spread: 60, origin: { x: 1, y: 0.8 }, colors: BRAND }), 320)
+  setTimeout(() => confetti({ particleCount: 50, angle: 60, spread: 60, origin: { x: 0, y: 0.8 }, colors: BRAND, disableForReducedMotion: true }), 180)
+  setTimeout(() => confetti({ particleCount: 50, angle: 120, spread: 60, origin: { x: 1, y: 0.8 }, colors: BRAND, disableForReducedMotion: true }), 320)
 }

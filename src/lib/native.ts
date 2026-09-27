@@ -10,33 +10,51 @@
 import { NATIVE_AUTH_CALLBACK } from './platform'
 import { openLayerCount } from './backstack'
 import { supabase } from './supabase'
+import { toast } from './toast'
+import { useStore } from '../store/useStore'
 
 let started = false
 
 export async function initNative(): Promise<void> {
   if (started) return
   started = true
-  const [{ App }, { Browser }] = await Promise.all([import('@capacitor/app'), import('@capacitor/browser')])
-
-  void App.addListener('backButton', ({ canGoBack }) => {
-    if (openLayerCount() > 0 || canGoBack) window.history.back()
-    else void App.exitApp()
-  })
-
-  void App.addListener('appUrlOpen', ({ url }) => {
-    if (!isAuthCallback(url)) return
-    void completeOAuth(url)
-      .catch(() => alert('로그인을 마치지 못했어요. 다시 시도해 주세요.'))
-      .finally(() => void Browser.close().catch(() => {}))
-  })
-
   try {
-    const { StatusBar, Style } = await import('@capacitor/status-bar')
-    const dark = window.matchMedia?.('(prefers-color-scheme: dark)').matches
-    await StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light })
-  } catch {
-    /* 상태바 플러그인이 없는 플랫폼 */
+    const [{ App }, { Browser }] = await Promise.all([import('@capacitor/app'), import('@capacitor/browser')])
+
+    // 첫 화면에서 뒤로가기 한 번에 앱이 꺼지지 않게 — 2초 안에 한 번 더 누르면 종료
+    let exitArmedAt = 0
+    void App.addListener('backButton', ({ canGoBack }) => {
+      if (openLayerCount() > 0 || canGoBack) return window.history.back()
+      if (Date.now() - exitArmedAt < 2000) return void App.exitApp()
+      exitArmedAt = Date.now()
+      toast.info(useStore.getState().lang === 'ko' ? '한 번 더 누르면 앱이 닫혀요' : useStore.getState().lang === 'ja' ? 'もう一度押すと終了します' : 'Press back again to exit')
+    })
+
+    void App.addListener('appUrlOpen', ({ url }) => {
+      if (!isAuthCallback(url)) return
+      void completeOAuth(url)
+        .catch(() => alert('로그인을 마치지 못했어요. 다시 시도해 주세요.'))
+        .finally(() => void Browser.close().catch(() => {}))
+    })
+
+    try {
+      // 상태바 아이콘 색은 시스템이 아니라 앱 테마를 따른다(앱 설정에서 바꿔도 따라가게)
+      const { StatusBar, Style } = await import('@capacitor/status-bar')
+      const apply = (theme: 'light' | 'dark') => void StatusBar.setStyle({ style: theme === 'dark' ? Style.Dark : Style.Light }).catch(() => {})
+      apply(useStore.getState().theme)
+      useStore.subscribe((st, prev) => {
+        if (st.theme !== prev.theme) apply(st.theme)
+      })
+    } catch {
+      /* 상태바 플러그인이 없는 플랫폼 */
+    }
+  } finally {
+    // 무슨 일이 있어도 스플래시는 걷는다 — launchAutoHide:false라 여기서 안 닫으면 앱이 영원히 로고 화면에 멈춘다
+    await hideSplash()
   }
+}
+
+export async function hideSplash(): Promise<void> {
   try {
     const { SplashScreen } = await import('@capacitor/splash-screen')
     await SplashScreen.hide()

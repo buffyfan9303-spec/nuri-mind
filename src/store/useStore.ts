@@ -97,7 +97,6 @@ interface State {
   sound: boolean
   ambient: boolean
   theme: 'light' | 'dark'
-  fontScale: number
   notify: boolean
   nickname: string
   avatar: Avatar
@@ -201,7 +200,6 @@ interface State {
   setSound: (v: boolean) => void
   setAmbient: (v: boolean) => void
   setTheme: (v: 'light' | 'dark') => void
-  setFontScale: (v: number) => void
   setNotify: (v: boolean) => void
   setNickname: (n: string) => void
   setAvatar: (a: Avatar) => void
@@ -295,7 +293,6 @@ const initial = () => ({
   sound: true,
   ambient: false,
   theme: 'light' as 'light' | 'dark',
-  fontScale: 1,
   notify: false,
   nickname: '누리',
   avatar: null as Avatar,
@@ -954,8 +951,7 @@ export const useStore = create<State>()(
       migrate: (persisted, version) => {
         const s = persisted as Partial<State> | undefined
         if (s) {
-          // v1: 글자 크기 배율 100% 1회 정규화
-          if (version < 1) s.fontScale = 1
+          // v1(글자 크기 배율 정규화)은 글자 크기 설정을 없애며 할 일이 없어졌다 — 저장된 fontScale 값은 읽지 않는다
           // v2: 기존 유저(검사기록 있거나 닉네임 바꾼)는 회원가입 건너뜀
           if (version < 2) s.onboarded = (s.results?.length ?? 0) > 0 || (!!s.nickname && s.nickname !== '누리')
           // v3: 보상 중복 지급 차단 키 도입. 과거 지급분은 키가 없으므로 빈 배열로 시작한다 —

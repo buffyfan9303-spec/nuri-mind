@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { useEffect, useId, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { SPRING } from '../lib/motion'
@@ -39,13 +40,14 @@ export default function ReConsent() {
 
   return (
     // 조기 return 대신 AnimatePresence — 동의를 누르면 오버레이가 한 프레임에 증발하지 않고 걷힌다
+    createPortal(
     <AnimatePresence>
     {show && (
     <motion.div
       className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 p-4 sm:items-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, transition: SPRING.exit }}
     >
       <motion.div
         ref={panelRef}
@@ -87,6 +89,8 @@ export default function ReConsent() {
       </motion.div>
     </motion.div>
     )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
+  )
   )
 }

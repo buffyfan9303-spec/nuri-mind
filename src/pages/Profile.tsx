@@ -12,7 +12,7 @@ import { PERSONAS, PERSONA_TEST } from '../i18n/animalTranslations'
 import { lifetimeOf, tierOf } from '../data/rank'
 import type { Lang } from '../data/types'
 import { fileToAvatarDataUrl } from '../lib/image'
-import { scheduleStreakReminder } from '../lib/notify'
+import { isNativeNotifyAvailable, scheduleStreakReminder } from '../lib/notify'
 import { enablePush, disablePush, pushSupported, pushConfigured, pushPermission } from '../lib/push'
 import { authReady, signInWithKakao, signInWithApple, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
 import { APPLE_SIGNIN_ENABLED } from '../data/features'
@@ -22,7 +22,8 @@ import { humanizeError } from '../lib/dbError'
 import { useStore, OPERATOR_NICKS, isPremium, PREMIUM_KRW } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import Emoji from '../components/Emoji'
-import { topPercentOf, shortDate } from '../lib/format'
+import { hollandCode, topPercentOf, shortDate } from '../lib/format'
+import { hasNorm } from '../data/tests'
 
 const LANGS: { key: Lang; label: string }[] = [
   { key: 'ko', label: '한국어' },
@@ -217,7 +218,8 @@ export default function Profile() {
                 <button
                   onClick={() => setEditing(true)}
                   aria-label={l({ ko: '닉네임 바꾸기', en: 'Edit nickname', ja: 'ニックネームを変更' })}
-                  className="flex opacity-60"
+                  // 연필은 15px이지만 누르는 자리는 44px — Pill·동의 체크박스와 같은 before 확장 패턴
+                  className="relative flex opacity-60 before:absolute before:-inset-[15px] before:content-['']"
                 >
                   <Emoji e="✏️" size={15} />
                 </button>
@@ -388,7 +390,7 @@ export default function Profile() {
                         {r.iq ? ` · IQ ${r.iq}` : ''}
                       </p>
                     </div>
-                    <Chip tone="mind">{t('result.topPercent', { p: topPercentOf(r.percentile) })}</Chip>
+                    <Chip tone="mind">{hasNorm(r.testId) ? t('result.topPercent', { p: topPercentOf(r.percentile) }) : hollandCode(r)}</Chip>
                   </Card>
                 )
               })}
@@ -511,30 +513,8 @@ export default function Profile() {
               </button>
             </div>
 
-            {/* 글자 크기 슬라이더 */}
-            <div className="border-t border-line px-3 py-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[15px] font-bold">{t('profile.fontSize')}</span>
-                <span className="text-[13px] font-extrabold text-mind-700 dark:text-mind-300">{Math.round(s.fontScale * 100)}%</span>
-              </div>
-              <div className="mt-2 flex items-center gap-2.5">
-                <span className="text-[13px] font-bold text-ink-faint">가</span>
-                <input
-                  type="range"
-                  min={0.9}
-                  max={1.3}
-                  step={0.05}
-                  value={s.fontScale}
-                  onChange={(e) => s.setFontScale(Number(e.target.value))}
-                  aria-label={t('profile.fontSize')}
-                  aria-valuetext={`${Math.round(s.fontScale * 100)}%`}
-                  className="h-2 flex-1 accent-mind-500"
-                />
-                <span className="text-[20px] font-bold text-ink">가</span>
-              </div>
-            </div>
-
-            {/* 출석 알림 (APK) */}
+            {/* 출석 알림 (APK) — 알림이 실제로 연결되기 전엔 숨긴다(켜도 아무 알림이 안 오는 거짓 스위치였다) */}
+            {isNativeNotifyAvailable() && (
             <div className="flex items-center justify-between border-t border-line px-3 py-3">
               <div className="min-w-0 pr-3">
                 <p className="text-[15px] font-bold">{t('profile.notify')}</p>
@@ -559,6 +539,7 @@ export default function Profile() {
                 />
               </button>
             </div>
+            )}
 
             {authReady() &&
               (authUser ? (

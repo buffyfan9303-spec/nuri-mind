@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { useEffect } from 'react'
 import { SPRING } from '../lib/motion'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -33,6 +34,7 @@ export default function Celebration({
   }, [open])
 
   return (
+    createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -40,7 +42,7 @@ export default function Celebration({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.25 } }}
           onClick={onClose}
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/55 px-8 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/55 px-8"
           role="dialog"
           aria-label={title}
         >
@@ -111,6 +113,8 @@ export default function Celebration({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
+  )
   )
 }

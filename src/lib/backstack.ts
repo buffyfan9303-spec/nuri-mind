@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useNavigate, type NavigateOptions } from 'react-router-dom'
 
 /**
  * 뒤로가기(Back) 스택 — 홀덤 캘린더에서 이식.
@@ -164,4 +165,35 @@ export function useBackClose(open: boolean, onClose: CloseFn): void {
     if (!open) return
     return pushLayer(() => ref.current())
   }, [open])
+}
+
+/**
+ * 열린 겹(오버레이·검사 가드)을 닫지 않고 그 history 칸만 되감은 뒤 then()을 부른다.
+ * 겹이 열린 채 nav(replace)로 떠나면, 언마운트 때 되감기(go(-k))가 방금 한 이동을 되돌려 검사 화면으로 돌아갔다.
+ */
+export function leaveLayers(then: () => void): void {
+  const k = Math.min(ownedSlots, entries.filter((e) => e.hasSlot).length)
+  entries.length = 0
+  ownedSlots = 0
+  if (k <= 0) return then()
+  let done = false
+  const finish = () => {
+    if (done) return
+    done = true
+    window.removeEventListener('popstate', finish)
+    then()
+  }
+  window.addEventListener('popstate', finish)
+  setTimeout(finish, 400) // popstate가 안 오는 환경 대비
+  try {
+    window.history.go(-k)
+  } catch {
+    finish()
+  }
+}
+
+/** nav()와 같지만 열린 겹의 history 칸을 먼저 정리한다 — 검사 중단·완료처럼 가드가 걸린 화면을 떠날 때 */
+export function useLeaveNav(): (to: string, opts?: NavigateOptions) => void {
+  const nav = useNavigate()
+  return (to, opts) => leaveLayers(() => nav(to, opts))
 }

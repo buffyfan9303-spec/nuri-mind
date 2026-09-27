@@ -49,6 +49,9 @@ const Article = lazyWithReload(() => import('./pages/Article'))
 const Insight = lazyWithReload(() => import('./pages/Insight'))
 const Fortune = lazyWithReload(() => import('./pages/Fortune'))
 const ZodiacLanding = lazyWithReload(() => import('./pages/ZodiacLanding'))
+const StarFortune = lazyWithReload(() => import('./pages/StarFortune'))
+const Tarot = lazyWithReload(() => import('./pages/Tarot'))
+const DreamDict = lazyWithReload(() => import('./pages/DreamDict'))
 const Compat = lazyWithReload(() => import('./pages/Compat'))
 const Charge = lazyWithReload(() => import('./pages/Charge'))
 const Premium = lazyWithReload(() => import('./pages/Premium'))
@@ -99,6 +102,9 @@ const ROUTES = [
   { path: '/insight', element: <Insight /> },
   { path: '/fortune', element: <Fortune /> },
   { path: '/zodiac/:slug', element: <ZodiacLanding /> },
+  { path: '/star', element: <StarFortune /> },
+  { path: '/tarot', element: <Tarot /> },
+  { path: '/dream', element: <DreamDict /> },
   { path: '/compat', element: <Compat /> },
   { path: '/rank', element: <Rank /> },
   { path: '/league', element: <League /> },
@@ -124,7 +130,7 @@ const ROUTES = [
  * 검사 소개(/test/:id)는 공개, 검사 진행(/test/:id/run)은 가입 후 — 소개 화면은 척도 근거·주의 사항이 담긴
  * 읽을거리라 크롤러·광고 심사가 볼 수 있어야 하고, 예전엔 sitemap의 /test/* 가 전부 같은 가입 화면을 돌려줬다.
  */
-const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs|about|account-deletion)(\/|$)|^\/test\/[^/]+\/?$/
+const PUBLIC_ROUTES = /^\/(legal|zodiac|magazine|vs|about|account-deletion|star|tarot|dream)(\/|$)|^\/test\/[^/]+\/?$/
 
 /**
  * 뒤로가기 스크롤 기억(홀덤에서 이식) — 경로별 마지막 scrollY. 모듈 스코프라 라우트 전환에도 살고, 새로고침이면 비운다.
@@ -137,7 +143,6 @@ export default function App() {
   const location = useLocation()
   const navType = useNavigationType()
   const restoreY = useRef<number | null>(null)
-  const fontScale = useStore((s) => s.fontScale)
   const onboarded = useStore((s) => s.onboarded)
   const theme = useStore((s) => s.theme)
   const lang = useStore((s) => s.lang)
@@ -147,11 +152,6 @@ export default function App() {
   useEffect(() => {
     document.documentElement.lang = lang
   }, [lang])
-
-  // 글자 크기: 루트 zoom으로 전체 UI 배율 조정
-  useEffect(() => {
-    ;(document.documentElement.style as unknown as { zoom: string }).zoom = String(fontScale)
-  }, [fontScale])
 
   // 다크모드: 루트에 .dark 클래스 토글 (CSS 변수로 전체 색 전환)
   useEffect(() => {

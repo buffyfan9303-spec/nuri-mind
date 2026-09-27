@@ -42,7 +42,7 @@ export default function InstallPrompt() {
       <motion.div
         initial={{ y: 90, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 90, opacity: 0 }}
+        exit={{ y: 90, opacity: 0, transition: SPRING.exit }}
         transition={SPRING.ui}
         // z-40: 모달·시트(z-50) 아래, 하단 내비(z-30) 위. z-50이면 DOM 순서상 나중이라 열린 모달 위에 떠서
         // 시트 아래쪽 버튼을 가리고, aria-modal 대화상자 밖인데도 눌렸다.

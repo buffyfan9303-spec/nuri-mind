@@ -17,7 +17,6 @@ export interface SettingsActions {
   setSound: (v: boolean) => void
   setAmbient: (v: boolean) => void
   setTheme: (v: 'light' | 'dark') => void
-  setFontScale: (v: number) => void
   setNotify: (v: boolean) => void
   setNickname: (n: string) => void
   setAvatar: (a: Avatar) => void
@@ -39,7 +38,6 @@ export const createSettingsSlice = (set: Patch): SettingsActions => ({
   },
   setAmbient: (ambient) => set({ ambient }),
   setTheme: (theme) => set({ theme }),
-  setFontScale: (fontScale) => set({ fontScale: Math.min(1.3, Math.max(0.9, fontScale)) }),
   setNotify: (notify) => set({ notify }),
   setNickname: (nickname) => set({ nickname: nickname.slice(0, 12) || '누리' }),
   setAvatar: (avatar) => set({ avatar }),

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
+import { useBackClose, useLeaveNav } from '../lib/backstack'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+
 import Button from '../components/Button'
 import { Modal, ProgressBar } from '../components/ui'
 import { testMeta } from '../data/tests'
@@ -24,7 +25,7 @@ function buildItems(): number[] {
 
 export default function SpeedRun() {
   const l = useL()
-  const nav = useNavigate()
+  const leave = useLeaveNav()
   const addResult = useStore((s) => s.addResult)
   const tm = testMeta('speed')
   const accent = tm.gradFrom
@@ -34,6 +35,8 @@ export default function SpeedRun() {
   const [idx, setIdx] = useState(0)
   const [flash, setFlash] = useState<{ ok: boolean; n: number } | null>(null)
   const [quitOpen, setQuitOpen] = useState(false)
+  // 안드로이드·브라우저 뒤로가기도 X와 같이 '중단 확인'을 연다(확인 없이 검사가 끊기던 문제)
+  useBackClose(!quitOpen, () => openQuit())
 
   const idxRef = useRef(0)
   const correctRef = useRef(0)
@@ -51,7 +54,7 @@ export default function SpeedRun() {
     const result = scoreSpeed(correctRef.current, TOTAL, Date.now() - startRef.current)
     result.durationMs = Date.now() - startRef.current
     const reward = addResult(result)
-    nav(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
+    leave(`/result/${result.id}`, { state: { fresh: true, reward }, replace: true })
   }
 
   /** 중단 확인 창이 떠 있던 시간은 소요시간에서 뺀다 — 창을 열었다 '계속하기'를 누르면 그 시간만큼 점수가 깎였다 */
@@ -152,10 +155,8 @@ export default function SpeedRun() {
                 <AnimatePresence mode="popLayout">
                   <motion.span
                     key={idx}
-                    initial={{ scale: 0.6, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.7, opacity: 0 }}
-                    transition={{ duration: 0.1 }}
+                    initial={false}
+                    exit={{ opacity: 0, transition: { duration: 0 } }}
                     className="text-[28px] leading-none"
                   >
                     {SYMBOLS[items[idx]]}
@@ -204,7 +205,7 @@ export default function SpeedRun() {
             <Button color="iq" onClick={closeQuit}>
               {l({ ko: '계속하기', en: 'Keep going', ja: '続ける' })}
             </Button>
-            <Button color="white" onClick={() => nav('/test/speed', { replace: true })}>
+            <Button color="white" onClick={() => leave('/test/speed', { replace: true })}>
               {l({ ko: '중단하기', en: 'Quit', ja: 'やめる' })}
             </Button>
           </div>

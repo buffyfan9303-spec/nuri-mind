@@ -58,6 +58,13 @@ export const LIKERT_AGREE: Record<Lang, string[]> = {
   ja: ['全くそう思わない', 'そう思わない', 'どちらとも言えない', 'そう思う', '強くそう思う'],
 }
 
+/** 선호 척도 (진로 흥미, 1~5) — 활동을 얼마나 좋아하는지. 능력·경험이 아니라 '끌림'을 묻는다 */
+export const LIKERT_LIKE: Record<Lang, string[]> = {
+  ko: ['아주 싫다', '싫은 편이다', '잘 모르겠다', '좋은 편이다', '아주 좋다'],
+  en: ['Strongly dislike', 'Dislike', 'Not sure', 'Like', 'Strongly like'],
+  ja: ['とても嫌い', 'どちらかと言えば嫌い', 'よく分からない', 'どちらかと言えば好き', 'とても好き'],
+}
+
 export function format(s: string, vars: Record<string, string | number>): string {
   return s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ''))
 }

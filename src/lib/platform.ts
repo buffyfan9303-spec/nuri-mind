@@ -43,3 +43,6 @@ export const NATIVE_AUTH_CALLBACK = `${NATIVE_APP_ID}://auth-callback`
 
 /** 웹 공개 주소 — 스토어 등록 정보·계정 삭제 안내에 쓰는 절대 URL의 기준 */
 export const WEB_ORIGIN = 'https://www.nurimind.co.kr'
+
+/** 공유·초대 링크의 기준 주소 — 앱 WebView의 location.origin은 https://localhost라 받는 사람이 열 수 없다 */
+export const shareOrigin = (): string => (isNativeApp() ? WEB_ORIGIN : window.location.origin)

@@ -19,6 +19,9 @@ export function adsEnabled(): boolean {
   // ⚠️ 스토어 앱(WebView)에서는 AdSense를 띄우지 않는다 — AdSense는 웹 전용이고, 앱 WebView 안 노출은
   //    AdSense 정책 위반(무효 트래픽)으로 계정이 막힐 수 있다. 앱 광고는 AdMob 연동 후 isNative() 분기로.
   if (isNativeApp()) return false
+  // 개발 서버(npm run dev)에선 운영 광고 계정으로 요청하지 않는다 — 로컬 QA가 무효 트래픽이 되고,
+  // StrictMode 이중 마운트가 같은 슬롯에 두 번 push해 TagError를 냈다
+  if (import.meta.env.DEV) return false
   return Boolean(ADSENSE_CLIENT)
 }
 

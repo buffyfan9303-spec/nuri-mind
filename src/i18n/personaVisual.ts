@@ -61,4 +61,10 @@ export const PERSONA_VISUAL: Record<string, { emoji: string; grad: [string, stri
   giraffe: { emoji: '🦒', grad: ['#7CC0A0', '#B6E0CB'] },
   seal: { emoji: '🦭', grad: ['#6E8FC9', '#A9C2E8'] },
   badger: { emoji: '🦡', grad: ['#7E7BB0', '#B3B0DC'] },
+  ox: { emoji: '🐮', grad: ['#B7793A', '#E3B27A'] },
+  monkey: { emoji: '🐵', grad: ['#3E7CC9', '#8FB8E8'] },
+  dragon: { emoji: '🐲', grad: ['#8B5CF6', '#C4B5FD'] },
+  llama: { emoji: '🦙', grad: ['#E0788F', '#F4B4C2'] },
+  pony: { emoji: '🐴', grad: ['#E4572E', '#F59E7A'] },
+  pig: { emoji: '🐷', grad: ['#5E8C6A', '#A7CBB0'] },
 }

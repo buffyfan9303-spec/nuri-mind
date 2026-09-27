@@ -13,6 +13,8 @@ export interface TestMeta {
   btn: 'adhd' | 'ego' | 'iq' | 'love' | 'burn' | 'dopa' | 'reso' | 'dk'
   /** 정밀검사(실측 인지과제) — 홈에서 별도 섹션으로 묶음 */
   precision?: boolean
+  /** 인구 규준이 없는 프로필형 검사(진로 흥미) — 'percentile'은 자리 채움값(50)이라 '상위 %'를 어디에도 보이지 않는다 */
+  noNorm?: boolean
 }
 
 export const TESTS: TestMeta[] = [
@@ -210,6 +212,27 @@ export const TESTS: TestMeta[] = [
     gradTo: '#9BD5E3',
     btn: 'dopa',
   },
+  {
+    id: 'career',
+    emoji: '🧭',
+    count: 30,
+    minutes: 5,
+    tint: 'bg-adhd-light',
+    text: 'text-adhd-deep',
+    gradFrom: '#E8912D',
+    gradTo: '#F6C06B',
+    btn: 'adhd',
+    noNorm: true,
+  },
 ]
 
 export const testMeta = (id: TestId): TestMeta => TESTS.find((t) => t.id === id)!
+
+/** '상위 %'를 보여도 되는 검사인가 — 규준 없는 프로필형(noNorm)은 false. 알 수 없는 id는 기존 동작(true) */
+export const hasNorm = (id: string): boolean => !TESTS.find((t) => t.id === id)?.noNorm
+
+/**
+ * '심층검사를 모두 마침' 판정 묶음(AI 종합 리포트·나에 관하여 한눈에·홈 완료) — 기존 11종.
+ * 진로 흥미(noNorm)는 추가 검사라 넣지 않는다(2026-09-27 사용자 결정: 새 검사로 기존 완주자를 다시 잠그지 않음).
+ */
+export const GATED_DEEP = TESTS.filter((t) => !t.precision && !t.noNorm)

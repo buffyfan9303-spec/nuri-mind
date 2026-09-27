@@ -47,6 +47,9 @@
   <url><loc>https://www.nurimind.co.kr/zodiac/rooster</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.nurimind.co.kr/zodiac/dog</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.nurimind.co.kr/zodiac/pig</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/star</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/tarot</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.nurimind.co.kr/dream</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.nurimind.co.kr/legal/terms</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
   <url><loc>https://www.nurimind.co.kr/legal/privacy</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
 </urlset>

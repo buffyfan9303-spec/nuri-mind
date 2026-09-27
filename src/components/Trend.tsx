@@ -5,6 +5,7 @@ import type { TestId } from '../data/types'
 import { useStore } from '../store/useStore'
 import { useT } from '../i18n/useT'
 import { shortDate, topPercentOf } from '../lib/format'
+import { hasNorm } from '../data/tests'
 
 /** 심리 날씨 — 같은 검사를 다시 받을수록 상위% 추이를 보여줘 변화를 체감하게 함 */
 export default function Trend({ testId }: { testId: TestId }) {
@@ -22,6 +23,7 @@ export default function Trend({ testId }: { testId: TestId }) {
   )
 
   if (series.length < 2) return null // 재검사 2회 이상부터 표시
+  if (!hasNorm(testId)) return null // 규준 없는 프로필형(진로 흥미)은 '상위 %' 추이가 없다
 
   const W = 300
   const H = 80

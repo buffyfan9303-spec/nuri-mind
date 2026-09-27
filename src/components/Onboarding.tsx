@@ -29,15 +29,23 @@ import AppleLoginButton from './AppleLoginButton'
 const DRAFT_KEY = 'nuri-mind-onboard-draft'
 /** 초대 링크(?invite=CODE)의 코드 — 카카오 리다이렉트로 URL이 갈리므로 세션에 보관 */
 const INVITE_KEY = 'nuri-mind-invite-code'
+/** 재미 운세 비회원 맛보기(pages/FunGuest.tsx)에서 적은 이름 — 닉네임 칸을 한 번 채우고 바로 지운다 */
+const PREFILL_KEY = 'nuri-mind-prefill-nick'
 type Draft = { nick: string; picked: string | null; agreed: boolean }
 const loadDraft = (): Draft => {
+  let prefill = ''
   try {
+    // 지우기는 마운트 후 effect에서 — 초기화 함수는 StrictMode에서 두 번 돌 수 있다
+    prefill = (sessionStorage.getItem(PREFILL_KEY) ?? '').trim().slice(0, 12)
     const raw = sessionStorage.getItem(DRAFT_KEY)
-    if (raw) return { nick: '', picked: null, agreed: false, ...(JSON.parse(raw) as Partial<Draft>) }
+    if (raw) {
+      const d = { nick: '', picked: null, agreed: false, ...(JSON.parse(raw) as Partial<Draft>) }
+      return { ...d, nick: d.nick || prefill }
+    }
   } catch {
     /* 저장소 불가 — 빈 초안 */
   }
-  return { nick: '', picked: null, agreed: false }
+  return { nick: prefill, picked: null, agreed: false }
 }
 
 // 시작 캐릭터 후보(귀여운 페르소나) — 검사로 더 모을 수 있음
@@ -59,6 +67,14 @@ export default function Onboarding() {
   const [legal, setLegal] = useState<'terms' | 'privacy' | null>(null)
   // label↔input 연결 — 없으면 스크린리더가 입력칸을 이름 없이('편집 가능한 텍스트') 읽는다
   const nickId = useId()
+
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem(PREFILL_KEY)
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   // 초대 코드 캡처 — URL에서 한 번 읽어 보관하고 주소창은 정리한다
   useEffect(() => {

@@ -51,9 +51,9 @@ export default function About() {
         </h1>
         <p className="mt-3 break-keep text-[15px] font-bold leading-[1.8] text-ink-sub">
           {l({
-            ko: '누리 마인드는 학술적으로 공개된 심리 척도와 인지 과제를 바탕으로, 지금의 나를 이해하도록 돕는 심리 콘텐츠 서비스입니다. 검사 결과는 백분위와 함께 동물 캐릭터로 풀이되고, 강점·주의할 점·오늘 해 볼 수 있는 한 걸음을 함께 안내합니다.',
-            en: 'Nuri Mind is a psychology content service that helps you understand yourself, built on published psychological scales and cognitive tasks. Results come with a percentile and an animal persona, plus strengths, cautions and one small step for today.',
-            ja: 'ヌリマインドは公開された心理尺度と認知課題に基づき、今の自分を理解する手助けをする心理コンテンツサービスです。結果はパーセンタイルと動物キャラクターで解説し、強み・注意点・今日の一歩を案内します。',
+            ko: '누리 마인드는 학술적으로 공개된 심리 척도와 인지 과제를 바탕으로, 지금의 나를 이해하도록 돕는 심리 콘텐츠 서비스입니다. 대부분의 검사 결과는 백분위와 함께 동물 캐릭터로 풀이되고, 강점·주의할 점·오늘 해 볼 수 있는 한 걸음을 함께 안내합니다.',
+            en: 'Nuri Mind is a psychology content service that helps you understand yourself, built on published psychological scales and cognitive tasks. Most results come with a percentile and an animal persona, plus strengths, cautions and one small step for today.',
+            ja: 'ヌリマインドは公開された心理尺度と認知課題に基づき、今の自分を理解する手助けをする心理コンテンツサービスです。ほとんどの結果はパーセンタイルと動物キャラクターで解説し、強み・注意点・今日の一歩を案内します。',
           })}
         </p>
 

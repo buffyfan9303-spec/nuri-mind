@@ -5,5 +5,5 @@
 export const DEEP_CATS = [
   { key: 'relation', emoji: '💞', label: { ko: '연애 · 관계', en: 'Love & relationships', ja: '恋愛・関係' }, ids: ['love', 'dark', 'ego'] },
   { key: 'mind', emoji: '🌿', label: { ko: '요즘 내 마음', en: 'How I feel lately', ja: '最近の心' }, ids: ['burnout', 'adhd', 'socialanx', 'dopamine', 'resilience'] },
-  { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['selfesteem', 'perfect', 'efficacy'] },
+  { key: 'self', emoji: '🪞', label: { ko: '나를 알기', en: 'Know yourself', ja: '自分を知る' }, ids: ['selfesteem', 'perfect', 'efficacy', 'career'] },
 ] as const

@@ -86,19 +86,16 @@ export default function Ticker() {
         style={{ background: `linear-gradient(135deg,${pal.grad[0]},${pal.grad[1]})`, boxShadow: `0 4px 0 ${pal.shadow}` }}
       >
         <div className="flex items-center gap-2.5 px-3 py-2.5">
-          <motion.div
-            animate={{ rotate: [0, -13, 13, -8, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut', repeatDelay: 1.5 }}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white shadow"
+          <div
+            className="wiggle flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white shadow"
             style={{ transformOrigin: '50% 70%' }}
           >
             <Emoji e="📣" size={17} />
-          </motion.div>
+          </div>
           <div className="relative min-w-0 flex-1 overflow-hidden">
-            <motion.div
-              className="flex gap-8 whitespace-nowrap"
-              animate={{ x: ['0%', '-50%'] }}
-              transition={{ repeat: Infinity, duration: Math.max(14, items.length * 5.5), ease: 'linear' }}
+            <div
+              className="marquee flex gap-8 whitespace-nowrap"
+              style={{ animationDuration: `${Math.max(14, items.length * 5.5)}s` }}
             >
               {loop.map((m, i) => (
                 <span key={i} className="text-[13px] font-extrabold text-white">
@@ -106,7 +103,7 @@ export default function Ticker() {
                   {m.nick ? <span className="font-bold text-white/75"> · {m.nick}</span> : null}
                 </span>
               ))}
-            </motion.div>
+            </div>
             {/* 양끝 페이드(말풍선이 칼로 잘리지 않게) */}
             <div className="pointer-events-none absolute inset-y-0 right-0 w-5" style={{ background: `linear-gradient(90deg,transparent,${pal.fade})` }} />
           </div>
