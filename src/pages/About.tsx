@@ -40,6 +40,7 @@ export default function About() {
       ? ([[l({ ko: '통신판매업 신고번호', en: 'Mail-order reg. no.', ja: '通信販売業届出番号' }), MAIL_ORDER_NO]] as [string, string][])
       : []),
     ...(CONTACT_PHONE ? ([[l({ ko: '전화', en: 'Phone', ja: '電話' }), CONTACT_PHONE]] as [string, string][]) : []),
+    [l({ ko: '호스팅 제공자', en: 'Hosting', ja: 'ホスティング' }), COMPANY.hosting],
   ]
 
   return (

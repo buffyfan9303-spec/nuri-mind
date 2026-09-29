@@ -6,7 +6,7 @@
  *    첫 화면 로딩이 그만큼 느려진다.
  * 사업자 정보 블록은 data/company.ts에서 끼워 넣는다(푸터·소개 페이지와 표기가 어긋나지 않게).
  */
-import { COMPANY } from './company'
+import { COMPANY, CONTACT_EMAIL, CONTACT_PHONE } from './company'
 
 export const TERMS = `누리 마인드 이용약관
 
@@ -229,7 +229,9 @@ export const TERMS = `누리 마인드 이용약관
 - 개업일: ${COMPANY.openedAt.replace(/-/g, '.')}
 - 서비스명: ${COMPANY.serviceName}(${COMPANY.site})
 - 통신판매업 신고: 유료 결제(다이아) 서비스 운영과 관련한 통신판매업 신고를 진행할 예정이며, 신고 완료 후 신고번호를 본 약관 및 서비스 하단에 게시합니다. 신고 완료 전까지는 본 안내로 그 취지를 갈음합니다.
-- 문의: buffyfan9303@gmail.com`
+- 대표 전화번호: ${CONTACT_PHONE}
+- 문의: ${CONTACT_EMAIL}
+- 호스팅 제공자: ${COMPANY.hosting}`
 
 export const PRIVACY = `누리 마인드 개인정보처리방침
 
@@ -364,7 +366,7 @@ export const PRIVACY = `누리 마인드 개인정보처리방침
 제15조(개인정보 보호책임자)
 1. 회사는 개인정보 처리에 관한 업무를 총괄하여 책임지고, 개인정보 처리와 관련한 정보주체의 불만처리 및 피해구제 등을 위하여 다음과 같이 개인정보 보호책임자를 지정하고 있습니다.
  - 개인정보 보호책임자: 김윤혜(엔에이치홀딩스 대표자)
- - 연락처(전자우편): buffyfan9303@gmail.com
+ - 연락처(전자우편): ${CONTACT_EMAIL}
 2. 정보주체는 서비스를 이용하면서 발생한 모든 개인정보 보호 관련 문의, 불만처리, 피해구제 등에 관한 사항을 개인정보 보호책임자에게 문의할 수 있으며, 회사는 지체 없이 답변 및 처리합니다.
 
 제16조(권익침해 구제 방법)
@@ -387,4 +389,6 @@ export const PRIVACY = `누리 마인드 개인정보처리방침
 - 개업일: ${COMPANY.openedAt.replace(/-/g, '.')}
 - 서비스명: ${COMPANY.serviceName}(${COMPANY.site})
 - 개인정보 보호책임자: 김윤혜(대표자)
-- 문의: buffyfan9303@gmail.com`
+- 대표 전화번호: ${CONTACT_PHONE}
+- 문의: ${CONTACT_EMAIL}
+- 호스팅 제공자: ${COMPANY.hosting}`
