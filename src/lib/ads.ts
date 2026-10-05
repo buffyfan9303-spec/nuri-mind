@@ -9,11 +9,11 @@ import { isNativeApp } from './platform'
 
 // 공개 ID(클라이언트 노출 정상) — 진짜 값 박아 Vercel env 없이도 동작.
 // ⚠️ env에 'XXXX'/'0000' 같은 플레이스홀더가 들어가도 무시하고 진짜 값을 쓴다(광고 안뜨는 사고 방지).
-const realOr = (env: string | undefined, real: string): string =>
+const realOr = <T extends string | undefined>(env: string | undefined, real: T): string | T =>
   env && !/[Xx]{3,}|0{6,}|^undefined$/.test(env) ? env : real
-export const ADSENSE_CLIENT: string | undefined = realOr(import.meta.env.VITE_ADSENSE_CLIENT, 'ca-pub-6018943099120763')
-export const ADSENSE_SLOT_BANNER: string | undefined = realOr(import.meta.env.VITE_ADSENSE_SLOT_BANNER, '2845154757')
-export const ADSENSE_SLOT_RECT: string | undefined = realOr(import.meta.env.VITE_ADSENSE_SLOT_RECT, '2729646243')
+export const ADSENSE_CLIENT: string | undefined = realOr(import.meta.env.VITE_ADSENSE_CLIENT, 'ca-pub-4637265976541550')
+export const ADSENSE_SLOT_BANNER: string | undefined = realOr(import.meta.env.VITE_ADSENSE_SLOT_BANNER, undefined)
+export const ADSENSE_SLOT_RECT: string | undefined = realOr(import.meta.env.VITE_ADSENSE_SLOT_RECT, undefined)
 
 export function adsEnabled(): boolean {
   // ⚠️ 스토어 앱(WebView)에서는 AdSense를 띄우지 않는다 — AdSense는 웹 전용이고, 앱 WebView 안 노출은
@@ -22,7 +22,8 @@ export function adsEnabled(): boolean {
   // 개발 서버(npm run dev)에선 운영 광고 계정으로 요청하지 않는다 — 로컬 QA가 무효 트래픽이 되고,
   // StrictMode 이중 마운트가 같은 슬롯에 두 번 push해 TagError를 냈다
   if (import.meta.env.DEV) return false
-  return Boolean(ADSENSE_CLIENT)
+  // 슬롯 ID는 계정별이다 — 새 계정(4637…)의 광고 단위를 만들어 env(또는 위 기본값)에 넣기 전엔 플레이스홀더.
+  return Boolean(ADSENSE_CLIENT && ADSENSE_SLOT_BANNER && ADSENSE_SLOT_RECT)
 }
 
 /**
