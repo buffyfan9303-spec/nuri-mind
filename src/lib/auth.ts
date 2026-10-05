@@ -43,7 +43,8 @@ export async function signInWithKakao(chooseAccount = false): Promise<{ ok: bool
     typeof window !== 'undefined'
       ? window.location.origin + window.location.pathname + window.location.search + window.location.hash
       : undefined
-  // 닉네임만 요청 — account_email은 카카오 동의항목 미설정 시 KOE205 발생(이메일은 비즈앱 검수 필요).
+  // Supabase Kakao provider 기본 scope는 account_email·profile_image·profile_nickname이다.
+  // 아래 scopes는 추가 요청값이므로 닉네임만 수집한다고 해석하면 안 된다(data/legalDocs.ts 참고).
   let reauth = chooseAccount
   try {
     reauth = reauth || localStorage.getItem(REAUTH_KEY) === '1'

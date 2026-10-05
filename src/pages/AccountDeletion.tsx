@@ -56,9 +56,9 @@ export default function AccountDeletion() {
           <h2 className="text-[17px] font-extrabold">{l({ ko: '삭제되는 정보', en: 'What is deleted', ja: '削除される情報' })}</h2>
           <p className="mt-2 break-keep text-[14px] font-bold leading-relaxed text-ink-sub">
             {l({
-              ko: '카카오 로그인 계정 정보(닉네임), 프로필, 포인트·다이아 내역, 프리미엄 이용 기간, 우편함, 교환 신청 내역, 알림 구독, 초대 기록, AI 이용 횟수. 이 기기에 저장된 해당 계정의 검사 기록도 함께 지워집니다.',
-              en: 'Kakao sign-in account (nickname), profile, points & diamond history, premium period, mailbox, redemption requests, push subscriptions, referral records and AI usage counts. That account’s test history stored on the device is removed too.',
-              ja: 'カカオログインのアカウント情報（ニックネーム）、プロフィール、ポイント・ダイヤ履歴、プレミアム期間、メール、交換申請、通知購読、招待記録、AI利用回数。この端末に保存された当該アカウントの検査記録も削除されます。',
+              ko: '카카오 로그인 계정 정보(계정 식별값·닉네임·프로필 사진 URL·이메일), 프로필, 포인트·다이아 내역, 프리미엄 이용 기간, 우편함, 교환 신청 내역, 알림 구독, 초대 기록, AI 이용 횟수. 이 기기에 저장된 해당 계정의 검사 기록도 함께 지워집니다.',
+              en: 'Kakao sign-in account (account ID, nickname, profile photo URL and email address), profile, points & diamond history, premium period, mailbox, redemption requests, push subscriptions, referral records and AI usage counts. That account’s test history stored on the device is removed too.',
+              ja: 'カカオログインのアカウント情報（アカウント識別子・ニックネーム・プロフィール写真URL・メールアドレス）、プロフィール、ポイント・ダイヤ履歴、プレミアム期間、メール、交換申請、通知購読、招待記録、AI利用回数。この端末に保存された当該アカウントの検査記録も削除されます。',
             })}
           </p>
           <p className="mt-2 break-keep text-[13px] font-bold leading-relaxed text-ink-faint">
