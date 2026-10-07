@@ -11,6 +11,7 @@ import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
 import { authReady, getAuthUser, onAuthChange, signInWithKakao } from '../lib/auth'
 import AppleLoginButton from '../components/AppleLoginButton'
+import GoogleLoginButton from '../components/GoogleLoginButton'
 import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem, confirmMailDelivery } from '../lib/mailbox'
 import { isAccountSwitchPending } from '../lib/economy'
 import { burst } from '../lib/confetti'
@@ -206,6 +207,7 @@ export default function Mailbox() {
             <button onClick={onLogin} className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[#FEE500] py-3 text-[15px] font-extrabold text-[#191919] shadow-card transition-transform active:translate-y-[2px]">
               {l({ ko: '카카오로 로그인', en: 'Log in with Kakao', ja: 'カカオでログイン' })}
             </button>
+            <GoogleLoginButton className="mt-2" />
             <AppleLoginButton className="mt-2" />
           </Card>
         ) : mail.length === 0 ? (

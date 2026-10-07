@@ -20,7 +20,7 @@ export default {
   'result.openDex': '도감 보기',
   'onboard.kakao': '카카오로 3초 만에 시작',
   'onboard.or': '또는 닉네임으로 시작',
-  'onboard.kakaoReady': '카카오 연결 완료 · {nick}님 환영해요!',
+  'onboard.kakaoReady': '로그인 완료 · {nick}님 환영해요!',
   'onboard.otherAccount': '다른 계정으로 로그인',
   'onboard.note': '닉네임·캐릭터는 나중에 프로필에서 바꿀 수 있어요',
   'onboard.agreePre': '만 14세 이상이며, ',

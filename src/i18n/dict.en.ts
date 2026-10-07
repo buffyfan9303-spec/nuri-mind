@@ -16,7 +16,7 @@ export default {
   'result.openDex': 'Open dex',
   'onboard.kakao': 'Start with Kakao in 3s',
   'onboard.or': 'or start with a nickname',
-  'onboard.kakaoReady': 'Kakao connected · welcome, {nick}!',
+  'onboard.kakaoReady': 'Signed in · welcome, {nick}!',
   'onboard.otherAccount': 'Sign in with another account',
   'onboard.note': 'You can change your name & character later in Profile',
   'onboard.agreePre': 'I am 14 or older and agree to the ',
