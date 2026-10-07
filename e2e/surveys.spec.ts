@@ -13,6 +13,8 @@ import { seedOnboarded, seedStore, waitForApp } from './helpers'
  */
 const CONSENT = { v: LEGAL_VERSION, at: '2026-01-01' }
 const AD_SCRIPT = '#adsbygoogle-js'
+// 슬롯 ID가 없으면 같은 자리에 플레이스홀더가 선다 — 위치 보증은 둘 다 센다
+const AD_SLOT = 'ins.adsbygoogle, [data-ad-placeholder]'
 
 test.describe('리워드 설문 — 준비 중', () => {
   test.beforeEach(async ({ page }) => {
@@ -31,7 +33,7 @@ test.describe('리워드 설문 — 준비 중', () => {
     await expect(page.getByRole('button', { name: '설문 참여하러 가기' })).toHaveCount(0)
     await expect(page.getByText(/설문 참여하고 \d+P 받기/)).toHaveCount(0)
     // 홈은 탐색 화면 — 광고 슬롯도, 로더 스크립트도 없어야 한다(자동 광고가 붙을 발판 자체를 없앤다)
-    await expect(page.locator('ins.adsbygoogle')).toHaveCount(0)
+    await expect(page.locator(AD_SLOT)).toHaveCount(0)
     await expect(page.locator(AD_SCRIPT)).toHaveCount(0)
   })
 
@@ -49,7 +51,7 @@ test.describe('리워드 설문 — 준비 중', () => {
       await page.goto(path)
       await waitForApp(page)
       await expect(page.getByRole('heading', { level: 1, name: '준비 중이에요' })).toBeVisible()
-      await expect(page.locator('ins.adsbygoogle')).toHaveCount(0)
+      await expect(page.locator(AD_SLOT)).toHaveCount(0)
       await expect(page.locator(AD_SCRIPT)).toHaveCount(0)
       await page.getByRole('button', { name: '돌아가기' }).click()
       await expect(page).toHaveURL(/\/rewards$/)
@@ -64,11 +66,11 @@ test('광고는 콘텐츠 아래에만 — 매거진 아티클엔 본문 뒤 한
   await page.goto('/about')
   await waitForApp(page)
   await expect(page.getByRole('heading', { level: 1, name: '누리 마인드를 소개합니다' })).toBeVisible()
-  await expect(page.locator('ins.adsbygoogle')).toHaveCount(0)
+  await expect(page.locator(AD_SLOT)).toHaveCount(0)
 
   await page.goto('/magazine/adhd-focus')
   await waitForApp(page)
   await expect(page.getByRole('heading', { level: 1, name: '집중력이 약한 게 아니라, 뇌가 다른 거예요' })).toBeVisible()
   // 본문 중간 광고는 뺐다 — 슬롯은 정확히 하나(하단)
-  await expect(page.locator('ins.adsbygoogle')).toHaveCount(1)
+  await expect(page.locator(AD_SLOT)).toHaveCount(1)
 })

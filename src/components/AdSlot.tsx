@@ -50,6 +50,7 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
     />
   ) : (
     <div
+      data-ad-placeholder
       className={`flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-line bg-surface2 ${
         isRect ? 'h-[250px]' : 'h-[64px]'
       }`}
