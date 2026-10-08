@@ -115,6 +115,7 @@ export default function Onboarding() {
   }, [])
 
   const [oauthErr, setOauthErr] = useState('')
+  const canStart = !!nick.trim() && agreed
 
   // OAuth 콜백 에러(동의 취소·프로바이더 설정 오류) 표시 — 무음 복귀 방지 + URL 잔존 파라미터 정리
   useEffect(() => {
@@ -273,7 +274,14 @@ export default function Onboarding() {
                   style={{ borderColor: sel ? '#4FA882' : 'rgb(var(--line))', background: sel ? '#4FA88216' : 'rgb(var(--surface))' }}
                 >
                   {/* 글자가 없는 버튼 — 이모지가 곧 이름이라 대체 텍스트로 남긴다(버튼 이름 '🐧') */}
-                  <Emoji e={p.emoji} size={32} label={p.emoji} />
+                  {/* 고르는 순간 캐릭터가 '톡' 튄다(듀오링고 캐릭터 선택) — 1→1.08→1, 다른 칸은 가만히 */}
+                  <motion.span
+                    className="flex"
+                    animate={sel ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                    transition={sel ? { duration: 0.32, times: [0, 0.45, 1], ease: 'easeOut' } : SPRING.snap}
+                  >
+                    <Emoji e={p.emoji} size={32} label={p.emoji} />
+                  </motion.span>
                 </motion.button>
               )
             })}
@@ -318,9 +326,15 @@ export default function Onboarding() {
               {t('onboard.agreeSuf')} <span className="font-extrabold text-mind-600">{t('onboard.agreeReq')}</span>
             </p>
           </div>
-          <Button color="mind" size="lg" disabled={!nick.trim() || !agreed} onClick={start}>
-            {t('onboard.start')}
-          </Button>
+          {/* 시작 버튼이 '켜지는 순간' 한 번 살짝 부풀어 눈길을 끈다(듀오링고 CTA 활성화). 꺼져 있거나 이미 켜진 뒤엔 가만히 */}
+          <motion.div
+            animate={canStart ? { scale: [1, 1.03, 1] } : { scale: 1 }}
+            transition={canStart ? { duration: 0.36, times: [0, 0.5, 1], ease: 'easeOut' } : SPRING.snap}
+          >
+            <Button color="mind" size="lg" disabled={!canStart} onClick={start}>
+              {t('onboard.start')}
+            </Button>
+          </motion.div>
           <p className="mt-2.5 px-2 text-center text-[11px] font-bold leading-relaxed text-ink-faint">
             {t('onboard.effective', { date: LEGAL_EFFECTIVE })} · {t('onboard.note')}
           </p>

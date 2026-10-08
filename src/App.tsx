@@ -218,12 +218,14 @@ export default function App() {
       >
         <motion.div
           key={location.pathname}
-          // 이동 폭을 줄이고(14→10px) 길게 풀어(0.26→0.34s) '밀려 들어온다'보다 '떠오른다'로.
-          // 퇴장은 easeIn이면 최고 속도에서 끊겨 깜빡임처럼 보인다 — 속도를 0으로 줄이며 흐려지게 한다
-          initial={{ opacity: 0, y: 10, scale: 0.99 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -6, scale: 0.995, transition: { duration: 0.16, ease: [0.4, 0, 0.2, 1] } }}
-          transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+          // 이 래퍼는 화면 '전체'(fixed 내비의 형제, 모달 조상)다 — 넓은 본문에 transform(y·scale)을 걸고 들어오면
+          // 삼성 인터넷에서 래스터 재생성 순간 밝기가 점프하고(nuri-lessons-ui C-107·111), 페이지 안 fixed 요소가 갇힌다.
+          // 그래서 전환은 opacity만: 들어올 땐 ease-out으로 떠오르고, 나갈 땐 속도를 0까지 줄이며 흐려진다.
+          // '살짝 위로 뜨는' 느낌은 각 페이지 안의 히어로·카드가 자기 영역에서만(작은 요소) 담당한다.
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.14, ease: [0.4, 0, 0.2, 1] } }}
+          transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* 라우트 경계: 한 화면의 크래시·청크 실패가 앱 전체(내비 포함)를 지우지 않게. motion.div가 경로별 key라 이동하면 자동 리셋 */}
           <SentryErrorBoundary fallback={({ resetError }) => <RouteFallback onReset={resetError} />}>

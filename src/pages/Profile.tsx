@@ -3,7 +3,7 @@ import { SPRING } from '../lib/motion'
 import { toast } from '../lib/toast'
 import { localDay, localDayOf } from '../lib/date'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Button from '../components/Button'
 import Avatar from '../components/Avatar'
 import Badges from '../components/Badges'
@@ -129,6 +129,8 @@ export default function Profile() {
   }, [])
 
   const fileRef = useRef<HTMLInputElement>(null)
+  /** 아바타의 정체 키 — 바뀔 때만 크로스페이드가 돈다(같은 동물을 다시 골라도 안 움직인다). 사진은 길이로 구분(data URL 전체를 키로 쓰면 무겁다) */
+  const avatarKey = s.avatar ? (s.avatar.kind === 'animal' ? `a:${s.avatar.persona}` : `p:${s.avatar.dataUrl.length}`) : 'none'
 
   // 검사로 얻은 동물(중복 제거) — 아바타 후보
   const earnedAnimals = Array.from(new Set(s.results.map((r) => r.persona))).filter((k) => PERSONAS[k])
@@ -168,7 +170,21 @@ export default function Profile() {
             aria-label={t('profile.avatarPick')}
             className="relative shrink-0"
           >
-            <Avatar avatar={s.avatar} size={64} />
+            {/* 아바타를 바꾸면 옛것이 흐려지는 동안 새것이 떠오른다(크로스페이드). 둘 다 64px 상자 안 absolute라 레이아웃은 1px도 안 움직인다 */}
+            <span className="relative block h-16 w-16">
+              <AnimatePresence initial={false}>
+                <motion.span
+                  key={avatarKey}
+                  className="absolute inset-0 flex"
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.04, transition: SPRING.exit }}
+                  transition={SPRING.pop}
+                >
+                  <Avatar avatar={s.avatar} size={64} />
+                </motion.span>
+              </AnimatePresence>
+            </span>
             <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-surface shadow-card"><Emoji e="📷" size={12} /></span>
           </button>
           <div className="min-w-0 flex-1">
@@ -679,7 +695,20 @@ export default function Profile() {
         <div>
           <h3 className="text-center text-[17px] font-extrabold">{t('profile.avatarPick')}</h3>
           <div className="mt-4 flex justify-center">
-            <Avatar avatar={s.avatar} size={88} />
+            <span className="relative block h-[88px] w-[88px]">
+              <AnimatePresence initial={false}>
+                <motion.span
+                  key={avatarKey}
+                  className="absolute inset-0 flex"
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.04, transition: SPRING.exit }}
+                  transition={SPRING.pop}
+                >
+                  <Avatar avatar={s.avatar} size={88} />
+                </motion.span>
+              </AnimatePresence>
+            </span>
           </div>
 
           {/* 동물 후보 */}
@@ -689,8 +718,10 @@ export default function Profile() {
                 const p = PERSONAS[key]
                 const active = s.avatar?.kind === 'animal' && s.avatar.persona === key
                 return (
-                  <button
+                  <motion.button
                     key={key}
+                    whileTap={{ scale: 0.97 }}
+                    transition={SPRING.press}
                     onClick={() => s.setAvatar({ kind: 'animal', persona: key })}
                     className="flex aspect-square items-center justify-center rounded-2xl border-2 text-2xl"
                     style={{
@@ -698,8 +729,15 @@ export default function Profile() {
                       background: active ? '#4FA8821A' : 'rgb(var(--surface))',
                     }}
                   >
-                    {p.emoji}
-                  </button>
+                    {/* 고른 동물만 한 번 '톡'(온보딩 캐릭터 선택과 같은 1→1.08→1) */}
+                    <motion.span
+                      className="flex"
+                      animate={active ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                      transition={active ? { duration: 0.32, times: [0, 0.45, 1], ease: 'easeOut' } : SPRING.snap}
+                    >
+                      {p.emoji}
+                    </motion.span>
+                  </motion.button>
                 )
               })}
             </div>

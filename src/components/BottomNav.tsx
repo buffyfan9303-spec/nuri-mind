@@ -100,27 +100,28 @@ export default function BottomNav() {
                 onClick={() => haptic(6)}
                 className="flex w-[60px] flex-col items-center py-0.5"
               >
-                <motion.span
-                  animate={
-                    active
-                      ? { y: -1, scale: [0.88, 1.14, 1] }
-                      : { y: 0, scale: 1 }
-                  }
-                  transition={{
-                    ...SPRING.flick,
-                    // 탭 배지의 scale만 키프레임으로 따로 간다(스프링으로는 중간 피크를 만들 수 없다)
-                    scale: { duration: 0.34, times: [0, 0.55, 1], ease: 'easeOut' },
-                  }}
-                  aria-hidden="true"
-                  // 듀오링고식 활성 탭 — 둥근 네모에 옅은 면 + 2px 테두리(아이콘은 그대로 선명하게)
-                  className="flex h-9 w-10 items-center justify-center rounded-xl border-2 text-[20px] transition-colors"
-                  style={{
-                    background: active ? 'rgba(79,168,130,0.14)' : 'transparent',
-                    borderColor: active ? '#4FA882' : 'transparent',
-                  }}
-                >
-                  <Emoji e={tab.icon} size={22} />
-                </motion.span>
+                <span aria-hidden="true" className="relative flex h-9 w-10 items-center justify-center text-[20px]">
+                  {/* 듀오링고식 활성 표시 — 옅은 면 + 2px 테두리 '한 장'이 탭 사이를 미끄러져 옮겨 간다(layoutId).
+                      요소 하나·탭 5개라 레이아웃 측정이 가볍고, 첫 렌더엔 이전 위치가 없어 그냥 제자리에 있다 */}
+                  {active && (
+                    <motion.span
+                      layoutId="bottomnav-pill"
+                      transition={SPRING.snap}
+                      className="absolute inset-0 rounded-xl border-2 border-[#4FA882] bg-[rgba(79,168,130,0.14)]"
+                    />
+                  )}
+                  <motion.span
+                    animate={active ? { y: -1, scale: [0.88, 1.14, 1] } : { y: 0, scale: 1 }}
+                    transition={{
+                      ...SPRING.flick,
+                      // 탭 배지의 scale만 키프레임으로 따로 간다(스프링으로는 중간 피크를 만들 수 없다)
+                      scale: { duration: 0.34, times: [0, 0.55, 1], ease: 'easeOut' },
+                    }}
+                    className="relative flex"
+                  >
+                    <Emoji e={tab.icon} size={22} />
+                  </motion.span>
+                </span>
                 <span
                   // 일본어 'コミュニティ'가 2줄로 접혀 탭 높이가 늘어났다(69 vs 55) — ja만 글자를 줄여 nowrap으로 1줄 유지, ko/en은 그대로
                   className={`mt-px whitespace-nowrap text-[11px] font-extrabold leading-tight transition-colors [html:lang(ja)_&]:text-[9.5px] [html:lang(ja)_&]:tracking-[-0.02em] ${
