@@ -15,6 +15,9 @@
  *  6) 개별 이벤트 전송은 첫 동기화(마커) 완료 후에만 — 이관액과의 이중 계상 차단.
  *  7) 모든 트리거(앱시작·auth 이벤트·online·포그라운드 복귀·enqueue)는 syncAccount 하나로 수렴 —
  *     첫 동기화가 일시 실패해도 다음 트리거가 재시도(마커==uid면 flush만 하는 값싼 경로).
+ *  8) 늦은 응답 가드: 계정 세대(AuthMark)를 두고 모든 await 뒤에 지금 값과 비교한다 — 로그아웃·전환 사이에
+ *     늦게 끝난 이전 계정의 호출이 새 계정의 지갑·마커를 쓰지 못한다. 아웃박스는 항목마다 보내기 직전
+ *     세션 uid를 다시 확인한다(보안 검토 S3). 판정·순서 로직은 econCore.ts(의존성 없음, 스모크가 행동 검사).
  *
  * 비로그인·미설정 시 전부 no-op — 앱은 기존 localStorage 단독으로 동작.
  * ⚠️ 적립은 p_is_free=false(일일 무료 상한은 제품 정책상 제거됨). 차감은 mirror_spend RPC
@@ -23,37 +26,47 @@
  */
 import { supabase } from './supabase'
 import { clearKakaoReauth, onAuthChange, signOut } from './auth'
+import { safeLocalStorage } from './safeStorage'
+import {
+  GUEST,
+  MAX_AMOUNT,
+  OUTBOX_KEY,
+  SYNC_UID_KEY,
+  clearLocalUid,
+  createRerunGate,
+  readLocalUid,
+  writeLocalUid,
+  deleteErrorCode,
+  drainOutbox,
+  loadOutboxFrom,
+  nextAuthMark,
+  runAccountSync,
+  saveOutboxTo,
+  vaultDrop,
+  type AuthMark,
+  type DeleteAccountError,
+  type OutboxEntry,
+  type SpendResult,
+  type SyncHooks,
+} from './econCore'
 
-const OUTBOX_KEY = 'nuri-mind-econ-outbox-v1'
-/** 이 기기가 마지막으로 동기화를 완료한 계정 uid — 첫 동기화/계정 전환 판별 */
-const SYNC_UID_KEY = 'nuri-mind-econ-sync-uid'
-/**
- * 이 기기의 로컬 프로필이 "누구 것인가" — 서버 왕복과 무관한 로컬 경계.
- * SYNC_UID_KEY(서버 동기화 완료)와 분리한 이유: 계정 전환 감지 후 서버 호출이 한 번만 실패해도
- * 이전 계정의 유료 재화·기록이 새 계정 화면에 남는 창이 생기기 때문(경계는 네트워크와 무관해야 함).
- */
-const LOCAL_UID_KEY = 'nuri-mind-econ-local-uid'
-/** 로그아웃 상태의 기기 프로필도 하나의 '계정'처럼 보관 — 재로그인 시 원상 복구를 위해 */
-const GUEST = 'guest'
-const MAX_OUTBOX = 300
-/** 서버 grant_points/mirror_spend의 건당 상한과 일치 */
-const MAX_AMOUNT = 100000
+export type { SyncHooks, AuthMark, DeleteAccountError } from './econCore'
+export { isStaleAuth } from './econCore'
 
-interface OutboxEntry {
-  /** 항목 고유 인스턴스 id — 클레임/제거의 매칭 기준(같은 의미 키가 계정별로 공존 가능하므로 k로 매칭 금지) */
-  id: string
-  /** 서버 reason_key — 재시도 멱등성의 핵심(의미 키 또는 생성 시 1회 발급되는 evt: 키) */
-  k: string
-  kind: 'earn' | 'spend'
-  amount: number
-  memo: string
-  /** 이벤트 발생 시점의 계정(비로그인은 null → 첫 로그인 계정이 클레임) */
-  uid: string | null
+/** 저장소 접근은 전부 이 보호 래퍼로 — 시크릿 모드·용량 초과에서 읽기만 해도 던진다 */
+const kv = safeLocalStorage
+
+/** 지금 이 기기의 로그인 계정과 세대 — 직접 대입하지 말고 noteAuthUid로만 바꾼다 */
+let auth: AuthMark = { uid: null, epoch: 0 }
+/** 늦은 응답 가드용 getter — 시작 시 잡은 값과 비교할 "지금 값"은 반드시 이걸로 읽는다 */
+export const authMark = (): AuthMark => auth
+function noteAuthUid(uid: string | null): void {
+  auth = nextAuthMark(auth, uid)
 }
 
-let currentUid: string | null = null
 let flushing = false
-let syncing = false
+/** 동기화 재진입 게이트 — 진행 중 들어온 트리거(auth 이벤트 등)는 버리지 않고 끝난 뒤 한 번 더 */
+const syncGate = createRerunGate()
 /** mirror_spend 미배포(PGRST202) 감지 — 이번 세션 재시도만 중단(아웃박스에는 유지) */
 let spendRpcMissing = false
 /** initEconomySync가 등록한 훅 — enqueue 등 모든 트리거가 syncAccount로 수렴하기 위한 참조 */
@@ -62,29 +75,17 @@ let hooksRef: SyncHooks | null = null
 const uniq = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 const evtKey = () => 'evt:' + uniq()
 
-function loadOutbox(): OutboxEntry[] {
-  try {
-    const raw = localStorage.getItem(OUTBOX_KEY)
-    const list = raw ? (JSON.parse(raw) as OutboxEntry[]) : []
-    if (!Array.isArray(list)) return []
-    // 구버전 항목(id 없음) 호환 — k를 id로 승계
-    return list.map((x) => (x.id ? x : { ...x, id: x.k }))
-  } catch {
-    return []
-  }
-}
-function saveOutbox(list: OutboxEntry[]): void {
-  try {
-    localStorage.setItem(OUTBOX_KEY, JSON.stringify(list.slice(-MAX_OUTBOX)))
-  } catch {
-    /* 저장소 불가 — 미러 포기(로컬 동작엔 영향 없음) */
-  }
-}
+const loadOutbox = (): OutboxEntry[] => loadOutboxFrom(kv)
+const saveOutbox = (list: OutboxEntry[]): void => saveOutboxTo(kv, list)
 
 async function sessionUid(): Promise<string | null> {
   if (!supabase) return null
-  const { data } = await supabase.auth.getSession()
-  return data.session?.user?.id ?? null
+  try {
+    const { data } = await supabase.auth.getSession()
+    return data.session?.user?.id ?? null
+  } catch {
+    return null
+  }
 }
 
 /** 서버 잔액(원장 합계) — 비로그인/오류 시 null */
@@ -111,8 +112,13 @@ async function fetchServerLedgerCount(): Promise<number | null> {
   }
 }
 
-async function sendEarn(amount: number, memo: string, key: string): Promise<boolean> {
+/**
+ * 적립 전송. asUid를 주면 보내기 직전 세션이 그 계정인지 확인한다 — RPC는 "지금 세션의 토큰"으로 나가므로
+ * 그 사이 계정이 바뀌었으면 다른 사람 원장에 적립된다(보안 검토 S3).
+ */
+async function sendEarn(amount: number, memo: string, key: string, asUid: string | null = null): Promise<boolean> {
   if (!supabase) return false
+  if (asUid !== null && (await sessionUid()) !== asUid) return false
   try {
     const { error } = await supabase.rpc('grant_points', {
       p_amount: Math.round(amount),
@@ -126,7 +132,6 @@ async function sendEarn(amount: number, memo: string, key: string): Promise<bool
   }
 }
 
-type SpendResult = 'ok' | 'fail' | 'defer'
 async function sendSpend(amount: number, memo: string, key: string): Promise<SpendResult> {
   if (!supabase) return 'fail'
   if (spendRpcMissing) return 'defer'
@@ -152,44 +157,28 @@ async function sendSpend(amount: number, memo: string, key: string): Promise<Spe
 
 /**
  * 아웃박스 전송. 반환 true = 이 계정의 적격 항목이 하나도 남지 않음(완전 배출).
- * 모든 변이는 localStorage를 다시 읽어 병합 — 전송 중 enqueue된 항목을 절대 덮어쓰지 않고,
- * 한 바퀴 배출 후 새로 들어온 항목까지 재확인(rerun 루프).
  * 첫 동기화(마커) 전에는 전송하지 않음(force는 syncAccount 내부 전용).
+ * expectUid: 호출부가 확인한 계정 — 세션이 그와 다르면 아무것도 보내지 않는다.
+ * isStale: 호출부의 늦은 응답 가드(없으면 이 배출 시작 이후 세대가 바뀌었는지만 본다).
+ * 루프·항목별 세션 재확인은 econCore.drainOutbox.
  */
-async function flushOutbox(force = false): Promise<boolean> {
+async function flushOutbox(force = false, expectUid: string | null = null, isStale?: () => boolean): Promise<boolean> {
   if (!supabase || flushing) return false
   flushing = true
   try {
+    const epoch0 = auth.epoch
     const uid = await sessionUid()
     if (!uid) return false
-    if (!force && localStorage.getItem(SYNC_UID_KEY) !== uid) return false
-    for (;;) {
-      const eligible = loadOutbox().filter((x) => x.uid === uid || x.uid === null)
-      if (eligible.length === 0) return true
-      let progressed = false
-      let deferred = 0
-      for (const e of eligible) {
-        if (e.uid === null) {
-          // 이 기기 지갑을 현재 계정이 소유(클레임) — 저장소 재읽기 후 해당 항목만 갱신(id 매칭)
-          saveOutbox(loadOutbox().map((x) => (x.id === e.id ? { ...x, uid } : x)))
-        }
-        if (e.kind === 'earn') {
-          if (!(await sendEarn(e.amount, e.memo, e.k))) return false // 네트워크 실패 — 다음 기회에
-        } else {
-          const r = await sendSpend(e.amount, e.memo, e.k)
-          if (r === 'fail') return false
-          if (r === 'defer') {
-            deferred++
-            continue // RPC 미배포 — 항목 유지하고 다음으로
-          }
-        }
-        saveOutbox(loadOutbox().filter((x) => x.id !== e.id))
-        progressed = true
-      }
-      if (deferred > 0) return false // 차감 대기 잔존 — 완전 배출 아님
-      if (!progressed) return true
-      // 전송 도중 새 항목이 들어왔을 수 있음 → 한 바퀴 더
-    }
+    if (expectUid !== null && uid !== expectUid) return false
+    if (!force && kv.getItem(SYNC_UID_KEY) !== uid) return false
+    return await drainOutbox({
+      uid,
+      kv,
+      sessionUid,
+      isStale: isStale ?? (() => authMark().epoch !== epoch0),
+      sendEarn: (e) => sendEarn(e.amount, e.memo, e.k),
+      sendSpend: (e) => sendSpend(e.amount, e.memo, e.k),
+    })
   } finally {
     flushing = false
   }
@@ -198,7 +187,7 @@ async function flushOutbox(force = false): Promise<boolean> {
 function enqueue(kind: 'earn' | 'spend', amount: number, memo: string, key: string | null): void {
   const n = Math.round(amount)
   if (!supabase || n <= 0 || n > MAX_AMOUNT) return
-  const entry: OutboxEntry = { id: uniq(), k: key ?? evtKey(), kind, amount: n, memo, uid: currentUid }
+  const entry: OutboxEntry = { id: uniq(), k: key ?? evtKey(), kind, amount: n, memo, uid: auth.uid }
   const list = loadOutbox()
   // 같은 의미 키 재큐잉 방지 — 단, 소유자가 같거나 클레임 가능(null)한 경우만 차단.
   // 다른 계정의 dormant 항목이 현재 계정의 정당한 이벤트를 막으면 안 됨(서버 멱등성은 계정 단위).
@@ -225,100 +214,28 @@ export function mirrorSpend(amount: number, memo: string, key: string | null = n
   enqueue('spend', amount, memo, key)
 }
 
-export interface SyncHooks {
-  getWallet: () => { points: number }
-  /** 새 기기 복원 — points = 서버잔액 + (현재 − 스냅샷) 으로 동기화 중 적립을 보존 */
-  restoreTo: (serverPoints: number, snapshotPoints: number) => void
-  /**
-   * 계정 전환 — 이전 계정의 기기-로컬 프로필을 uid별로 보관(스냅샷)하고,
-   * 새 계정의 보관본이 있으면 복원한다. 파기하지 않는 이유: 유료 재화(다이아·프리미엄)는
-   * 서버 복원 경로가 없어 지우면 영구 소멸이고, 남기면 남의 계정에 승계되기 때문.
-   */
-  swapAccount: (prevUid: string, nextUid: string) => void
-  /** 서버 권위 잔액으로 지갑을 맞춤(차액은 원장 1행으로 기록) */
-  setWallet: (points: number, memo: string) => void
-}
-
 /**
- * 계정 동기화 — 모든 트리거가 이 함수로 수렴(멱등·재진입 가드).
- *  · 마커 == uid       → 아웃박스만 전송
- *  · 마커 없음 + 서버 원장 있음 → 복원: 아웃박스 완전 배출 확인 → 스냅샷 → 서버 잔액 → restoreTo
- *  · 마커 없음 + 서버 원장 없음 → 이관: 같은 tick에 아웃박스 폐기+스냅샷 → 'local_migration' 1회
- *  · 마커 ≠ uid(계정 전환)     → 이관 없이 서버 상태로 지갑 재설정
- * 실패(네트워크·부분 전송) 시 마커를 남기지 않고 반환 → 다음 트리거가 재시도(전부 멱등).
+ * 계정 동기화 — 모든 트리거가 이 함수로 수렴. 분기·늦은 응답 가드는 econCore.runAccountSync.
+ * 진행 중에 들어온 호출은 버리지 않고, 끝난 뒤 한 번 더 실행한다(전환 직후 새 계정 동기화가 미뤄지지 않게).
  */
 async function syncAccount(hooks: SyncHooks): Promise<void> {
-  if (syncing || !supabase) return
-  syncing = true
+  if (!supabase) return
+  if (!syncGate.tryEnter()) return
   try {
-    const uid = await sessionUid()
-    if (!uid) return
-    currentUid = uid
-
-    // ── ① 로컬 경계를 서버보다 먼저 세운다 ──
-    // 전환 감지 즉시 프로필을 스왑한다. 서버 응답을 기다리면 네트워크가 한 번만 실패해도
-    // 이전 계정의 다이아·프리미엄·검사기록이 새 계정 화면에 그대로 남는다.
-    const localUid = localStorage.getItem(LOCAL_UID_KEY)
-    if (localUid && localUid !== uid) {
-      hooks.swapAccount(localUid, uid)
-      // 이전 지갑에서 로그아웃 상태로 쌓인 활동(uid=null)은 새 계정 것이 아니다.
-      // ⚠️ 반드시 flush "이전"에 폐기 — 뒤에 두면 force flush가 먼저 새 계정 원장에 적립해버린다.
-      saveOutbox(loadOutbox().filter((e) => e.uid !== null))
-      localStorage.setItem(LOCAL_UID_KEY, uid)
-    }
-
-    const marker = localStorage.getItem(SYNC_UID_KEY)
-    if (marker === uid) {
-      await flushOutbox()
-      return
-    }
-
-    if (marker && marker !== uid) {
-      // 계정 전환 — 경계는 ①에서 이미 확정됐고, 여기서는 잔액만 서버 권위로 정산한다.
-      // 이전 계정 태그(uid=marker) 항목은 배출하지 않고 휴면 보관 — 그 사용자가 재로그인할 때 전송된다.
-      if (!(await flushOutbox(true))) return
-      // ⚠️ 원장 행 수는 반드시 flush "이후"에 읽는다. 배출로 갓 생긴 행을 못 보면
-      //    신규 계정으로 오판해 local_migration 100P를 덧대 로컬·서버가 영구히 어긋난다.
-      const count = await fetchServerLedgerCount()
-      if (count === null) return
-      if (count > 0) {
-        const server = await fetchServerPoints()
-        if (server === null) return
-        hooks.setWallet(server, '👤 계정 전환 — 서버 지갑으로 동기화')
-      } else {
-        // 새 지갑 시드 100P — 전송 성공을 확인한 뒤에만 지갑 확정(실패 시 다음 트리거가 재시도)
-        if (!(await sendEarn(100, '💾 로컬 지갑 이관', 'local_migration'))) return
-        hooks.setWallet(100, '👤 계정 전환 — 새 지갑 시작')
-      }
-      localStorage.setItem(SYNC_UID_KEY, uid)
-      return
-    }
-
-    // ── 이 기기에서 이 계정 첫 동기화 ──
-    // 여기서는 원장 행 수를 flush 전에 읽어야 한다. 신규 계정 경로는 flush가 아니라
-    // '아웃박스 폐기 + 잔액 1회 이관'이라서, 먼저 배출해버리면 이관액과 이중 계상된다.
-    const ledgerCount = await fetchServerLedgerCount()
-    if (ledgerCount === null) return
-    if (ledgerCount > 0) {
-      // 기존 계정(재설치·새 기기) → 비로그인 활동을 전부 서버에 반영한 뒤 서버 잔액으로 복원.
-      // 완전 배출이 아니면(네트워크 실패·차감 RPC 미배포) 복원 보류 — 부정확한 잔액 복원 방지.
-      if (!(await flushOutbox(true))) return
-      // 스냅샷은 flush "완료 후"에 — flush로 서버에 반영된 적립이 드리프트에 중복 계상되는 것 방지
-      const snapshot = hooks.getWallet().points
-      const server = await fetchServerPoints()
-      if (server === null) return
-      hooks.restoreTo(server, snapshot)
-    } else {
-      // 신규 계정 → 로컬 잔액 1회 이관. 아웃박스 폐기와 스냅샷을 같은 동기 tick에 수행 —
-      // 현재 계정·비로그인 이벤트 금액은 전부 스냅샷에 포함돼 있으므로 폐기가 정확(이중 지급 차단).
-      saveOutbox(loadOutbox().filter((e) => e.uid !== null && e.uid !== uid))
-      const amt = Math.min(Math.max(hooks.getWallet().points, 0), MAX_AMOUNT)
-      if (amt > 0 && !(await sendEarn(amt, '💾 로컬 지갑 이관', 'local_migration'))) return
-    }
-    localStorage.setItem(SYNC_UID_KEY, uid)
-    localStorage.setItem(LOCAL_UID_KEY, uid)
+    await runAccountSync({
+      kv,
+      hooks,
+      sessionUid,
+      getAuth: authMark,
+      noteUid: (uid) => noteAuthUid(uid),
+      flush: ({ force, uid, isStale }) => flushOutbox(force, uid, isStale),
+      fetchLedgerCount: fetchServerLedgerCount,
+      fetchServerPoints,
+      sendEarn: (amount, memo, key, asUid) => sendEarn(amount, memo, key, asUid),
+    })
   } finally {
-    syncing = false
+    // setTimeout — 같은 tick에 재진입하지 않게(호출 스택이 아니라 다음 태스크에서)
+    if (syncGate.exit()) setTimeout(() => void syncAccount(hooks), 0)
   }
 }
 
@@ -329,16 +246,13 @@ async function syncAccount(hooks: SyncHooks): Promise<void> {
  * '보관본 복원 + 서버 잔액 정산' 경로를 다시 타게 한다.
  */
 export function leaveAccount(): void {
-  const prev = currentUid ?? localStorage.getItem(LOCAL_UID_KEY)
+  const prev = auth.uid ?? readLocalUid(kv)
+  // 세대를 먼저 올린다 — 진행 중인 동기화가 다음 await 뒤에 이 계정의 지갑·마커를 쓰지 못하게
+  noteAuthUid(null)
   if (hooksRef && prev && prev !== GUEST) hooksRef.swapAccount(prev, GUEST)
-  try {
-    localStorage.setItem(LOCAL_UID_KEY, GUEST)
-    localStorage.removeItem(SYNC_UID_KEY)
-    saveOutbox(loadOutbox().filter((e) => e.uid !== null))
-  } catch {
-    /* 저장소 불가 — 스토어 리셋은 이미 적용됨 */
-  }
-  currentUid = null
+  writeLocalUid(kv, GUEST) // 저장소에 못 쓰면 메모리로 — 표식이 옛 계정에 남아 스왑이 반복되지 않게
+  kv.removeItem(SYNC_UID_KEY)
+  saveOutbox(loadOutbox().filter((e) => e.uid !== null))
 }
 
 /**
@@ -358,20 +272,31 @@ export async function logoutAccount(): Promise<void> {
  * 계정 삭제(스토어 필수) — 서버(엣지 함수 delete-account)가 auth 사용자와 연결 데이터를 지운 뒤,
  * 이 기기에서도 그 계정의 흔적(보관 프로필)을 지우고 게스트로 돌아간다.
  * 서버 삭제가 실패하면 로컬은 건드리지 않는다(지워졌다고 믿게 만들지 않는다).
+ * 실패는 **코드로만** 돌려준다 — 서버 원문(message)은 화면에 닿지 않게 콘솔에만 남긴다.
+ * 예외도 던지지 않는다(던지면 호출부의 '삭제 중' 표시가 풀리지 않았다).
  */
-export async function deleteAccount(): Promise<{ ok: boolean; error?: string }> {
+export async function deleteAccount(): Promise<{ ok: boolean; error?: DeleteAccountError }> {
   if (!supabase) return { ok: false, error: 'supabase_not_configured' }
-  const { data: sess } = await supabase.auth.getSession()
-  const uid = sess.session?.user?.id
-  if (!uid) return { ok: false, error: 'not_logged_in' }
-  const { error } = await supabase.functions.invoke('delete-account', { method: 'POST' })
-  if (error) return { ok: false, error: error.message }
-  leaveAccount() // 게스트 프로필로 경계 — 이때 계정 스냅샷이 보관되므로 바로 아래에서 지운다
+  let uid: string | undefined
   try {
-    localStorage.removeItem(`nuri-mind-acct-${uid}`)
+    const { data: sess } = await supabase.auth.getSession()
+    uid = sess.session?.user?.id
   } catch {
-    /* ignore */
+    return { ok: false, error: 'session_unavailable' }
   }
+  if (!uid) return { ok: false, error: 'not_logged_in' }
+  try {
+    const { error } = await supabase.functions.invoke('delete-account', { method: 'POST' })
+    if (error) {
+      console.warn('[account] delete-account 실패', deleteErrorCode(error))
+      return { ok: false, error: deleteErrorCode(error) }
+    }
+  } catch (e) {
+    console.warn('[account] delete-account 예외', deleteErrorCode(e))
+    return { ok: false, error: deleteErrorCode(e) === 'unknown' ? 'network' : deleteErrorCode(e) }
+  }
+  leaveAccount() // 게스트 프로필로 경계 — 이때 계정 스냅샷이 보관되므로 바로 아래에서 지운다
+  vaultDrop(kv, uid) // 저장소·이번 방문 메모리 보관본 둘 다
   try {
     await supabase.auth.signOut({ scope: 'local' }) // 서버 사용자는 이미 없다 — 로컬 세션만 정리
   } catch {
@@ -386,35 +311,38 @@ export async function deleteAccount(): Promise<{ ok: boolean; error?: string }> 
  */
 export function isAccountSwitchPending(uid: string | null): boolean {
   if (!uid) return false
-  const localUid = localStorage.getItem(LOCAL_UID_KEY)
+  const localUid = readLocalUid(kv)
   return !!localUid && localUid !== uid
 }
 
 /** 전체 초기화 — 동기화 마커·아웃박스를 통째로 비워 다음 로그인이 처음부터 판정하게 한다. */
 export function clearAccountSync(): void {
-  try {
-    localStorage.removeItem(LOCAL_UID_KEY)
-    localStorage.removeItem(SYNC_UID_KEY)
-    localStorage.removeItem(OUTBOX_KEY)
-  } catch {
-    /* ignore */
-  }
-  currentUid = null
+  noteAuthUid(null)
+  clearLocalUid(kv)
+  kv.removeItem(SYNC_UID_KEY)
+  kv.removeItem(OUTBOX_KEY)
 }
 
 /** 동기화 초기화 — useStore 모듈 로드 시 1회 호출. */
 export function initEconomySync(hooks: SyncHooks): void {
   if (typeof window === 'undefined' || !supabase) return
   hooksRef = hooks
-  void supabase.auth.getSession().then(({ data }) => {
-    currentUid = data.session?.user?.id ?? null
-    if (currentUid) void syncAccount(hooks)
-  })
+  void supabase.auth.getSession().then(
+    ({ data }) => {
+      const uid = data.session?.user?.id ?? null
+      noteAuthUid(uid)
+      if (uid) void syncAccount(hooks)
+    },
+    () => {
+      /* 세션 저장소를 못 읽음 — 다음 auth 이벤트·포그라운드 복귀가 다시 시도한다 */
+    },
+  )
   // ⚠️ setTimeout으로 콜백 밖에서 실행 — onAuthStateChange 안의 supabase 재호출은 교착 위험(supabase-js v2)
   // TOKEN_REFRESHED 등 모든 세션 이벤트에서 재시도 — 첫 동기화 실패 시에도 세션 내 재시도 확보
   // (마커==uid·아웃박스 빈 상태면 RPC 0회의 값싼 경로라 반복 호출 무해)
+  // 세대 반영은 콜백 안에서 **동기로** — 진행 중인 이전 계정 작업이 다음 await 뒤에 바로 멈추게.
   onAuthChange((uid) => {
-    currentUid = uid
+    noteAuthUid(uid)
     if (uid) {
       clearKakaoReauth() // 새 세션이 섰다 — 다음 로그인부터는 다시 자동 로그인 허용
       setTimeout(() => void syncAccount(hooks), 0)

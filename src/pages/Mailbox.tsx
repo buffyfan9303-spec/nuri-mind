@@ -13,7 +13,8 @@ import { authReady, getAuthUser, onAuthChange, signInWithKakao } from '../lib/au
 import AppleLoginButton from '../components/AppleLoginButton'
 import GoogleLoginButton from '../components/GoogleLoginButton'
 import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem, confirmMailDelivery } from '../lib/mailbox'
-import { isAccountSwitchPending } from '../lib/economy'
+import { authMark, isAccountSwitchPending, isStaleAuth } from '../lib/economy'
+import { claimAllGuarded } from '../lib/econUi'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import Emoji, { EmojiText } from '../components/Emoji'
@@ -108,19 +109,31 @@ export default function Mailbox() {
   const claimFailMsg = () =>
     flash(l({ ko: '받기에 실패했어요. 네트워크 확인 후 다시 시도해 주세요.', en: 'Claim failed. Check your connection and retry.', ja: '受取に失敗。接続を確認して再試行してください。' }))
 
-  /** 계정 전환 반영 전에는 수령 금지 — 서버에서 이미 claimed 처리된 다이아가 직후 스왑에 덮여 사라진다 */
+  /**
+   * 계정 전환 반영 전에는 수령 금지 — 서버에서 이미 claimed 처리된 다이아가 직후 스왑에 덮여 사라진다.
+   * 이 화면이 아는 계정(uid)과 동기화 모듈이 아는 지금 계정(authMark)이 다를 때도 같은 창이다 —
+   * 그 상태로 시작하면 아래의 늦은 응답 가드가 정상 수령까지 버린다.
+   */
   const switchPending = () => {
-    if (!isAccountSwitchPending(uid)) return false
+    if (!isAccountSwitchPending(uid) && authMark().uid === uid) return false
     sfx.err()
     flash(l({ ko: '계정 동기화 중이에요. 잠시 후 다시 받아 주세요.', en: 'Syncing your account — please retry in a moment.', ja: 'アカウント同期中です。少し後に再試行してください。' }))
     return true
   }
 
+  /**
+   * 늦은 응답 가드 — 수령 응답을 기다리는 사이 로그아웃·계정 전환이 있었으면 결과를 이 지갑에 쓰지 않는다.
+   * 쓰면 A 계정의 다이아가 B 계정 지갑에 들어간다. 배송 확정(confirmMailDelivery)도 하지 않으므로
+   * 서버는 그 우편을 미확정으로 남긴다(A가 다시 받을 때 서버가 정리 — lib/mailbox.ts 주석).
+   * ⚠️ 비교 대상은 시작 시 잡은 값 vs **authMark()로 지금 읽은 값**이다(클로저 값끼리 비교 금지).
+   */
   const onClaim = async (it: MailItem) => {
     if (switchPending() || claiming !== null) return
+    const start = authMark()
     setClaiming(it.id)
     const got = await claimMail(it.id)
     setClaiming(null)
+    if (isStaleAuth(start, authMark())) return
     // 실패(null)는 수령 처리하지 않음 — 가짜 '수령 완료·환불 불가' 표시 방지
     if (got === null) {
       sfx.err()
@@ -136,23 +149,35 @@ export default function Mailbox() {
     if (got > 0) flash(l({ ko: `💎 ${got}개를 받았어요`, en: `Got 💎${got}`, ja: `💎${got}個 受取` }))
   }
 
+  /**
+   * 일괄 받기 — claim_all_mail **1회**. 항목별 claim_mail 루프로 바꾸지 말 것(claimAllGuarded 주석):
+   * 응답 유실로 '받았지만 미확정'인 우편은 화면에 이미 '수령 완료'로 보여 루프에서 빠지고, 그 다이아는 영구 유실된다.
+   * claim_all_mail은 그 미확정분까지 합쳐 돌려준다.
+   * 늦은 응답 가드: 응답 대기 중 계정이 바뀌면 아무것도 더하지도 확정하지도 않는다(서버가 미확정으로 보관 →
+   * 그 계정의 다음 '모두 받기'가 같은 금액을 다시 준다). 비교는 시작 값 vs authMark()로 지금 읽은 값.
+   */
   const onClaimAll = async () => {
     if (switchPending() || claiming !== null) return
+    const start = authMark()
     setClaiming('all')
-    const got = await claimAllMail()
+    const r = await claimAllGuarded({
+      claimAll: claimAllMail,
+      isStale: () => isStaleAuth(start, authMark()),
+      addDiamonds,
+      confirmAll: () => void confirmMailDelivery(),
+    })
     setClaiming(null)
-    if (got === null) {
+    if (r.status === 'stale') return
+    if (r.status === 'fail') {
       sfx.err()
       claimFailMsg()
       return
     }
-    if (got > 0) addDiamonds(got)
-    void confirmMailDelivery()
     setMail((m) => m.map((x) => ({ ...x, claimed: true })))
-    if (got > 0) {
+    if (r.total > 0) {
       burst()
       sfx.coin()
-      flash(l({ ko: `💎 ${got}개를 모두 받았어요`, en: `Claimed all 💎${got}`, ja: `💎${got}個 一括受取` }))
+      flash(l({ ko: `💎 ${r.total}개를 모두 받았어요`, en: `Claimed all 💎${r.total}`, ja: `💎${r.total}個 一括受取` }))
     }
   }
 

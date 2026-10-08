@@ -30,6 +30,9 @@ import { moderateText } from '../lib/moderation'
 import { isTaskDone, weekKeyOfDay, type Cadence } from '../lib/cadence'
 import { claimDiamondGrantsServer } from '../lib/diamonds'
 import { mirrorEarn, mirrorSpend, initEconomySync, clearAccountSync, type SyncHooks } from '../lib/economy'
+import { safeLocalStorage } from '../lib/safeStorage'
+import { vaultLoad, vaultSave } from '../lib/econCore'
+import { toast } from '../lib/toast'
 import { createSettingsSlice } from './slices/settingsSlice'
 
 /** 검사 첫 완료 보상 (1회성 — 일일 상한 제외) */
@@ -368,37 +371,7 @@ const initial = () => ({
   paidKeys: [] as string[],
 })
 
-/**
- * 저장소 보호 — localStorage.setItem은 용량 초과·사생활 모드에서 예외를 던진다. persist는 그 예외를 set() 밖으로 흘려
- * 적립 직후의 서버 미러(mirrorEarn)·화면 처리까지 건너뛰게 만든다. 저장만 포기하고 앱 상태는 계속 간다(메모리 상태 유지).
- */
-let storageWarned = false
-const safeLocalStorage = {
-  getItem: (k: string): string | null => {
-    try {
-      return localStorage.getItem(k)
-    } catch {
-      return null
-    }
-  },
-  setItem: (k: string, v: string): void => {
-    try {
-      localStorage.setItem(k, v)
-    } catch (e) {
-      if (!storageWarned) {
-        storageWarned = true
-        console.warn('[store] 저장 공간에 쓰지 못했어요 — 이번 방문 동안만 유지돼요', e)
-      }
-    }
-  },
-  removeItem: (k: string): void => {
-    try {
-      localStorage.removeItem(k)
-    } catch {
-      /* ignore */
-    }
-  },
-}
+// 저장소 보호(safeLocalStorage)는 lib/safeStorage.ts로 옮겼다 — economy.ts도 같은 것을 쓴다(순환 참조 없이).
 
 export const useStore = create<State>()(
   persist(
@@ -740,11 +713,14 @@ export const useStore = create<State>()(
           const up = code.trim().toUpperCase()
           if (!/^NURI-[A-Z0-9]{4,6}$/.test(up)) return 'invalid'
           if (up === s.referralCode) return 'mine'
-          if (s.referredBy) return 'used'
+          // 로컬도 멱등키로 막는다(grantFree의 paidKeys 원칙) — referredBy만 보면 그 필드가 비워지는
+          // 경로(옛 보관본 복원 등)에서 같은 계정이 +100P를 다시 받는다. 키는 서버 멱등키와 같다.
+          if (s.referredBy || s.paidKeys.includes('referral_redeem')) return 'used'
           set({
             referredBy: up,
             points: s.points + 100,
             ledger: [{ id: uid('lg_'), amount: 100, memo: '🤝 친구 초대 코드 입력 보상', at: Date.now() }, ...s.ledger],
+            paidKeys: ['referral_redeem', ...s.paidKeys].slice(0, 400),
           })
           // referrals.sql의 redeem_referral과 같은 키 — 어느 경로로든 서버 지급은 1회만
           mirrorEarn(100, '🤝 친구 초대 코드 입력 보상', 'referral_redeem')
@@ -1054,26 +1030,71 @@ const econHooks: SyncHooks = {
       // B의 정당한 첫 보상을 0P로 막았다(lastCheckIn 등 가드 필드는 이미 계정별로 스왑된다)
       paidKeys: st.paidKeys,
     }
-    const KEY = (u: string) => `nuri-mind-acct-${u}`
-    try {
-      localStorage.setItem(KEY(prevUid), JSON.stringify(snap))
-    } catch {
-      /* 저장소 불가 — 보관은 포기하되 경계(아래 초기화)는 반드시 적용한다 */
+    // 보관 실패를 조용히 넘기지 않는다(예전엔 catch에서 그냥 버려, 용량 초과 기기에서 전환하면
+    // 이전 계정의 다이아·프리미엄이 영구 소멸했다). 경계(아래 초기화)는 어느 경우든 반드시 적용한다.
+    //  · 이번 방문 메모리에는 항상 전체 보관 → 같은 탭에서 돌아오면 완전 복원
+    //  · 저장소엔 전체 → 실패하면 유료 권리·보상 가드만 담은 축약본(수백 바이트)
+    //  · 포인트는 서버 원장이 기준이라 다시 로그인하면 서버 잔액으로 맞춰진다(economy 계정 전환 경로)
+    //  · 다이아·프리미엄·해금은 서버 복원 경로가 없어 축약본의 최우선 항목이다
+    const compact = {
+      diamonds: snap.diamonds,
+      premiumUntil: snap.premiumUntil,
+      iqUnlocked: snap.iqUnlocked,
+      precisionUnlocked: snap.precisionUnlocked,
+      aiReports: snap.aiReports,
+      points: snap.points,
+      streakFreezes: snap.streakFreezes,
+      rewardedTests: snap.rewardedTests,
+      firstPostDone: snap.firstPostDone,
+      firstCommentDone: snap.firstCommentDone,
+      lastCheckIn: snap.lastCheckIn,
+      streak: snap.streak,
+      // 보상·무료 횟수 가드 — 빠지면 축약본으로 돌아온 계정이 오늘 받은 보상·무료 이용을 다시 받는다
+      takenSurveys: snap.takenSurveys,
+      sharedResults: snap.sharedResults,
+      readArticles: snap.readArticles,
+      questClaimedDate: snap.questClaimedDate,
+      fortuneFullDate: snap.fortuneFullDate,
+      fortuneDetailDate: snap.fortuneDetailDate,
+      fortuneShareDate: snap.fortuneShareDate,
+      fortuneMonth: snap.fortuneMonth,
+      fortuneFreeUses: snap.fortuneFreeUses,
+      referredBy: snap.referredBy,
+      nickname: snap.nickname,
+      avatar: snap.avatar,
+      deviceId: snap.deviceId,
+      paidKeys: snap.paidKeys,
     }
-    let restored: Partial<typeof snap> | null = null
-    try {
-      const raw = localStorage.getItem(KEY(nextUid))
-      if (raw) restored = JSON.parse(raw) as Partial<typeof snap>
-    } catch {
-      restored = null
+    const saved = vaultSave(safeLocalStorage, prevUid, snap, compact)
+    if (saved !== 'full') {
+      console.warn(`[account] 이전 계정 보관본을 저장소에 다 쓰지 못했어요(${saved})`)
+      const ln = st.lang
+      toast.err(
+        saved === 'compact'
+          ? ln === 'en'
+            ? 'Storage is full — kept only diamonds, premium and key records of the previous account on this device.'
+            : ln === 'ja'
+              ? '保存容量不足のため、前のアカウントはダイヤ・プレミアム・主要記録のみ保管しました。'
+              : '저장 공간이 부족해 이전 계정은 다이아·프리미엄·주요 기록만 이 기기에 보관했어요.'
+          : ln === 'en'
+            ? "Couldn't save to this device — the previous account's data is kept only until you close the app."
+            : ln === 'ja'
+              ? '端末に保存できず、前のアカウントの情報はアプリを閉じるまでのみ保管されます。'
+              : '이 기기에 저장하지 못해 이전 계정 정보는 앱을 닫기 전까지만 보관돼요.',
+      )
     }
+    const restored = vaultLoad(safeLocalStorage, nextUid) as Partial<typeof snap> | null
+    // 처음 보는 계정이면 이 값 그대로, 보관본이 있으면 이 위에 덮는다 —
+    // 축약본·옛 보관본에 없는 필드가 직전 계정 값으로 남지 않게(빈 기본값이 바탕).
+    // onboarded·동의·언어·테마는 기기 설정이므로 유지(로그아웃했다고 온보딩을 다시 시키지 않는다).
+    const fresh = freshAccountFields()
     if (restored) {
       // 이 기기에서 쓰던 계정으로 돌아온 경우 — 보관본 복원(운영자 잠금은 항상 다시 걸린다)
       // paidKeys가 없는 옛 보관본은 빈 목록으로 — 직전 계정의 키를 이어받지 않게(v3 이관과 같은 판단)
       // 운세 프로필이 없는 옛 보관본은 그 계정의 생일에서 되살린다(직전 계정의 입력을 이어받지 않게)
       const fp = restored.fortuneProfile ?? (restored.birthDate ? profileFromBirthDate(restored.birthDate) : null)
       useStore.setState({
-        paidKeys: [],
+        ...fresh,
         ...restored,
         fortuneProfile: fp,
         fortuneRecent: restored.fortuneRecent ?? (fp ? [fp] : []),
@@ -1083,50 +1104,7 @@ const econHooks: SyncHooks = {
       return
     }
     // 처음 보는 계정 — 이전 사용자의 흔적을 남기지 않고 새 프로필로 시작.
-    // onboarded·동의·언어·테마는 기기 설정이므로 유지(로그아웃했다고 온보딩을 다시 시키지 않는다).
-    const base = initial()
-    useStore.setState({
-      points: base.points,
-      ledger: [],
-      diamonds: 0,
-      premiumUntil: 0,
-      iqUnlocked: false,
-      precisionUnlocked: false,
-      results: [],
-      rewardedTests: [],
-      readArticles: [],
-      birthDate: '',
-      moodLog: {},
-      routineDone: {},
-      growthPlanAt: 0,
-      growthFocusIds: [],
-      growthDone: {},
-      aiReports: [],
-      aiReportText: {},
-      takenSurveys: [],
-      sharedResults: [],
-      firstPostDone: false,
-      firstCommentDone: false,
-      lastCheckIn: '',
-      streak: 0,
-      streakFreezes: 0,
-      questClaimedDate: '',
-      fortuneFullDate: '',
-      fortuneDetailDate: '',
-      fortuneShareDate: '',
-      fortuneMonth: '',
-      fortuneFreeUses: 0,
-      fortuneProfile: null,
-      fortuneRecent: [],
-      ...NO_FORTUNE_AI,
-      referredBy: '',
-      paidKeys: [],
-      nickname: base.nickname,
-      avatar: base.avatar,
-      adminUnlocked: false,
-      // 커뮤니티 글 소유권이 새 계정으로 승계되지 않도록 기기 식별자도 새로 발급
-      deviceId: uid('dev_'),
-    })
+    useStore.setState(fresh)
   },
   setWallet: (points, memo) => {
     const st = useStore.getState()
@@ -1136,6 +1114,53 @@ const econHooks: SyncHooks = {
       ledger: diff === 0 ? st.ledger : [{ id: uid('lg_'), amount: diff, memo, at: Date.now() }, ...st.ledger],
     })
   },
+}
+
+/** 계정에 귀속되는 기기-로컬 필드의 빈 기본값 — 처음 보는 계정의 시작 상태이자 보관본 복원의 바탕 */
+function freshAccountFields(): Partial<State> {
+  const base = initial()
+  return {
+    points: base.points,
+    ledger: [],
+    diamonds: 0,
+    premiumUntil: 0,
+    iqUnlocked: false,
+    precisionUnlocked: false,
+    results: [],
+    rewardedTests: [],
+    readArticles: [],
+    birthDate: '',
+    moodLog: {},
+    routineDone: {},
+    growthPlanAt: 0,
+    growthFocusIds: [],
+    growthDone: {},
+    aiReports: [],
+    aiReportText: {},
+    takenSurveys: [],
+    sharedResults: [],
+    firstPostDone: false,
+    firstCommentDone: false,
+    lastCheckIn: '',
+    streak: 0,
+    streakFreezes: 0,
+    questClaimedDate: '',
+    fortuneFullDate: '',
+    fortuneDetailDate: '',
+    fortuneShareDate: '',
+    fortuneMonth: '',
+    fortuneFreeUses: 0,
+    fortuneProfile: null,
+    fortuneRecent: [],
+    ...NO_FORTUNE_AI,
+    referredBy: '',
+    paidKeys: [],
+    nickname: base.nickname,
+    avatar: base.avatar,
+    adminUnlocked: false,
+    // 커뮤니티 글 소유권이 새 계정으로 승계되지 않도록 기기 식별자도 새로 발급
+    deviceId: uid('dev_'),
+  }
 }
 initEconomySync(econHooks)
 
