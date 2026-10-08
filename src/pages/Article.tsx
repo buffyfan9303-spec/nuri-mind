@@ -12,6 +12,7 @@ import { celebrate } from '../lib/confetti'
 import { usePageMeta } from '../hooks/usePageMeta'
 import Footer from '../components/Footer'
 import Emoji, { EmojiText } from '../components/Emoji'
+import { toast } from '../lib/toast'
 
 export default function Article() {
   const { id } = useParams<{ id: string }>()
@@ -20,6 +21,7 @@ export default function Article() {
   const nav = useNavigate()
   const a = articleById(id || '')
   const readArticle = useStore((s) => s.readArticle)
+  const onboarded = useStore((s) => s.onboarded)
   const claimedBefore = useStore((s) => (a ? s.readArticles.includes(a.id) : false))
   const [justClaimed, setJustClaimed] = useState(false)
   usePageMeta(a ? { title: `${l(a.title)} | 누리 마인드 심리 매거진`, description: l(a.summary), path: `/magazine/${a.id}` } : null)
@@ -29,6 +31,11 @@ export default function Article() {
   // 본문 중간 배너: 섹션 4개 이상일 때만, 절반을 읽은 경계에 — 짧은 글이면 하단 광고와 붙어 과노출이 되므로 생략
   const midAdAt = a.sections.length >= 4 ? Math.floor(a.sections.length / 2) - 1 : -1
   const onFinish = () => {
+    // 가입 전이면 보상이 기록되지 않는다(store.readArticle) — '읽기 완료 ✓'로 바꾸면 받은 것처럼 보였다
+    if (!onboarded) {
+      toast.info(l({ ko: '시작하기를 마치면 정독 보상(+8P)을 받을 수 있어요', en: 'Finish getting started to earn the reading reward (+8P)', ja: 'はじめるを完了すると精読報酬（+8P）がもらえます' }))
+      return
+    }
     const got = readArticle(a.id)
     setJustClaimed(true)
     if (got > 0) celebrate()
