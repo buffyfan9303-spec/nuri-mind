@@ -38,3 +38,4 @@ export function supabaseReady(): boolean {
 /** Edge Functions 베이스 URL + anon 키 — 키 없으면 빈 값(클라가 정적 폴백). */
 export const FUNCTIONS_URL: string = anonKey && anonKey.length > 20 ? `${url}/functions/v1` : ''
 export const ANON_KEY: string = anonKey && anonKey.length > 20 ? anonKey : ''
+export const SUPABASE_URL: string = url

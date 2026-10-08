@@ -16,7 +16,7 @@ export default {
   'result.openDex': '図鑑を見る',
   'onboard.kakao': 'カカオで3秒スタート',
   'onboard.or': 'またはニックネームで',
-  'onboard.kakaoReady': 'カカオ連携完了 · {nick}さん歓迎！',
+  'onboard.kakaoReady': 'ログイン完了 · {nick}さん歓迎！',
   'onboard.otherAccount': '別のアカウントでログイン',
   'onboard.note': '名前·キャラは後でプロフィールで変更できます',
   'onboard.agreePre': '14歳以上であり、',

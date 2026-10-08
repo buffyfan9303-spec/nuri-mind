@@ -7,7 +7,7 @@
  *
  * Provider 미설정 시 signInWithKakao()는 에러를 반환하고, 호출부가 안내 메시지를 보여줍니다.
  */
-import { supabase } from './supabase'
+import { supabase, SUPABASE_URL, ANON_KEY } from './supabase'
 import { isNativeApp, NATIVE_AUTH_CALLBACK } from './platform'
 
 /**
@@ -65,8 +65,44 @@ export async function signInWithApple(): Promise<{ ok: boolean; error?: string }
   return oauth('apple', 'name email', redirectTo)
 }
 
+/**
+ * 구글 로그인. 로그아웃 뒤(REAUTH 표식)에는 구글 계정 선택 화면을 띄운다 — 카카오와 같은 이유(브라우저에 남은 구글 세션).
+ * 버튼은 서버에서 Google provider가 켜져 있을 때만 보인다(googleEnabled).
+ */
+export async function signInWithGoogle(chooseAccount = false): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'supabase_not_configured' }
+  const redirectTo =
+    typeof window !== 'undefined'
+      ? window.location.origin + window.location.pathname + window.location.search + window.location.hash
+      : undefined
+  let reauth = chooseAccount
+  try {
+    reauth = reauth || localStorage.getItem(REAUTH_KEY) === '1'
+  } catch {
+    /* 저장소 불가 — 인자로 받은 값만 따른다 */
+  }
+  return oauth('google', 'email profile', redirectTo, reauth ? { prompt: 'select_account' } : undefined)
+}
+
+let googleOn: Promise<boolean> | null = null
+/**
+ * Supabase 대시보드에서 Google provider가 켜져 있나(공개 /auth/v1/settings). 켜기 전엔 버튼을 숨겨
+ * 'provider is not enabled' 오류 화면으로 보내지 않는다 — 대시보드에서 켜면 배포 없이 버튼이 나타난다.
+ */
+export function googleEnabled(): Promise<boolean> {
+  if (!supabase) return Promise.resolve(false)
+  googleOn ??= fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: ANON_KEY } })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d) => d?.external?.google === true)
+    .catch(() => {
+      googleOn = null // 네트워크 실패는 캐시하지 않는다 — 다음 화면에서 다시 묻는다
+      return false
+    })
+  return googleOn
+}
+
 async function oauth(
-  provider: 'kakao' | 'apple',
+  provider: 'kakao' | 'apple' | 'google',
   scopes: string,
   redirectTo: string | undefined,
   queryParams?: Record<string, string>,

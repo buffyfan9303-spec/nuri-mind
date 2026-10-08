@@ -16,6 +16,7 @@ import { isNativeNotifyAvailable, scheduleStreakReminder } from '../lib/notify'
 import { enablePush, disablePush, pushSupported, pushConfigured, pushPermission } from '../lib/push'
 import { authReady, signInWithKakao, signInWithApple, getAuthUser, onAuthChange, type AuthUser } from '../lib/auth'
 import { APPLE_SIGNIN_ENABLED } from '../data/features'
+import { GoogleG, startGoogleLogin, useGoogleEnabled } from '../components/GoogleLoginButton'
 import { logoutAccount, deleteAccount } from '../lib/economy'
 import { moderateText } from '../lib/moderation'
 import { humanizeError } from '../lib/dbError'
@@ -96,6 +97,7 @@ export default function Profile() {
       .catch(() => {})
   }, [])
   const [authUser, setAuthUser] = useState<AuthUser | null>(null)
+  const googleOn = useGoogleEnabled()
   useEffect(() => {
     if (!authReady()) return
     getAuthUser().then(setAuthUser).catch(() => {})
@@ -597,6 +599,15 @@ export default function Profile() {
                   <span className="text-ink-faint">›</span>
                 </button>
               ))}
+            {authReady() && !authUser && googleOn && (
+              <button
+                onClick={() => startGoogleLogin(l({ ko: 'Google 로그인을 열지 못했어요. 잠시 후 다시 시도해 주세요.', en: "Couldn't open Google sign-in. Please try again shortly.", ja: 'Googleログインを開けませんでした。少し後にお試しください。' }))}
+                className="flex w-full items-center justify-between border-t border-line px-3 py-3"
+              >
+                <span className="flex items-center gap-1.5 text-[15px] font-bold"><GoogleG className="h-[16px] w-[16px]" />{l({ ko: 'Google로 로그인', en: 'Sign in with Google', ja: 'Googleでログイン' })}</span>
+                <span className="text-ink-faint">›</span>
+              </button>
+            )}
             {authReady() && !authUser && APPLE_SIGNIN_ENABLED && (
               <button
                 onClick={async () => {
