@@ -1,4 +1,5 @@
 import { FUNCTIONS_URL, ANON_KEY } from './supabase'
+import { fetchWithTimeout, TIMEOUT } from './net'
 
 /**
  * AI 엣지 함수 헬스체크 — 운영자 콘솔 전용.
@@ -80,11 +81,11 @@ const VERDICT: Record<string, string> = {
 export async function probeAi(fn: AiFnName): Promise<AiHealth> {
   if (!FUNCTIONS_URL) return { fn, ok: false, code: 'not_configured', verdict: VERDICT.not_configured }
   try {
-    const r = await fetch(`${FUNCTIONS_URL}/${fn}`, {
+    const r = await fetchWithTimeout(`${FUNCTIONS_URL}/${fn}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${ANON_KEY}`, apikey: ANON_KEY },
       body: JSON.stringify(PROBE[fn]),
-    })
+    }, fn === 'deep-report' ? TIMEOUT.deepAi : TIMEOUT.ai)
     const body = (await r.json().catch(() => ({}))) as {
       error?: string
       detail?: string

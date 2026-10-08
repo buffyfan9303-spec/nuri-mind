@@ -21,7 +21,7 @@ import { useT, useL } from '../i18n/useT'
 import { celebrate, burst } from '../lib/confetti'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { makeResultCard, shareCardBlob, SHARE_FAIL } from '../lib/shareCard'
-import { kakaoEnabled, shareKakao } from '../lib/kakao'
+import { kakaoEnabled, shareKakao, loadKakao } from '../lib/kakao'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
 import { encodeDuel } from '../lib/duel'
@@ -872,6 +872,8 @@ export default function TestResult() {
           {/* 앱 WebView에선 카카오 JS 공유가 조용히 실패한다 — 앱은 네이티브 공유 시트에서 카카오톡을 고른다 */}
             {kakaoEnabled() && !isNativeApp() && (
             <button
+              // 버튼이 보이는 순간 SDK를 미리 받는다 — 클릭 뒤에 받으면 공유 창이 제스처 밖이라 막힌다(lib/kakao)
+              ref={loadKakao}
               onClick={() => {
                 const ok = shareKakao({
                   title: `나는 "${l(persona.name)}" 🐾 | 누리 마인드`,

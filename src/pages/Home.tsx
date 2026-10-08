@@ -80,7 +80,15 @@ export default function Home() {
   const [unreadMail, setUnreadMail] = useState(0)
   useEffect(() => {
     s.ensureLeague()
-    unreadMailCount().then(setUnreadMail)
+    // 배지는 부가 정보 — 실패해도 홈은 그대로(unreadMailCount는 던지지 않고, 실패면 같은 계정의 직전 개수를 준다).
+    // 홈을 떠난 뒤 도착한 응답은 버린다
+    let alive = true
+    void unreadMailCount().then((n) => {
+      if (alive) setUnreadMail(n)
+    })
+    return () => {
+      alive = false
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

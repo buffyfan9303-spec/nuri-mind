@@ -99,6 +99,9 @@ export default function Fortune() {
   /** 다이아 부족 시트 — 어느 해제에서 모자랐는지에 따라 필요한 개수가 다르다(종합 vs 상세) */
   const [needCharge, setNeedCharge] = useState<null | 'full' | 'detail'>(null)
   const [showAd, setShowAd] = useState(false)
+  /** AI 상세 운세 요청 상태 — 실패를 '결정론 풀이가 그냥 보이는 것'과 구분해 다시 시도를 준다. aiTry를 올리면 재요청 */
+  const [aiState, setAiState] = useState<null | 'loading' | 'failed'>(null)
+  const [aiTry, setAiTry] = useState(0)
 
   const profile = fortuneProfile
   const data = useMemo(() => {
@@ -164,6 +167,7 @@ export default function Fortune() {
     let cancelled = false
     const c = data.chart
     const P = (p: Pillar | null, suffix: string) => (p ? pillarKo(p) + suffix : '')
+    setAiState('loading')
     fetchFortuneDetailAi({
       ilju: data.saju.iljuKo,
       element: data.saju.ilganEl,
@@ -180,13 +184,18 @@ export default function Fortune() {
       todayTenGod: data.fortune.tenGod,
       todayIlju: data.fortune.todayIljuKo,
     }).then((res) => {
-      if (res && !cancelled) setFortuneAi(today, res, aiKey)
+      // 떠난 화면·바뀐 사람/언어의 늦은 응답은 버린다(다음 실행이 자기 상태를 세운다)
+      if (cancelled) return
+      // null = 실패·시간 초과(fetchFortuneDetailAi가 제한 시간 뒤 null) — 로딩을 반드시 풀고 다시 시도를 띄운다
+      if (res) setFortuneAi(today, res, aiKey)
+      setAiState(res ? null : 'failed')
     })
     return () => {
       cancelled = true
+      setAiState(null)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, data, fortuneDetailDate, premium, lang])
+  }, [view, data, fortuneDetailDate, premium, lang, aiTry])
 
   const shareFortune = async () => {
     if (!data) return
@@ -418,6 +427,25 @@ export default function Fortune() {
         <p className="mt-1 break-keep text-[12px] font-bold leading-relaxed text-ink-sub">
           {l({ ko: '시간대별 흐름부터 행운의 방향·장소·아이템까지 아주 자세하게. 매일 광고 한 번이면 무료로 볼 수 있어요.', en: 'From hour-by-hour flow to lucky direction, place, and item — in full detail. One ad a day unlocks it free.', ja: '時間帯ごとの流れから幸運の方角・場所・アイテムまで詳しく。毎日広告1回で無料。' })}
         </p>
+        {/* AI 풀이 상태 — 기다리는 동안·실패해도 아래 기본 풀이는 그대로 읽을 수 있다 */}
+        {detailUnlocked && !usingAi && aiState === 'loading' && (
+          <p className="mt-1.5 text-[12px] font-bold text-ink-faint" role="status" data-testid="fortune-ai-loading">
+            {l({ ko: 'AI 맞춤 풀이를 쓰고 있어요…', en: 'Writing your AI reading…', ja: 'AI個別の解説を作成中…' })}
+          </p>
+        )}
+        {detailUnlocked && !usingAi && aiState === 'failed' && (
+          <div className="mt-1.5 flex items-center gap-2" role="status" data-testid="fortune-ai-failed">
+            <p className="text-[12px] font-bold text-ink-faint">
+              {l({ ko: 'AI 풀이를 불러오지 못했어요', en: "Couldn't load the AI reading", ja: 'AI解説を読み込めませんでした' })}
+            </p>
+            <button
+              onClick={() => setAiTry((n) => n + 1)}
+              className="shrink-0 rounded-full bg-mind-100 px-2.5 py-1 text-[12px] font-extrabold text-mind-700"
+            >
+              {l({ ko: '다시 시도', en: 'Retry', ja: '再試行' })}
+            </button>
+          </div>
+        )}
 
         <div className="relative mt-3">
           <div className={detailUnlocked ? 'space-y-3' : 'pointer-events-none max-h-[440px] space-y-3 overflow-hidden select-none blur-[5px]'} aria-hidden={!detailUnlocked}>

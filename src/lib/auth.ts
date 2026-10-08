@@ -9,6 +9,7 @@
  */
 import { supabase, SUPABASE_URL, ANON_KEY } from './supabase'
 import { isNativeApp, NATIVE_AUTH_CALLBACK } from './platform'
+import { fetchWithTimeout } from './net'
 
 /**
  * 로그아웃 뒤 다음 카카오 로그인에서 계정을 다시 고르게 하는 표식.
@@ -133,7 +134,8 @@ let googleOn: Promise<boolean> | null = null
  */
 export function googleEnabled(): Promise<boolean> {
   if (!supabase) return Promise.resolve(false)
-  googleOn ??= fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: ANON_KEY } })
+  // 제한 시간 — 멈춘 요청이 캐시된 채 남으면 이 탭에선 다시 묻지도 못한다
+  googleOn ??= fetchWithTimeout(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: ANON_KEY } })
     .then((r) => (r.ok ? r.json() : null))
     .then((d) => d?.external?.google === true)
     .catch(() => {
@@ -229,13 +231,18 @@ export async function getAuthUser(): Promise<AuthUser | null> {
  * 운영자인가 — 서버 profiles.is_admin(본인 행만 읽히는 RLS). 'no_login'이면 로그인이 먼저다.
  * 화면 잠금용일 뿐 권한 경계는 서버 RPC(send_mail_admin 등)의 is_admin 확인이다.
  */
-export async function isServerAdmin(): Promise<'yes' | 'no' | 'no_login'> {
+/**
+ * 'error' = 확인 자체를 못 했다(오프라인·시간 초과·서버 오류). '권한 없음'과 안내·대응이 달라 나눈다.
+ * 보안상 'yes'가 아닌 모든 값은 접근 불가다 — 호출부는 'yes'일 때만 연다.
+ */
+export async function isServerAdmin(): Promise<'yes' | 'no' | 'no_login' | 'error'> {
   if (!supabase) return 'no'
   const { data: sess } = await supabase.auth.getSession()
   const uid = sess.session?.user?.id
   if (!uid) return 'no_login'
   const { data, error } = await supabase.from('profiles').select('is_admin').eq('id', uid).maybeSingle()
-  return !error && data?.is_admin === true ? 'yes' : 'no'
+  if (error) return 'error'
+  return data?.is_admin === true ? 'yes' : 'no'
 }
 
 /** 로그인 상태 변화 구독. cleanup 함수 반환. */

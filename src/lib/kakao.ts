@@ -23,7 +23,13 @@ export function kakaoEnabled(): boolean {
   return Boolean(KAKAO_KEY)
 }
 
-/** 카카오 JS SDK 주입 + init (main.tsx 시작 시 1회) */
+/**
+ * 카카오 JS SDK 주입 + init — 공유 버튼이 화면에 나타날 때(버튼의 ref 콜백) 한 번.
+ * 예전엔 main.tsx가 모든 페이지 로드마다 받아 공유를 안 하는 방문자도 SDK를 내려받았다.
+ * 클릭 때가 아니라 버튼이 보일 때 미리 받는 이유: 클릭 뒤에 받으면 sendDefault가 사용자 제스처 밖에서 불려
+ * iOS·일부 브라우저가 공유 창을 막는다. 아직 준비 전에 누르면 호출부가 텍스트 공유로 폴백한다.
+ * (카카오 '로그인'은 Supabase OAuth 리다이렉트라 이 SDK와 무관하다 — lib/auth signInWithKakao)
+ */
 export function loadKakao(): void {
   if (!kakaoEnabled() || typeof document === 'undefined') return
   if (document.getElementById('kakao-sdk')) return
@@ -31,6 +37,8 @@ export function loadKakao(): void {
   s.id = 'kakao-sdk'
   s.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js'
   s.crossOrigin = 'anonymous'
+  // 받기 실패(오프라인·차단)면 태그를 지워 다음에 버튼이 보일 때 다시 시도하게 한다
+  s.onerror = () => s.remove()
   s.onload = () => {
     try {
       if (window.Kakao && !window.Kakao.isInitialized?.()) window.Kakao.init(KAKAO_KEY!)
@@ -44,7 +52,10 @@ export function loadKakao(): void {
 /** 결과 카드형 공유. 성공 시 true, SDK 미준비면 false(호출부가 폴백). */
 export function shareKakao(opts: { title: string; description: string; link: string; imageUrl?: string }): boolean {
   const K = window.Kakao
-  if (!K || !K.isInitialized?.()) return false
+  if (!K || !K.isInitialized?.()) {
+    loadKakao() // 미리 받기가 실패했으면 다음 탭을 위해 다시 받아 둔다(이번 탭은 호출부 폴백)
+    return false
+  }
   try {
     K.Share.sendDefault({
       objectType: 'feed',

@@ -1,4 +1,5 @@
 import { FUNCTIONS_URL, ANON_KEY } from './supabase'
+import { fetchWithTimeout, TIMEOUT } from './net'
 
 /** AI 상세 운세 — 현지화 완료된 평문 문자열(결정론 L[]과 달리 단일 언어). */
 export interface FortuneDetailText {
@@ -54,11 +55,11 @@ export interface FortuneAiPayload {
 export async function fetchFortuneDetailAi(p: FortuneAiPayload): Promise<FortuneDetailText | null> {
   if (!FUNCTIONS_URL) return null
   try {
-    const r = await fetch(`${FUNCTIONS_URL}/fortune-detail`, {
+    const r = await fetchWithTimeout(`${FUNCTIONS_URL}/fortune-detail`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${ANON_KEY}`, apikey: ANON_KEY },
       body: JSON.stringify(p),
-    })
+    }, TIMEOUT.ai)
     if (!r.ok) return null
     const data = await r.json()
     const d = data?.detail

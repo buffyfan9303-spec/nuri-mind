@@ -27,12 +27,13 @@ function PinGate() {
   const t = useT()
   const unlockAdmin = useStore((s) => s.unlockAdmin)
   const [busy, setBusy] = useState(false)
-  const [err, setErr] = useState<'' | 'no' | 'no_login'>('')
+  const [err, setErr] = useState<'' | 'no' | 'no_login' | 'error'>('')
 
   const tryUnlock = async () => {
     if (busy) return
     setBusy(true)
-    const r = await isServerAdmin().catch(() => 'no' as const)
+    // 세션 조회 자체가 던져도 '확인 못 함'이다 — '권한 없음'으로 뭉뚱그리면 운영자가 권한을 의심한다(접근은 어느 쪽이든 불가)
+    const r = await isServerAdmin().catch(() => 'error' as const)
     setBusy(false)
     if (r === 'yes') {
       sfx.coin()
@@ -51,12 +52,16 @@ function PinGate() {
         <h1 className="mt-4 text-lg font-extrabold">{t('admin.pinTitle')}</h1>
         {err && (
           <p className="mt-3 text-sm font-bold text-red-500">
-            {err === 'no_login' ? '운영자 카카오 계정으로 먼저 로그인해 주세요(프로필 > 카카오로 로그인).' : t('admin.pinErr')}
+            {err === 'no_login'
+              ? '운영자 카카오 계정으로 먼저 로그인해 주세요(프로필 > 카카오로 로그인).'
+              : err === 'error'
+                ? '연결을 확인할 수 없어요. 네트워크를 확인하고 다시 시도해 주세요.'
+                : t('admin.pinErr')}
           </p>
         )}
         <div className="mx-auto mt-5 max-w-[260px]">
           <Button color="mind" busy={busy} onClick={tryUnlock}>
-            {t('admin.enter')}
+            {err === 'error' ? '다시 시도' : t('admin.enter')}
           </Button>
         </div>
       </div>
