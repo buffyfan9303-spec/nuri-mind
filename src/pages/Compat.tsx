@@ -78,12 +78,12 @@ export default function Compat() {
 
         <Card className="mt-5 space-y-3">
           <div>
-            <label className="text-[13px] font-extrabold">{t('compat.me')}</label>
-            <input type="date" value={me} max={localDay()} min="1920-01-01" onChange={(e) => setMe(e.target.value)} className="mt-1.5 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-extrabold outline-none focus:border-mind-400" />
+            <label htmlFor="compat-me" className="text-[13px] font-extrabold">{t('compat.me')}</label>
+            <input id="compat-me" type="date" value={me} max={localDay()} min="1920-01-01" onChange={(e) => setMe(e.target.value)} className="mt-1.5 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-extrabold outline-none focus:border-mind-400" />
           </div>
           <div>
-            <label className="text-[13px] font-extrabold">{t('compat.partner')}</label>
-            <input type="date" value={partner} max={localDay()} min="1920-01-01" onChange={(e) => setPartner(e.target.value)} className="mt-1.5 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-extrabold outline-none focus:border-mind-400" />
+            <label htmlFor="compat-partner" className="text-[13px] font-extrabold">{t('compat.partner')}</label>
+            <input id="compat-partner" type="date" value={partner} max={localDay()} min="1920-01-01" onChange={(e) => setPartner(e.target.value)} className="mt-1.5 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-extrabold outline-none focus:border-mind-400" />
           </div>
           <Button color="love" size="lg" disabled={!me || !partner} onClick={run}>
             {t('compat.see')}

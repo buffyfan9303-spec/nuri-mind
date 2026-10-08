@@ -234,6 +234,7 @@ function Console() {
                 <input
                   value={reasons[sv.id] ?? ''}
                   onChange={(e) => setReasons((p) => ({ ...p, [sv.id]: e.target.value }))}
+                  aria-label={t('admin.rejectPh')}
                   placeholder={t('admin.rejectPh')}
                   className="mt-3 w-full rounded-xl border-2 border-line px-3 py-2 text-[13px] font-bold outline-none focus:border-mind-400"
                 />
@@ -444,17 +445,17 @@ function Console() {
               </button>
             )}
             <div className="mt-2 flex gap-2">
-              <input value={diaNick} onChange={(e) => setDiaNick(e.target.value)} placeholder="닉네임(서버 유저)" className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
-              <input value={diaAmt} onChange={(e) => setDiaAmt(e.target.value.replace(/\D/g, ''))} placeholder="개수" inputMode="numeric" className="w-20 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+              <input value={diaNick} onChange={(e) => setDiaNick(e.target.value)} placeholder="닉네임(서버 유저)" aria-label="닉네임(서버 유저)"className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+              <input value={diaAmt} onChange={(e) => setDiaAmt(e.target.value.replace(/\D/g, ''))} placeholder="개수" aria-label="개수"inputMode="numeric" className="w-20 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
               <button onClick={onGrantNick} disabled={opBusy} className="shrink-0 rounded-xl bg-[#6E7BF2] px-4 py-2.5 text-[13px] font-extrabold text-white disabled:opacity-50">지급</button>
             </div>
 
             <h3 className="mt-4 text-[14px] font-extrabold text-white">개인 우편 보내기</h3>
-            <input value={mailNick} onChange={(e) => setMailNick(e.target.value)} placeholder="받는 사람 닉네임" className="mt-2 w-full rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
-            <input value={mailTitle} onChange={(e) => setMailTitle(e.target.value)} placeholder="제목" className="mt-2 w-full rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
-            <textarea value={mailBody} onChange={(e) => setMailBody(e.target.value)} placeholder="내용" rows={2} className="mt-2 w-full resize-none rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+            <input value={mailNick} onChange={(e) => setMailNick(e.target.value)} placeholder="받는 사람 닉네임" aria-label="받는 사람 닉네임"className="mt-2 w-full rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+            <input value={mailTitle} onChange={(e) => setMailTitle(e.target.value)} placeholder="제목" aria-label="제목"className="mt-2 w-full rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+            <textarea value={mailBody} onChange={(e) => setMailBody(e.target.value)} placeholder="내용" aria-label="내용"rows={2} className="mt-2 w-full resize-none rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
             <div className="mt-2 flex gap-2">
-              <input value={mailDia} onChange={(e) => setMailDia(e.target.value.replace(/\D/g, ''))} placeholder="첨부 💎(선택)" inputMode="numeric" className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
+              <input value={mailDia} onChange={(e) => setMailDia(e.target.value.replace(/\D/g, ''))} placeholder="첨부 💎(선택)" aria-label="첨부 다이아(선택)"inputMode="numeric" className="min-w-0 flex-1 rounded-xl bg-white/10 px-3 py-2.5 text-[13px] text-white placeholder-white/40 outline-none" />
               <button onClick={onSendMail} disabled={opBusy} className="shrink-0 rounded-xl bg-[#6E7BF2] px-4 py-2.5 text-[13px] font-extrabold text-white disabled:opacity-50">보내기</button>
             </div>
 

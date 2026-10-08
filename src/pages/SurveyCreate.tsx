@@ -174,6 +174,7 @@ export default function SurveyCreate() {
                   <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    aria-label={t('create.name')}
                     placeholder={t('create.namePh')}
                     maxLength={40}
                     className="mt-2 w-full rounded-2xl border-2 border-line bg-surface px-4 py-3.5 text-[15px] font-bold outline-none focus:border-mind-400"
@@ -184,6 +185,7 @@ export default function SurveyCreate() {
                   <textarea
                     value={desc}
                     onChange={(e) => setDesc(e.target.value)}
+                    aria-label={t('create.desc')}
                     placeholder={t('create.descPh')}
                     rows={3}
                     maxLength={120}
@@ -232,6 +234,7 @@ export default function SurveyCreate() {
                       <textarea
                         value={q.text}
                         onChange={(e) => patchQ(q.id, { text: e.target.value })}
+                        aria-label={t('create.qPh')}
                         placeholder={t('create.qPh')}
                         rows={2}
                         maxLength={120}
@@ -247,6 +250,7 @@ export default function SurveyCreate() {
                                 onChange={(e) =>
                                   patchQ(q.id, { options: q.options!.map((x, i) => (i === oi ? e.target.value : x)) })
                                 }
+                                aria-label={`${oi + 1}. ${t('create.optPh')}`}
                                 placeholder={t('create.optPh')}
                                 maxLength={40}
                                 className="flex-1 rounded-xl border-2 border-line bg-surface px-3 py-2 text-[13px] font-bold outline-none focus:border-mind-400"
@@ -324,6 +328,7 @@ export default function SurveyCreate() {
                     max={300}
                     step={10}
                     value={reward}
+                    aria-label={t('create.reward')}
                     onChange={(e) => setReward(Number(e.target.value))}
                     className="mt-3 w-full accent-mind-500"
                   />
@@ -341,6 +346,7 @@ export default function SurveyCreate() {
                     max={500}
                     step={10}
                     value={target}
+                    aria-label={t('create.target')}
                     onChange={(e) => setTarget(Number(e.target.value))}
                     className="mt-3 w-full accent-sky2-500"
                   />

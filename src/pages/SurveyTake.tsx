@@ -188,6 +188,7 @@ export default function SurveyTake() {
                   <textarea
                     value={(answers[q.id] as string) ?? ''}
                     onChange={(e) => setAns(q.id, e.target.value)}
+                    aria-label={t('take.textPh')}
                     placeholder={t('take.textPh')}
                     rows={3}
                     maxLength={500}

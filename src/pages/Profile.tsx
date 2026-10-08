@@ -195,6 +195,7 @@ export default function Profile() {
                   value={nick}
                   onChange={(e) => setNick(e.target.value)}
                   maxLength={12}
+                  aria-label={t('profile.nickPh')}
                   placeholder={t('profile.nickPh')}
                   className="min-w-0 flex-1 rounded-xl border-2 border-mind-300 px-3 py-1.5 text-[15px] font-extrabold outline-none"
                   autoFocus
@@ -723,6 +724,8 @@ export default function Profile() {
                     whileTap={{ scale: 0.97 }}
                     transition={SPRING.press}
                     onClick={() => s.setAvatar({ kind: 'animal', persona: key })}
+                    aria-label={l(p.name)}
+                    aria-pressed={active}
                     className="flex aspect-square items-center justify-center rounded-2xl border-2 text-2xl"
                     style={{
                       borderColor: active ? '#4FA882' : '#E3EAE5',
