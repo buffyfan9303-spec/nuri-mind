@@ -13,6 +13,8 @@ function ac(): AudioContext | null {
 function tone(freq: number, start: number, dur: number, vol = 0.12, type: OscillatorType = 'sine') {
   const c = ac()
   if (!c) return
+  // 사용자 제스처 전에 만들어진 컨텍스트는 'suspended'로 남아 그 탭이 끝까지 무음이었다(자동재생 정책) — 매번 깨운다
+  if (c.state === 'suspended') void c.resume().catch(() => {})
   const o = c.createOscillator()
   const g = c.createGain()
   o.type = type
