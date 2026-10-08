@@ -1,3 +1,4 @@
+import { toast } from '../lib/toast'
 import { useEffect, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { localDay } from '../lib/date'
@@ -8,7 +9,7 @@ import Button from '../components/Button'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { compatOf, type Compat } from '../lib/saju'
-import { makeResultCard, shareCardBlob } from '../lib/shareCard'
+import { makeResultCard, shareCardBlob, SHARE_FAIL } from '../lib/shareCard'
 import { track } from '../lib/analytics'
 import Emoji from '../components/Emoji'
 
@@ -60,7 +61,7 @@ export default function Compat() {
         setTimeout(() => setSaved(false), 2200)
       }
     } catch {
-      /* noop */
+      toast.err(l(SHARE_FAIL))
     }
   }
 

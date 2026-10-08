@@ -91,13 +91,15 @@ export default function Mailbox() {
     if (!r.ok) flash(l({ ko: '카카오 로그인 준비 중이에요. 잠시 후 다시 시도해 주세요.', en: 'Kakao login is being set up. Please try again later.', ja: 'カカオログイン準備中です。後ほどお試しください。' }))
   }
 
-  // OAuth 콜백에 에러가 실려오면(설정 문제 등) 사용자에게 그대로 보여줌 → 원인 진단
+  // OAuth 콜백에 에러가 실려오면 고정 문구로 안내 — URL의 error_description 원문은 외부에서 임의로 만들 수 있어
+  // 화면에 그대로 띄우지 않는다(nuri-lessons §3: 서버 원문·URL 쿼리 문구 노출 금지). 원인은 콘솔에만.
   useEffect(() => {
     const q = new URLSearchParams(window.location.search.slice(1))
     const h = new URLSearchParams(window.location.hash.slice(1))
     const err = q.get('error_description') || h.get('error_description') || q.get('error') || h.get('error')
     if (err) {
-      flash(l({ ko: `카카오 로그인 실패: ${decodeURIComponent(err).slice(0, 90)}`, en: `Login failed: ${err.slice(0, 90)}`, ja: `ログイン失敗: ${err.slice(0, 90)}` }))
+      console.warn('[auth] OAuth callback error:', q.get('error') || h.get('error'))
+      flash(l({ ko: '로그인하지 못했어요. 잠시 후 다시 시도해 주세요.', en: "Couldn't sign in. Please try again shortly.", ja: 'ログインできませんでした。少し後にお試しください。' }))
       window.history.replaceState({}, '', window.location.pathname)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

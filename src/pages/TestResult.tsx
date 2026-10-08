@@ -1,3 +1,4 @@
+import { toast } from '../lib/toast'
 import { isNativeApp, shareOrigin } from '../lib/platform'
 import { useEffect, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
@@ -19,7 +20,7 @@ import { useStore, IQ_DIA_COST } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { celebrate, burst } from '../lib/confetti'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
-import { makeResultCard, shareCardBlob } from '../lib/shareCard'
+import { makeResultCard, shareCardBlob, SHARE_FAIL } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
@@ -229,6 +230,7 @@ export default function TestResult() {
       afterShare()
     } catch {
       sfx.err()
+      toast.err(l(SHARE_FAIL))
     }
   }
 

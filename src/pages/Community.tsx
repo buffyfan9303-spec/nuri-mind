@@ -76,6 +76,8 @@ export default function Community() {
   const [openComments, setOpenComments] = useState<string | null>(null)
   const [commentText, setCommentText] = useState('')
   const [serverComments, setServerComments] = useState<Record<string, CommunityComment[]>>({})
+  /** 댓글을 못 불러온 글 id — 빈 목록과 구분해 '다시 시도'를 보인다 */
+  const [commentErr, setCommentErr] = useState<string | null>(null)
 
   /** 상단 리워드 배너 + 전역 토스트를 함께 — 호출부(수십 곳)는 그대로 flash()를 쓴다 */
   const rewardTimer = useRef<ReturnType<typeof setTimeout>>()
@@ -277,8 +279,9 @@ export default function Community() {
     try {
       const list = await fetchComments(postId, deviceId)
       setServerComments((prev) => ({ ...prev, [postId]: list }))
+      setCommentErr((cur) => (cur === postId ? null : cur))
     } catch {
-      /* 무시 — 펼침 상태 유지 */
+      setCommentErr(postId) // 펼침은 유지하고 '불러오지 못했어요 · 다시 시도'를 보여준다
     }
   }
   const toggleComments = (postId: string) => {
@@ -319,11 +322,17 @@ export default function Community() {
     if (r > 0) flash(t('community.firstCommentReward', { p: r }))
   }
 
-  const onReport = (p: CommunityPost) => {
-    if (server) {
-      reportPostServer(deviceId, p.id, { nick: p.nick, excerpt: p.text, reason: 'user-report' }).catch(() => {})
-    }
+  const onReport = async (p: CommunityPost) => {
     reportPost(p.id, p.nick, p.text, 'user-report') // 로컬 기록(신고자 콘솔 확인용)
+    if (server) {
+      // '접수됐어요'는 서버가 받은 뒤에만 — 안전 흐름이라 실패를 성공처럼 말하지 않는다
+      try {
+        await reportPostServer(deviceId, p.id, { nick: p.nick, excerpt: p.text, reason: 'user-report' })
+      } catch {
+        toast.err(l({ ko: '신고를 보내지 못했어요. 잠시 후 다시 눌러 주세요.', en: "Couldn't send the report. Please try again.", ja: '通報を送信できませんでした。もう一度お試しください。' }))
+        return
+      }
+    }
     flash(t('community.reportDone'))
     sfx.tap()
   }
@@ -351,6 +360,8 @@ export default function Community() {
           prev.map((x) => (x.id === p.id ? { ...x, liked: r.liked, likes: r.likes ?? x.likes } : x)),
         )
       } catch {
+        // 하트가 말없이 되돌아가면 '버튼이 안 먹는다'로 읽힌다 — 이유를 짧게 말하고 서버 값으로 되돌린다
+        toast.err(l({ ko: '좋아요를 반영하지 못했어요', en: "Couldn't update the like", ja: 'いいねを反映できませんでした' }))
         reload()
       }
     } else {
@@ -703,7 +714,15 @@ export default function Community() {
                             className="overflow-hidden"
                           >
                             <div className="mt-3 space-y-2 border-t-2 border-line pt-3">
-                              {comments.length === 0 ? (
+                              {commentErr === p.id && comments.length === 0 ? (
+                                // 실패와 '댓글 없음'은 다른 상태 — 못 불러왔는데 '첫 댓글을 남겨보세요'라고 말하지 않는다
+                                <p role="alert" className="py-1 text-center text-[12px] font-bold text-ink-faint">
+                                  {l({ ko: '댓글을 불러오지 못했어요', en: "Couldn't load comments", ja: 'コメントを読み込めませんでした' })}
+                                  <button onClick={() => void loadComments(p.id)} className="ml-1.5 font-extrabold text-mind-600 underline">
+                                    {l({ ko: '다시 시도', en: 'Retry', ja: '再試行' })}
+                                  </button>
+                                </p>
+                              ) : comments.length === 0 ? (
                                 <p className="py-1 text-center text-[12px] font-bold text-ink-faint">
                                   {t('community.commentEmpty')}
                                 </p>
