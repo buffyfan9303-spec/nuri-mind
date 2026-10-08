@@ -95,6 +95,7 @@ test.describe('뒤로가기 스택', () => {
   })
 
   test('검사를 끝까지 하면 결과 화면으로 가고 그대로 머문다', async ({ page }) => {
+    test.setTimeout(60_000) // 20문항 × 전환 모션 — 부하가 있는 PC에서 30초 기본값을 넘긴 적이 있다(앱은 결과에 정상 도착)
     await seedOnboarded(page, { consent: CONSENT })
     await page.goto('/test/burnout')
     await waitForApp(page)

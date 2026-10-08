@@ -188,12 +188,3 @@ export interface ShopItem {
   desc: L
   cost: number
 }
-
-export interface Offer {
-  id: string
-  emoji: string
-  title: L
-  desc: L
-  reward: number
-  ready: boolean
-}
