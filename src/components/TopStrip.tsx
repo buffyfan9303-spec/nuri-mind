@@ -6,6 +6,7 @@ import { useL } from '../i18n/useT'
 import { haptic } from '../lib/haptic'
 import { canHover } from '../lib/device'
 import { SURVEYS_ENABLED } from '../data/features'
+import { isNativeApp } from '../lib/platform'
 import Emoji from './Emoji'
 
 /**
@@ -24,7 +25,8 @@ export default function TopStrip() {
   // 설문이 켜져 있으면 설문 띠, 꺼져 있으면 프리미엄 안내 띠 — 이미 구독 중이면 띠 자체를 숨긴다
   const premium = isPremium(useStore((s) => s.premiumUntil))
   if (SURVEYS_ENABLED) return <TopStripLive />
-  return premium ? null : <TopStripPremium />
+  // 스토어 앱: Play 결제 연동 전이라 살 수 없는 구독 가격 띠를 모든 화면 맨 위에 걸지 않는다(docs/PLAY-RELEASE.md)
+  return premium || isNativeApp() ? null : <TopStripPremium />
 }
 
 /** 프리미엄 안내 띠 — 설문이 준비 중인 동안 이 자리는 유일한 유료 상품을 알린다(홈 하단 배너는 뺐다) */

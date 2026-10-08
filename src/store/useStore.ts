@@ -20,6 +20,7 @@ import type {
   TestId,
 } from '../data/types'
 import { SEED_SURVEYS, SEED_POSTS, LEGACY_SEED_SURVEY_IDS } from '../data/seed'
+import { rollSpin } from '../data/daily'
 import { lifetimeOf, tierAtLeast } from '../data/rank'
 import { botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
 import { uid } from '../lib/random'
@@ -644,8 +645,7 @@ export const useStore = create<State>()(
           const t = today()
           if (viaAd ? s.lastAdSpinDate === t : s.lastSpinDate === t) return null
           if (freeLeft() <= 0) return null
-          const r = Math.random()
-          const rolled = r < 0.3 ? 3 : r < 0.55 ? 5 : r < 0.75 ? 8 : r < 0.88 ? 12 : r < 0.96 ? 20 : r < 0.99 ? 30 : 50
+          const rolled = rollSpin(Math.random()) // 확률표는 data/daily SPIN_ODDS — 화면 고지와 같은 표
           set(viaAd ? { lastAdSpinDate: t } : { lastSpinDate: t })
           const granted = grantFree(rolled, `🎁 랜덤박스 ${viaAd ? '(광고 보너스) ' : ''}+${rolled}P 당첨`, `${viaAd ? 'spin_ad' : 'spin'}:${t}`)
           return { rolled, granted }

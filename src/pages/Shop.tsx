@@ -13,6 +13,7 @@ import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { sfx } from '../lib/sound'
 import Emoji from '../components/Emoji'
 import { shortDate } from '../lib/format'
+import { isNativeApp } from '../lib/platform'
 
 export default function Shop() {
   const t = useT()
@@ -91,7 +92,9 @@ export default function Shop() {
         )}
 
         <div className="mt-4 space-y-2.5">
-          {SHOP_ITEMS.map((item, i) => {
+          {/* 스토어 앱에선 '포인트 랜덤박스'(상품권으로 바꿀 수 있는 포인트를 걸고 무작위 포인트를 받는 교환)를 뺀다 —
+              Google Play 현금성 경품·도박 정책 위험(docs/PLAY-RELEASE.md). 웹 노출은 별도 판단 */}
+          {SHOP_ITEMS.filter((item) => !(item.id === 'randombox' && isNativeApp())).map((item, i) => {
             const afford = points >= item.cost
             const isFreeze = item.id === 'item_freeze'
             const maxed = isFreeze && freezes >= FREEZE_MAX

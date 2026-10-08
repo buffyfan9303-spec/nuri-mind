@@ -4,6 +4,7 @@ import { SPRING, correctPop, press3d } from '../lib/motion'
 import Button from './Button'
 import { Card, Modal } from './ui'
 import { QUIZ_BANK, todayQuizIndex } from '../data/quiz'
+import { SPIN_ODDS } from '../data/daily'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { burst } from '../lib/confetti'
@@ -33,6 +34,7 @@ export function DailyCapMeter() {
 /** 랜덤박스 — 무료 1회 (광고 보너스 박스는 당분간 비활성) */
 export function DailySpin() {
   const t = useT()
+  const l = useL()
   const lastSpinDate = useStore((s) => s.lastSpinDate)
   const spin = useStore((s) => s.spin)
   const freeRemaining = useStore((s) => s.freeRemaining)
@@ -77,6 +79,10 @@ export function DailySpin() {
           <p className="mt-0.5 text-[13px] font-bold text-ink-faint">{t('spin.sub')}</p>
         </div>
       </div>
+      {/* 확률 공개 — 지급 로직과 같은 표(SPIN_ODDS)를 그대로 보여 준다 */}
+      <p className="mt-2 break-keep text-[11px] font-bold leading-relaxed text-ink-faint">
+        {l({ ko: '확률', en: 'Odds', ja: '確率' })}: {SPIN_ODDS.map((o) => `${o.p}P ${o.pct}%`).join(' · ')}
+      </p>
 
       <div className="mt-3.5 space-y-2.5">
         {capLeft <= 0 && !allDone ? (

@@ -322,23 +322,29 @@ export default function Community() {
     if (r > 0) flash(t('community.firstCommentReward', { p: r }))
   }
 
-  const onReport = async (p: CommunityPost) => {
-    reportPost(p.id, p.nick, p.text, 'user-report') // 로컬 기록(신고자 콘솔 확인용)
+  // 글·댓글 공용 — 댓글 신고는 reports.post_id가 글을 가리키므로 부모 글 id + 댓글 작성자·본문 + 'comment-report'로 보낸다
+  // (Google Play UGC 정책: 공개 UGC는 콘텐츠·사용자 신고와 차단을 앱 안에서 제공)
+  const onReport = async (postId: string, target: { nick: string; text: string }, reason = 'user-report') => {
+    reportPost(postId, target.nick, target.text, reason) // 로컬 기록(신고자 콘솔 확인용)
     if (server) {
       // '접수됐어요'는 서버가 받은 뒤에만 — 안전 흐름이라 실패를 성공처럼 말하지 않는다
       try {
-        await reportPostServer(deviceId, p.id, { nick: p.nick, excerpt: p.text, reason: 'user-report' })
-      } catch {
-        toast.err(l({ ko: '신고를 보내지 못했어요. 잠시 후 다시 눌러 주세요.', en: "Couldn't send the report. Please try again.", ja: '通報を送信できませんでした。もう一度お試しください。' }))
-        return
+        await reportPostServer(deviceId, postId, { nick: target.nick, excerpt: target.text, reason })
+      } catch (e) {
+        // reports는 (post_id, device_id) 유일 — 같은 글(또는 그 글의 다른 댓글)을 이 기기가 이미 신고했으면 23505. 접수는 이미 된 것.
+        // ponytail: 같은 글의 두 번째 댓글 신고는 첫 신고 행에 묻힌다 — 댓글 단위 신고 행이 필요하면 comment_id 열 + 유일 키 변경(마이그레이션)
+        if ((e as { code?: string } | null)?.code !== '23505') {
+          toast.err(l({ ko: '신고를 보내지 못했어요. 잠시 후 다시 눌러 주세요.', en: "Couldn't send the report. Please try again.", ja: '通報を送信できませんでした。もう一度お試しください。' }))
+          return
+        }
       }
     }
     flash(t('community.reportDone'))
     sfx.tap()
   }
 
-  const onBlock = (p: CommunityPost) => {
-    blockUser(p.nick)
+  const onBlock = (nick: string) => {
+    blockUser(nick)
     flash(t('community.blockDone'))
     sfx.tap()
   }
@@ -695,10 +701,10 @@ export default function Community() {
                         </button>
                         {!p.mine && (
                           <div className="ml-auto flex shrink-0 items-center gap-1">
-                            <button onClick={() => onBlock(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-bold text-ink-faint">
+                            <button onClick={() => onBlock(p.nick)} className="rounded-full px-2.5 py-1.5 text-[11px] font-bold text-ink-faint">
                               <Emoji e="🚫" inline />{t('community.block')}
                             </button>
-                            <button onClick={() => onReport(p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-bold text-ink-faint">
+                            <button onClick={() => void onReport(p.id, p)} className="rounded-full px-2.5 py-1.5 text-[11px] font-bold text-ink-faint">
                               <Emoji e="🚩" inline />{t('community.report')}
                             </button>
                           </div>
@@ -748,6 +754,16 @@ export default function Community() {
                                       <p className="mt-0.5 whitespace-pre-line break-keep text-[13px] font-bold leading-relaxed text-ink">
                                         {c.text}
                                       </p>
+                                      {!c.mine && (
+                                        <div className="mt-1 flex justify-end gap-1">
+                                          <button onClick={() => onBlock(c.nick)} className="min-h-[32px] rounded-full px-2 text-[11px] font-bold text-ink-faint">
+                                            <Emoji e="🚫" inline />{t('community.block')}
+                                          </button>
+                                          <button onClick={() => void onReport(p.id, c, 'comment-report')} className="min-h-[32px] rounded-full px-2 text-[11px] font-bold text-ink-faint">
+                                            <Emoji e="🚩" inline />{t('community.report')}
+                                          </button>
+                                        </div>
+                                      )}
                                     </div>
                                   </motion.div>
                                 ))

@@ -545,6 +545,14 @@ export default function Fortune() {
                   </Button>
                 </div>
                 <p className="mt-2.5 text-[11px] font-bold text-ink-faint">{l({ ko: '보유', en: 'Balance', ja: '保有' })} <Emoji e="💎" inline />{diamonds.toLocaleString()}</p>
+                {/* 전송 고지 — 열면 아래 효과(useEffect)가 사주 요약을 AI 엣지 함수로 보낸다(개인정보처리방침 'AI 해석' 항목) */}
+                <p className="mt-1.5 break-keep text-[11px] font-bold leading-relaxed text-ink-faint">
+                  {l({
+                    ko: 'ⓘ 열면 사주 요약(일주·오행·성별·나이 등)이 해석 생성을 위해 외부 AI 서비스로 전송돼요. 이름은 보내지 않아요.',
+                    en: 'ⓘ Opening sends a saju summary (day pillar, elements, gender, age, etc.) to an external AI service to write the reading. Your name is not sent.',
+                    ja: 'ⓘ 開くと、四柱の要約（日柱・五行・性別・年齢など）が解釈生成のため外部AIサービスへ送信されます。名前は送信しません。',
+                  })}
+                </p>
               </div>
             </div>
           )}

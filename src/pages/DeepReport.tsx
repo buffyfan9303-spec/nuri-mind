@@ -93,7 +93,7 @@ export default function DeepReport() {
     startedRef.current = true
     let alive = true
     setLoading(true)
-    const payload = buildPayload(results, (id) => t(`test.${id}.name`), lang, nickname)
+    const payload = buildPayload(results, (id) => t(`test.${id}.name`), lang)
     fetchDeepReport(payload).then((rep) => {
       if (!alive) return
       setLoading(false)
