@@ -1,4 +1,4 @@
-import type { Survey, ShopItem, Offer, CommunityPost } from './types'
+import type { Survey, ShopItem, CommunityPost } from './types'
 
 /**
  * 시드 설문 — 비어 있다. 예전 데모 설문(가짜 응답 수 포함)은 실제 사용자 데이터처럼 보여 애드센스 '가치 낮은 콘텐츠'
@@ -51,54 +51,6 @@ export const SHOP_ITEMS: ShopItem[] = [
     name: { ko: '포인트 랜덤박스', en: 'Point Random Box', ja: 'ポイントランダムボックス' },
     desc: { ko: '500P~5,000P 랜덤 지급 이벤트', en: 'Random 500–5,000P event', ja: '500~5,000Pランダム支給' },
     cost: 1500,
-  },
-]
-
-/**
- * 오퍼월 미션 — 고보상 적립의 핵심 재원.
- * 실서비스: 애디슨(NBT)·애드팝콘(IGAWorks) 등 오퍼월 SDK 연동 시 이 목록이 실시간 미션으로 대체됨.
- * reward는 매체 수익의 일부를 유저에게 환원하는 예시값(실제는 광고주 단가에 따름).
- */
-export const OFFERS: Offer[] = [
-  {
-    id: 'of_card',
-    emoji: '💳',
-    title: { ko: '카드 발급 (무료 연회비)', en: 'Get a free-fee credit card', ja: 'カード発行（年会費無料）' },
-    desc: { ko: '발급 완료 시 — 오퍼월 최고 보상', en: 'On approval — top offerwall reward', ja: '発行完了で — オファーウォール最高報酬' },
-    reward: 8000,
-    ready: false,
-  },
-  {
-    id: 'of_fin',
-    emoji: '🏦',
-    title: { ko: '증권/핀테크 앱 계좌 개설', en: 'Open a brokerage/fintech account', ja: '証券・フィンテック口座開設' },
-    desc: { ko: '본인 인증 + 계좌 연동 시 적립', en: 'Credited after ID + account link', ja: '本人認証＋口座連携で付与' },
-    reward: 5000,
-    ready: false,
-  },
-  {
-    id: 'of_sub',
-    emoji: '🎬',
-    title: { ko: 'OTT 무료 체험 구독', en: 'Free-trial an OTT subscription', ja: 'OTT無料体験登録' },
-    desc: { ko: '체험 등록 완료 시 적립', en: 'Credited on trial sign-up', ja: '体験登録完了で付与' },
-    reward: 1500,
-    ready: false,
-  },
-  {
-    id: 'of_game',
-    emoji: '🎮',
-    title: { ko: '게임 설치 + 7일 플레이', en: 'Install a game + play 7 days', ja: 'ゲーム導入＋7日プレイ' },
-    desc: { ko: '레벨/일수 미션 달성 시 적립', en: 'Credited on level/day milestones', ja: 'レベル・日数達成で付与' },
-    reward: 900,
-    ready: false,
-  },
-  {
-    id: 'of_walk',
-    emoji: '🏃',
-    title: { ko: '만보기 앱 설치 + 회원가입', en: 'Install pedometer app + sign up', ja: '歩数計アプリ導入＋会員登録' },
-    desc: { ko: '첫 1,000보 기록 시 적립', en: 'Credited at your first 1,000 steps', ja: '最初の1,000歩記録で付与' },
-    reward: 250,
-    ready: false,
   },
 ]
 

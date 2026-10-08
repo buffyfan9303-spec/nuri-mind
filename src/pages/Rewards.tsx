@@ -7,7 +7,6 @@ import { DailyCapMeter, DailyQuiz, DailySpin } from '../components/Daily'
 import DailyExtras from '../components/DailyExtras'
 import Invite from '../components/Invite'
 import { Card, Chip, Modal, Section, TopBar } from '../components/ui'
-import { OFFERS } from '../data/seed'
 import { lifetimeOf, nextTierOf, tierOf } from '../data/rank'
 import { LEAGUE_TIERS, botsFor, myRank, myWeekPoints, weekKeyOf } from '../lib/league'
 import { localDay } from '../lib/date'
@@ -251,25 +250,6 @@ export default function Rewards() {
         <div id="invite" className="mt-6 scroll-mt-20">
           <Invite />
         </div>
-
-        {/* 앱 설치 미션 */}
-        <Section title={`${t('rewards.offers')}`}>
-          <div className="space-y-3">
-            {OFFERS.map((of) => (
-              <Card key={of.id} className="flex items-center gap-3.5 !p-4 opacity-75">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky2-100"><Emoji e={of.emoji} size={24} /></div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="line-clamp-2 text-[16px] font-extrabold">{l(of.title)}</h3>
-                  <p className="mt-1 truncate text-[13px] font-bold text-ink-faint">{l(of.desc)}</p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <div className="text-[15px] font-extrabold text-sky2-600">+{of.reward}P</div>
-                  <Chip tone="gray">{t('rewards.offerSoon')}</Chip>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </Section>
 
         {/* 포인트 내역 */}
         <Section title={`${t('rewards.ledger')}`}>
