@@ -197,9 +197,10 @@ test.describe('온보딩 · 약관 시트 · 초안 보존', () => {
 
     await page.getByRole('button', { name: /다 읽었어요/ }).click()
 
-    // 라벨은 낙관적으로(justClaimed) 무조건 바뀐다 → 라벨은 '클릭이 처리됐다'는 신호로만 쓰고
+    // 미가입이면 '읽기 완료 ✓'로 바꾸지 않고(받은 것처럼 보였다) 가입 안내를 띄운다 — 안내는 '클릭이 처리됐다'는 신호,
     // 판정은 지갑으로 한다. 미가입 적립이 열리면 약관 동의 없이 포인트를 쌓는 우회로가 된다.
-    await expect(page.getByRole('button', { name: '읽기 완료 ✓' })).toBeVisible()
+    await expect(page.getByText('시작하기를 마치면 정독 보상').first()).toBeVisible()
+    await expect(page.getByRole('button', { name: '읽기 완료 ✓' })).toHaveCount(0)
 
     // ⚠️ 판정은 반드시 저장소 먼저. '값이 안 변했다'를 UI로 먼저 물으면 폴링 첫 회차가
     // 변경 전 화면을 보고 그냥 통과한다(적립 게이트를 뚫어도 초록이 뜨는 걸 실측했다).

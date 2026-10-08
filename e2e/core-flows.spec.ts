@@ -303,8 +303,9 @@ test('매거진 — 가입(동의) 전에는 글을 읽어도 포인트·원장�
   const btn = claimBtn(page)
   await expect(btn).toHaveCount(1)
   await btn.click()
-  // 클릭이 처리될 시간을 상태로 기다린다(버튼이 '읽기 완료'로 바뀜) — 그런 뒤에도 원장은 비어 있어야 한다
-  await expect(page.getByRole('button', { name: '읽기 완료 ✓' })).toBeVisible()
+  // 클릭이 처리됐다는 신호는 가입 안내(받은 것처럼 보이는 '읽기 완료'로 바뀌지 않는다) — 그런 뒤에도 원장은 비어 있어야 한다
+  await expect(page.getByText('시작하기를 마치면 정독 보상').first()).toBeVisible()
+  await expect(page.getByRole('button', { name: '읽기 완료 ✓' })).toHaveCount(0)
   const s = await readState(page)
   expect(s.points).toBe(300)
   expect(s.ledger ?? []).toEqual([])

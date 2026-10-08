@@ -3,7 +3,7 @@ import { isNativeApp, shareOrigin } from '../lib/platform'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { animate, motion, useReducedMotion } from 'framer-motion'
-import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../components/Button'
 import AdSlot from '../components/AdSlot'
 import Gauge from '../components/Gauge'
@@ -118,7 +118,26 @@ export default function TestResult() {
     }
   }, [state.fresh])
 
-  if (!result) return <Navigate to="/" replace />
+  // 없는(지운·다른 기기의) 결과 링크 — 예전엔 말없이 홈으로 보내 사용자가 이유를 몰랐다
+  if (!result)
+    return (
+      <div className="min-h-dvh pb-36">
+        <TopBar back="/" title={l({ ko: '검사 결과', en: 'Result', ja: '検査結果' })} />
+        <main className="mx-auto max-w-md px-5">
+          <Card className="mt-6 text-center">
+            <div className="leading-none"><Emoji e="🔍" size={32} className="align-top" /></div>
+            <h1 className="mt-3 break-keep text-[17px] font-extrabold">{l({ ko: '결과를 찾을 수 없어요', en: "We couldn't find this result", ja: '結果が見つかりません' })}</h1>
+            <p className="mt-1.5 break-keep text-[13px] font-bold leading-relaxed text-ink-sub">
+              {l({ ko: '검사 결과는 이 기기에 저장돼요. 다른 기기에서 했거나 기록을 지웠다면 여기서 볼 수 없어요.', en: 'Results are saved on this device. If you took it on another device or cleared your data, it is not available here.', ja: '検査結果はこの端末に保存されます。別の端末で受けたか記録を削除した場合はここでは見られません。' })}
+            </p>
+            <div className="mt-4 space-y-2">
+              <Button color="mind" onClick={() => nav('/profile')}>{l({ ko: '내 기록 보기', en: 'My records', ja: 'マイ記録' })}</Button>
+              <Button color="white" onClick={() => nav('/tests')}>{l({ ko: '검사 둘러보기', en: 'Browse tests', ja: '検査を見る' })}</Button>
+            </div>
+          </Card>
+        </main>
+      </div>
+    )
   const persona = PERSONAS[result.persona]
   // 이 결과로 '처음 얻은' 동물인지 — 획득 순간에 수집 쾌감을 주는 축하 배지(도감은 갤러리 역할)
   const isNewAnimal = !results.some((r) => r.id !== result.id && r.persona === result.persona)

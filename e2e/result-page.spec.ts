@@ -150,17 +150,18 @@ test('결과 화면(IQ 빠른판) — 추정 IQ·어림값 안내·영역별 점
   expect(errors.list(), errors.format()).toEqual([])
 })
 
-test('없는 결과 id(/result/없는id)는 흰 화면·크래시 없이 앱 안(홈)으로 돌아온다', async ({ page }) => {
+test('없는 결과 id(/result/없는id)는 흰 화면·크래시 없이 안내 화면을 보여 준다', async ({ page }) => {
   const errors = collectConsoleErrors(page)
   await blockExternal(page)
   await seedOnboarded(page, { consent: CONSENT, results: [] })
   await page.goto('/result/' + encodeURIComponent('없는id'))
   await waitForApp(page)
 
-  // 흰 화면이 아니다: 홈이 그려졌고(하단 내비 존재) 결과 화면 요소는 없다
+  // 흰 화면이 아니다: 안내 화면이 그려졌고(하단 내비 존재) 결과 화면 요소는 없다
   expect(await page.getByRole('navigation').count(), '내비게이션 랜드마크가 있어야 한다').toBeGreaterThan(0)
   await expect(page.getByRole('navigation').first()).toBeVisible()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(page.getByRole('heading', { name: '결과를 찾을 수 없어요' })).toBeVisible()
+  await expect(page.getByRole('button', { name: '내 기록 보기' })).toBeVisible()
   await expect(page.getByRole('button', { name: dict['result.retake'] })).toHaveCount(0)
   // 에러 경계 폴백이 아니다
   await expect(page.getByRole('alert').filter({ hasText: '불러오지 못했어요' })).toHaveCount(0)
