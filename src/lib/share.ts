@@ -9,6 +9,7 @@
  * 'cancelled'(사용자가 시트를 닫음)는 실패가 아니므로 클립보드를 덮어쓰지 않는다.
  */
 import { isNativeApp } from './platform'
+import { toast } from './toast'
 
 export type ShareOutcome = 'shared' | 'copied' | 'cancelled' | 'failed'
 
@@ -32,9 +33,14 @@ async function copy(p: SharePayload): Promise<ShareOutcome> {
     await navigator.clipboard.writeText(p.copyText ?? (p.url ? `${p.text} ${p.url}` : p.text))
     return 'copied'
   } catch {
+    // 공유 시트도 클립보드도 안 되는 환경(인앱 WebView·권한 거부) — 호출부가 'failed'를 놓쳐도 사용자는 알게 한다
+    const lang = (typeof document !== 'undefined' ? document.documentElement.lang : 'ko') as 'ko' | 'en' | 'ja'
+    toast.err(SHARE_FAILED[lang] ?? SHARE_FAILED.ko)
     return 'failed'
   }
 }
+
+const SHARE_FAILED = { ko: '공유하지 못했어요. 링크를 직접 복사해 주세요.', en: "Couldn't share. Please copy the link manually.", ja: '共有できませんでした。リンクを直接コピーしてください。' }
 
 export async function shareOrCopy(p: SharePayload): Promise<ShareOutcome> {
   if (isNativeApp()) {

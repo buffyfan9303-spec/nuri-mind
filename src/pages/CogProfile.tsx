@@ -141,7 +141,7 @@ export default function CogProfile() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <TopBar back="/" title={l({ ko: '인지 프로필', en: 'Cognitive Profile', ja: '認知プロフィール' })} />
+      <TopBar historyBack back="/" title={l({ ko: '인지 프로필', en: 'Cognitive Profile', ja: '認知プロフィール' })} />
       <main className="mx-auto max-w-md px-5">
         {/* 헤더 */}
         <motion.div

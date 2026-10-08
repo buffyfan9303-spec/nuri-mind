@@ -475,7 +475,15 @@ export default function Profile() {
                         await disablePush()
                         setPushOn(false)
                       } else {
-                        setPushOn(await enablePush())
+                        const ok = await enablePush().catch(() => false)
+                        setPushOn(ok)
+                        // 켜기 실패를 말없이 되돌리면 몇 번을 눌러도 이유를 모른다 — 권한 거부면 설정 안내
+                        if (!ok)
+                          toast.err(
+                            pushPermission() === 'denied'
+                              ? l({ ko: '알림이 차단돼 있어요. 브라우저(앱) 설정에서 알림을 허용해 주세요.', en: 'Notifications are blocked. Please allow them in your browser/app settings.', ja: '通知がブロックされています。ブラウザ（アプリ）の設定で許可してください。' })
+                              : l({ ko: '알림을 켜지 못했어요. 잠시 후 다시 시도해 주세요.', en: "Couldn't turn on notifications. Please try again shortly.", ja: '通知をオンにできませんでした。少し後にお試しください。' }),
+                          )
                       }
                     } catch {
                       /* 해제 실패 — 스위치는 그대로(실제 구독 상태와 맞춘다) */

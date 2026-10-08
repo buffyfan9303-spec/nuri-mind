@@ -57,7 +57,7 @@ export default function Rank() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <TopBar back="/rewards" title={t('rank.title')} />
+      <TopBar historyBack back="/rewards" title={t('rank.title')} />
 
       {/* 등급 상승 풀스크린 축하 */}
       <Celebration

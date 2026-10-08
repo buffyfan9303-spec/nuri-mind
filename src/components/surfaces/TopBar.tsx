@@ -9,11 +9,14 @@ export function TopBar({
   back,
   right,
   transparent,
+  historyBack,
 }: {
   title?: string
   back?: string | (() => void)
   right?: ReactNode
   transparent?: boolean
+  /** 진입점이 여러 곳인 화면 — 앱 안 이전 화면이 있으면 그리로(react-router history.state.idx), 없으면 back 경로 */
+  historyBack?: boolean
 }) {
   const nav = useNavigate()
   const t = useT()
@@ -26,7 +29,15 @@ export function TopBar({
       {back !== undefined && (
         <motion.button
           whileTap={{ scale: 0.97 }}
-          onClick={() => (typeof back === 'function' ? back() : back ? nav(back) : nav(-1))}
+          onClick={() =>
+            typeof back === 'function'
+              ? back()
+              : historyBack && ((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0
+                ? nav(-1)
+                : back
+                  ? nav(back)
+                  : nav(-1)
+          }
           className="flex h-11 w-11 items-center justify-center rounded-xl text-xl text-ink-sub"
           // 영어 'back'을 그대로 읽으면 한국어 스크린리더가 '백'으로 읽는다
           aria-label={t('common.back')}
