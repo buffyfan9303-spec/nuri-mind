@@ -135,6 +135,7 @@ export default function Ticker() {
             maxLength={60}
             rows={2}
             autoFocus
+            aria-label={l({ ko: '확성기 메시지', en: 'Megaphone message', ja: '拡声器メッセージ' })}
             placeholder={l({ ko: '한 줄 외쳐보세요! (최대 60자)', en: 'Shout one line! (max 60)', ja: '一言どうぞ！(最大60字)' })}
             className="mt-3 w-full resize-none rounded-2xl border-2 border-line bg-surface px-4 py-3 text-[15px] font-bold leading-relaxed outline-none focus:border-[#8B7CF6]"
           />

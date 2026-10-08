@@ -759,6 +759,7 @@ export default function Community() {
                                   onChange={(e) => setCommentText(e.target.value)}
                                   onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && submitComment(p.id)}
                                   placeholder={t('community.commentPh')}
+                                  aria-label={t('community.commentPh')}
                                   maxLength={200}
                                   className="min-w-0 flex-1 rounded-full border-2 border-line bg-surface px-3.5 py-2 text-[13px] font-bold outline-none focus:border-mind-400"
                                 />
@@ -862,6 +863,7 @@ export default function Community() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t('community.ph')}
+          aria-label={t('community.ph')}
           rows={4}
           maxLength={280}
           autoFocus
