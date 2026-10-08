@@ -17,6 +17,7 @@ const read = (p) => readFileSync(join(ROOT, p), 'utf8')
 
 export async function runEconCheck() {
   const C = await import(pathToFileURL(join(ROOT, 'src/lib/econCore.ts')).href)
+  const U = await import(pathToFileURL(join(ROOT, 'src/lib/econUi.ts')).href)
   const passes = []
   const fails = []
   const check = (name, cond, detail = '') => (cond ? passes.push(name) : fails.push(`${name}${detail ? ' — ' + detail : ''}`))
@@ -256,7 +257,7 @@ export async function runEconCheck() {
     const run = async ({ got, flip = false }) => {
       const log = []
       let stale = false
-      const r = await C.claimAllGuarded({
+      const r = await U.claimAllGuarded({
         claimAll: async () => {
           log.push('claimAll')
           if (flip) stale = true // 응답 대기 중 계정 전환
@@ -280,7 +281,7 @@ export async function runEconCheck() {
 
   /* ── 7. 초대 코드 — 'unavailable'에서 로컬 보상 금지 ── */
   {
-    const S = C.referralNextStep
+    const S = U.referralNextStep
     check('초대: unavailable·모르는 응답·계정 변경 → 막음', S('unavailable', false) === 'blocked' && S('weird', false) === 'blocked' && S('ok', true) === 'blocked' && S('no_auth', true) === 'blocked')
     check('초대(반대편): ok·비로그인은 로컬 진행, 서버 확정 판정은 그대로', S('ok', false) === 'local' && S('no_auth', false) === 'local' && S('used', false) === 'used' && S('self', false) === 'self' && S('invalid', false) === 'invalid')
   }
