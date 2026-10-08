@@ -39,10 +39,15 @@
       글꼴(듀오링고식 둥글고 굵은 활자) — 라틴·숫자는 Nunito, 한글은 나눔스퀘어라운드(자체 호스팅, OFL 1.1).
       Nunito에는 한글 글리프가 없어 한글은 자연스럽게 다음 글꼴(나눔스퀘어라운드)로 넘어간다.
       UI 굵기는 700/800만 쓴다(900은 큰 숫자의 Nunito 전용) — 안 쓰는 굵기는 받지 않는다.
+      그래서 Noto Sans JP 는 700/800 만 받는다: font-black(900)이 걸린 곳은 src 전체에 2곳이고
+      둘 다 라틴 숫자(포인트 잔액·행운의 숫자)라 Nunito 900 이 그린다. JP 900 은 매칭될 글리프가 없는데
+      스타일시트만 114KB 늘렸다(3굵기 348KB/387 face → 2굵기 234KB/263 face, 렌더 블로킹).
+      ⚠️ Noto Sans JP 자체는 빼면 안 된다 — NanumSquareRound 의 unicode-range 에 한자가 없어서
+         한국어 화면의 한자(사주 천간·지지 등)도 이 글꼴로 떨어진다. 일본어 전용이 아니다.
       ExtraBold(800)는 제목·버튼·칩 라벨 등 첫 화면 대부분이 쓰는 굵기라 미리 받는다(preload).
     -->
     <link rel="preload" href="/fonts/NanumSquareRoundEB.woff2" as="font" type="font/woff2" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+JP:wght@700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+JP:wght@700;800&display=swap" rel="stylesheet" />
     <meta name="google-adsense-account" content="ca-pub-4637265976541550" />
     <!--
       [수익화] Google AdSense — 로더 스크립트는 src/lib/ads.ts(loadAdSenseScript)가

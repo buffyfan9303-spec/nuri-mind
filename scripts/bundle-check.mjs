@@ -33,6 +33,9 @@ const FORBIDDEN = [
   //    LIKERT_AGREE(정적 유지)에도 같은 문자열이 있어 오탐이 났다.
   { name: 'dict.en (영어 사전 36KB)', mark: 'New animal unlocked — added to your dex!' },
   { name: 'dict.ja (일본어 사전 40KB)', mark: 'ヌリマインドへようこそ' },
+  // 색종이 연출은 첫 화면에 없다 — lib/confetti.ts 가 지연 import 한다(2026-10-08, 메인 −4.5KB gzip).
+  // 마커는 canvas-confetti 의 기본 색 팔레트. 정적 import 로 되돌리면 여기서 빨개진다.
+  { name: 'canvas-confetti (색종이 연출 10.7KB)', mark: '#26ccff' },
 ]
 
 if (!existsSync(ASSETS)) {
