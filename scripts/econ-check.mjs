@@ -128,6 +128,8 @@ export async function runEconCheck() {
   /* ── 4. 계정 동기화 — 늦게 끝난 이전 계정 호출이 새 계정에 쓰지 않는다 ── */
   {
     const mkSync = ({ kv, session = () => 'A', ledger = 3, server = 777, onLedger, onServer, onSendEarn }) => {
+      // 로컬 경계 표식의 메모리 대체본은 모듈 상태다 — 빈 저장소로 지워 '저장소가 기준' 상태로 되돌린다
+      C.clearLocalUid(mkKV())
       const st = { mark: { uid: null, epoch: 0 } }
       const calls = { swap: [], restore: [], setWallet: [], sendEarn: [], flush: [] }
       const deps = {
@@ -211,6 +213,24 @@ export async function runEconCheck() {
       await C.runAccountSync(r3.deps)
       check('동기화(반대편): 도중 같은 계정 토큰 갱신은 무해', r3.calls.restore.length === 1 && kv3.getItem(C.SYNC_UID_KEY) === 'A')
     }
+    // ⑥ 용량 초과: 저장소에 옛 표식 X가 남은 채 LOCAL_UID 쓰기만 실패 → 스왑은 한 번만
+    //    (반복되면 이미 A인 화면이 'X의 보관본'으로 저장돼 X의 메모리본을 덮는다)
+    {
+      const kv = mkKV((k) => k === C.LOCAL_UID_KEY)
+      kv.m.set(C.LOCAL_UID_KEY, 'X')
+      const r = mkSync({ kv })
+      await C.runAccountSync(r.deps)
+      await C.runAccountSync(r.deps)
+      await C.runAccountSync(r.deps)
+      check('경계 표식: 저장소 쓰기 실패해도 스왑은 1회(메모리 대체본이 기준)', r.calls.swap.length === 1 && r.calls.swap[0].join('>') === 'X>A' && C.readLocalUid(kv) === 'A', `스왑 ${r.calls.swap.length}회`)
+      // 반대편 — 저장소가 정상이면 메모리 대체본이 끼어들지 않는다(다른 탭이 쓴 값이 그대로 읽힘)
+      const kvOk = mkKV()
+      const r2 = mkSync({ kv: kvOk })
+      await C.runAccountSync(r2.deps)
+      kvOk.m.set(C.LOCAL_UID_KEY, 'other-tab')
+      check('경계 표식(반대편): 정상 저장소면 저장소값이 기준', C.readLocalUid(kvOk) === 'other-tab')
+      C.clearLocalUid(mkKV())
+    }
   }
 
   /* ── 5. 계정 삭제 오류 — 서버 원문을 돌려주지 않는다 ── */
@@ -231,17 +251,31 @@ export async function runEconCheck() {
     check('삭제 오류(반대편): 종류별 코드 구분', outs[0] === 'server_rejected' && outs[1] === 'server_unavailable' && outs[2] === 'network')
   }
 
-  /* ── 6. 우편 일괄 수령 집계 ── */
+  /* ── 6. 우편 일괄 수령 — claim_all 1회, 중단 시 미가산·미확정, 성공 시 가산 뒤 확정 ── */
   {
-    const r = C.tallyClaims([
-      { id: 1, got: 5 },
-      { id: 2, got: null },
-      { id: 3, got: 0 },
-      { id: 4, got: 7 },
-    ])
-    check('일괄 수령: 실패분은 미수령으로 분리, 성공분만 합산', r.okIds.join(',') === '1,3,4' && r.failedIds.join(',') === '2' && r.total === 12)
-    const all = C.tallyClaims([{ id: 9, got: 3 }])
-    check('일괄 수령(반대편): 전부 성공이면 실패 0', all.failedIds.length === 0 && all.total === 3)
+    const run = async ({ got, flip = false }) => {
+      const log = []
+      let stale = false
+      const r = await C.claimAllGuarded({
+        claimAll: async () => {
+          log.push('claimAll')
+          if (flip) stale = true // 응답 대기 중 계정 전환
+          return got
+        },
+        isStale: () => stale,
+        addDiamonds: (n) => log.push('add:' + n),
+        confirmAll: () => log.push('confirm'),
+      })
+      return { r, log: log.join(',') }
+    }
+    const a = await run({ got: 30, flip: true })
+    check('일괄 수령: 응답 대기 중 계정 전환 → 가산·확정 둘 다 안 함(서버 미확정 보관)', a.r.status === 'stale' && a.log === 'claimAll', a.log)
+    const b = await run({ got: 30 })
+    check('일괄 수령: 성공 → 가산한 뒤에만 전체 확정(순서)', b.r.status === 'ok' && b.r.total === 30 && b.log === 'claimAll,add:30,confirm', b.log)
+    const c = await run({ got: null })
+    check('일괄 수령: 실패 → 가산·확정 없음', c.r.status === 'fail' && c.log === 'claimAll', c.log)
+    const d = await run({ got: 0 })
+    check('일괄 수령(반대편): 0다이아(공지만)도 정상 처리·확정', d.r.status === 'ok' && d.r.total === 0 && d.log === 'claimAll,confirm', d.log)
   }
 
   /* ── 7. 초대 코드 — 'unavailable'에서 로컬 보상 금지 ── */
@@ -270,6 +304,14 @@ export async function runEconCheck() {
     const kvOld = mkKV()
     kvOld.setItem(C.acctKey('u-disk'), JSON.stringify({ diamonds: 4 }))
     check('보관(반대편): 메모리에 없으면 저장소 보관본을 읽는다', C.vaultLoad(kvOld, 'u-disk')?.diamonds === 4)
+    // 전체 저장 성공 → 메모리본 폐기. 한때 실패해 메모리본이 생겼던 계정도, 이후 전체 저장이 되면 저장소가 기준이다
+    let full2fail = true
+    const kvFlaky = mkKV((k, v) => full2fail && v.length > 1000)
+    C.vaultSave(kvFlaky, 'u-flaky', { ...full, diamonds: 1 }, { diamonds: 1 }) // 메모리본(diamonds 1) 생김
+    full2fail = false
+    C.vaultSave(kvFlaky, 'u-flaky', { ...full, diamonds: 2 }, { diamonds: 2 }) // 전체 저장 성공
+    kvFlaky.m.set(C.acctKey('u-flaky'), JSON.stringify({ diamonds: 3 })) // 이후 다른 탭이 저장소를 갱신
+    check('보관: 전체 저장 성공하면 메모리본 폐기 → 저장소가 기준(옛 메모리본이 되살아나지 않음)', C.vaultLoad(kvFlaky, 'u-flaky')?.diamonds === 3)
   }
 
   /* ── 9. 배선 앵커 — 순수 함수를 호출부가 실제로 쓰는가 ── */
@@ -282,12 +324,18 @@ export async function runEconCheck() {
     check('배선: 세대는 auth 이벤트 콜백 안에서 동기로 반영', /onAuthChange\(\(uid\) => \{\s*noteAuthUid\(uid\)/.test(code))
     const mail = read('src/pages/Mailbox.tsx')
     const staleChecks = (mail.match(/isStaleAuth\(start, authMark\(\)\)/g) ?? []).length
-    check('배선: 우편 수령 두 곳 모두 늦은 응답 가드(지금 값 getter)', staleChecks >= 2 && /tallyClaims\(results\)/.test(mail) && !/claimAllMail/.test(mail), `가드 ${staleChecks}곳`)
+    check('배선: 우편 수령 두 곳 모두 늦은 응답 가드(지금 값 getter)', staleChecks >= 2, `가드 ${staleChecks}곳`)
+    check('배선: 일괄 받기는 claim_all_mail 1회(claimAllGuarded) — 항목별 claim_mail 루프 금지', /claimAllGuarded\(\{\s*claimAll: claimAllMail,/.test(mail) && /confirmAll: \(\) => void confirmMailDelivery\(\)/.test(mail) && !/for \(const \w+ of /.test(mail))
+    check('배선: economy의 경계 표식은 메모리 대체 헬퍼로만', !/LOCAL_UID_KEY/.test(code) && /readLocalUid\(kv\)/.test(code) && /writeLocalUid\(kv, GUEST\)/.test(code))
     const inv = read('src/components/Invite.tsx')
     check('배선: 초대 입력이 서버 판정 → referralNextStep을 거친다', /referralNextStep\(sv, isStaleAuth\(start, authMark\(\)\)\)/.test(inv) && /step === 'blocked'/.test(inv))
     const store = read('src/store/useStore.ts')
     check('배선: 스토어 전환이 보관 실패를 vaultSave로 판정', /vaultSave\(safeLocalStorage, prevUid, snap, compact\)/.test(store) && /saved !== 'full'/.test(store) && !/localStorage\.setItem\(KEY\(/.test(store))
     check('배선: 초대 보상 로컬 멱등키', /paidKeys\.includes\('referral_redeem'\)/.test(store))
+    const compactSrc = store.match(/const compact = \{([\s\S]*?)\n\s*\}/)?.[1] ?? ''
+    const guards = ['diamonds', 'premiumUntil', 'paidKeys', 'takenSurveys', 'questClaimedDate', 'fortuneFullDate', 'fortuneDetailDate', 'fortuneShareDate', 'fortuneMonth', 'fortuneFreeUses']
+    const missing = guards.filter((g) => !new RegExp(`\\b${g}: snap\\.${g}\\b`).test(compactSrc))
+    check('배선: 축약 보관본에 유료 권리·보상 가드 필드 포함', compactSrc.length > 0 && missing.length === 0, missing.join(','))
   }
 
   return { passes, fails }

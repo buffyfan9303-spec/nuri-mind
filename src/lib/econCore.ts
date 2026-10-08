@@ -78,6 +78,30 @@ export function saveOutboxTo(kv: KV, list: OutboxEntry[]): void {
   }
 }
 
+// ── 로컬 경계 표식(LOCAL_UID_KEY) — 저장소에 못 쓰면 메모리로 대신 보관 ──────────────
+
+/**
+ * undefined = 메모리 대체본 없음(저장소가 기준). 문자열·null = 저장소 쓰기가 실패해 이 값이 기준.
+ * 왜: 용량 초과로 setItem이 실패하면 표식이 옛 계정(A)으로 남는다. 그러면 B로 동기화할 때마다
+ * swapAccount(A, B)가 다시 실행되고, 그때의 화면(이미 B)이 'A의 보관본'으로 저장돼 A의 메모리본을 B 데이터로 덮는다.
+ */
+let localUidMem: string | null | undefined = undefined
+
+/** 읽기 — 메모리 대체본이 있으면 그것이 우선 */
+export function readLocalUid(kv: KV): string | null {
+  return localUidMem !== undefined ? localUidMem : kv.getItem(LOCAL_UID_KEY)
+}
+
+export function writeLocalUid(kv: KV, uid: string): void {
+  localUidMem = kv.setItem(LOCAL_UID_KEY, uid) ? undefined : uid
+}
+
+/** 지우기 — removeItem도 조용히 실패할 수 있다. 지워졌으면 저장소가 기준, 남아 있으면 메모리를 '없음(null)'으로 확정 */
+export function clearLocalUid(kv: KV): void {
+  kv.removeItem(LOCAL_UID_KEY)
+  localUidMem = kv.getItem(LOCAL_UID_KEY) === null ? undefined : null
+}
+
 // ── 계정 세대(늦은 응답 가드) ─────────────────────────────────────────────
 
 /** 지금 이 기기의 로그인 계정과 그 세대 — 세대는 "이전 계정의 진행 중 작업을 무효로 만드는" 전이에서만 오른다 */
@@ -239,13 +263,13 @@ export async function runAccountSync(d: SyncDeps): Promise<void> {
   // ── ① 로컬 경계를 서버보다 먼저 세운다 ──
   // 전환 감지 즉시 프로필을 스왑한다. 서버 응답을 기다리면 네트워크가 한 번만 실패해도
   // 이전 계정의 다이아·프리미엄·검사기록이 새 계정 화면에 그대로 남는다.
-  const localUid = kv.getItem(LOCAL_UID_KEY)
+  const localUid = readLocalUid(kv)
   if (localUid && localUid !== uid) {
     hooks.swapAccount(localUid, uid)
     // 이전 지갑에서 로그아웃 상태로 쌓인 활동(uid=null)은 새 계정 것이 아니다.
     // ⚠️ 반드시 flush "이전"에 폐기 — 뒤에 두면 force flush가 먼저 새 계정 원장에 적립해버린다.
     saveOutboxTo(kv, loadOutboxFrom(kv).filter((e) => e.uid !== null))
-    kv.setItem(LOCAL_UID_KEY, uid)
+    writeLocalUid(kv, uid)
   }
 
   const marker = kv.getItem(SYNC_UID_KEY)
@@ -301,7 +325,7 @@ export async function runAccountSync(d: SyncDeps): Promise<void> {
     if (stale()) return
   }
   kv.setItem(SYNC_UID_KEY, uid)
-  kv.setItem(LOCAL_UID_KEY, uid)
+  writeLocalUid(kv, uid)
 }
 
 // ── 계정 삭제 오류 코드 ────────────────────────────────────────────────────
@@ -328,25 +352,34 @@ export function deleteErrorCode(err: unknown): DeleteAccountError {
   return 'unknown'
 }
 
-// ── 우편 일괄 수령 집계 ─────────────────────────────────────────────────────
+// ── 우편 일괄 수령 ─────────────────────────────────────────────────────────
+
+export interface ClaimAllDeps {
+  /** claim_all_mail — 미수령을 claimed로 바꾸고 'claimed && 미확정(undelivered)' 전액을 돌려준다. 실패는 null */
+  claimAll: () => Promise<number | null>
+  /** 시작 이후 로그아웃·계정 전환이 있었는가(getter 기반) */
+  isStale: () => boolean
+  addDiamonds: (n: number) => void
+  /** confirm_mail_delivery(null) — 이 계정의 미확정분 전부 확정 */
+  confirmAll: () => void
+}
 
 /**
- * 항목별 수령 결과 집계 — got=null은 실패(미수령으로 남긴다), 숫자는 성공(0다이아 공지 수령 포함).
- * 예전 일괄 받기는 한 번의 RPC가 실패하면 전부 실패, 성공하면 화면의 전부를 '수령 완료'로 칠했다.
+ * 일괄 받기 — **claim_all_mail 1회**로 받는다.
+ * ⚠️ 항목별 claim_mail 루프로 바꾸면 안 된다: my_mail은 claimed 원값을 그대로 주므로
+ *    '받았지만 응답이 유실돼 확정 안 된(claimed && undelivered)' 우편은 화면에서 이미 '수령 완료'로 보여
+ *    루프 대상에서 빠진다 → 그 다이아를 돌려받을 경로가 끊긴다. claim_all_mail은 그 미확정분까지 합쳐 돌려준다.
+ * 순서: 받기 → (응답 대기 중 계정이 바뀌었으면 아무것도 더하지도 확정하지도 않고 끝 — 서버에 미확정으로 남아
+ *       다음 '모두 받기'가 같은 금액을 다시 준다) → 로컬 가산 → 가산한 **뒤에만** 확정.
  */
-export function tallyClaims(results: { id: number; got: number | null }[]): { okIds: number[]; failedIds: number[]; total: number } {
-  const okIds: number[] = []
-  const failedIds: number[] = []
-  let total = 0
-  for (const r of results) {
-    if (r.got === null || !Number.isFinite(r.got)) {
-      failedIds.push(r.id)
-      continue
-    }
-    okIds.push(r.id)
-    if (r.got > 0) total += r.got
-  }
-  return { okIds, failedIds, total }
+export async function claimAllGuarded(d: ClaimAllDeps): Promise<{ status: 'stale' } | { status: 'fail' } | { status: 'ok'; total: number }> {
+  const got = await d.claimAll()
+  if (d.isStale()) return { status: 'stale' }
+  if (got === null || !Number.isFinite(got)) return { status: 'fail' }
+  const total = Math.max(0, got)
+  if (total > 0) d.addDiamonds(total)
+  d.confirmAll()
+  return { status: 'ok', total }
 }
 
 // ── 초대 코드 서버 판정 → 화면 처리 ─────────────────────────────────────────
@@ -392,13 +425,18 @@ function trySetJson(kv: KV, k: string, v: unknown): boolean {
  * ⚠️ 저장소의 옛 보관본은 지우지 않는다 — 지우면 다음 방문에 그 계정의 유료 재화가 0으로 시작한다.
  */
 export function vaultSave(kv: KV, uid: string, full: Record<string, unknown>, compact: Record<string, unknown>): VaultSaveResult {
+  if (trySetJson(kv, acctKey(uid), full)) {
+    // 저장소에 전체가 들어갔으면 메모리본은 버린다 — 메모리본은 읽을 때 저장소보다 우선하므로,
+    // 남겨 두면 오래된 메모리본이 되살아나거나(다른 탭이 저장소를 갱신한 뒤) 엉뚱한 데이터가 이긴다.
+    memoryVault.delete(uid)
+    return 'full'
+  }
   memoryVault.set(uid, full)
-  if (trySetJson(kv, acctKey(uid), full)) return 'full'
   if (trySetJson(kv, acctKey(uid), compact)) return 'compact'
   return 'memory'
 }
 
-/** 보관본 읽기 — 이번 방문의 메모리본이 가장 최신이다(이 uid를 떠날 때마다 덮어쓴다) */
+/** 보관본 읽기 — 메모리본은 저장소에 전체를 못 쓴 경우에만 존재하고, 그때는 저장소본(축약·옛 본)보다 최신이다 */
 export function vaultLoad(kv: KV, uid: string): Record<string, unknown> | null {
   const mem = memoryVault.get(uid)
   if (mem) return mem

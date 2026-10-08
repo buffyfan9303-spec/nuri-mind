@@ -29,11 +29,13 @@ import { clearKakaoReauth, onAuthChange, signOut } from './auth'
 import { safeLocalStorage } from './safeStorage'
 import {
   GUEST,
-  LOCAL_UID_KEY,
   MAX_AMOUNT,
   OUTBOX_KEY,
   SYNC_UID_KEY,
+  clearLocalUid,
   createRerunGate,
+  readLocalUid,
+  writeLocalUid,
   deleteErrorCode,
   drainOutbox,
   loadOutboxFrom,
@@ -244,11 +246,11 @@ async function syncAccount(hooks: SyncHooks): Promise<void> {
  * '보관본 복원 + 서버 잔액 정산' 경로를 다시 타게 한다.
  */
 export function leaveAccount(): void {
-  const prev = auth.uid ?? kv.getItem(LOCAL_UID_KEY)
+  const prev = auth.uid ?? readLocalUid(kv)
   // 세대를 먼저 올린다 — 진행 중인 동기화가 다음 await 뒤에 이 계정의 지갑·마커를 쓰지 못하게
   noteAuthUid(null)
   if (hooksRef && prev && prev !== GUEST) hooksRef.swapAccount(prev, GUEST)
-  kv.setItem(LOCAL_UID_KEY, GUEST)
+  writeLocalUid(kv, GUEST) // 저장소에 못 쓰면 메모리로 — 표식이 옛 계정에 남아 스왑이 반복되지 않게
   kv.removeItem(SYNC_UID_KEY)
   saveOutbox(loadOutbox().filter((e) => e.uid !== null))
 }
@@ -309,14 +311,14 @@ export async function deleteAccount(): Promise<{ ok: boolean; error?: DeleteAcco
  */
 export function isAccountSwitchPending(uid: string | null): boolean {
   if (!uid) return false
-  const localUid = kv.getItem(LOCAL_UID_KEY)
+  const localUid = readLocalUid(kv)
   return !!localUid && localUid !== uid
 }
 
 /** 전체 초기화 — 동기화 마커·아웃박스를 통째로 비워 다음 로그인이 처음부터 판정하게 한다. */
 export function clearAccountSync(): void {
   noteAuthUid(null)
-  kv.removeItem(LOCAL_UID_KEY)
+  clearLocalUid(kv)
   kv.removeItem(SYNC_UID_KEY)
   kv.removeItem(OUTBOX_KEY)
 }

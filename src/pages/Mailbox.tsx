@@ -12,9 +12,9 @@ import { useL } from '../i18n/useT'
 import { authReady, getAuthUser, onAuthChange, signInWithKakao } from '../lib/auth'
 import AppleLoginButton from '../components/AppleLoginButton'
 import GoogleLoginButton from '../components/GoogleLoginButton'
-import { fetchMail, claimMail, cancelPurchase, type MailItem, confirmMailDelivery } from '../lib/mailbox'
+import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem, confirmMailDelivery } from '../lib/mailbox'
 import { authMark, isAccountSwitchPending, isStaleAuth } from '../lib/economy'
-import { tallyClaims } from '../lib/econCore'
+import { claimAllGuarded } from '../lib/econCore'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import Emoji, { EmojiText } from '../components/Emoji'
@@ -150,51 +150,34 @@ export default function Mailbox() {
   }
 
   /**
-   * 일괄 받기 — 항목별로 받아 성공분만 반영한다.
-   * 예전엔 한 번의 RPC 결과로 화면의 모든 우편을 '수령 완료'로 칠하고 배송을 통째로 확정했다 —
-   * 일부만 서버에 반영돼도 사용자는 실패분을 다시 받을 방법이 없었다. 이제 실패분은 미수령으로 남고 안내한다.
+   * 일괄 받기 — claim_all_mail **1회**. 항목별 claim_mail 루프로 바꾸지 말 것(claimAllGuarded 주석):
+   * 응답 유실로 '받았지만 미확정'인 우편은 화면에 이미 '수령 완료'로 보여 루프에서 빠지고, 그 다이아는 영구 유실된다.
+   * claim_all_mail은 그 미확정분까지 합쳐 돌려준다.
+   * 늦은 응답 가드: 응답 대기 중 계정이 바뀌면 아무것도 더하지도 확정하지도 않는다(서버가 미확정으로 보관 →
+   * 그 계정의 다음 '모두 받기'가 같은 금액을 다시 준다). 비교는 시작 값 vs authMark()로 지금 읽은 값.
    */
   const onClaimAll = async () => {
     if (switchPending() || claiming !== null) return
     const start = authMark()
-    const targets = mail.filter((m) => !m.claimed).map((m) => m.id)
-    if (targets.length === 0) return
     setClaiming('all')
-    const results: { id: number; got: number | null }[] = []
-    for (const id of targets) {
-      const got = await claimMail(id)
-      // 도중에 계정이 바뀌면 여기서 멈추고 아무것도 반영하지 않는다(받은 것도 확정하지 않음 — 서버가 보관)
-      if (isStaleAuth(start, authMark())) {
-        setClaiming(null)
-        return
-      }
-      results.push({ id, got })
-    }
+    const r = await claimAllGuarded({
+      claimAll: claimAllMail,
+      isStale: () => isStaleAuth(start, authMark()),
+      addDiamonds,
+      confirmAll: () => void confirmMailDelivery(),
+    })
     setClaiming(null)
-    const { okIds, failedIds, total } = tallyClaims(results)
-    if (okIds.length === 0) {
+    if (r.status === 'stale') return
+    if (r.status === 'fail') {
       sfx.err()
       claimFailMsg()
       return
     }
-    if (total > 0) addDiamonds(total)
-    void confirmMailDelivery(okIds)
-    const ok = new Set(okIds)
-    setMail((m) => m.map((x) => (ok.has(x.id) ? { ...x, claimed: true } : x)))
-    if (failedIds.length > 0) {
-      sfx.err()
-      const n = failedIds.length
-      flash(
-        total > 0
-          ? l({ ko: `💎 ${total}개를 받았어요. ${n}개는 받지 못했어요 — 다시 시도해 주세요.`, en: `Got 💎${total}. ${n} failed — please retry.`, ja: `💎${total}個 受取。${n}件は失敗 — 再試行してください。` })
-          : l({ ko: `${n}개는 받지 못했어요. 네트워크 확인 후 다시 시도해 주세요.`, en: `${n} failed. Check your connection and retry.`, ja: `${n}件 受取失敗。接続を確認して再試行してください。` }),
-      )
-      return
-    }
-    if (total > 0) {
+    setMail((m) => m.map((x) => ({ ...x, claimed: true })))
+    if (r.total > 0) {
       burst()
       sfx.coin()
-      flash(l({ ko: `💎 ${total}개를 모두 받았어요`, en: `Claimed all 💎${total}`, ja: `💎${total}個 一括受取` }))
+      flash(l({ ko: `💎 ${r.total}개를 모두 받았어요`, en: `Claimed all 💎${r.total}`, ja: `💎${r.total}個 一括受取` }))
     }
   }
 
