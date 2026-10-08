@@ -14,6 +14,7 @@
  *  ⑩ 제목·버튼·라벨에 장식 이모지 접두 없음(스탯 타일·뱃지의 내용 이모지는 대상 아님)
  *  ⑪ 만세력(사주팔자·음력·절기)이 공표 기준값과 맞는가 — scripts/saju-check.mjs
  *  ⑫ 아이콘 이모지마다 Fluent SVG 파일이 있는가(동기화 누락·파일 누락) — scripts/emoji-sync.mjs
+ *  ⑬ 계정·재화 동기화 행동(늦은 응답·아웃박스 세션 재확인·보관 실패·초대 판정) — scripts/econ-check.mjs
  *
  * 실행: npm run smoke   (실패 시 exit 1 — 배포 전 게이트로 사용)
  */
@@ -300,6 +301,14 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
       !existsSync(join(ROOT, 'public/emoji/LICENSE-fluentui-emoji.txt')) && '라이선스 파일 없음',
     ].filter(Boolean).join(' / '),
   )
+}
+
+/* ⑬ 계정·재화 동기화 행동 — 늦은 응답 가드·아웃박스 세션 재확인·보관 실패·초대 판정 (scripts/econ-check.mjs)
+   계정 전환 경합은 실계정 둘이 있어야 브라우저로 재현된다 — 판정·순서 로직(src/lib/econCore.ts)을 직접 불러 재현한다. */
+{
+  const { runEconCheck } = await import('./econ-check.mjs')
+  const { passes, fails: bad } = await runEconCheck()
+  check(`계정·재화 동기화 행동(${passes.length + bad.length}건)`, passes.length > 30 && bad.length === 0, bad.slice(0, 3).join(' · '))
 }
 
 /* 결과 */

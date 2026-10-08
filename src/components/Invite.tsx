@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react'
 import { Card } from './ui'
 import Button from './Button'
 import { useStore } from '../store/useStore'
-import { useT } from '../i18n/useT'
+import { useL, useT } from '../i18n/useT'
+import { authMark, isStaleAuth } from '../lib/economy'
+import { referralNextStep } from '../lib/econCore'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { ensureReferralCodeServer, referralCountServer, referralReady, redeemReferralServer } from '../lib/referral'
@@ -22,6 +24,7 @@ const MILESTONES: { n: number; p: number; d?: number }[] = [
 /** Temu식 마일스톤 친구 초대 (코드 기반 — 서버 연동 전 로컬 버전) */
 export default function Invite() {
   const t = useT()
+  const l = useL()
   const referralCodeLocal = useStore((s) => s.referralCode)
   const referredBy = useStore((s) => s.referredBy)
   const invitedCount = useStore((s) => s.invitedCount)
@@ -75,25 +78,36 @@ export default function Invite() {
     // 서버 검증(카카오 로그인 + supabase): 계정당 1회 — localStorage 초기화 파밍 차단.
     // 서버가 확정 판정('used'/'self'/'invalid')을 내리면 로컬 폴백 금지 —
     // 특히 자기 서버 코드('self')가 로컬 검사(로컬 코드와만 비교)를 통과해 자가지급되는 구멍 차단.
-    // 로컬 폴백은 판정 불가('no_auth'/'unavailable')일 때만.
+    // 로컬 폴백은 비로그인('no_auth' — 서버 판정 대상이 아님)일 때만.
+    // ⚠️ 'unavailable'(로그인했는데 서버 확인 실패)에서 로컬 보상을 주면 안 된다 — 서버가 'used'라고
+    //    했을 계정도 오프라인·장애 한 번에 +100P를 받는다. "지금은 확인할 수 없어요"로 막는다.
     if (referralReady()) {
+      const start = authMark()
       const sv = await redeemReferralServer(input.trim().toUpperCase())
-      if (sv === 'used') {
+      // 응답을 기다리는 사이 계정이 바뀌었으면 이 판정은 지금 계정 것이 아니다 — 로컬 보상도 주지 않는다
+      const step = referralNextStep(sv, isStaleAuth(start, authMark()))
+      if (step === 'blocked') {
+        setMsg({ ok: false, text: l({ ko: '지금은 확인할 수 없어요. 잠시 후 다시 시도해 주세요.', en: "We can't verify this right now. Please try again shortly.", ja: '今は確認できません。少し後にもう一度お試しください。' }) })
+        sfx.err()
+        return
+      }
+      if (step === 'used') {
         setMsg({ ok: false, text: t('invite.usedAccount') })
         sfx.err()
         return
       }
-      if (sv === 'self') {
+      if (step === 'self') {
         setMsg({ ok: false, text: t('invite.mine') })
         sfx.err()
         return
       }
-      if (sv === 'invalid') {
+      if (step === 'invalid') {
         setMsg({ ok: false, text: t('invite.invalid') })
         sfx.err()
         return
       }
     }
+    // 여기 닿는 경우: 서버 미설정 빌드 · 비로그인('no_auth') · 서버가 'ok'(지급 완료 — 로컬 반영, 같은 멱등키라 서버 이중 지급 없음)
     const r = redeemCode(input)
     if (r === 'ok') {
       setMsg({ ok: true, text: t('invite.ok') })

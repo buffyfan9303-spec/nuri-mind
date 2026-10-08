@@ -12,8 +12,9 @@ import { useL } from '../i18n/useT'
 import { authReady, getAuthUser, onAuthChange, signInWithKakao } from '../lib/auth'
 import AppleLoginButton from '../components/AppleLoginButton'
 import GoogleLoginButton from '../components/GoogleLoginButton'
-import { fetchMail, claimMail, claimAllMail, cancelPurchase, type MailItem, confirmMailDelivery } from '../lib/mailbox'
-import { isAccountSwitchPending } from '../lib/economy'
+import { fetchMail, claimMail, cancelPurchase, type MailItem, confirmMailDelivery } from '../lib/mailbox'
+import { authMark, isAccountSwitchPending, isStaleAuth } from '../lib/economy'
+import { tallyClaims } from '../lib/econCore'
 import { burst } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import Emoji, { EmojiText } from '../components/Emoji'
@@ -108,19 +109,31 @@ export default function Mailbox() {
   const claimFailMsg = () =>
     flash(l({ ko: '받기에 실패했어요. 네트워크 확인 후 다시 시도해 주세요.', en: 'Claim failed. Check your connection and retry.', ja: '受取に失敗。接続を確認して再試行してください。' }))
 
-  /** 계정 전환 반영 전에는 수령 금지 — 서버에서 이미 claimed 처리된 다이아가 직후 스왑에 덮여 사라진다 */
+  /**
+   * 계정 전환 반영 전에는 수령 금지 — 서버에서 이미 claimed 처리된 다이아가 직후 스왑에 덮여 사라진다.
+   * 이 화면이 아는 계정(uid)과 동기화 모듈이 아는 지금 계정(authMark)이 다를 때도 같은 창이다 —
+   * 그 상태로 시작하면 아래의 늦은 응답 가드가 정상 수령까지 버린다.
+   */
   const switchPending = () => {
-    if (!isAccountSwitchPending(uid)) return false
+    if (!isAccountSwitchPending(uid) && authMark().uid === uid) return false
     sfx.err()
     flash(l({ ko: '계정 동기화 중이에요. 잠시 후 다시 받아 주세요.', en: 'Syncing your account — please retry in a moment.', ja: 'アカウント同期中です。少し後に再試行してください。' }))
     return true
   }
 
+  /**
+   * 늦은 응답 가드 — 수령 응답을 기다리는 사이 로그아웃·계정 전환이 있었으면 결과를 이 지갑에 쓰지 않는다.
+   * 쓰면 A 계정의 다이아가 B 계정 지갑에 들어간다. 배송 확정(confirmMailDelivery)도 하지 않으므로
+   * 서버는 그 우편을 미확정으로 남긴다(A가 다시 받을 때 서버가 정리 — lib/mailbox.ts 주석).
+   * ⚠️ 비교 대상은 시작 시 잡은 값 vs **authMark()로 지금 읽은 값**이다(클로저 값끼리 비교 금지).
+   */
   const onClaim = async (it: MailItem) => {
     if (switchPending() || claiming !== null) return
+    const start = authMark()
     setClaiming(it.id)
     const got = await claimMail(it.id)
     setClaiming(null)
+    if (isStaleAuth(start, authMark())) return
     // 실패(null)는 수령 처리하지 않음 — 가짜 '수령 완료·환불 불가' 표시 방지
     if (got === null) {
       sfx.err()
@@ -136,23 +149,52 @@ export default function Mailbox() {
     if (got > 0) flash(l({ ko: `💎 ${got}개를 받았어요`, en: `Got 💎${got}`, ja: `💎${got}個 受取` }))
   }
 
+  /**
+   * 일괄 받기 — 항목별로 받아 성공분만 반영한다.
+   * 예전엔 한 번의 RPC 결과로 화면의 모든 우편을 '수령 완료'로 칠하고 배송을 통째로 확정했다 —
+   * 일부만 서버에 반영돼도 사용자는 실패분을 다시 받을 방법이 없었다. 이제 실패분은 미수령으로 남고 안내한다.
+   */
   const onClaimAll = async () => {
     if (switchPending() || claiming !== null) return
+    const start = authMark()
+    const targets = mail.filter((m) => !m.claimed).map((m) => m.id)
+    if (targets.length === 0) return
     setClaiming('all')
-    const got = await claimAllMail()
+    const results: { id: number; got: number | null }[] = []
+    for (const id of targets) {
+      const got = await claimMail(id)
+      // 도중에 계정이 바뀌면 여기서 멈추고 아무것도 반영하지 않는다(받은 것도 확정하지 않음 — 서버가 보관)
+      if (isStaleAuth(start, authMark())) {
+        setClaiming(null)
+        return
+      }
+      results.push({ id, got })
+    }
     setClaiming(null)
-    if (got === null) {
+    const { okIds, failedIds, total } = tallyClaims(results)
+    if (okIds.length === 0) {
       sfx.err()
       claimFailMsg()
       return
     }
-    if (got > 0) addDiamonds(got)
-    void confirmMailDelivery()
-    setMail((m) => m.map((x) => ({ ...x, claimed: true })))
-    if (got > 0) {
+    if (total > 0) addDiamonds(total)
+    void confirmMailDelivery(okIds)
+    const ok = new Set(okIds)
+    setMail((m) => m.map((x) => (ok.has(x.id) ? { ...x, claimed: true } : x)))
+    if (failedIds.length > 0) {
+      sfx.err()
+      const n = failedIds.length
+      flash(
+        total > 0
+          ? l({ ko: `💎 ${total}개를 받았어요. ${n}개는 받지 못했어요 — 다시 시도해 주세요.`, en: `Got 💎${total}. ${n} failed — please retry.`, ja: `💎${total}個 受取。${n}件は失敗 — 再試行してください。` })
+          : l({ ko: `${n}개는 받지 못했어요. 네트워크 확인 후 다시 시도해 주세요.`, en: `${n} failed. Check your connection and retry.`, ja: `${n}件 受取失敗。接続を確認して再試行してください。` }),
+      )
+      return
+    }
+    if (total > 0) {
       burst()
       sfx.coin()
-      flash(l({ ko: `💎 ${got}개를 모두 받았어요`, en: `Claimed all 💎${got}`, ja: `💎${got}個 一括受取` }))
+      flash(l({ ko: `💎 ${total}개를 모두 받았어요`, en: `Claimed all 💎${total}`, ja: `💎${total}個 一括受取` }))
     }
   }
 

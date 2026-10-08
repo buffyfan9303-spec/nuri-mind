@@ -11,10 +11,14 @@ export function referralReady(): boolean {
 
 export type ReferralResult = 'ok' | 'used' | 'self' | 'no_auth' | 'invalid' | 'unavailable'
 
-/** 피초대자 코드 1회 등록(서버). RPC 미배포·오류 시 'unavailable'. */
+/** 피초대자 코드 1회 등록(서버). 비로그인은 'no_auth', RPC 미배포·오류 시 'unavailable'. */
 export async function redeemReferralServer(code: string): Promise<ReferralResult> {
   if (!supabase) return 'unavailable'
   try {
+    // 비로그인이면 부르지 않는다 — redeem_referral은 로그인 전용(anon 실행권 회수, advisor-fixes-2026-09.sql)이라
+    // 비로그인 호출은 권한 오류 → 'unavailable'이 되고, 호출부는 'unavailable'에서 로컬 보상을 막는다.
+    // 그러면 게스트의 로컬 전용 초대 입력까지 막히므로 서버의 'no_auth' 판정을 여기서 그대로 낸다.
+    if (!(await supabase.auth.getSession()).data.session) return 'no_auth'
     const { data, error } = await supabase.rpc('redeem_referral', { p_code: code })
     if (error) return 'unavailable'
     return ((data as ReferralResult) ?? 'unavailable')
