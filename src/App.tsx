@@ -224,7 +224,9 @@ export default function App() {
           // '살짝 위로 뜨는' 느낌은 각 페이지 안의 히어로·카드가 자기 영역에서만(작은 요소) 담당한다.
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.14, ease: [0.4, 0, 0.2, 1] } }}
+          // 나가는 화면은 즉시 눌리지 않게 — mode="wait"라 퇴장 0.14초 동안 옛 화면이 위에 남아,
+          // 빠르게 누르면 사라지는 화면의 '뒤로'가 눌려 엉뚱한 곳(홈)으로 갔다(E2E finish-pass가 잡음)
+          exit={{ opacity: 0, pointerEvents: 'none', transition: { duration: 0.14, ease: [0.4, 0, 0.2, 1] } }}
           transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* 라우트 경계: 한 화면의 크래시·청크 실패가 앱 전체(내비 포함)를 지우지 않게. motion.div가 경로별 key라 이동하면 자동 리셋 */}
