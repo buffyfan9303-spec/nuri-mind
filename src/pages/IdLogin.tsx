@@ -1,9 +1,9 @@
-import { useId, useState, type FormEvent } from 'react'
+import { useEffect, useId, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, TopBar } from '../components/ui'
 import Button from '../components/Button'
 import { useL } from '../i18n/useT'
-import { ID_RULE, PW_MIN, normalizeId, signInWithId, signUpWithId, type IdAuthError } from '../lib/auth'
+import { ID_RULE, PW_MIN, getAuthUser, normalizeId, signInWithId, signUpWithId, type IdAuthError } from '../lib/auth'
 
 /**
  * 아이디·비밀번호 로그인/회원가입. 약관·개인정보 동의는 온보딩에서 이미 받았다(이 화면은 온보딩 뒤에만 열린다).
@@ -20,6 +20,16 @@ export default function IdLogin() {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
+  // 이미 로그인돼 있으면 들어오지 않는다 — 로그아웃(계정 경계) 없이 다른 계정으로 바로 바꾸면,
+  // 진행 중이던 이전 계정의 적립 전송이 새 계정 토큰으로 나가 섞일 수 있다(카카오는 리다이렉트라 페이지가 새로 떴다)
+  useEffect(() => {
+    let alive = true
+    void getAuthUser().then((u) => alive && u && nav('/profile', { replace: true }))
+    return () => {
+      alive = false
+    }
+  }, [nav])
+
   const msg = (e: IdAuthError | 'mismatch'): string =>
     ({
       invalid_id: l({ ko: '아이디는 영문 소문자·숫자·밑줄(_) 4~20자로 만들어 주세요.', en: 'Use 4–20 lowercase letters, numbers, or _.', ja: 'IDは英小文字・数字・_ で4〜20文字にしてください。' }),
@@ -27,6 +37,7 @@ export default function IdLogin() {
       mismatch: l({ ko: '비밀번호 확인이 달라요.', en: "Passwords don't match.", ja: 'パスワード確認が一致しません。' }),
       taken: l({ ko: '이미 쓰고 있는 아이디예요.', en: 'That ID is already taken.', ja: 'そのIDはすでに使われています。' }),
       wrong: l({ ko: '아이디나 비밀번호가 맞지 않아요.', en: 'Wrong ID or password.', ja: 'IDまたはパスワードが違います。' }),
+      too_many: l({ ko: '가입 시도가 너무 많아요. 1시간 뒤에 다시 시도해 주세요.', en: 'Too many sign-ups. Please try again in an hour.', ja: '登録の試行が多すぎます。1時間後にお試しください。' }),
       confirm_required: l({ ko: '지금은 아이디 가입을 받을 수 없어요. 잠시 후 다시 시도해 주세요.', en: 'ID sign-up is unavailable right now. Please try again later.', ja: '現在ID登録を受け付けられません。後ほどお試しください。' }),
       failed: l({ ko: '연결이 원활하지 않아요. 잠시 후 다시 시도해 주세요.', en: 'Connection problem. Please try again shortly.', ja: '接続が不安定です。少し後にお試しください。' }),
     })[e]

@@ -102,3 +102,12 @@ test('회원가입 성공 — 세션이 오면 프로필로', async ({ page }) =
   await expect(page).toHaveURL(/\/profile$/)
   await expect(page.getByRole('button', { name: /로그아웃/ })).toBeVisible()
 })
+
+test('이미 로그인돼 있으면 /login은 프로필로 돌려보낸다 — 로그아웃 없이 계정을 바꾸지 못하게', async ({ page }) => {
+  const url = process.env.VITE_SUPABASE_URL ?? 'https://ci-dummy-not-a-real-project.supabase.co'
+  const key = `sb-${new URL(url).hostname.split('.')[0]}-auth-token`
+  await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [key, JSON.stringify(session('e2e-already-in'))] as const)
+  await page.goto('/login')
+  await expect(page).toHaveURL(/\/profile$/)
+  await expect(page.getByRole('button', { name: /로그아웃/ })).toBeVisible()
+})

@@ -94,17 +94,20 @@ export const PW_MIN = 8
 const idEmail = (id: string) => `${id}@id.nurimind.co.kr`
 export const normalizeId = (id: string) => id.trim().toLowerCase()
 
-export type IdAuthError = 'invalid_id' | 'weak_password' | 'taken' | 'confirm_required' | 'wrong' | 'failed'
+export type IdAuthError = 'invalid_id' | 'weak_password' | 'taken' | 'confirm_required' | 'too_many' | 'wrong' | 'failed'
 
 export async function signUpWithId(rawId: string, pw: string): Promise<{ ok: boolean; error?: IdAuthError }> {
   if (!supabase) return { ok: false, error: 'failed' }
   const id = normalizeId(rawId)
   if (!ID_RULE.test(id)) return { ok: false, error: 'invalid_id' }
   if (pw.length < PW_MIN) return { ok: false, error: 'weak_password' }
-  const { data, error } = await supabase.auth.signUp({ email: idEmail(id), password: pw, options: { data: { nickname: id } } })
+  const { data, error } = await supabase.auth.signUp({ email: idEmail(id), password: pw, options: { data: { name: id } } })
   if (error) {
     if (error.code === 'user_already_exists' || error.code === 'email_exists') return { ok: false, error: 'taken' }
     if (error.code === 'weak_password') return { ok: false, error: 'weak_password' }
+    // 서버 가입 훅(supabase/id-signup-hook-2026-10.sql): 같은 IP 1시간 5건 초과 / 규칙 밖 주소
+    if (error.status === 429 || error.code === 'over_request_rate_limit') return { ok: false, error: 'too_many' }
+    if (error.status === 403) return { ok: false, error: 'invalid_id' }
     return { ok: false, error: 'failed' }
   }
   // Confirm email이 켜져 있으면 세션 없이 돌아온다(이미 있는 아이디도 같은 모양 — 존재 여부를 숨기는 Supabase 동작)
