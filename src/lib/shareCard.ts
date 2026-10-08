@@ -439,6 +439,9 @@ export async function makeCogCard(spec: {
 
 /** 공유: Web Share(파일) → 실패 시 PNG 다운로드.
  *  반환: 'shared'(네이티브 공유 완료) · 'cancelled'(사용자가 공유 취소) · 'downloaded'(다운로드 폴백) */
+/** 공유 카드 실패 안내 — 소리(sfx.err)만으론 무음 사용자가 아무것도 모른다 */
+export const SHARE_FAIL = { ko: '공유 카드를 만들지 못했어요. 다시 시도해 주세요.', en: "Couldn't create the share card. Please try again.", ja: '共有カードを作成できませんでした。もう一度お試しください。' }
+
 export async function shareCardBlob(blob: Blob, text: string, filename = 'nuri-mind-result.png'): Promise<'shared' | 'downloaded' | 'cancelled'> {
   const file = new File([blob], filename, { type: 'image/png' })
   const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean }

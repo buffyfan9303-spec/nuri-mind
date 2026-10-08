@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { SPRING } from '../lib/motion'
+import { toast } from '../lib/toast'
 import { localDay, localDayOf } from '../lib/date'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -140,7 +141,8 @@ export default function Profile() {
       s.setAvatar({ kind: 'photo', dataUrl })
       setAvatarOpen(false)
     } catch {
-      /* noop */
+      // 이미지가 아니거나(손상·HEIC 등 브라우저가 못 여는 형식) 읽기 실패 — 눌렀는데 아무 일도 없던 자리
+      toast.err(l({ ko: '이 사진은 쓸 수 없어요. JPG나 PNG 사진을 골라 주세요.', en: "This photo can't be used. Please choose a JPG or PNG.", ja: 'この写真は使えません。JPGまたはPNGを選んでください。' }))
     }
     e.target.value = ''
   }
@@ -572,7 +574,8 @@ export default function Profile() {
                     )
                     if (!ok) return
                     setDeleting(true)
-                    const r = await deleteAccount()
+                    // 네트워크 예외가 던져져도 '삭제 중…'에 멈추지 않게 — 실패로 취급하고 버튼을 되살린다
+                    const r = await deleteAccount().catch(() => ({ ok: false }))
                     setDeleting(false)
                     if (!r.ok) {
                       alert(l({ ko: '삭제하지 못했어요. 잠시 뒤 다시 시도해 주세요.', en: 'Could not delete. Please try again later.', ja: '削除できませんでした。しばらくしてから再度お試しください。' }))

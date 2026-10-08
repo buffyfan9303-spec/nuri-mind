@@ -48,7 +48,8 @@ export default function IdLogin() {
     if (mode === 'signup' && pw !== pw2) return setErr(msg('mismatch'))
     setBusy(true)
     setErr('')
-    const r = mode === 'login' ? await signInWithId(id, pw) : await signUpWithId(id, pw)
+    // 네트워크 예외(오프라인 등)도 실패로 — 버튼이 busy로 멈추지 않게
+    const r = await (mode === 'login' ? signInWithId(id, pw) : signUpWithId(id, pw)).catch(() => ({ ok: false as const, error: 'failed' as const }))
     setBusy(false)
     if (!r.ok) return setErr(msg(r.error ?? 'failed'))
     nav('/profile', { replace: true })

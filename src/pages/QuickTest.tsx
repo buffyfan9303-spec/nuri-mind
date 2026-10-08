@@ -1,3 +1,4 @@
+import { toast } from '../lib/toast'
 import { isNativeApp, shareOrigin } from '../lib/platform'
 import { useMemo, useRef, useState } from 'react'
 import { SPRING, press3d } from '../lib/motion'
@@ -10,7 +11,7 @@ import { useT, useL } from '../i18n/useT'
 import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
-import { makeResultCard, shareCardBlob } from '../lib/shareCard'
+import { makeResultCard, shareCardBlob, SHARE_FAIL } from '../lib/shareCard'
 import { kakaoEnabled, shareKakao } from '../lib/kakao'
 import { darken, shiftGrad } from '../lib/color'
 import { CHARACTERS } from '../lib/characters'
@@ -115,6 +116,7 @@ export default function QuickTest() {
       }
     } catch {
       sfx.err()
+      toast.err(l(SHARE_FAIL))
     }
   }
 

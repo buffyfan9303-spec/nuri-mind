@@ -1,3 +1,4 @@
+import { toast } from '../lib/toast'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
@@ -15,7 +16,7 @@ import {
 } from '../lib/manse'
 import { fetchFortuneDetailAi, type FortuneDetailText } from '../lib/fortuneAi'
 import { FUNCTIONS_URL } from '../lib/supabase'
-import { makeResultCard, shareCardBlob } from '../lib/shareCard'
+import { makeResultCard, shareCardBlob, SHARE_FAIL } from '../lib/shareCard'
 import { ELEMENT_SVG } from '../lib/characters'
 import { WEEK_LINES, TEN_GOD_LINES, STRENGTH_LINES, REL_NOTES, PILLAR_POS, EL_NAMES } from '../data/fortune'
 import { track } from '../lib/analytics'
@@ -220,7 +221,7 @@ export default function Fortune() {
         setTimeout(() => setSaved(false), 2200)
       }
     } catch {
-      /* noop */
+      toast.err(l(SHARE_FAIL))
     }
   }
 
@@ -252,7 +253,7 @@ export default function Fortune() {
         setTimeout(() => setSaved(false), 2200)
       }
     } catch {
-      /* noop */
+      toast.err(l(SHARE_FAIL))
     }
   }
 

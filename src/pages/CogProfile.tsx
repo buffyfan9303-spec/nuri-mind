@@ -1,3 +1,4 @@
+import { toast } from '../lib/toast'
 import { useMemo, useState } from 'react'
 import { SPRING } from '../lib/motion'
 import { motion } from 'framer-motion'
@@ -6,7 +7,7 @@ import { TopBar, Card } from '../components/ui'
 import Button from '../components/Button'
 import { useStore } from '../store/useStore'
 import { useL } from '../i18n/useT'
-import { makeCogCard, shareCardBlob } from '../lib/shareCard'
+import { makeCogCard, shareCardBlob, SHARE_FAIL } from '../lib/shareCard'
 import { sfx } from '../lib/sound'
 import type { TestResult } from '../data/types'
 import Emoji from '../components/Emoji'
@@ -134,6 +135,7 @@ export default function CogProfile() {
       sfx.coin()
     } catch {
       sfx.err()
+      toast.err(l(SHARE_FAIL))
     }
   }
 

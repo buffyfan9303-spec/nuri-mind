@@ -11,6 +11,9 @@ export function fileToAvatarDataUrl(file: File, size = 240): Promise<string> {
         c.width = size
         c.height = size
         const ctx = c.getContext('2d')!
+        // JPEG엔 투명이 없다 — 깔지 않으면 투명 PNG의 빈 곳이 검정으로 저장된다
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, size, size)
         // center-crop cover
         const scale = Math.max(size / img.width, size / img.height)
         const w = img.width * scale
