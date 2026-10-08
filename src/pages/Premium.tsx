@@ -53,7 +53,7 @@ export default function Premium() {
   }
 
   return (
-    <div className="min-h-dvh pb-10">
+    <main className="min-h-dvh pb-10">
       <TopBar title={l({ ko: '프리미엄', en: 'Premium', ja: 'プレミアム' })} back="/" right={<span />} />
 
       <div className="space-y-4 px-4">
@@ -180,6 +180,6 @@ export default function Premium() {
           </div>
         </div>
       </Modal>
-    </div>
+    </main>
   )
 }

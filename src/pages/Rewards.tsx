@@ -259,7 +259,7 @@ export default function Rewards() {
               <Card key={of.id} className="flex items-center gap-3.5 !p-4 opacity-75">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky2-100"><Emoji e={of.emoji} size={24} /></div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate text-[16px] font-extrabold">{l(of.title)}</h3>
+                  <h3 className="line-clamp-2 text-[16px] font-extrabold">{l(of.title)}</h3>
                   <p className="mt-1 truncate text-[13px] font-bold text-ink-faint">{l(of.desc)}</p>
                 </div>
                 <div className="shrink-0 text-right">

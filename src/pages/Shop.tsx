@@ -117,7 +117,7 @@ export default function Shop() {
                       size="sm"
                       disabled={!afford || maxed}
                       onClick={() => setConfirm(item)}
-                      className="!px-2 whitespace-nowrap"
+                      className="!min-h-[44px] !px-2 whitespace-nowrap"
                     >
                       {maxed
                         ? l({ ko: '보유 중', en: 'Owned', ja: '保有中' })

@@ -122,7 +122,8 @@ export default function BottomNav() {
                   <Emoji e={tab.icon} size={22} />
                 </motion.span>
                 <span
-                  className={`mt-px text-[11px] font-extrabold leading-tight transition-colors ${
+                  // 일본어 'コミュニティ'가 2줄로 접혀 탭 높이가 늘어났다(69 vs 55) — ja만 글자를 줄여 nowrap으로 1줄 유지, ko/en은 그대로
+                  className={`mt-px whitespace-nowrap text-[11px] font-extrabold leading-tight transition-colors [html:lang(ja)_&]:text-[9.5px] [html:lang(ja)_&]:tracking-[-0.02em] ${
                     active ? 'text-mind-700' : 'text-ink-sub'
                   }`}
                 >

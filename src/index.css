@@ -33,7 +33,9 @@
   --surface-2: 242 245 243;
   --text: 51 65 58;
   --text-sub: 107 117 110;
-  --text-faint: 154 165 158;
+  /* 원래 154 165 158(#9AA59E)는 실제 배경(#FAFCF9/#FFFFFF) 위에서 대비 2.47~2.55로 WCAG AA 미달 —
+     105 117 112(#697570)로 낮춰 4.5:1 이상 확보(FAFCF9 4.65 · 흰색 4.80) */
+  --text-faint: 105 117 112;
   --line: 234 239 236;
   /* 3D 카드 아랫면(ledge) — 테두리보다 한 단계 짙게. 듀오링고식 답안 카드·스탯 타일이 '눌리는 물체'로 읽히게 */
   --ledge: 220 228 223;
@@ -47,7 +49,8 @@
   --surface-2: 52 60 69; /* #343C45 — higher elevation */
   --text: 221 228 225; /* #DDE4E1 — ~88% off-white */
   --text-sub: 154 164 160; /* #9AA4A0 */
-  --text-faint: 110 119 114; /* #6E7772 */
+  /* 원래 #6E7772는 다크 surface(#2A3038) 위에서 대비 2.88로 미달 — #9AA3A0로 올려 5.14 확보 */
+  --text-faint: 154 163 160; /* #9AA3A0 */
   --line: 58 66 74; /* #3A424A — soft border */
   --ledge: 28 33 39; /* 표면보다 어둡게 — 다크에서도 아랫면이 그림자로 읽힌다 */
   color-scheme: dark;
@@ -69,6 +72,9 @@
 .dark .bg-mind-50 { background-color: rgba(79, 168, 130, 0.16); }
 .dark .bg-mind-100 { background-color: rgba(79, 168, 130, 0.22); }
 .dark .text-reso-deep { color: #34D399; }
+/* IQ 결과 큰 숫자(text-iq-deep)만 다크 override가 빠져 있었다 — #4F5CD4는 다크 surface에서 2.42, 팔레트의
+   더 밝은 톤(#8490F8, Ticker의 iq fade색과 동일)으로 4.64 확보 */
+.dark .text-iq-deep { color: #8490F8; }
 .dark .text-dk-deep { color: #D98AAA; }
 .dark .text-dopa-deep { color: #5BC8DC; }
 

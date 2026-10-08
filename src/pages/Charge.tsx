@@ -58,7 +58,7 @@ export default function Charge() {
   ]
 
   return (
-    <div className="min-h-dvh pb-10">
+    <main className="min-h-dvh pb-10">
       <TopBar title={l({ ko: '다이아 충전', en: 'Charge Diamonds', ja: 'ダイヤチャージ' })} back="/shop" right={<span />} />
 
       <div className="space-y-4 px-4">
@@ -194,6 +194,6 @@ export default function Charge() {
           </div>
         )}
       </Modal>
-    </div>
+    </main>
   )
 }

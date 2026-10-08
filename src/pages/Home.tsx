@@ -187,7 +187,7 @@ export default function Home() {
             whileTap={tapPop}
             transition={SPRING.press}
             onClick={() => nav('/mail')}
-            className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface2 text-[16px] shadow-card"
+            className="relative flex h-8 w-8 items-center justify-center rounded-full bg-surface2 text-[16px] shadow-card before:absolute before:-inset-[6px] before:content-['']"
             aria-label={l({ ko: '우편함', en: 'Mailbox', ja: 'メールボックス' })}
           >
             <Emoji e="📬" size={18} />

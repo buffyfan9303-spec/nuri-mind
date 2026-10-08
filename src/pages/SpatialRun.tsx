@@ -119,7 +119,7 @@ export default function SpatialRun() {
     <div className="flex min-h-dvh flex-col">
       {/* 헤더 */}
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button whileTap={{ scale: 0.97 }} onClick={openQuit} className="text-2xl font-bold text-ink-faint" aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}>
+        <motion.button whileTap={{ scale: 0.97 }} onClick={openQuit} className="relative text-2xl font-bold text-ink-faint before:absolute before:-inset-[10px] before:content-['']" aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}>
           ✕
         </motion.button>
         <div className="flex-1">

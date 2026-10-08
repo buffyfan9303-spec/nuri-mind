@@ -87,7 +87,8 @@ export const JellyChip = memo(function JellyChip({
       </span>
       {/* 라벨: 한 줄·800·leading-none — 줄높이 여백이 없어야 아이콘과의 간격(gap)이 칸마다 같다.
           좌우 여백은 칸 패딩(px-0.5)뿐. 380px 미만(칸 56px)은 11px — 12px면 "자기효능감"·"소울메이트"가 3px 넘쳐 잘린다 */}
-      <span className="relative z-[1] block w-full truncate whitespace-nowrap pb-px text-center text-[11px] font-extrabold leading-none min-[380px]:text-[12px]">{label}</span>
+      {/* ja/en 라벨이 더 길어 잘리는 경우가 많다 — 격자 정렬을 지키려 줄바꿈 대신 글자만 더 줄인다(레이아웃 불변) */}
+      <span className="relative z-[1] block w-full truncate whitespace-nowrap pb-px text-center text-[11px] font-extrabold leading-none min-[380px]:text-[12px] [html:lang(ja)_&]:text-[9.5px] [html:lang(en)_&]:text-[9.5px] [html:lang(ja)_&]:min-[380px]:text-[10.5px] [html:lang(en)_&]:min-[380px]:text-[10.5px]">{label}</span>
     </button>
   )
 })
