@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
-import { SPRING, press3d, tapPop } from '../lib/motion'
-import { motion } from 'framer-motion'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { SPRING, floatUp, press3d, tapPop } from '../lib/motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useCountUp } from '../components/primitives/Pill'
 import type { L } from '../data/types'
 import { useNavigate } from 'react-router-dom'
 import Avatar from '../components/Avatar'
@@ -33,11 +34,14 @@ const CHECKIN_PRESS = press3d(3, '#D8E0DA')
  * 대시보드 스탯 칸 — 높이를 고정(h-[50px])하고 내용 전체를 칸 정중앙에 둔다.
  * 아이콘과 숫자를 한 덩어리로 묶어야 '🔥 1'과 '🔥 1,234'가 같은 중심선에 선다(따로 두면 숫자 폭만큼 치우친다).
  */
-function StatTile({ icon, value, label, onClick }: { icon: string; value: string; label: string; onClick?: () => void }) {
+function StatTile({ icon, value, label, onClick, pulse = false }: { icon: string; value: string; label: string; onClick?: () => void; pulse?: boolean }) {
   const inner = (
     <>
       <span className="inline-flex max-w-full items-center justify-center gap-1 text-[16px] font-extrabold leading-none text-white">
-        <Emoji e={icon} size={17} />
+        {/* pulse: 출석 직후 불꽃이 한 번 부풀었다 앉는다(듀오링고 스트릭 불꽃) — 값이 바뀐 순간에만, 재렌더엔 반복하지 않는다 */}
+        <motion.span animate={pulse ? { scale: [1, 1.35, 1] } : { scale: 1 }} transition={{ duration: 0.45, ease: 'easeOut' }} className="flex leading-none">
+          <Emoji e={icon} size={17} />
+        </motion.span>
         <span className="truncate tabular-nums">{value}</span>
       </span>
       <span className="mt-1.5 block max-w-full truncate text-center text-[11px] font-extrabold leading-none text-white/90">{label}</span>
@@ -132,8 +136,24 @@ export default function Home() {
     }
   }, [fp])
 
+  /**
+   * 출석 보상 연출 — 잔액 숫자가 굴러 올라가고(useCountUp) '+NP'가 떠오르며(floatUp) 스트릭 불꽃이 한 번 부푼다.
+   * 획득량은 store 전후 차이로 잰다(출석 래더·프리즈 보너스를 여기서 다시 계산하지 않는다 — 단일 출처).
+   */
+  const pointsText = useCountUp(s.points)
+  const [gain, setGain] = useState<{ id: number; n: number } | null>(null)
+  const gainTimer = useRef<ReturnType<typeof setTimeout>>()
+  useEffect(() => () => clearTimeout(gainTimer.current), [])
   const onCheckIn = () => {
-    if (s.checkIn()) fire('coin')
+    const before = useStore.getState().points
+    if (!s.checkIn()) return
+    fire('coin')
+    const n = useStore.getState().points - before
+    if (n > 0) {
+      setGain({ id: Date.now(), n })
+      clearTimeout(gainTimer.current)
+      gainTimer.current = setTimeout(() => setGain(null), 1100)
+    }
   }
 
   // 퀵테스트 칩 — 문항·결과 데이터(60KB)는 지연 로드(메인 번들 오염 방지). 칩엔 메타 4필드만 필요
@@ -239,13 +259,29 @@ export default function Home() {
           {/* 잔액 줄 — 환산액·교환 가능 수는 뺐다(홈 첫 카드는 잔액과 출석만). 출석 버튼과 세로 중앙 정렬 */}
           <div className="mt-2.5 flex min-h-[40px] items-center justify-between gap-3">
             {/* 숫자와 단위 P는 같은 기준선(items-baseline)에 — 아래끝 맞춤(items-end)은 글꼴 하단 여백 차이로 P가 떠 보였다 */}
-            <div className="flex min-w-0 items-baseline gap-1">
+            <div className="relative flex min-w-0 items-baseline gap-1">
               {/* 코인 이모지는 숫자와 따로 — 한 덩어리로 leading-none + truncate를 걸면 이모지 위아래가 잘린다 */}
               <Emoji e="🪙" size={24} className="self-center" />
-              <span className="truncate text-[28px] font-black leading-tight tracking-tight text-white tabular-nums">
-                {s.points.toLocaleString()}
-              </span>
+              <motion.span className="truncate text-[28px] font-black leading-tight tracking-tight text-white tabular-nums">
+                {pointsText}
+              </motion.span>
               <span className="text-[16px] font-extrabold leading-none text-white/85">P</span>
+              {/* '+NP' 플로트 — 절대 위치라 레이아웃을 밀지 않는다. 숫자는 aria-live 없이 장식(잔액 자체가 이미 갱신된다) */}
+              <AnimatePresence>
+                {gain && (
+                  <motion.span
+                    key={gain.id}
+                    variants={floatUp}
+                    initial="hidden"
+                    animate="show"
+                    exit={{ opacity: 0, transition: SPRING.exit }}
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-5 left-8 whitespace-nowrap text-[15px] font-extrabold text-white"
+                  >
+                    +{gain.n.toLocaleString()}P
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </div>
             {!checkedToday && (
               <motion.button
@@ -263,7 +299,7 @@ export default function Home() {
           {/* 스탯 3종 — 세 칸 모두 같은 틀(StatTile). 숫자 자릿수가 바뀌어도 칸 한가운데에 오도록
               아이콘+숫자를 한 덩어리(inline-flex)로 묶어 가운데 정렬하고, 숫자는 고정폭(tabular-nums) */}
           <div className="mt-2.5 grid grid-cols-3 gap-2">
-            <StatTile icon="🔥" value={s.streak.toLocaleString()} label={t('dash.streak')} />
+            <StatTile icon="🔥" value={s.streak.toLocaleString()} label={t('dash.streak')} pulse={gain !== null} />
             <StatTile icon={lgTier.emoji} value={l({ ko: `${lgRank}위`, en: `#${lgRank}`, ja: `${lgRank}位` })} label={t('dash.leagueShort')} onClick={() => nav('/league')} />
             <StatTile icon="⚡" value={`${todayFree.toLocaleString()}P`} label={t('dash.freeShort')} onClick={() => nav('/rewards')} />
           </div>

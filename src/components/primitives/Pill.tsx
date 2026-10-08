@@ -8,8 +8,12 @@ import Emoji from '../Emoji'
 /** 숫자 카운터 전용 — lib/motion의 transition 프리셋과 API가 달라 여기 둔다(오버슈트 금지) */
 const COUNTER_SPRING = { stiffness: 110, damping: 22 }
 
-/** 숫자 스프링 카운트업 — 잔액이 점프하지 않고 촤르륵 굴러가는 네이티브 감. 동작 줄이기 설정 시 즉시 표시 */
-function useCountUp(value: number) {
+/**
+ * 숫자 스프링 카운트업 — 잔액이 점프하지 않고 촤르륵 굴러가는 네이티브 감. 동작 줄이기 설정 시 즉시 표시.
+ * 첫 마운트는 현재값에서 시작한다(화면에 들어올 때마다 0부터 세지 않는다) — 값이 바뀔 때만 굴러간다.
+ * 홈·리워드 잔액도 같은 훅을 쓴다 — 반환값은 MotionValue라 `<motion.span>{text}</motion.span>`로 그린다.
+ */
+export function useCountUp(value: number) {
   const reduced = useReducedMotion()
   // 숫자 카운터는 useSpring(값 보간) API라 transition 프리셋과 형태가 다르다 —
   // 오버슈트가 있으면 포인트가 잠깐 초과 표시되므로 임계감쇠로 둔다.

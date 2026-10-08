@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { SPRING } from '../lib/motion'
 import { Card } from './ui'
 import { DAILY_CHALLENGES, DAILY_LINES, dayIndex } from '../data/daily'
 import { useStore } from '../store/useStore'
@@ -47,12 +48,19 @@ export default function DailyExtras() {
           className="mt-2 flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left transition-colors"
           style={{ background: challengeDone ? '#4FA88214' : 'rgb(var(--surface-2))' }}
         >
-          <span
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2"
+          {/* 체크 원 — 듀오링고 체크리스트처럼 색이 번지고(transition-colors) 체크 표시가 '톡' 커지며 앉는다(press: 살짝 튐) */}
+          <motion.span
+            animate={challengeDone ? { scale: [1, 1.15, 1] } : { scale: 1 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
             style={{ borderColor: challengeDone ? '#4FA882' : 'rgb(var(--line))', background: challengeDone ? '#4FA882' : 'rgb(var(--surface))' }}
           >
-            {challengeDone && <span className="text-[13px] text-white">✓</span>}
-          </span>
+            {challengeDone && (
+              <motion.span initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={SPRING.press} className="text-[13px] text-white">
+                ✓
+              </motion.span>
+            )}
+          </motion.span>
           <span className={`min-w-0 flex-1 break-keep text-[14px] font-bold leading-snug ${challengeDone ? 'text-ink-faint line-through' : 'text-ink'}`}>
             {l(challenge)}
           </span>

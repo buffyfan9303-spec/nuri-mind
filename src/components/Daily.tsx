@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { SPRING, correctPop, press3d } from '../lib/motion'
 import Button from './Button'
 import { Card, Modal } from './ui'
 import { QUIZ_BANK, todayQuizIndex } from '../data/quiz'
@@ -107,7 +108,13 @@ export function DailySpin() {
           ) : (
             reward && (
               <>
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, -8, 6, 0] }} className="leading-none">
+                <motion.div
+                  // 보상 순간이라 flick(튐 0.24) — 0이 아니라 0.5에서 시작(무에서 생기는 물체는 없다). rotate 흔들기는 키프레임 트윈으로 따로
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1, rotate: [0, -8, 6, 0] }}
+                  transition={{ ...SPRING.flick, rotate: { duration: 0.5, ease: 'easeOut' } }}
+                  className="leading-none"
+                >
                   <Emoji e="🪙" size={72} className="align-top" />
                 </motion.div>
                 <h3 className="mt-3 text-[24px] font-extrabold text-mind-700">
@@ -191,26 +198,41 @@ export function DailyQuiz() {
               const isAnswer = i === item.answer
               const isPicked = picked === i
               const show = answered
+              /**
+               * 듀오링고 레슨식 즉시 피드백 — 이 퀴즈는 정답이 있는 상식 문제라 허용된다
+               * (심리검사 자기보고 문항·인지검사 측정 화면엔 넣지 않는다 — AnswerCard 참고).
+               *  · 누름: 아랫면 3px만큼 곧장 내려앉는다(press3d, Button과 같은 손맛)
+               *  · 정답: 초록 + 한 번 작게 부풀었다 앉는다(correctPop)
+               *  · 오답(내가 고른 것): 빨강 + 좌우 짧은 흔들림(.shake — 동작 줄이기에선 색만 남는다)
+               */
+              const edge = show && isAnswer ? '#2F6B52' : show && isPicked ? '#B91C1C' : 'rgb(var(--ledge))'
+              const p = press3d(3, edge)
               return (
-                <button
+                <motion.button
                   key={i}
+                  type="button"
                   onClick={() => pick(i)}
-                  className="w-full rounded-2xl border-2 px-4 py-3.5 text-left text-[15px] font-bold leading-relaxed"
+                  disabled={show}
+                  whileTap={show ? undefined : p.whileTap}
+                  animate={show && isAnswer ? correctPop : { scale: 1 }}
+                  transition={p.transition}
+                  className={`w-full rounded-2xl border-2 px-4 py-3.5 text-left text-[15px] font-bold leading-relaxed transition-colors ${show && isPicked && !isAnswer ? 'shake' : ''}`}
                   style={{
                     // 라인 토큰 — 고정 #E3EAE5는 다크모드에서 보기 테두리만 밝게 떠 보였다
                     borderColor: show ? (isAnswer ? '#4FA882' : isPicked ? '#EF4444' : 'rgb(var(--line))') : 'rgb(var(--line))',
                     background: show ? (isAnswer ? '#4FA8821A' : isPicked ? '#EF44441A' : 'rgb(var(--surface))') : 'rgb(var(--surface))',
+                    boxShadow: p.rest,
                   }}
                 >
                   <EmojiText text={show && isAnswer ? '✅ ' : show && isPicked ? '❌ ' : ''} />
                   {l(op)}
-                </button>
+                </motion.button>
               )
             })}
           </div>
 
           {answered && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING.ui, delay: 0.2 }} className="mt-4">
               <p className="text-center text-[16px] font-extrabold">
                 {picked === item.answer
                   ? granted > 0

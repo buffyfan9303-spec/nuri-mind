@@ -64,6 +64,24 @@ export const modalSheet: Variants = {
   exit: { y: '100%', opacity: 0, transition: SPRING.exit },
 }
 
+/**
+ * 정답·오답 즉시 피드백(듀오링고 레슨) — **정답이 있는 퀴즈에만** 쓴다.
+ * 심리검사 자기보고 문항·인지검사 측정 구간에는 절대 넣지 않는다(채점 피드백이 측정을 오염시킨다).
+ *  · correct: 한 번 작게 부풀었다 앉는다(크기 4% — pop과 같은 크기감, 색은 호출부가 초록으로)
+ *  · wrong: 좌우 짧은 흔들림은 CSS `.shake`(index.css, 동작 줄이기에서 꺼짐)를 className으로 붙인다
+ * 스프링은 키프레임 2개만 보간하므로 중간 피크가 있는 scale은 트윈으로 돈다.
+ */
+export const correctPop = { scale: [1, 1.04, 1], transition: { duration: 0.3, ease: 'easeOut' } }
+
+/**
+ * '+10P' 같은 획득 라벨이 떠오르며 사라진다(듀오링고 '+XP' 플로트).
+ * 동작 줄이기(MotionConfig reducedMotion="user")에선 y가 생략되고 opacity만 남아 제자리에서 잠깐 보였다 사라진다.
+ */
+export const floatUp: Variants = {
+  hidden: { opacity: 0, y: 4 },
+  show: { opacity: [0, 1, 1, 0], y: -26, transition: { duration: 1.0, ease: 'easeOut', times: [0, 0.15, 0.6, 1] } },
+}
+
 /** 목록 자식들이 순차 등장 — 간격이 넓으면 느려 보인다 */
 export const stagger = (gap = 0.04): Variants => ({
   hidden: {},
