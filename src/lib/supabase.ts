@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { isNativeApp } from './platform'
+import { fetchWithTimeout } from './net'
 
 /**
  * Supabase 클라이언트 — 백엔드 연동 단일 진입점.
@@ -28,6 +29,9 @@ export const supabase: SupabaseClient | null =
           // 웹은 기존 흐름(implicit) 유지 — 운영 로그인 동작을 이번 변경으로 흔들지 않는다.
           flowType: isNativeApp() ? 'pkce' : 'implicit',
         },
+        // 모든 REST·RPC·인증·functions.invoke 요청에 제한 시간(lib/net) — 끊긴 망에서 영원히 대기하던 자리.
+        // 시간 초과는 각 호출의 { error } 경로로 돌아온다(postgrest는 AbortError를 status 0 오류로 반환).
+        global: { fetch: (input, init) => fetchWithTimeout(input, init) },
       })
     : null
 

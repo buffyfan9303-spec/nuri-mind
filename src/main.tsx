@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import './index.css'
 import { loadAnalytics } from './lib/analytics'
-import { loadKakao } from './lib/kakao'
 import { initSentry, SentryErrorBoundary } from './lib/sentry'
 import { registerSW, initInstallPrompt } from './lib/pwa'
 import { useStore } from './store/useStore'
@@ -18,8 +17,7 @@ initInstallPrompt()
 // ⚠️ AdSense 로더는 전역 주입 금지 — AdSlot 마운트 시에만(src/lib/ads.ts 참고, 정책 방어)
 // GA4 — VITE_GA_ID 설정 시에만 (미설정이면 no-op)
 loadAnalytics()
-// 카카오 공유 SDK — VITE_KAKAO_KEY 설정 시에만 (미설정이면 no-op)
-loadKakao()
+// 카카오 공유 SDK는 여기서 받지 않는다 — 공유 버튼이 화면에 나타날 때 받는다(lib/kakao loadKakao)
 // 스토어 앱(Capacitor)일 때만 — 뒤로가기·OAuth 딥링크·상태바. 웹 번들엔 실리지 않는다(동적 import)
 if (isNativeApp())
   void import('./lib/native')

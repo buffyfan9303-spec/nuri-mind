@@ -15,6 +15,7 @@
  *  ⑪ 만세력(사주팔자·음력·절기)이 공표 기준값과 맞는가 — scripts/saju-check.mjs
  *  ⑫ 아이콘 이모지마다 Fluent SVG 파일이 있는가(동기화 누락·파일 누락) — scripts/emoji-sync.mjs
  *  ⑬ 계정·재화 동기화 행동(늦은 응답·아웃박스 세션 재확인·보관 실패·초대 판정) — scripts/econ-check.mjs
+ *  ⑭ 네트워크 제한 시간(멈춘 요청이 실패 경로로 끝나는가)·실패 상태 배선 — scripts/net-check.mjs
  *
  * 실행: npm run smoke   (실패 시 exit 1 — 배포 전 게이트로 사용)
  */
@@ -309,6 +310,14 @@ const check = (name, cond, detail = '') => (cond ? ok.push(name) : fails.push(`$
   const { runEconCheck } = await import('./econ-check.mjs')
   const { passes, fails: bad } = await runEconCheck()
   check(`계정·재화 동기화 행동(${passes.length + bad.length}건)`, passes.length > 30 && bad.length === 0, bad.slice(0, 3).join(' · '))
+}
+
+/* ⑭ 네트워크 제한 시간 — 느린/끊긴 망에서 AI 리포트 등이 영원히 로딩되던 문제 (scripts/net-check.mjs)
+   멈춘 fetch를 흉내 내 lib/net.ts가 실제로 끊는지 보고, 호출부가 그 실패를 화면 상태로 잇는지 앵커로 본다. */
+{
+  const { runNetCheck } = await import('./net-check.mjs')
+  const { passes, fails: bad } = await runNetCheck()
+  check(`네트워크 제한 시간·실패 상태(${passes.length + bad.length}건)`, passes.length >= 20 && bad.length === 0, bad.slice(0, 3).join(' · '))
 }
 
 /* 결과 */

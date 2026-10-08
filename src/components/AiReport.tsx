@@ -7,6 +7,7 @@ import type { TestResult } from '../data/types'
 import { useStore } from '../store/useStore'
 import { useT, useL } from '../i18n/useT'
 import { FUNCTIONS_URL, ANON_KEY } from '../lib/supabase'
+import { fetchWithTimeout, TIMEOUT } from '../lib/net'
 import Emoji from './Emoji'
 import { topPercentOf } from '../lib/format'
 
@@ -37,7 +38,8 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
     if (!FUNCTIONS_URL || !ANON_KEY) return
     let cancel = false
     setLoading(true)
-    fetch(`${FUNCTIONS_URL}/ai-report`, {
+    // 제한 시간이 지나면 catch → finally로 로딩이 풀리고 정적 페르소나 해석이 남는다
+    fetchWithTimeout(`${FUNCTIONS_URL}/ai-report`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${ANON_KEY}`, apikey: ANON_KEY },
       body: JSON.stringify({
@@ -50,7 +52,7 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
         solutions: persona.solutions.map(l),
         lang,
       }),
-    })
+    }, TIMEOUT.ai)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { if (!cancel && d && typeof d.text === 'string') setAiReportText(result.id, d.text) })
       .catch(() => {})

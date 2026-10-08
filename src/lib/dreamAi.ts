@@ -1,4 +1,5 @@
 import { FUNCTIONS_URL, ANON_KEY } from './supabase'
+import { fetchWithTimeout, TIMEOUT } from './net'
 import { hash32 } from './oracle'
 
 /**
@@ -55,11 +56,11 @@ export async function fetchDreamReading(dream: string, keywords: string[], lang:
   if (cached) return { ok: true, reading: cached }
   if (!FUNCTIONS_URL) return { ok: false, reason: 'error' }
   try {
-    const r = await fetch(`${FUNCTIONS_URL}/dream-reading`, {
+    const r = await fetchWithTimeout(`${FUNCTIONS_URL}/dream-reading`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${ANON_KEY}`, apikey: ANON_KEY },
       body: JSON.stringify({ dream: text, keywords: keywords.slice(0, 8), lang }),
-    })
+    }, TIMEOUT.ai)
     if (r.status === 429) return { ok: false, reason: 'quota' }
     if (!r.ok) return { ok: false, reason: 'error' }
     const reading = parseReading(await r.json())

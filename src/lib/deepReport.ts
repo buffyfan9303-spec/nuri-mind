@@ -8,6 +8,7 @@
  * 비용 가드: 비프리미엄은 이 함수를 호출하지 않는다(정적 티저만 노출).
  */
 import { FUNCTIONS_URL, ANON_KEY } from './supabase'
+import { fetchWithTimeout, TIMEOUT } from './net'
 import { PERSONAS } from '../i18n/animalTranslations'
 import type { Lang, TestResult } from '../data/types'
 import { hasNorm } from '../data/tests'
@@ -93,11 +94,11 @@ export function buildPayload(
 export async function fetchDeepReport(payload: ReturnType<typeof buildPayload>): Promise<DeepReport | null> {
   if (!FUNCTIONS_URL) return null
   try {
-    const r = await fetch(`${FUNCTIONS_URL}/deep-report`, {
+    const r = await fetchWithTimeout(`${FUNCTIONS_URL}/deep-report`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${ANON_KEY}`, apikey: ANON_KEY },
       body: JSON.stringify(payload),
-    })
+    }, TIMEOUT.deepAi)
     if (!r.ok) return null
     const data = (await r.json()) as { sections?: DeepSection[]; at?: number }
     const sections = (data.sections ?? []).filter((s) => s && typeof s.body === 'string' && s.body.trim())

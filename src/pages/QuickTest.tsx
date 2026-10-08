@@ -12,7 +12,7 @@ import { track } from '../lib/analytics'
 import { sfx } from '../lib/sound'
 import { useRewardAnimation } from '../hooks/useRewardAnimation'
 import { makeResultCard, shareCardBlob, SHARE_FAIL } from '../lib/shareCard'
-import { kakaoEnabled, shareKakao } from '../lib/kakao'
+import { kakaoEnabled, shareKakao, loadKakao } from '../lib/kakao'
 import { darken, shiftGrad } from '../lib/color'
 import { CHARACTERS } from '../lib/characters'
 import { encodeQuickDuel } from '../lib/duel'
@@ -250,6 +250,8 @@ export default function QuickTest() {
             {/* 앱 WebView에선 카카오 JS 공유가 조용히 실패한다 — 앱은 네이티브 공유 시트에서 카카오톡을 고른다 */}
             {kakaoEnabled() && !isNativeApp() && (
               <motion.button
+                // 버튼이 보이는 순간 SDK를 미리 받는다 — 클릭 뒤에 받으면 공유 창이 제스처 밖이라 막힌다(lib/kakao)
+                ref={loadKakao}
                 onClick={shareKakaoQuick}
                 whileTap={KAKAO_3D.whileTap}
                 transition={KAKAO_3D.transition}

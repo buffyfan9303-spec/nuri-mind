@@ -24,6 +24,7 @@ export default function Premium() {
   const active = isPremium(premiumUntil)
   const [confirm, setConfirm] = useState(false)
   const [done, setDone] = useState(false)
+  const [cancelAsk, setCancelAsk] = useState(false)
 
   const daysLeft = active ? Math.max(0, Math.ceil((premiumUntil - Date.now()) / 86400000)) : 0
   const untilStr = active
@@ -103,10 +104,8 @@ export default function Premium() {
         {/* CTA */}
         {active ? (
           <button
-            onClick={() => {
-              // 해지는 남은 기간을 즉시 없앤다 — 잘못 눌러도 되돌릴 수 없어 한 번 더 묻는다
-              if (window.confirm(l({ ko: `남은 ${daysLeft}일이 바로 사라져요. 해지할까요?`, en: `Your remaining ${daysLeft} days end now. Cancel?`, ja: `残り${daysLeft}日がすぐに消えます。解約しますか？` }))) cancel()
-            }}
+            // 해지는 남은 기간을 즉시 없앤다 — 잘못 눌러도 되돌릴 수 없어 한 번 더 묻는다(아래 해지 확인 시트)
+            onClick={() => setCancelAsk(true)}
             className="w-full py-2.5 text-[13px] font-bold text-ink-faint"
           >
             {l({ ko: '구독 해지 (베타)', en: 'Cancel subscription (beta)', ja: '解約（ベータ）' })}
@@ -162,6 +161,30 @@ export default function Premium() {
           <p className="mt-2 text-[11px] font-bold text-ink-faint">
             {l({ ko: '만 14세 미만 결제 불가 · 언제든 해지 가능', en: 'No purchase under 14 · cancel anytime', ja: '14歳未満不可・いつでも解約可' })}
           </p>
+        </div>
+      </Modal>
+
+      {/* 해지 확인 — 예전 window.confirm(앱 WebView·인앱 브라우저에서 막히거나 모양이 제각각)을 앱 시트로 */}
+      <Modal open={cancelAsk} onClose={() => setCancelAsk(false)}>
+        <div className="text-center">
+          <p className="mt-1 whitespace-pre-line break-keep text-[15px] font-bold leading-relaxed text-ink">
+            {l({ ko: `남은 ${daysLeft}일이 바로 사라져요. 해지할까요?`, en: `Your remaining ${daysLeft} days end now. Cancel?`, ja: `残り${daysLeft}日がすぐに消えます。解約しますか？` })}
+          </p>
+          <div className="mt-5 space-y-2.5">
+            <Button
+              color="danger"
+              onClick={() => {
+                // 시트가 내려가는 중 두 번 눌려도 괜찮다 — cancelPremium은 premiumUntil=0 대입이라 멱등
+                cancel()
+                setCancelAsk(false)
+              }}
+            >
+              {l({ ko: '해지하기', en: 'Cancel subscription', ja: '解約する' })}
+            </Button>
+            <Button color="white" onClick={() => setCancelAsk(false)}>
+              {l({ ko: '계속 이용하기', en: 'Keep Premium', ja: '利用を続ける' })}
+            </Button>
+          </div>
         </div>
       </Modal>
 
