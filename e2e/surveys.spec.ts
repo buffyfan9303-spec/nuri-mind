@@ -59,7 +59,7 @@ test.describe('리워드 설문 — 준비 중', () => {
   }
 })
 
-test('광고는 콘텐츠 아래에만 — 매거진 아티클엔 본문 뒤 한 자리, 소개 페이지엔 없음', async ({ page }) => {
+test('광고는 콘텐츠 사이에만 — 매거진 아티클엔 본문 중간(2번째 섹션 뒤)과 맨 아래, 소개 페이지엔 없음', async ({ page }) => {
   await page.route(/googlesyndication\.com|doubleclick\.net|googleads\.g\.|adtrafficquality\.google/, (r) => r.abort())
   await seedStore(page, { onboarded: false, lang: 'ko' })
 
@@ -71,6 +71,13 @@ test('광고는 콘텐츠 아래에만 — 매거진 아티클엔 본문 뒤 한
   await page.goto('/magazine/adhd-focus')
   await waitForApp(page)
   await expect(page.getByRole('heading', { level: 1, name: '집중력이 약한 게 아니라, 뇌가 다른 거예요' })).toBeVisible()
-  // 본문 중간 광고는 뺐다 — 슬롯은 정확히 하나(하단)
-  await expect(page.locator(AD_SLOT)).toHaveCount(1)
+  // 슬롯은 정확히 둘 — 본문 중간 배너는 2번째 섹션과 3번째 섹션 사이, 사각형은 마지막 섹션 뒤
+  const slots = page.locator(AD_SLOT)
+  await expect(slots).toHaveCount(2)
+  const [midAd, bottomAd] = [(await slots.nth(0).boundingBox())!.y, (await slots.nth(1).boundingBox())!.y]
+  const h2 = page.getByRole('heading', { level: 2 })
+  const [s2, s3, s4] = [(await h2.nth(1).boundingBox())!.y, (await h2.nth(2).boundingBox())!.y, (await h2.nth(3).boundingBox())!.y]
+  expect(midAd).toBeGreaterThan(s2)
+  expect(midAd).toBeLessThan(s3)
+  expect(bottomAd).toBeGreaterThan(s4)
 })

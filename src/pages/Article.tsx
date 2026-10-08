@@ -26,6 +26,8 @@ export default function Article() {
   if (!a) return <Navigate to="/magazine" replace />
 
   const done = claimedBefore || justClaimed
+  // 본문 중간 배너: 섹션 4개 이상일 때만, 절반을 읽은 경계에 — 짧은 글이면 하단 광고와 붙어 과노출이 되므로 생략
+  const midAdAt = a.sections.length >= 4 ? Math.floor(a.sections.length / 2) - 1 : -1
   const onFinish = () => {
     const got = readArticle(a.id)
     setJustClaimed(true)
@@ -54,7 +56,7 @@ export default function Article() {
           <p className="mx-auto mt-2.5 max-w-[19rem] break-keep text-[14px] font-bold leading-relaxed text-ink-sub">{l(a.intro)}</p>
         </motion.div>
 
-        {/* 섹션 = 듀오링고식 레슨 카드. 본문 중간 광고는 뺐다 — 재심사 전까지 광고는 글을 다 읽은 뒤 한 자리만 */}
+        {/* 섹션 = 듀오링고식 레슨 카드. 애드센스 승인(2026-10) 후 본문 중간 배너 복귀 — 글 절반을 읽은 섹션 경계 한 곳 */}
         <div className="mt-7 space-y-3.5">
           {a.sections.map((s, i) => (
             <div key={i}>
@@ -85,6 +87,11 @@ export default function Article() {
                   )}
                 </Card>
               </motion.div>
+              {i === midAdAt && (
+                <div className="mt-3.5">
+                  <AdSlot variant="banner" />
+                </div>
+              )}
             </div>
           ))}
         </div>
