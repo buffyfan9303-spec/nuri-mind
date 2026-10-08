@@ -1,9 +1,7 @@
 import { useCallback } from 'react'
-import confetti from 'canvas-confetti'
+import { pop } from '../lib/confetti'
 import { sfx } from '../lib/sound'
 import { haptic } from '../lib/haptic'
-
-const BRAND = ['#4FA882', '#8FB8E8', '#F4B08C', '#FFB020', '#FF6F61', '#6E7BF2']
 
 export type RewardKind = 'tap' | 'coin' | 'win' | 'levelup'
 
@@ -16,7 +14,7 @@ export type RewardKind = 'tap' | 'coin' | 'win' | 'levelup'
  *   onClick={(e) => fireAt(e, 'tap')}         // 클릭 좌표에서 팡(정확한 위치)
  *
  * kind: 'tap'(가벼운 터치) · 'coin'(포인트 획득) · 'win'(검사 완료/달성) · 'levelup'(등급/레벨업, 가장 화려)
- * 모든 confetti는 disableForReducedMotion으로 OS 동작 줄이기를 존중.
+ * 색상·동작 줄이기 존중·모듈 지연 로드는 lib/confetti 의 pop() 이 일괄 처리한다.
  */
 export function useRewardAnimation() {
   const fire = useCallback((kind: RewardKind = 'win', origin?: { x: number; y: number }) => {
@@ -25,7 +23,7 @@ export function useRewardAnimation() {
     if (kind === 'tap') {
       sfx.tap()
       haptic(6)
-      confetti({ particleCount: 22, spread: 52, startVelocity: 24, origin: o, colors: BRAND, scalar: 0.8, disableForReducedMotion: true })
+      pop({ particleCount: 22, spread: 52, startVelocity: 24, origin: o, scalar: 0.8 })
       return
     }
 
@@ -33,14 +31,14 @@ export function useRewardAnimation() {
     else sfx.fanfare()
     haptic(kind === 'coin' ? 14 : [12, 36, 16])
 
-    confetti({ particleCount: 80, spread: 78, origin: o, colors: BRAND, disableForReducedMotion: true })
+    pop({ particleCount: 80, spread: 78, origin: o })
 
     if (kind === 'win' || kind === 'levelup') {
-      window.setTimeout(() => confetti({ particleCount: 50, angle: 60, spread: 60, origin: { x: 0, y: 0.8 }, colors: BRAND, disableForReducedMotion: true }), 160)
-      window.setTimeout(() => confetti({ particleCount: 50, angle: 120, spread: 60, origin: { x: 1, y: 0.8 }, colors: BRAND, disableForReducedMotion: true }), 300)
+      window.setTimeout(() => pop({ particleCount: 50, angle: 60, spread: 60, origin: { x: 0, y: 0.8 } }), 160)
+      window.setTimeout(() => pop({ particleCount: 50, angle: 120, spread: 60, origin: { x: 1, y: 0.8 } }), 300)
     }
     if (kind === 'levelup') {
-      window.setTimeout(() => confetti({ particleCount: 130, spread: 130, startVelocity: 46, origin: { x: 0.5, y: 0.5 }, colors: BRAND, scalar: 1.1, disableForReducedMotion: true }), 120)
+      window.setTimeout(() => pop({ particleCount: 130, spread: 130, startVelocity: 46, origin: { x: 0.5, y: 0.5 }, scalar: 1.1 }), 120)
     }
   }, [])
 
