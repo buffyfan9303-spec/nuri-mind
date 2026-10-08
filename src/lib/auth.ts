@@ -84,6 +84,45 @@ export async function signInWithGoogle(chooseAccount = false): Promise<{ ok: boo
   return oauth('google', 'email profile', redirectTo, reauth ? { prompt: 'select_account' } : undefined)
 }
 
+/**
+ * 아이디·비밀번호 계정 — Supabase 이메일 계정을 쓰되, 이메일 자리에 아이디로 만든 내부 주소를 넣는다.
+ * 이 주소로는 메일을 보내지 않는다 → 대시보드 Authentication > Email의 'Confirm email'을 꺼야 가입 즉시 로그인된다
+ * (켜져 있으면 'confirm_required'). 메일이 없으므로 비밀번호 찾기는 없다.
+ */
+export const ID_RULE = /^[a-z0-9_]{4,20}$/
+export const PW_MIN = 8
+const idEmail = (id: string) => `${id}@id.nurimind.co.kr`
+export const normalizeId = (id: string) => id.trim().toLowerCase()
+
+export type IdAuthError = 'invalid_id' | 'weak_password' | 'taken' | 'confirm_required' | 'wrong' | 'failed'
+
+export async function signUpWithId(rawId: string, pw: string): Promise<{ ok: boolean; error?: IdAuthError }> {
+  if (!supabase) return { ok: false, error: 'failed' }
+  const id = normalizeId(rawId)
+  if (!ID_RULE.test(id)) return { ok: false, error: 'invalid_id' }
+  if (pw.length < PW_MIN) return { ok: false, error: 'weak_password' }
+  const { data, error } = await supabase.auth.signUp({ email: idEmail(id), password: pw, options: { data: { nickname: id } } })
+  if (error) {
+    if (error.code === 'user_already_exists' || error.code === 'email_exists') return { ok: false, error: 'taken' }
+    if (error.code === 'weak_password') return { ok: false, error: 'weak_password' }
+    return { ok: false, error: 'failed' }
+  }
+  // Confirm email이 켜져 있으면 세션 없이 돌아온다(이미 있는 아이디도 같은 모양 — 존재 여부를 숨기는 Supabase 동작)
+  if (!data.session) return { ok: false, error: 'confirm_required' }
+  return { ok: true }
+}
+
+export async function signInWithId(rawId: string, pw: string): Promise<{ ok: boolean; error?: IdAuthError }> {
+  if (!supabase) return { ok: false, error: 'failed' }
+  const id = normalizeId(rawId)
+  if (!ID_RULE.test(id) || !pw) return { ok: false, error: 'wrong' }
+  const { error } = await supabase.auth.signInWithPassword({ email: idEmail(id), password: pw })
+  if (!error) return { ok: true }
+  if (error.code === 'invalid_credentials') return { ok: false, error: 'wrong' }
+  if (error.code === 'email_not_confirmed') return { ok: false, error: 'confirm_required' }
+  return { ok: false, error: 'failed' }
+}
+
 let googleOn: Promise<boolean> | null = null
 /**
  * Supabase 대시보드에서 Google provider가 켜져 있나(공개 /auth/v1/settings). 켜기 전엔 버튼을 숨겨

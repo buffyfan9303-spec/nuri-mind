@@ -608,6 +608,12 @@ export default function Profile() {
                 <span className="text-ink-faint">›</span>
               </button>
             )}
+            {authReady() && !authUser && (
+              <button onClick={() => nav('/login')} className="flex w-full items-center justify-between border-t border-line px-3 py-3">
+                <span className="text-[15px] font-bold"><Emoji e="👤" inline />{l({ ko: '아이디로 로그인 · 회원가입', en: 'Log in / sign up with ID', ja: 'IDでログイン・会員登録' })}</span>
+                <span className="text-ink-faint">›</span>
+              </button>
+            )}
             {authReady() && !authUser && APPLE_SIGNIN_ENABLED && (
               <button
                 onClick={async () => {

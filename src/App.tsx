@@ -63,6 +63,7 @@ const MbtiTest = lazyWithReload(() => import('./pages/MbtiTest'))
 const About = lazyWithReload(() => import('./pages/About'))
 const AboutMe = lazyWithReload(() => import('./pages/AboutMe'))
 const AccountDeletion = lazyWithReload(() => import('./pages/AccountDeletion'))
+const IdLogin = lazyWithReload(() => import('./pages/IdLogin'))
 const AllTests = lazyWithReload(() => import('./pages/AllTests'))
 
 /**
@@ -119,6 +120,7 @@ const ROUTES = [
   { path: '/mbti/:mode', element: <MbtiTest /> },
   { path: '/about', element: <About /> },
   { path: '/account-deletion', element: <AccountDeletion /> },
+  { path: '/login', element: <IdLogin /> },
   { path: '/me', element: <AboutMe /> },
   { path: '/tests', element: <AllTests /> },
   { path: '/admin', element: <Admin /> },
