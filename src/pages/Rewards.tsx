@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
-import { SPRING } from '../lib/motion'
-import { motion } from 'framer-motion'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { SPRING, floatUp, popIn } from '../lib/motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useCountUp } from '../components/primitives/Pill'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
 import { DailyCapMeter, DailyQuiz, DailySpin } from '../components/Daily'
@@ -69,10 +70,21 @@ export default function Rewards() {
     [myWeek, leagueWeek, leagueSeed, leagueTier, lang],
   )
 
+  /** 출석 보상 연출 — 홈과 같은 패턴(잔액 카운트업 + '+NP' 플로트). 획득량은 store 전후 차이(단일 출처) */
+  const pointsText = useCountUp(points)
+  const [gain, setGain] = useState<{ id: number; n: number } | null>(null)
+  const gainTimer = useRef<ReturnType<typeof setTimeout>>()
+  useEffect(() => () => clearTimeout(gainTimer.current), [])
   const onCheckIn = () => {
-    if (checkIn()) {
-      sfx.coin()
-      burst()
+    const before = useStore.getState().points
+    if (!checkIn()) return
+    sfx.coin()
+    burst()
+    const n = useStore.getState().points - before
+    if (n > 0) {
+      setGain({ id: Date.now(), n })
+      clearTimeout(gainTimer.current)
+      gainTimer.current = setTimeout(() => setGain(null), 1100)
     }
   }
 
@@ -88,9 +100,25 @@ export default function Rewards() {
           className="rounded-3xl bg-gradient-to-br from-mind-500 to-sky2-500 p-6 shadow-pop"
         >
           <p className="text-[13px] font-extrabold text-white/80">{t('rewards.balance')}</p>
-          <div className="mt-1 flex items-end gap-1.5">
-            <span className="text-4xl font-extrabold tracking-tight text-white"><Emoji e="🪙" inline />{points.toLocaleString()}</span>
+          <div className="relative mt-1 flex items-end gap-1.5">
+            <span className="text-4xl font-extrabold tracking-tight text-white tabular-nums"><Emoji e="🪙" inline /><motion.span>{pointsText}</motion.span></span>
             <span className="pb-1 text-sm font-extrabold text-white/80">P</span>
+            {/* '+NP' 플로트 — 절대 위치라 레이아웃을 밀지 않는다(장식, aria-hidden) */}
+            <AnimatePresence>
+              {gain && (
+                <motion.span
+                  key={gain.id}
+                  variants={floatUp}
+                  initial="hidden"
+                  animate="show"
+                  exit={{ opacity: 0, transition: SPRING.exit }}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -top-5 left-10 whitespace-nowrap text-[15px] font-extrabold text-white"
+                >
+                  +{gain.n.toLocaleString()}P
+                </motion.span>
+              )}
+            </AnimatePresence>
           </div>
           {/* 랭크 등급 진입점 */}
           <motion.button
@@ -108,13 +136,19 @@ export default function Rewards() {
 
           <div className="mt-3">
             {checkedToday ? (
-              <div className="flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3.5 text-[15px] font-extrabold text-white">
+              // 방금 출석했을 때만 '톡' 등장(popIn) — 들어올 때 이미 출석한 상태면 그대로 그린다(재렌더에 반복 금지)
+              <motion.div
+                variants={popIn}
+                initial={gain ? 'hidden' : false}
+                animate="show"
+                className="flex items-center justify-between rounded-2xl bg-white/20 px-4 py-3.5 text-[15px] font-extrabold text-white"
+              >
                 <span><Emoji e="✅" inline />{t('rewards.checkinDone')}</span>
                 <span>
                   {streak > 0 && <><Emoji e="🔥" inline />{t('rewards.streak', { n: streak })}</>}
                   {streakFreezes > 0 && <span className="ml-2"><Emoji e="❄️" inline />×{streakFreezes}</span>}
                 </span>
-              </div>
+              </motion.div>
             ) : (
               <Button color="white" onClick={onCheckIn}>
                 {t('rewards.checkin')}
