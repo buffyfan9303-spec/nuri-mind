@@ -12,8 +12,8 @@ import { isNativeApp } from './platform'
 const realOr = <T extends string | undefined>(env: string | undefined, real: T): string | T =>
   env && !/[Xx]{3,}|0{6,}|^undefined$/.test(env) ? env : real
 export const ADSENSE_CLIENT: string | undefined = realOr(import.meta.env.VITE_ADSENSE_CLIENT, 'ca-pub-4637265976541550')
-export const ADSENSE_SLOT_BANNER: string | undefined = realOr(import.meta.env.VITE_ADSENSE_SLOT_BANNER, undefined)
-export const ADSENSE_SLOT_RECT: string | undefined = realOr(import.meta.env.VITE_ADSENSE_SLOT_RECT, undefined)
+export const ADSENSE_SLOT_BANNER: string | undefined = realOr(import.meta.env.VITE_ADSENSE_SLOT_BANNER, '9142895751')
+export const ADSENSE_SLOT_RECT: string | undefined = realOr(import.meta.env.VITE_ADSENSE_SLOT_RECT, '4782260173')
 
 export function adsEnabled(): boolean {
   // ⚠️ 스토어 앱(WebView)에서는 AdSense를 띄우지 않는다 — AdSense는 웹 전용이고, 앱 WebView 안 노출은
@@ -22,7 +22,7 @@ export function adsEnabled(): boolean {
   // 개발 서버(npm run dev)에선 운영 광고 계정으로 요청하지 않는다 — 로컬 QA가 무효 트래픽이 되고,
   // StrictMode 이중 마운트가 같은 슬롯에 두 번 push해 TagError를 냈다
   if (import.meta.env.DEV) return false
-  // 슬롯 ID는 계정별이다 — 새 계정(4637…)의 광고 단위를 만들어 env(또는 위 기본값)에 넣기 전엔 플레이스홀더.
+  // 슬롯 ID는 계정별이다(위 기본값은 pub-4637… 계정의 '가로형'·'정사각' 광고 단위) — 비면 플레이스홀더.
   return Boolean(ADSENSE_CLIENT && ADSENSE_SLOT_BANNER && ADSENSE_SLOT_RECT)
 }
 
