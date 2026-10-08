@@ -118,17 +118,35 @@ export default function Article() {
         </div>
 
         {/* 정독 완료 보상 (듀오링고식 레슨 클리어) */}
-        <motion.button
-          type="button"
-          onClick={done ? undefined : onFinish}
-          disabled={done}
-          whileTap={done ? undefined : { scale: 0.97 }}
-          className={`mt-4 w-full rounded-2xl py-3.5 text-[15px] font-extrabold transition-colors ${
-            done ? 'bg-mind-100 text-mind-700' : 'bg-mind-600 text-white shadow-duo active:translate-y-0.5'
-          }`}
-        >
-          <EmojiText text={done ? t('mag.readClaimed') : t('mag.readReward', { n: 8 })} />
-        </motion.button>
+        {/* 누르는 순간 버튼이 한 번 '톡' 부풀며 완료색으로 바뀌고(듀오링고 레슨 클리어), 보상 칩이 위로 떠오른다.
+            이미 받은 글을 다시 열었을 땐(claimedBefore) 아무것도 움직이지 않는다 */}
+        <div className="relative mt-4">
+          <motion.button
+            type="button"
+            onClick={done ? undefined : onFinish}
+            disabled={done}
+            whileTap={done ? undefined : { scale: 0.97 }}
+            animate={justClaimed ? { scale: [1, 1.04, 1] } : { scale: 1 }}
+            transition={justClaimed ? { duration: 0.4, times: [0, 0.4, 1], ease: 'easeOut' } : SPRING.press}
+            className={`w-full rounded-2xl py-3.5 text-[15px] font-extrabold transition-colors ${
+              done ? 'bg-mind-100 text-mind-700' : 'bg-mind-600 text-white shadow-duo active:translate-y-0.5'
+            }`}
+          >
+            <EmojiText text={done ? t('mag.readClaimed') : t('mag.readReward', { n: 8 })} />
+          </motion.button>
+          {justClaimed && (
+            <motion.span
+              aria-hidden="true"
+              // 가운데 정렬은 framer의 x로(클래스 -translate-x-1/2는 framer가 transform을 덮어써 사라진다 — nuri-lessons-ui)
+              initial={{ opacity: 0, x: '-50%', y: 0, scale: 0.9 }}
+              animate={{ opacity: [0, 1, 1, 0], x: '-50%', y: -34, scale: 1 }}
+              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], opacity: { duration: 1.1, times: [0, 0.15, 0.7, 1] } }}
+              className="pointer-events-none absolute left-1/2 top-0 rounded-full bg-amber-400 px-2.5 py-0.5 text-[13px] font-extrabold text-white shadow-card"
+            >
+              +8P
+            </motion.span>
+          )}
+        </div>
 
         {/* 검사 연결 CTA */}
         {a.test && (

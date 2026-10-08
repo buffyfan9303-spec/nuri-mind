@@ -1,8 +1,8 @@
 import { toast } from '../lib/toast'
 import { isNativeApp, shareOrigin } from '../lib/platform'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SPRING } from '../lib/motion'
-import { motion } from 'framer-motion'
+import { animate, motion, useReducedMotion } from 'framer-motion'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Button from '../components/Button'
 import AdSlot from '../components/AdSlot'
@@ -38,6 +38,41 @@ const PRECISION_RUN: Partial<Record<TestId, string>> = {
   speed: '/speed/run',
   spatial: '/spatial/run',
   switch: '/switch/run',
+}
+
+/**
+ * 점수 숫자 카운트업(듀오링고 레슨 완료 화면의 XP처럼 0에서 올라와 멈춘다).
+ * 게이지와 같은 물성(SPRING.gauge, 튐 0)이라 102처럼 넘치지 않는다 — 점수가 넘쳐 보이면 뜻이 틀어진다.
+ * 레이아웃 폭이 흔들리지 않게 tabular-nums. '동작 줄이기'면 즉시 최종값. 값이 없으면 원래처럼 아무것도 안 그린다.
+ */
+function CountUp({ value, delay = 0.3 }: { value: number | undefined; delay?: number }) {
+  const reduce = useReducedMotion()
+  const ref = useRef<HTMLSpanElement>(null)
+  // 첫 칠하기 전에 0으로 바꿔 둔다(useLayoutEffect) — useEffect면 최종값이 한 프레임 보였다가 0으로 되감겨 보인다
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (el == null || value == null) return
+    if (reduce) {
+      el.textContent = String(value)
+      return
+    }
+    el.textContent = '0'
+    const ctrl = animate(0, value, {
+      ...SPRING.gauge,
+      delay,
+      onUpdate: (v) => {
+        el.textContent = String(Math.round(v))
+      },
+    })
+    return () => ctrl.stop()
+  }, [value, reduce, delay])
+  if (value == null) return null
+  // 첫 그리기부터 최종값을 둔다(SSR·스냅샷·동작 줄이기) — effect가 0부터 다시 올린다
+  return (
+    <span ref={ref} className="tabular-nums">
+      {value}
+    </span>
+  )
 }
 
 export default function TestResult() {
@@ -445,7 +480,7 @@ export default function TestResult() {
           <div className="mt-3">
             {result.testId === 'iq' ? (
               <>
-                <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.iq}</div>
+                <div className="text-5xl font-extrabold tracking-tight text-iq-deep"><CountUp value={result.iq} /></div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.iqLabel')}</p>
                 {result.iqMode === 'fast' && (
                   <p className="mt-1 break-keep text-[12px] font-bold text-ink-faint">
@@ -462,7 +497,7 @@ export default function TestResult() {
               </>
             ) : result.testId === 'memory' ? (
               <>
-                <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.mq}</div>
+                <div className="text-5xl font-extrabold tracking-tight text-iq-deep"><CountUp value={result.mq} /></div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.mqLabel')}</p>
                 <div className="mt-4">
                   <Gauge value={result.percentile} color={tm.gradFrom} label={t('result.percentileUnit')} />
@@ -470,7 +505,7 @@ export default function TestResult() {
               </>
             ) : result.testId === 'focus' ? (
               <>
-                <div className="text-5xl font-extrabold tracking-tight text-reso-deep">{result.fq}</div>
+                <div className="text-5xl font-extrabold tracking-tight text-reso-deep"><CountUp value={result.fq} /></div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.fqLabel')}</p>
                 {result.axes?.rt != null && result.axes.acc != null && (
                   <p className="mt-1 text-[12px] font-bold text-ink-faint">
@@ -487,7 +522,7 @@ export default function TestResult() {
               </>
             ) : result.testId === 'switch' ? (
               <>
-                <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.wq}</div>
+                <div className="text-5xl font-extrabold tracking-tight text-iq-deep"><CountUp value={result.wq} /></div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.wqLabel')}</p>
                 {result.axes?.rt != null && result.axes.acc != null && result.axes.cost != null && (
                   <p className="mt-1 text-[12px] font-bold text-ink-faint">
@@ -504,7 +539,7 @@ export default function TestResult() {
               </>
             ) : result.testId === 'spatial' ? (
               <>
-                <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.xq}</div>
+                <div className="text-5xl font-extrabold tracking-tight text-iq-deep"><CountUp value={result.xq} /></div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.xqLabel')}</p>
                 {result.axes?.rt != null && result.axes.acc != null && (
                   <p className="mt-1 text-[12px] font-bold text-ink-faint">
@@ -521,7 +556,7 @@ export default function TestResult() {
               </>
             ) : result.testId === 'speed' ? (
               <>
-                <div className="text-5xl font-extrabold tracking-tight text-iq-deep">{result.sq}</div>
+                <div className="text-5xl font-extrabold tracking-tight text-iq-deep"><CountUp value={result.sq} /></div>
                 <p className="mt-0.5 text-xs font-bold text-ink-sub">{t('result.sqLabel')}</p>
                 {result.axes?.count != null && result.axes.ms != null && result.axes.acc != null && (
                   <p className="mt-1 text-[12px] font-bold text-ink-faint">
@@ -579,13 +614,22 @@ export default function TestResult() {
         {/* 검사별 3축 카드 */}
         {result.axes && axisDefs && (
           <div className="mt-4 grid grid-cols-3 gap-2.5">
-            {axisDefs.map(([key, label, color]) => (
-              <Card key={key} className="!p-3.5 text-center">
-                <div className="text-[20px] font-extrabold" style={{ color }}>
-                  {Math.round(result.axes![key])}
-                </div>
-                <div className="mt-0.5 text-[11px] font-bold tracking-wide text-ink-sub">{t(label)}</div>
-              </Card>
+            {/* 3축 카드는 보일 때 40ms 간격으로 떠오르고 숫자가 올라간다 — 작은 카드라 transform 진입이 허용된다 */}
+            {axisDefs.map(([key, label, color], i) => (
+              <motion.div
+                key={key}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ ...SPRING.ui, delay: 0.04 * i }}
+              >
+                <Card className="!p-3.5 text-center">
+                  <div className="text-[20px] font-extrabold" style={{ color }}>
+                    <CountUp value={Math.round(result.axes![key])} delay={0.1 + 0.04 * i} />
+                  </div>
+                  <div className="mt-0.5 text-[11px] font-bold tracking-wide text-ink-sub">{t(label)}</div>
+                </Card>
+              </motion.div>
             ))}
           </div>
         )}
@@ -631,7 +675,7 @@ export default function TestResult() {
         <Card className="mt-4">
           <h2 className="text-[17px] font-extrabold leading-tight">{t('result.subscaleTitle')}</h2>
           <div className="mt-4 space-y-4">
-            {result.subscales.map((s) => (
+            {result.subscales.map((s, i) => (
               <div key={s.key}>
                 <div className="mb-1.5 flex items-center justify-between text-[14px] font-bold">
                   <span>{t(`sub.${s.key}`)}</span>
@@ -640,11 +684,13 @@ export default function TestResult() {
                   </span>
                 </div>
                 <div className="h-3 overflow-hidden rounded-full bg-line">
+                  {/* 막대는 위에서 아래로 50ms씩 늦게 찬다 — 한꺼번에 차면 어느 막대가 긴지 눈이 못 따라간다.
+                      width 애니메이션은 트랙 안(overflow-hidden)에서만 일어나 바깥 레이아웃을 건드리지 않는다 */}
                   <motion.div
                     initial={{ width: 0 }}
                     whileInView={{ width: `${Math.round(s.ratio * 100)}%` }}
                     viewport={{ once: true }}
-                    transition={{ ...SPRING.gauge, delay: 0.1 }}
+                    transition={{ ...SPRING.gauge, delay: 0.1 + 0.05 * i }}
                     className="h-full rounded-full"
                     style={{ background: `linear-gradient(90deg, ${tm.gradFrom}, ${tm.gradTo})` }}
                   />

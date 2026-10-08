@@ -54,6 +54,9 @@ export default function Mailbox() {
   const [cancelling, setCancelling] = useState<number | null>(null)
   const msgTimer = useRef<ReturnType<typeof setTimeout>>()
   useEffect(() => () => clearTimeout(msgTimer.current), [])
+  /** 이 화면에서 방금 받은 우편 id — 아이콘 튐·칩 등장은 '받는 순간'에만, 서버에서 이미 수령된 채 온 우편은 가만히 */
+  const [justClaimedIds, setJustClaimedIds] = useState<Set<number>>(() => new Set())
+  const markClaimed = (ids: number[]) => setJustClaimedIds((s) => new Set([...s, ...ids]))
   const lang = useStore((s) => s.lang)
 
   const load = async () => {
@@ -143,6 +146,7 @@ export default function Mailbox() {
     if (got > 0) addDiamonds(got)
     // 로컬 가산이 끝난 뒤에만 서버에 배송 확정 — 그 전엔 서버가 재지급 가능 상태로 보관
     void confirmMailDelivery([it.id])
+    markClaimed([it.id])
     setMail((m) => m.map((x) => (x.id === it.id ? { ...x, claimed: true } : x)))
     burst()
     sfx.coin()
@@ -173,6 +177,7 @@ export default function Mailbox() {
       claimFailMsg()
       return
     }
+    markClaimed(mail.filter((x) => !x.claimed).map((x) => x.id))
     setMail((m) => m.map((x) => ({ ...x, claimed: true })))
     if (r.total > 0) {
       burst()
@@ -277,9 +282,14 @@ export default function Mailbox() {
                   >
                   <Card className={`!p-4 ${it.claimed ? 'opacity-60' : ''}`}>
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-iq-light">
+                      {/* 받는 순간 아이콘이 한 번 튄다(보상 획득 = 운동량이 실린 순간, SPRING.flick 결) — 처음부터 수령된 우편은 가만히 */}
+                      <motion.div
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-iq-light"
+                        animate={it.claimed && justClaimedIds.has(it.id) ? { scale: [1, 1.22, 1], rotate: [0, -8, 0] } : { scale: 1, rotate: 0 }}
+                        transition={{ duration: 0.44, times: [0, 0.4, 1], ease: 'easeOut' }}
+                      >
                         <Emoji e={it.kind === 'purchase' ? '🧾' : it.kind === 'personal' ? '✉️' : it.kind === 'system' ? '📢' : '🎁'} size={20} />
-                      </div>
+                      </motion.div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
                           <p className="truncate text-[15px] font-extrabold leading-tight">{title}</p>
@@ -303,10 +313,16 @@ export default function Mailbox() {
                               {l({ ko: '받기', en: 'Claim', ja: '受取' })}
                             </button>
                           ) : (
-                            <span className="rounded-full bg-line px-3 py-1.5 text-[12px] font-extrabold text-ink-faint">
+                            <motion.span
+                              // '받기' 버튼 자리에 '수령 완료' 칩이 톡 들어선다 — 목록을 처음 열 때(initial=false)는 그냥 있다
+                              initial={justClaimedIds.has(it.id) ? { opacity: 0, scale: 0.9 } : false}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={SPRING.pop}
+                              className="rounded-full bg-line px-3 py-1.5 text-[12px] font-extrabold text-ink-faint"
+                            >
                               <Emoji e="✅" inline />{l({ ko: '수령 완료', en: 'Received', ja: '受取済み' })}
                               {it.kind === 'purchase' && ` · ${l({ ko: '환불 불가', en: 'no refund', ja: '返金不可' })}`}
-                            </span>
+                            </motion.span>
                           )}
                           {refundable && (
                             <button
