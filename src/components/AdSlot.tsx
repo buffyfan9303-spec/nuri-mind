@@ -4,6 +4,7 @@ import { useStore, isPremium } from '../store/useStore'
 import { useNavigate } from 'react-router-dom'
 import { useT, useL } from '../i18n/useT'
 import Emoji from './Emoji'
+import { isNativeApp } from '../lib/platform'
 
 /**
  * 수익화 광고 슬롯.
@@ -36,6 +37,9 @@ export default function AdSlot({ variant = 'banner' }: { variant?: 'banner' | 'r
   }, [premiumUntil])
 
   if (isPremium(premiumUntil)) return null // 프리미엄 = 광고 제거
+  // 스토어 앱: 광고 SDK(AdMob) 미연동 — 빈 '광고 영역' 자리표시와 살 수 없는 프리미엄 업셀을 그리지 않는다
+  // (미완성 화면처럼 보이고 Play '광고 포함 아님' 선언과도 어긋난다. docs/PLAY-RELEASE.md)
+  if (isNativeApp()) return null
 
   const adEl = adsEnabled() ? (
     <ins

@@ -54,7 +54,6 @@ export function buildPayload(
   results: TestResult[],
   testName: (id: string) => string,
   lang: Lang,
-  nickname: string,
 ) {
   const latest = new Map<string, TestResult>()
   for (const r of [...results].sort((a, b) => b.at - a.at)) {
@@ -87,7 +86,8 @@ export function buildPayload(
     }
   }
 
-  return { tests, cognition, lang, nickname: nickname.slice(0, 20) }
+  // 닉네임은 보내지 않는다 — 개인정보처리방침이 AI 전송 항목에서 이름(닉네임)을 제외한다고 고지한다(엣지 함수는 없으면 생략)
+  return { tests, cognition, lang }
 }
 
 /** 심층 리포트 생성 요청. 실패 시 null(호출부가 정적 폴백). */

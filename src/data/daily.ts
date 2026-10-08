@@ -39,3 +39,27 @@ export const MOODS: { emoji: string; label: L }[] = [
   { emoji: '🙂', label: { ko: '괜찮', en: 'Okay', ja: 'いい' } },
   { emoji: '😄', label: { ko: '최고', en: 'Great', ja: '最高' } },
 ]
+
+/**
+ * 매일 랜덤박스 확률표(합 100%) — 지급(store spin)과 화면 고지(DailySpin)가 이 표 하나를 읽는다.
+ * Google Play: 비게임 앱의 확률형 보상은 확률을 앱 안에 공개해야 한다(docs/PLAY-RELEASE.md).
+ */
+export const SPIN_ODDS: readonly { p: number; pct: number }[] = [
+  { p: 3, pct: 30 },
+  { p: 5, pct: 25 },
+  { p: 8, pct: 20 },
+  { p: 12, pct: 13 },
+  { p: 20, pct: 8 },
+  { p: 30, pct: 3 },
+  { p: 50, pct: 1 },
+]
+
+/** r ∈ [0,1) → 지급 포인트 */
+export function rollSpin(r: number): number {
+  let acc = 0
+  for (const o of SPIN_ODDS) {
+    acc += o.pct
+    if (r * 100 < acc) return o.p
+  }
+  return SPIN_ODDS[SPIN_ODDS.length - 1].p
+}

@@ -74,6 +74,14 @@ export default function AiReport({ result, persona }: { result: TestResult; pers
               {/* dict의 'ai.unlock'은 '광고 보고 무료로 열기' — 광고가 없어졌으니 인라인 문구로 대체 */}
               {l({ ko: '무료로 열기', en: 'Open for free', ja: '無料で開く' })}
             </Button>
+            {/* 전송 고지 — 누르기 전에 무엇이 어디로 가는지(legalDocs 개인정보처리방침의 'AI 해석' 수집 항목·국외 이전 항목과 같은 내용) */}
+            <p className="mt-2 break-keep text-[11px] font-bold leading-relaxed text-ink-faint">
+              {l({
+                ko: 'ⓘ 열면 검사 이름·결과 구간·백분위·성향 요약이 해석 생성을 위해 외부 AI 서비스로 전송돼요. 이름은 보내지 않아요.',
+                en: 'ⓘ Opening sends the test name, result band, percentile and trait summary to an external AI service to write the interpretation. Your name is not sent.',
+                ja: 'ⓘ 開くと、検査名・結果区分・パーセンタイル・傾向の要約が解釈生成のため外部AIサービスへ送信されます。名前は送信しません。',
+              })}
+            </p>
           </div>
         </div>
     )

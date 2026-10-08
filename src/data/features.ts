@@ -1,6 +1,7 @@
 /**
  * 기능 스위치 — 운영 상황에 따라 켜고 끄는 기능을 한곳에 모은다.
  */
+import { isNativeApp } from '../lib/platform'
 
 /**
  * 리워드 설문(참여·만들기). 지금은 운영 중인 설문이 없어 꺼 둔다(2026-09).
@@ -19,10 +20,15 @@ export const SURVEYS_ENABLED = false
  * false면: 충전·구독 화면이 '결제 준비 중'으로 바뀌고 어떤 버튼도 재화를 만들지 않는다.
  * 이미 받은 다이아·진행 중인 프리미엄 기간은 그대로 둔다(사용자 자산을 소급해 빼앗지 않는다).
  *
- * 켤 때: 웹은 PG(카카오페이·토스 등), 앱(Capacitor)은 반드시 스토어 결제(src/lib/billing.ts)만 탄다.
+ * 켤 때: 웹은 PG(카카오페이·토스 등), 앱(Capacitor)은 반드시 스토어 결제(Google Play 결제·Apple IAP)만 탄다.
  * 서버 영수증 검증(엣지 함수)이 붙기 전에는 true로 바꾸지 말 것 — docs/BILLING.md 참고.
+ *
+ * 스토어 앱에서는 스위치와 무관하게 항상 꺼진다 — 지금 결제 경로(Charge·Premium)는 웹 PG 자리라,
+ * 웹만 켜려고 true로 바꿨을 때 앱에 외부 결제가 새면 Google Play 결제 정책 위반이다(docs/PLAY-RELEASE.md).
+ * 스토어 결제를 붙일 때 이 줄을 그 연동과 함께 바꾼다.
  */
-export const PAYMENTS_ENABLED = false
+const PAYMENTS_SWITCH = false
+export const PAYMENTS_ENABLED = PAYMENTS_SWITCH && !isNativeApp()
 
 /**
  * Sign in with Apple(Apple 심사 지침 4.8). 카카오 같은 제3자 로그인을 iOS 앱에서 제공하면

@@ -13,7 +13,7 @@
     "setup:ai": "node scripts/setup-ai-key.mjs",
     "deploy:fn": "npx supabase functions deploy deep-report --project-ref xdcglyavndiwbbaryocx && npx supabase functions deploy ai-report --project-ref xdcglyavndiwbbaryocx && npx supabase functions deploy fortune-detail --project-ref xdcglyavndiwbbaryocx",
     "bundle": "node scripts/bundle-check.mjs",
-    "cap:sync": "npm run build && npx cap sync"
+    "cap:sync": "node scripts/check-native-env.mjs && npm run build && npx cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
