@@ -89,15 +89,16 @@ export function FoldStrip({ cells }: { cells: Fig[] }) {
   return (
     <div className="mx-auto flex w-full max-w-[340px] items-center justify-center gap-1.5">
       {cells.map((fig, i) => (
-        <div key={i} className="flex items-center gap-1.5">
-          {i > 0 && <span className="text-lg font-extrabold text-ink-faint">→</span>}
-          <div className="h-24 w-24 rounded-xl border-2 border-line bg-surface p-1">
+        <div key={i} className="flex min-w-0 flex-1 items-center gap-1.5">
+          {i > 0 && <span className="shrink-0 text-lg font-extrabold text-ink-faint">→</span>}
+          {/* 고정 96px 셀 3개 + 화살표 + ?박스가 360px에서 넘쳤다(≈440px) — 유동 폭(aspect-square+max-w)으로 좁은 화면에서 줄어들게 한다 */}
+          <div className="aspect-square min-w-0 max-w-24 flex-1 rounded-xl border-2 border-line bg-surface p-1">
             <FigCell fig={fig} className="h-full w-full" />
           </div>
         </div>
       ))}
-      <span className="text-lg font-extrabold text-ink-faint">→</span>
-      <div className="flex h-24 w-16 items-center justify-center rounded-xl border-2 border-dashed border-iq bg-iq-light text-2xl font-extrabold text-iq-deep">
+      <span className="shrink-0 text-lg font-extrabold text-ink-faint">→</span>
+      <div className="aspect-[2/3] flex min-w-0 max-w-16 flex-1 items-center justify-center rounded-xl border-2 border-dashed border-iq bg-iq-light text-2xl font-extrabold text-iq-deep">
         ?
       </div>
     </div>

@@ -858,6 +858,7 @@ export default function TestResult() {
               <button
                 key={i}
                 onClick={() => setCardTheme(i)}
+                aria-pressed={cardTheme === i}
                 className="h-9 w-9 rounded-full border-2 transition-transform"
                 style={{
                   background: `linear-gradient(135deg, ${th.swatch[0]}, ${th.swatch[1]})`,

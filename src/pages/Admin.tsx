@@ -44,7 +44,7 @@ function PinGate() {
   }
 
   return (
-    <div className="min-h-dvh pb-28">
+    <main className="min-h-dvh pb-28">
       <TopBar back="/profile" title={t('admin.title')} />
       <div className="mx-auto max-w-md px-5 pt-16 text-center">
         <div className="leading-none"><Emoji e="🔐" size={48} className="align-top" /></div>
@@ -60,7 +60,7 @@ function PinGate() {
           </Button>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 

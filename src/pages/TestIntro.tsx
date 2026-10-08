@@ -33,7 +33,7 @@ export default function TestIntro() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <TopBar back="/" title={t(`test.${id}.name`)} />
+      <TopBar historyBack back="/" title={t(`test.${id}.name`)} />
       <main className="mx-auto max-w-md px-5">
         {/* 마스코트 인사 — 검사 시작 전 긴장을 낮추는 톤(결과 스포 방지용 중립 아이콘) */}
         <div className="mt-3 flex items-start gap-2.5 rounded-3xl bg-surface2 px-4 py-3">

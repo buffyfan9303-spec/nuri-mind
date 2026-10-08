@@ -59,6 +59,5 @@ export function useFunShare() {
     track('share', { channel })
     const out = await shareOrCopy({ title: l({ ko: '누리 마인드', en: 'NURI MIND', ja: 'NURI MIND' }), text, url: `${shareOrigin()}${path}` })
     if (out === 'copied') toast.ok(l({ ko: '링크를 복사했어요', en: 'Link copied', ja: 'リンクをコピーしました' }))
-    else if (out === 'failed') toast.err(l({ ko: '공유하지 못했어요', en: "Couldn't share", ja: '共有できませんでした' }))
   }
 }

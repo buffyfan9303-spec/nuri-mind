@@ -117,9 +117,10 @@ export default function Invite() {
 
       {/* 내 코드 */}
       <div className="mt-4 flex items-center gap-2">
-        <div className="flex-1 rounded-2xl border-2 border-dashed border-mind-300 bg-mind-50 px-4 py-3 text-center">
+        <div className="min-w-0 flex-1 rounded-2xl border-2 border-dashed border-mind-300 bg-mind-50 px-4 py-3 text-center">
           <p className="text-[11px] font-extrabold tracking-widest text-mind-600">{t('invite.myCode')}</p>
-          <p className="text-[20px] font-extrabold tracking-[0.15em] text-mind-800">{referralCode}</p>
+          {/* 360px에서 tracking-[0.15em]+20px가 2줄로 접혔다 — nowrap+살짝 축소 */}
+          <p className="whitespace-nowrap text-[17px] font-extrabold tracking-[0.08em] text-mind-800">{referralCode}</p>
         </div>
         <div className="flex w-[104px] flex-col gap-2">
           <Button color="white" size="sm" onClick={copy}>

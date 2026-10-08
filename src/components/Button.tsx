@@ -7,16 +7,22 @@ import Emoji from './Emoji'
 
 export type BtnColor = 'mind' | 'sky' | 'adhd' | 'ego' | 'iq' | 'love' | 'burn' | 'dopa' | 'reso' | 'dk' | 'white' | 'danger'
 
+/**
+ * 흰 글자 대비 감사(VIS 라운드) — 큰 글자 기준 3:1을 못 넘던 색은 같은 팔레트에서 한 단계
+ * 진한 배경으로(mind/sky/ego/dopa/reso), adhd는 배경이 원래 밝은 노랑이라 한 단계 진하게 해도
+ * 3:1을 못 넘어(2.69) 대신 글자색을 어두운 ink로 바꿨다. 수치(흰 글자 기준):
+ * mind 2.89→3.92, sky 2.74→3.83, ego 2.73→4.08, dopa 2.92→4.38, reso 2.54→4.25, adhd(어두운 글자) 5.86.
+ */
 const COLORS: Record<BtnColor, { bg: string; sh: string; fg: string; border?: string }> = {
-  mind: { bg: '#4FA882', sh: '#2F6B52', fg: '#FFFFFF' },
-  sky: { bg: '#6E9FDC', sh: '#46699A', fg: '#FFFFFF' },
-  adhd: { bg: '#FFB020', sh: '#C77F00', fg: '#FFFFFF' },
-  ego: { bg: '#FF6F61', sh: '#C2453A', fg: '#FFFFFF' },
+  mind: { bg: '#3E8F6C', sh: '#27543F', fg: '#FFFFFF' },
+  sky: { bg: '#5784C2', sh: '#3D5C88', fg: '#FFFFFF' },
+  adhd: { bg: '#FFB020', sh: '#C77F00', fg: '#33413A' },
+  ego: { bg: '#D94F42', sh: '#98372E', fg: '#FFFFFF' },
   iq: { bg: '#6E7BF2', sh: '#4350B8', fg: '#FFFFFF' },
   love: { bg: '#F25C8E', sh: '#B83863', fg: '#FFFFFF' },
   burn: { bg: '#8B7CF6', sh: '#5B49C4', fg: '#FFFFFF' },
-  dopa: { bg: '#12A5C2', sh: '#0B7186', fg: '#FFFFFF' },
-  reso: { bg: '#10B981', sh: '#0B7A55', fg: '#FFFFFF' },
+  dopa: { bg: '#0E849B', sh: '#0A5C6D', fg: '#FFFFFF' },
+  reso: { bg: '#0B8C63', sh: '#086245', fg: '#FFFFFF' },
   dk: { bg: '#A23E63', sh: '#722B47', fg: '#FFFFFF' },
   white: { bg: 'rgb(var(--surface))', sh: 'rgb(var(--line))', fg: 'rgb(var(--text))', border: '2px solid rgb(var(--line))' },
   danger: { bg: '#EF4444', sh: '#B91C1C', fg: '#FFFFFF' },

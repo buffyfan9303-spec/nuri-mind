@@ -182,7 +182,8 @@ export function DailyQuiz() {
         )}
       </div>
 
-      <Modal open={open} onClose={answered ? () => setOpen(false) : undefined}>
+      {/* 답 전에도 닫힌다 — onClose를 비우면 ESC·배경·뒤로가기가 모두 막혀 앱이 잠겼다(버튼 연결 감사 H-1) */}
+      <Modal open={open} onClose={() => setOpen(false)}>
         <div>
           <h3 className="text-[17px] font-extrabold leading-[1.6]">{l(item.q)}</h3>
           <div className="mt-4 space-y-2.5">

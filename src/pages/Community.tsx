@@ -538,6 +538,7 @@ export default function Community() {
               <button
                 key={tp}
                 onClick={() => setFilter(tp)}
+                aria-pressed={active}
                 className="shrink-0 whitespace-nowrap rounded-full border-2 px-3.5 py-1.5 text-[13px] font-extrabold transition-colors"
                 style={{
                   borderColor: active ? '#4FA882' : '#E3EAE5',
@@ -557,6 +558,7 @@ export default function Community() {
             <button
               key={s}
               onClick={() => setSort(s)}
+              aria-pressed={sort === s}
               className={`flex-1 rounded-xl py-2 text-[13px] font-extrabold transition-colors ${
                 sort === s ? 'bg-surface text-mind-700 shadow-card' : 'text-ink-faint'
               }`}

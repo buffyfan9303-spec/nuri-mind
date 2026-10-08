@@ -167,7 +167,7 @@ export default function MemoryRun() {
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => setQuitOpen(true)}
-          className="text-2xl font-bold text-ink-faint"
+          className="relative text-2xl font-bold text-ink-faint before:absolute before:-inset-3.5 before:content-['']"
           aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}
         >
           ✕

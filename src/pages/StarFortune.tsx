@@ -107,7 +107,10 @@ export default function StarFortune() {
                 <p className="mt-0.5 break-keep text-[13px] font-extrabold leading-tight">{l(r.color.name)}</p>
               </div>
               <div className="flex flex-col items-center rounded-2xl bg-surface p-3 text-center shadow-card">
-                <span className="text-[20px] font-black leading-6" style={{ color: grad[0] }}>{r.number}</span>
+                {/* water 원소 grad[0](#5B4FC4)가 다크 surface에서 대비 2.13 — 인라인 color라 dark: variant를 못 써서
+                    두 span을 토글(그라디언트의 밝은 쪽 정지점 grad[1]은 네 원소 전부 다크에서 4.7 이상) */}
+                <span className="text-[20px] font-black leading-6 dark:hidden" style={{ color: grad[0] }}>{r.number}</span>
+                <span className="hidden text-[20px] font-black leading-6 dark:inline" style={{ color: grad[1] }}>{r.number}</span>
                 <p className="mt-1.5 text-[11px] font-bold text-ink-faint">{l({ ko: '행운의 숫자', en: 'Lucky number', ja: 'ラッキーナンバー' })}</p>
               </div>
               <button

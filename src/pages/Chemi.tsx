@@ -72,7 +72,7 @@ export default function Chemi() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <TopBar back="/profile" title={t('chemi.title')} />
+      <TopBar historyBack back="/profile" title={t('chemi.title')} />
       <main className="mx-auto max-w-md px-5">
         <p className="text-[14px] font-bold leading-relaxed text-ink-sub">
           {shared && theirs && PERSONAS[theirs] ? t('chemi.subFriend', { a: l(PERSONAS[theirs].name) }) : t('chemi.sub')}

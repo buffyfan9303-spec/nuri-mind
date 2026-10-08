@@ -45,7 +45,7 @@ export default function Insight() {
   if (count < NEED) {
     return (
       <div className="min-h-dvh pb-36">
-        <TopBar back="/profile" title={t('insight.title')} />
+        <TopBar historyBack back="/profile" title={t('insight.title')} />
         <main className="mx-auto max-w-md px-5 pt-10 text-center">
           <div className="leading-none"><Emoji e="🧬" size={60} className="align-top" /></div>
           <h1 className="mt-4 text-[20px] font-extrabold tracking-tight">{t('insight.locked')}</h1>
@@ -64,7 +64,7 @@ export default function Insight() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <TopBar back="/profile" title={t('insight.title')} />
+      <TopBar historyBack back="/profile" title={t('insight.title')} />
       <main className="mx-auto max-w-md px-5">
         {/* 헤더 */}
         <motion.div

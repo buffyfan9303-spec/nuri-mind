@@ -37,7 +37,7 @@ export default function Dex() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <TopBar back="/profile" title={t('dex.title')} />
+      <TopBar historyBack back="/profile" title={t('dex.title')} />
       <main className="mx-auto max-w-md px-5">
         {/* 진행 헤더 */}
         <motion.div

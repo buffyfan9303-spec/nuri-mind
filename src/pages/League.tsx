@@ -60,7 +60,7 @@ export default function League() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <TopBar back="/rewards" title={t('league.title')} />
+      <TopBar historyBack back="/rewards" title={t('league.title')} />
 
       {/* 승급 풀스크린 축하 */}
       <Celebration

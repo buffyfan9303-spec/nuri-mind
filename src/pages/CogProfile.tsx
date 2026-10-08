@@ -23,7 +23,7 @@ const METRICS: {
 }[] = [
   { id: 'iq', label: { ko: '추론(IQ)', en: 'Reasoning', ja: '推論(IQ)' }, emoji: '🧩', color: '#6E7BF2', route: '/test/iq', get: (r) => r.iq },
   { id: 'memory', label: { ko: '기억력', en: 'Memory', ja: '作業記憶' }, emoji: '🧠', color: '#5B6CF0', route: '/test/memory', get: (r) => r.mq },
-  { id: 'focus', label: { ko: '집중력', en: 'Focus', ja: '集中力' }, emoji: '👁️', color: '#14B8A6', route: '/test/focus', get: (r) => r.fq },
+  { id: 'focus', label: { ko: '집중력', en: 'Focus', ja: '集中力' }, emoji: '👁️', color: '#0F9488', route: '/test/focus', get: (r) => r.fq },
   { id: 'speed', label: { ko: '처리속도', en: 'Speed', ja: '処理速度' }, emoji: '⚡', color: '#8B5CF6', route: '/test/speed', get: (r) => r.sq },
   { id: 'spatial', label: { ko: '공간지각', en: 'Spatial', ja: '空間知覚' }, emoji: '🧭', color: '#3B82F6', route: '/test/spatial', get: (r) => r.xq },
   { id: 'switch', label: { ko: '주의전환', en: 'Switching', ja: '注意切替' }, emoji: '🤹', color: '#0EA5E9', route: '/test/switch', get: (r) => r.wq },
@@ -141,7 +141,7 @@ export default function CogProfile() {
 
   return (
     <div className="min-h-dvh pb-36">
-      <TopBar back="/" title={l({ ko: '인지 프로필', en: 'Cognitive Profile', ja: '認知プロフィール' })} />
+      <TopBar historyBack back="/" title={l({ ko: '인지 프로필', en: 'Cognitive Profile', ja: '認知プロフィール' })} />
       <main className="mx-auto max-w-md px-5">
         {/* 헤더 */}
         <motion.div
@@ -161,7 +161,7 @@ export default function CogProfile() {
 
         {/* 레이더 차트 */}
         <Card className="mt-4">
-          <svg viewBox="0 0 300 300" className="mx-auto w-full max-w-[320px]">
+          <svg viewBox="0 0 300 300" className="mx-auto w-full max-w-[320px] overflow-visible">
             {/* 그리드 링 */}
             {[0.25, 0.5, 0.75, 1].map((k) => (
               <polygon key={k} points={poly(METRICS.map(() => k * R))} fill="none" stroke="rgb(var(--line))" strokeWidth={1} />

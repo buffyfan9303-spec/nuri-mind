@@ -57,7 +57,8 @@ export default function SwitchRun() {
   const finishedRef = useRef(false)
 
   const it = items[idx]
-  const cueColor = it.task === 'size' ? '#F59E0B' : '#0EA5E9'
+  // 흰 글자 대비: 원래 #F59E0B(2.15)·#0EA5E9(2.77) 모두 3:1 미달 — 같은 색 계열에서 한 단계 진하게
+  const cueColor = it.task === 'size' ? '#C77F00' : '#0A7CB0'
 
   useEffect(() => {
     if (phase === 'stim') {
@@ -118,7 +119,7 @@ export default function SwitchRun() {
   return (
     <div className="flex min-h-dvh flex-col">
       <div className="mx-auto flex w-full max-w-md items-center gap-3 px-4 pt-4">
-        <motion.button whileTap={{ scale: 0.97 }} onClick={openQuit} className="text-2xl font-bold text-ink-faint" aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}>
+        <motion.button whileTap={{ scale: 0.97 }} onClick={openQuit} className="relative text-2xl font-bold text-ink-faint before:absolute before:-inset-3.5 before:content-['']" aria-label={l({ ko: '검사 중단', en: 'Quit test', ja: '検査を中断' })}>
           ✕
         </motion.button>
         <div className="flex-1">
